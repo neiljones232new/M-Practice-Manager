@@ -70,7 +70,7 @@ When templates are rendered, they receive a flat object with all resolved placeh
   serviceFrequency: "Annually",
   
   // System data
-  practiceEmail: "info@mdjconsultants.com",
+  practiceEmail: "info@example.com",
   practiceName: "MDJ Consultants",
   practicePhone: "020 1234 5678",
   

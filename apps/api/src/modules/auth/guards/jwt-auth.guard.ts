@@ -26,7 +26,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (request.query.demo === 'true' || request.headers['x-demo-mode'] === 'true') {
       request.user = {
         id: 'demo-user',
-        email: 'demo@mdjpractice.com',
+        email: 'demo@example.com',
         firstName: 'Demo',
         lastName: 'User',
         role: 'MANAGER',

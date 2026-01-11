@@ -548,13 +548,13 @@ export default function SettingsPage() {
           practiceAddress: '123 Business Street\nLondon, UK\nSW1A 1AA',
           practicePhone: '+44 20 1234 5678',
           alternativePhone: '+44 20 1234 5679',
-          practiceEmail: 'admin@mdjpractice.com',
-          accountsEmail: 'accounts@mdjpractice.com',
-          practiceWebsite: 'https://mdjpractice.com',
+          practiceEmail: 'admin@example.com',
+          accountsEmail: 'accounts@example.com',
+          practiceWebsite: 'https://example.com',
           primaryContact: {
             name: 'John Smith',
             role: 'Managing Director',
-            email: 'john.smith@mdjpractice.com',
+            email: 'john.smith@example.com',
             phone: '+44 20 1234 5680',
           },
           regulatedBodies: [

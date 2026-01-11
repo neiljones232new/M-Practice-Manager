@@ -35,7 +35,7 @@ app.post('/auth/demo', (req, res) => {
     access_token: 'demo-token-' + Date.now(),
     user: {
       id: 'demo-user',
-      email: 'demo@mdj.com',
+      email: 'demo@example.com',
       name: 'Demo User',
       role: 'admin'
     }
