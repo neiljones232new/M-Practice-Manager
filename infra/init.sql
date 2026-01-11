@@ -9,7 +9,8 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'mdj_app') THEN
-        CREATE ROLE mdj_app WITH LOGIN PASSWORD 'mdj_app_password';
+        -- Replace with a strong password during deployment.
+        CREATE ROLE mdj_app WITH LOGIN PASSWORD 'CHANGE_ME';
     END IF;
 END
 $$;
