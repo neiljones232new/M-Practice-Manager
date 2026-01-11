@@ -12,6 +12,7 @@ import {
   HttpStatus,
   BadRequestException,
   NotFoundException,
+  Request,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PortfoliosService } from './portfolios.service';
@@ -22,17 +23,31 @@ import { CreatePortfolioDto, UpdatePortfolioDto, MergePortfoliosDto } from './dt
 export class PortfoliosController {
   constructor(private readonly portfoliosService: PortfoliosService) {}
 
+  private isDemoUser(req: any) {
+    return req?.user?.id === 'demo-user';
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all portfolios' })
   @ApiResponse({ status: 200, description: 'Returns all portfolios' })
-  async findAll() {
+  async findAll(@Request() req: any) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.portfoliosService.findAll();
   }
 
   @Get('stats')
   @ApiOperation({ summary: 'Get portfolio statistics' })
   @ApiResponse({ status: 200, description: 'Returns portfolio statistics' })
-  async getStats() {
+  async getStats(@Request() req: any) {
+    if (this.isDemoUser(req)) {
+      return {
+        totalPortfolios: 0,
+        totalClients: 0,
+        avgClientsPerPortfolio: 0,
+      };
+    }
     return this.portfoliosService.getStats();
   }
 
@@ -40,7 +55,10 @@ export class PortfoliosController {
   @ApiOperation({ summary: 'Get portfolio by code' })
   @ApiResponse({ status: 200, description: 'Returns the portfolio' })
   @ApiResponse({ status: 404, description: 'Portfolio not found' })
-  async findOne(@Param('code', ParseIntPipe) code: number) {
+  async findOne(@Request() req: any, @Param('code', ParseIntPipe) code: number) {
+    if (this.isDemoUser(req)) {
+      throw new NotFoundException(`Portfolio with code ${code} not found`);
+    }
     const portfolio = await this.portfoliosService.findOne(code);
     if (!portfolio) {
       throw new NotFoundException(`Portfolio with code ${code} not found`);

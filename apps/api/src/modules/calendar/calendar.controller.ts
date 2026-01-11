@@ -9,6 +9,7 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  Request,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CalendarService } from './calendar.service';
@@ -26,9 +27,19 @@ import {
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
 
+  private isDemoUser(req: any) {
+    return req?.user?.id === 'demo-user';
+  }
+
   // Root endpoint for backward compatibility - returns all events
   @Get()
-  async getAllEvents(@Query() filters: CalendarEventFilters): Promise<CalendarEvent[]> {
+  async getAllEvents(
+    @Request() req: any,
+    @Query() filters: CalendarEventFilters,
+  ): Promise<CalendarEvent[]> {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     // Convert string dates to Date objects
     if (filters.startDate) {
       filters.startDate = new Date(filters.startDate);
@@ -58,7 +69,13 @@ export class CalendarController {
   }
 
   @Get('events')
-  async getEvents(@Query() filters: CalendarEventFilters): Promise<CalendarEvent[]> {
+  async getEvents(
+    @Request() req: any,
+    @Query() filters: CalendarEventFilters,
+  ): Promise<CalendarEvent[]> {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     // Convert string dates to Date objects
     if (filters.startDate) {
       filters.startDate = new Date(filters.startDate);
@@ -77,7 +94,10 @@ export class CalendarController {
   }
 
   @Get('events/:id')
-  async getEventById(@Param('id') id: string): Promise<CalendarEvent> {
+  async getEventById(@Request() req: any, @Param('id') id: string): Promise<CalendarEvent> {
+    if (this.isDemoUser(req)) {
+      return null;
+    }
     return this.calendarService.getEventById(id);
   }
 
@@ -105,12 +125,24 @@ export class CalendarController {
 
   @Get('view')
   async getCalendarView(
+    @Request() req: any,
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
     @Query() filters: CalendarEventFilters,
   ): Promise<CalendarView> {
     const start = new Date(startDate);
     const end = new Date(endDate);
+
+    if (this.isDemoUser(req)) {
+      return {
+        events: [],
+        totalCount: 0,
+        dateRange: {
+          start,
+          end,
+        },
+      };
+    }
 
     // Convert other date filters
     if (filters.startDate) {
@@ -124,15 +156,31 @@ export class CalendarController {
   }
 
   @Get('summary')
-  async getCalendarSummary(@Query('portfolioCode') portfolioCode?: number): Promise<CalendarSummary> {
+  async getCalendarSummary(
+    @Request() req: any,
+    @Query('portfolioCode') portfolioCode?: number,
+  ): Promise<CalendarSummary> {
+    if (this.isDemoUser(req)) {
+      return {
+        totalEvents: 0,
+        upcomingEvents: 0,
+        overdueEvents: 0,
+        eventsByType: {},
+        eventsByStatus: {},
+      };
+    }
     return this.calendarService.getCalendarSummary(portfolioCode);
   }
 
   @Get('events/range/:startDate/:endDate')
   async getEventsByDateRange(
+    @Request() req: any,
     @Param('startDate') startDate: string,
     @Param('endDate') endDate: string,
   ): Promise<CalendarEvent[]> {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     const start = new Date(startDate);
     const end = new Date(endDate);
     return this.calendarService.getEventsByDateRange(start, end);
