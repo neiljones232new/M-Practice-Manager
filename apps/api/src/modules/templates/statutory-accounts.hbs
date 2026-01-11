@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statutory Accounts - {{company.name}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+            background: white;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .company-info {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .company-info h2 {
+            font-size: 28px;
+            color: #7c3aed;
+            margin-bottom: 10px;
+        }
+
+        .company-info .company-number {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #7c3aed;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .financial-statement {
+            margin-bottom: 30px;
+        }
+
+        .statement-title {
+            font-size: 18px;
+            color: #1f2937;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        .total-row {
+            font-weight: bold;
+            border-top: 2px solid #374151;
+        }
+
+        .subtotal-row {
+            font-weight: 600;
+            border-top: 1px solid #6b7280;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+
+        .directors-approval {
+            margin-top: 50px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+        }
+
+        .signature-line {
+            margin-top: 30px;
+            border-bottom: 1px solid #374151;
+            width: 300px;
+            padding-bottom: 5px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .footer strong {
+            color: #7c3aed;
+        }
+
+        @media print {
+            .page {
+                margin: 0;
+                border: none;
+                width: 100%;
+            }
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 20px;
+        }
+
+        .single-column {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <!-- Header -->
+        <div class="header">
+            <h1>MDJ Consultants Ltd</h1>
+            <p>Statutory Accounts</p>
+        </div>
+
+        <!-- Company Information -->
+        <div class="company-info">
+            <h2>{{company.name}}</h2>
+            <div class="company-number">Company Number: {{company.companyNumber}}</div>
+            <div class="company-number">
+                {{#if period.isFirstYear}}
+                For the period ended {{formatDate period.endDate}}
+                {{else}}
+                For the year ended {{formatDate period.endDate}}
+                {{/if}}
+            </div>
+        </div>
+
+        <!-- Profit and Loss Account -->
+        {{#if profitAndLoss}}
+        <div class="financial-statement">
+            <div class="statement-title">
+                {{#if period.isFirstYear}}
+                Profit and Loss Account for the period ended {{formatDate period.endDate}}
+                {{else}}
+                Profit and Loss Account for the year ended {{formatDate period.endDate}}
+                {{/if}}
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <td></td>
+                        {{#if period.isFirstYear}}
+                        <td class="number">{{formatDate period.endDate}}</td>
+                        {{else}}
+                        <td class="number">{{formatDate period.endDate}}</td>
+                        <td class="number">{{formatDate comparatives.priorYear.endDate}}</td>
+                        {{/if}}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Turnover</td>
+                        <td class="number">{{formatCurrency profitAndLoss.lines.turnover}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency profitAndLoss.comparatives.priorYearLines.turnover}}</td>
+                        {{/unless}}
+                    </tr>
+                    {{#if profitAndLoss.lines.costOfSales}}
+                    <tr>
+                        <td>Cost of sales</td>
+                        <td class="number">({{formatCurrency profitAndLoss.lines.costOfSales}})</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">({{formatCurrency profitAndLoss.comparatives.priorYearLines.costOfSales}})</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+                    {{#if profitAndLoss.lines.otherIncome}}
+                    <tr>
+                        <td>Other income</td>
+                        <td class="number">{{formatCurrency profitAndLoss.lines.otherIncome}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency profitAndLoss.comparatives.priorYearLines.otherIncome}}</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+                    <tr class="subtotal-row">
+                        <td>Gross profit</td>
+                        <td class="number">{{formatCurrency calculations.profitAndLoss.grossProfit}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency comparatives.calculations.profitAndLoss.grossProfit}}</td>
+                        {{/unless}}
+                    </tr>
+                    <tr>
+                        <td>Administrative expenses</td>
+                        <td class="number">({{formatCurrency profitAndLoss.lines.adminExpenses}})</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">({{formatCurrency profitAndLoss.comparatives.priorYearLines.adminExpenses}})</td>
+                        {{/unless}}
+                    </tr>
+                    {{#if profitAndLoss.lines.wages}}
+                    <tr>
+                        <td>Staff costs</td>
+                        <td class="number">({{formatCurrency profitAndLoss.lines.wages}})</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">({{formatCurrency profitAndLoss.comparatives.priorYearLines.wages}})</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+                    <tr class="subtotal-row">
+                        <td>Operating profit</td>
+                        <td class="number">{{formatCurrency calculations.profitAndLoss.operatingProfit}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency comparatives.calculations.profitAndLoss.operatingProfit}}</td>
+                        {{/unless}}
+                    </tr>
+                    {{#if profitAndLoss.lines.interestPayable}}
+                    <tr>
+                        <td>Interest payable</td>
+                        <td class="number">({{formatCurrency profitAndLoss.lines.interestPayable}})</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">({{formatCurrency profitAndLoss.comparatives.priorYearLines.interestPayable}})</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+                    <tr class="subtotal-row">
+                        <td>Profit before taxation</td>
+                        <td class="number">{{formatCurrency calculations.profitAndLoss.profitBeforeTax}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency comparatives.calculations.profitAndLoss.profitBeforeTax}}</td>
+                        {{/unless}}
+                    </tr>
+                    {{#if profitAndLoss.lines.taxCharge}}
+                    <tr>
+                        <td>Tax on profit</td>
+                        <td class="number">({{formatCurrency profitAndLoss.lines.taxCharge}})</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">({{formatCurrency profitAndLoss.comparatives.priorYearLines.taxCharge}})</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+                    <tr class="total-row">
+                        <td>Profit for the financial {{#if period.isFirstYear}}period{{else}}year{{/if}}</td>
+                        <td class="number">{{formatCurrency calculations.profitAndLoss.profitAfterTax}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency comparatives.calculations.profitAndLoss.profitAfterTax}}</td>
+                        {{/unless}}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {{/if}}
+
+        <!-- Balance Sheet -->
+        {{#if balanceSheet}}
+        <div class="financial-statement">
+            <div class="statement-title">
+                Balance Sheet as at {{formatDate period.endDate}}
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <td></td>
+                        {{#if period.isFirstYear}}
+                        <td class="number">{{formatDate period.endDate}}</td>
+                        {{else}}
+                        <td class="number">{{formatDate period.endDate}}</td>
+                        <td class="number">{{formatDate comparatives.priorYear.endDate}}</td>
+                        {{/if}}
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Fixed Assets -->
+                    {{#if calculations.balanceSheet.totalFixedAssets}}
+                    <tr>
+                        <td><strong>Fixed assets</strong></td>
+                        <td class="number"></td>
+                        {{#unless period.isFirstYear}}<td class="number"></td>{{/unless}}
+                    </tr>
+                    {{#if balanceSheet.assets.fixedAssets.tangibleFixedAssets}}
+                    <tr>
+                        <td>Tangible assets</td>
+                        <td class="number">{{formatCurrency balanceSheet.assets.fixedAssets.tangibleFixedAssets}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency balanceSheet.comparatives.prior.assets.fixedAssets.tangibleFixedAssets}}</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+                    <tr class="subtotal-row">
+                        <td>Total fixed assets</td>
+                        <td class="number">{{formatCurrency calculations.balanceSheet.totalFixedAssets}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency comparatives.calculations.balanceSheet.totalFixedAssets}}</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+
+                    <!-- Current Assets -->
+                    <tr>
+                        <td><strong>Current assets</strong></td>
+                        <td class="number"></td>
+                        {{#unless period.isFirstYear}}<td class="number"></td>{{/unless}}
+                    </tr>
+                    {{#if balanceSheet.assets.currentAssets.debtors}}
+                    <tr>
+                        <td>Debtors</td>
+                        <td class="number">{{formatCurrency balanceSheet.assets.currentAssets.debtors}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency balanceSheet.comparatives.prior.assets.currentAssets.debtors}}</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+                    <tr>
+                        <td>Cash at bank and in hand</td>
+                        <td class="number">{{formatCurrency balanceSheet.assets.currentAssets.cash}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency balanceSheet.comparatives.prior.assets.currentAssets.cash}}</td>
+                        {{/unless}}
+                    </tr>
+                    <tr class="subtotal-row">
+                        <td>Total current assets</td>
+                        <td class="number">{{formatCurrency calculations.balanceSheet.totalCurrentAssets}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency comparatives.calculations.balanceSheet.totalCurrentAssets}}</td>
+                        {{/unless}}
+                    </tr>
+
+                    <!-- Creditors -->
+                    <tr>
+                        <td><strong>Creditors: amounts falling due within one year</strong></td>
+                        <td class="number"></td>
+                        {{#unless period.isFirstYear}}<td class="number"></td>{{/unless}}
+                    </tr>
+                    {{#if balanceSheet.liabilities.creditorsWithinOneYear.tradeCreditors}}
+                    <tr>
+                        <td>Trade creditors</td>
+                        <td class="number">({{formatCurrency balanceSheet.liabilities.creditorsWithinOneYear.tradeCreditors}})</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">({{formatCurrency balanceSheet.comparatives.prior.liabilities.creditorsWithinOneYear.tradeCreditors}})</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+                    {{#if balanceSheet.liabilities.creditorsWithinOneYear.accrualsDeferredIncome}}
+                    <tr>
+                        <td>Accruals and deferred income</td>
+                        <td class="number">({{formatCurrency balanceSheet.liabilities.creditorsWithinOneYear.accrualsDeferredIncome}})</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">({{formatCurrency balanceSheet.comparatives.prior.liabilities.creditorsWithinOneYear.accrualsDeferredIncome}})</td>
+                        {{/unless}}
+                    </tr>
+                    {{/if}}
+                    <tr class="subtotal-row">
+                        <td>Total creditors due within one year</td>
+                        <td class="number">({{formatCurrency calculations.balanceSheet.totalCurrentLiabilities}})</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">({{formatCurrency comparatives.calculations.balanceSheet.totalCurrentLiabilities}})</td>
+                        {{/unless}}
+                    </tr>
+
+                    <tr class="subtotal-row">
+                        <td>Net current assets</td>
+                        <td class="number">{{formatCurrency calculations.balanceSheet.netCurrentAssets}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency comparatives.calculations.balanceSheet.netCurrentAssets}}</td>
+                        {{/unless}}
+                    </tr>
+
+                    <tr class="total-row">
+                        <td>Total assets less current liabilities</td>
+                        <td class="number">{{formatCurrency calculations.balanceSheet.netAssets}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency comparatives.calculations.balanceSheet.netAssets}}</td>
+                        {{/unless}}
+                    </tr>
+
+                    <!-- Capital and Reserves -->
+                    <tr>
+                        <td><strong>Capital and reserves</strong></td>
+                        <td class="number"></td>
+                        {{#unless period.isFirstYear}}<td class="number"></td>{{/unless}}
+                    </tr>
+                    <tr>
+                        <td>Called up share capital</td>
+                        <td class="number">{{formatCurrency balanceSheet.equity.shareCapital}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency balanceSheet.comparatives.prior.equity.shareCapital}}</td>
+                        {{/unless}}
+                    </tr>
+                    <tr>
+                        <td>Profit and loss account</td>
+                        <td class="number">{{formatCurrency balanceSheet.equity.retainedEarnings}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency balanceSheet.comparatives.prior.equity.retainedEarnings}}</td>
+                        {{/unless}}
+                    </tr>
+                    <tr class="total-row">
+                        <td>Shareholders' funds</td>
+                        <td class="number">{{formatCurrency calculations.balanceSheet.totalEquity}}</td>
+                        {{#unless period.isFirstYear}}
+                        <td class="number">{{formatCurrency comparatives.calculations.balanceSheet.totalEquity}}</td>
+                        {{/unless}}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {{/if}}
+
+        <!-- Notes to the Accounts -->
+        {{#if notes}}
+        <div class="section">
+            <div class="section-title">Notes to the Financial Statements</div>
+            
+            {{#if notes.principalActivity}}
+            <div class="note">
+                <strong>1. Principal Activity</strong><br>
+                {{notes.principalActivity}}
+            </div>
+            {{/if}}
+
+            {{#if accountingPolicies}}
+            <div class="note">
+                <strong>2. Accounting Policies</strong><br>
+                <strong>Basis of preparation:</strong> {{accountingPolicies.basisOfPreparation}}<br>
+                {{#if accountingPolicies.goingConcern.isGoingConcern}}
+                <strong>Going concern:</strong> The financial statements have been prepared on a going concern basis.
+                {{else}}
+                <strong>Going concern:</strong> {{accountingPolicies.goingConcern.noteText}}
+                {{/if}}
+            </div>
+            {{/if}}
+
+            {{#if notes.shareCapital}}
+            <div class="note">
+                <strong>3. Share Capital</strong><br>
+                {{notes.shareCapital.numberOfShares}} {{notes.shareCapital.shareClass}} shares of {{formatCurrency notes.shareCapital.nominalValue}} each.
+            </div>
+            {{/if}}
+
+            {{#if frameworkDisclosures.auditExemption.isAuditExempt}}
+            <div class="note">
+                <strong>4. Audit Exemption</strong><br>
+                {{#if (eq frameworkDisclosures.auditExemption.exemptionStatementKey "MICRO_ENTITY")}}
+                The company is entitled to exemption from audit under Section 477 of the Companies Act 2006 for the year ended {{formatDate period.endDate}}. The members have not required the company to obtain an audit of its financial statements for the year ended {{formatDate period.endDate}} in accordance with Section 476 of the Companies Act 2006. The directors acknowledge their responsibilities for:
+                (a) ensuring that the company keeps accounting records that comply with Sections 386 and 387 of the Companies Act 2006 and
+                (b) preparing financial statements which give a true and fair view of the state of affairs of the company as at the end of each financial year and of its profit or loss for each financial year in accordance with the requirements of Sections 394 and 395 and which otherwise comply with the requirements of the Companies Act 2006 relating to financial statements, so far as applicable to the company.
+                {{/if}}
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+
+        <!-- Directors' Approval -->
+        {{#if directorsApproval.approved}}
+        <div class="directors-approval">
+            <p>The financial statements were approved by the board of directors and authorised for issue on {{formatDate directorsApproval.approvalDate}} and are signed on its behalf by:</p>
+            
+            <div class="signature-line">
+                {{directorsApproval.directorName}}
+            </div>
+            <p style="margin-top: 10px; font-size: 12px;">Director</p>
+        </div>
+        {{/if}}
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                <strong>MDJ Consultants Ltd</strong><br>
+                Canal View, 8B Slate Lane, Audenshaw, Manchester, M34 5GW<br>
+                Tel: 07713 697615
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MDJ Company Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f6;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Header */
+    header {
+      background-color: #fff;
+      border-bottom: 3px solid #d7a54b;
+      padding: 20px 40px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .header-logo img {
+      height: 50px;
+      width: auto;
+    }
+
+    .header-logo h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #333;
+      margin: 0;
+    }
+
+    .header-practice-info {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .header-contact {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .header-report-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e9eaec;
+    }
+
+    .company-name-large {
+      font-size: 24px;
+      font-weight: 700;
+      color: #d7a54b;
+    }
+
+    /* Main Content */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 40px;
+    }
+
+    /* Section Cards */
+    .section {
+      background-color: #e9eaec;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #d7a54b;
+    }
+
+    /* Grid Layout for Key-Value Pairs */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px 16px;
+      margin-top: 8px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      min-width: 0;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #555;
+      font-size: 12px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .info-value {
+      color: #333;
+      font-size: 13px;
+      word-wrap: break-word;
+    }
+    
+    .info-item.full-width {
+      grid-column: 1 / -1;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      background-color: #fff;
+    }
+
+    thead {
+      background-color: #f0f0f0;
+    }
+
+    th {
+      text-align: left;
+      padding: 6px 8px;
+      font-weight: 700;
+      font-size: 13px;
+      color: #333;
+    }
+
+    td {
+      padding: 6px 8px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    tbody tr {
+      background-color: #fff;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    tbody tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #fff;
+      border-top: 2px solid #d7a54b;
+      padding: 16px 40px;
+      margin-top: 24px;
+      box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-branding {
+      font-size: 13px;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .footer-signature {
+      font-size: 13px;
+      color: #666;
+      font-style: italic;
+    }
+
+    /* Utility Classes */
+    .text-muted {
+      color: #999;
+    }
+
+    .text-bold {
+      font-weight: 600;
+    }
+
+    .text-gold {
+      color: #d7a54b;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background-color: #fff;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+
+      header {
+        position: static;
+        box-shadow: none;
+      }
+
+      footer {
+        position: static;
+        box-shadow: none;
+      }
+
+      .section {
+        page-break-inside: avoid;
+      }
+      
+      .info-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+      }
+      
+      .info-item {
+        display: flex !important;
+        flex-direction: column !important;
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header {
+        padding: 15px 20px;
+      }
+
+      main {
+        padding: 15px 20px;
+      }
+
+      footer {
+        padding: 12px 20px;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 4px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Header -->
+  <header>
+    <div class="header-logo">
+      {{#if logoDataUrl}}
+      <img src="{{logoDataUrl}}" alt="MDJ Consultants Ltd" />
+      {{/if}}
+      <h1>MDJ Consultants Ltd</h1>
+    </div>
+    <div class="header-practice-info">
+      8b Slate Lane, Audenshaw, Manchester, M34 5GW
+    </div>
+    <div class="header-contact">
+      Tel: 07713 697615 | mdjteam.co.uk
+    </div>
+    <div class="header-report-title">
+      <span class="text-bold">COMPANY REPORT</span> — 
+      <span class="company-name-large">{{companyName}}</span> 
+      ({{clientRef}}) | Generated {{generatedDate}}
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Company Overview Section -->
+    <section class="section">
+      <h2 class="section-title">Company Overview</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Client Reference</div>
+          <div class="info-value">{{clientRef}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Company Number</div>
+          <div class="info-value">{{companyNumber}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Company Type</div>
+          <div class="info-value">{{companyType}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Portfolio</div>
+          <div class="info-value">{{portfolio}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Status</div>
+          <div class="info-value">{{status}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">UTR</div>
+          <div class="info-value">{{utr}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Incorporation Date</div>
+          <div class="info-value">{{incorporationDate}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Last Accounts Date</div>
+          <div class="info-value">{{lastAccountsDate}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Next Accounts Date</div>
+          <div class="info-value">{{nextAccountsDate}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Last CS Date</div>
+          <div class="info-value">{{lastCSDate}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Next CS Date</div>
+          <div class="info-value">{{nextCSDate}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Email</div>
+          <div class="info-value">{{email}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Phone</div>
+          <div class="info-value">{{phone}}</div>
+        </div>
+        <div class="info-item full-width">
+          <div class="info-label">Registered Address</div>
+          <div class="info-value">{{address}}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Contacts & Parties Section -->
+    <section class="section">
+      <h2 class="section-title">Key Contacts & Parties</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Main Contact</div>
+          <div class="info-value">{{mainContact}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Responsible Manager</div>
+          <div class="info-value">{{responsibleManager}}</div>
+        </div>
+        <div class="info-item full-width">
+          <div class="info-label">Associated Parties</div>
+          <div class="info-value">{{parties}}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Active Services Section -->
+    {{#if services.length}}
+    <section class="section">
+      <h2 class="section-title">Active Services</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Frequency</th>
+            <th>Fee</th>
+            <th>Next Due</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each services}}
+          <tr>
+            <td>{{this.name}}</td>
+            <td>{{this.frequency}}</td>
+            <td>{{this.fee}}</td>
+            <td>{{this.nextDue}}</td>
+            <td>{{this.status}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </section>
+    {{/if}}
+
+    <!-- Upcoming Tasks Section -->
+    {{#if tasks.length}}
+    <section class="section">
+      <h2 class="section-title">Upcoming Tasks</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Status</th>
+            <th>Due Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each tasks}}
+          <tr>
+            <td>{{this.title}}</td>
+            <td>{{this.status}}</td>
+            <td>{{this.due}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </section>
+    {{/if}}
+
+    <!-- Companies House Data Section -->
+    {{#if directors}}
+    <section class="section">
+      <h2 class="section-title">Companies House Information</h2>
+      <div class="info-grid">
+        <div class="info-item full-width">
+          <div class="info-label">Directors</div>
+          <div class="info-value">{{directors}}</div>
+        </div>
+        <div class="info-item full-width">
+          <div class="info-label">Persons with Significant Control</div>
+          <div class="info-value">{{psc}}</div>
+        </div>
+      </div>
+      
+      {{#if filings.length}}
+      <h3 style="font-size: 16px; font-weight: 600; margin-top: 16px; margin-bottom: 12px;">Recent Filing History</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each filings}}
+          <tr>
+            <td>{{this.date}}</td>
+            <td>{{this.type}}</td>
+            <td>{{this.description}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+    </section>
+    {{/if}}
+
+    <!-- Compliance Summary Section -->
+    <section class="section">
+      <h2 class="section-title">Compliance Summary</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">AML Review Date</div>
+          <div class="info-value">{{amlReviewDate}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Engagement Letter Status</div>
+          <div class="info-value">{{engagementStatus}}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Renewal Date</div>
+          <div class="info-value">{{renewalDate}}</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Fixed Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-branding">
+        Prepared by MDJ Consultants Ltd — Confidential Report
+      </div>
+      <div class="footer-signature">
+        Signed electronically by Neil Jones
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

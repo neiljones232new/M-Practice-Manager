@@ -1,0 +1,457 @@
+import { Injectable, UnauthorizedException, ConflictException, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
+import { FileStorageService } from '../file-storage/file-storage.service';
+import { User, UserSession, PasswordResetToken, AuthResponse, JwtPayload } from './entities/user.entity';
+import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto } from './dto/auth.dto';
+
+@Injectable()
+export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
+  constructor(
+    private fileStorageService: FileStorageService,
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
+
+  async register(registerDto: RegisterDto): Promise<AuthResponse> {
+    const { firstName, lastName, email, password, confirmPassword, agreeToTerms } = registerDto;
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      throw new BadRequestException('Passwords do not match');
+    }
+
+    // Validate terms agreement
+    if (!agreeToTerms) {
+      throw new BadRequestException('You must agree to the terms and conditions');
+    }
+
+    // Check if user already exists
+    const existingUser = await this.findUserByEmail(email);
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists');
+    }
+
+    // Hash password
+    const saltRounds = 12;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    // Create user
+    const userId = uuidv4();
+    const user: User = {
+      id: userId,
+      email: email.toLowerCase(),
+      firstName,
+      lastName,
+      passwordHash,
+      role: 'STAFF', // Default role
+      portfolios: [1], // Default portfolio
+      isActive: true,
+      emailVerified: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // Save user to file storage
+    await this.fileStorageService.writeJson('users', userId, user);
+
+    // Create user index entry
+    await this.updateUserIndex(user);
+
+    this.logger.log(`User registered: ${email}`);
+
+    // Generate tokens and return auth response
+    return this.generateAuthResponse(user);
+  }
+
+  async login(loginDto: LoginDto): Promise<AuthResponse> {
+    const { email, password, rememberMe = false } = loginDto;
+
+    // Find user by email
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Check if user is active
+    if (!user.isActive) {
+      throw new UnauthorizedException('Account is deactivated');
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Update last login
+    user.lastLoginAt = new Date();
+    user.updatedAt = new Date();
+    await this.fileStorageService.writeJson('users', user.id, user);
+
+    this.logger.log(`User logged in: ${email}`);
+
+    // Generate tokens and return auth response
+    return this.generateAuthResponse(user, rememberMe);
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
+    const { email } = forgotPasswordDto;
+
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+      // Don't reveal if email exists or not
+      return { message: 'If an account with that email exists, we have sent a password reset link.' };
+    }
+
+    // Generate reset token
+    const resetToken = uuidv4();
+    const tokenId = uuidv4();
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours expiry
+
+    const passwordResetToken: PasswordResetToken = {
+      id: tokenId,
+      userId: user.id,
+      token: resetToken,
+      expiresAt,
+      used: false,
+      createdAt: new Date(),
+    };
+
+    // Save reset token
+    await this.fileStorageService.writeJson('password-reset-tokens', tokenId, passwordResetToken);
+
+    // TODO: Send email with reset link
+    // For now, just log the token (in production, this would be sent via email)
+    this.logger.log(`Password reset token for ${email}: ${resetToken}`);
+
+    return { message: 'If an account with that email exists, we have sent a password reset link.' };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+    const { token, password, confirmPassword } = resetPasswordDto;
+
+    if (password !== confirmPassword) {
+      throw new BadRequestException('Passwords do not match');
+    }
+
+    // Find reset token
+    const resetTokenData = await this.findPasswordResetToken(token);
+    if (!resetTokenData) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    // Check if token is expired
+    if (new Date() > resetTokenData.expiresAt) {
+      throw new BadRequestException('Reset token has expired');
+    }
+
+    // Check if token is already used
+    if (resetTokenData.used) {
+      throw new BadRequestException('Reset token has already been used');
+    }
+
+    // Find user
+    const user = await this.fileStorageService.readJson<User>('users', resetTokenData.userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Hash new password
+    const saltRounds = 12;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    // Update user password
+    user.passwordHash = passwordHash;
+    user.updatedAt = new Date();
+    await this.fileStorageService.writeJson('users', user.id, user);
+
+    // Mark token as used
+    resetTokenData.used = true;
+    await this.fileStorageService.writeJson('password-reset-tokens', resetTokenData.id, resetTokenData);
+
+    // Invalidate all user sessions
+    await this.invalidateAllUserSessions(user.id);
+
+    this.logger.log(`Password reset for user: ${user.email}`);
+
+    return { message: 'Password has been reset successfully' };
+  }
+
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<{ message: string }> {
+    const { currentPassword, newPassword, confirmPassword } = changePasswordDto;
+
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException('New passwords do not match');
+    }
+
+    // Find user
+    const user = await this.fileStorageService.readJson<User>('users', userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    // Hash new password
+    const saltRounds = 12;
+    const passwordHash = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update user password
+    user.passwordHash = passwordHash;
+    user.updatedAt = new Date();
+    await this.fileStorageService.writeJson('users', user.id, user);
+
+    // Invalidate all other user sessions (keep current session)
+    await this.invalidateAllUserSessions(user.id);
+
+    this.logger.log(`Password changed for user: ${user.email}`);
+
+    return { message: 'Password has been changed successfully' };
+  }
+
+  async validateUser(payload: JwtPayload): Promise<Omit<User, 'passwordHash'> | null> {
+    // Handle demo user specially (not stored in file system)
+    if (payload.sub === 'demo-user') {
+      return {
+        id: 'demo-user',
+        email: 'demo@mdjpractice.com',
+        firstName: 'Demo',
+        lastName: 'User',
+        role: 'MANAGER',
+        portfolios: [1, 2],
+        isActive: true,
+        emailVerified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+    }
+
+    const user = await this.fileStorageService.readJson<User>('users', payload.sub);
+    if (!user || !user.isActive) {
+      return null;
+    }
+
+    const { passwordHash, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
+  async refreshToken(refreshToken: string): Promise<AuthResponse> {
+    try {
+      // Verify refresh token
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      });
+
+      // Find user session
+      const session = await this.findUserSession(refreshToken);
+      if (!session || session.expiresAt < new Date()) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      // Find user
+      const user = await this.fileStorageService.readJson<User>('users', payload.sub);
+      if (!user || !user.isActive) {
+        throw new UnauthorizedException('User not found or inactive');
+      }
+
+      // Update session last used
+      session.lastUsedAt = new Date();
+      await this.fileStorageService.writeJson('user-sessions', session.id, session);
+
+      // Generate new auth response
+      return this.generateAuthResponse(user, session.rememberMe);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  async logout(userId: string, refreshToken?: string): Promise<{ message: string }> {
+    if (refreshToken) {
+      // Find and invalidate specific session
+      const session = await this.findUserSession(refreshToken);
+      if (session && session.userId === userId) {
+        await this.fileStorageService.deleteJson('user-sessions', session.id);
+      }
+    } else {
+      // Invalidate all user sessions
+      await this.invalidateAllUserSessions(userId);
+    }
+
+    this.logger.log(`User logged out: ${userId}`);
+    return { message: 'Logged out successfully' };
+  }
+
+  async getDemoUser(): Promise<AuthResponse> {
+    // Create a demo user object (not persisted to storage)
+    const demoUser: User = {
+      id: 'demo-user',
+      email: 'demo@mdjpractice.com',
+      firstName: 'Demo',
+      lastName: 'User',
+      passwordHash: '', // Not needed for demo
+      role: 'MANAGER',
+      portfolios: [1, 2],
+      isActive: true,
+      emailVerified: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // Generate real JWT tokens for demo user (short-lived for security)
+    const payload: JwtPayload = {
+      sub: demoUser.id,
+      email: demoUser.email,
+      role: demoUser.role,
+      portfolios: demoUser.portfolios,
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: '1h', // Demo tokens expire in 1 hour
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: '1h', // Demo refresh also expires in 1 hour
+    });
+
+    this.logger.log('Demo user session created');
+
+    const { passwordHash, ...userWithoutPassword } = demoUser;
+
+    return {
+      user: userWithoutPassword,
+      accessToken,
+      refreshToken,
+      expiresIn: 3600, // 1 hour in seconds
+    };
+  }
+
+  private async generateAuthResponse(user: User, rememberMe = false): Promise<AuthResponse> {
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      portfolios: user.portfolios,
+    };
+
+    // Generate tokens
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN', '15m'),
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: rememberMe ? '30d' : '7d',
+    });
+
+    // Create user session
+    const sessionId = uuidv4();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + (rememberMe ? 30 : 7));
+
+    const session: UserSession = {
+      id: sessionId,
+      userId: user.id,
+      token: accessToken,
+      refreshToken,
+      expiresAt,
+      rememberMe,
+      createdAt: new Date(),
+      lastUsedAt: new Date(),
+    };
+
+    await this.fileStorageService.writeJson('user-sessions', sessionId, session);
+
+    const { passwordHash, ...userWithoutPassword } = user;
+
+    return {
+      user: userWithoutPassword,
+      accessToken,
+      refreshToken,
+      expiresIn: 15 * 60, // 15 minutes in seconds
+    };
+  }
+
+  private async findUserByEmail(email: string): Promise<User | null> {
+    try {
+      // Search through user files to find by email
+      const users = await this.fileStorageService.searchFiles<User>(
+        'users',
+        (user) => user.email.toLowerCase() === email.toLowerCase()
+      );
+      return users.length > 0 ? users[0] : null;
+    } catch (error) {
+      this.logger.error(`Error finding user by email ${email}:`, error);
+      return null;
+    }
+  }
+
+  private async findPasswordResetToken(token: string): Promise<PasswordResetToken | null> {
+    try {
+      const tokens = await this.fileStorageService.searchFiles<PasswordResetToken>(
+        'password-reset-tokens',
+        (tokenData) => tokenData.token === token
+      );
+      return tokens.length > 0 ? tokens[0] : null;
+    } catch (error) {
+      this.logger.error(`Error finding password reset token:`, error);
+      return null;
+    }
+  }
+
+  private async findUserSession(refreshToken: string): Promise<UserSession | null> {
+    try {
+      const sessions = await this.fileStorageService.searchFiles<UserSession>(
+        'user-sessions',
+        (session) => session.refreshToken === refreshToken
+      );
+      return sessions.length > 0 ? sessions[0] : null;
+    } catch (error) {
+      this.logger.error(`Error finding user session:`, error);
+      return null;
+    }
+  }
+
+  private async invalidateAllUserSessions(userId: string): Promise<void> {
+    try {
+      const sessions = await this.fileStorageService.searchFiles<UserSession>(
+        'user-sessions',
+        (session) => session.userId === userId
+      );
+
+      for (const session of sessions) {
+        await this.fileStorageService.deleteJson('user-sessions', session.id);
+      }
+    } catch (error) {
+      this.logger.error(`Error invalidating user sessions for ${userId}:`, error);
+    }
+  }
+
+  private async updateUserIndex(user: User): Promise<void> {
+    try {
+      // Create or update user index for faster email lookups
+      const userIndex = {
+        id: user.id,
+        email: user.email,
+        isActive: user.isActive,
+        updatedAt: user.updatedAt,
+      };
+
+      await this.fileStorageService.writeJson('indexes/users-by-email', user.email.replace('@', '_at_'), userIndex);
+    } catch (error) {
+      this.logger.error(`Error updating user index for ${user.email}:`, error);
+    }
+  }
+}

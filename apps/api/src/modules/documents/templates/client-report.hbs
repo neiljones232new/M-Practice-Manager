@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Client Report</title>
+    <style>
+      :root {
+        --text: #111827;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --accent: #5b21b6;
+        --accent-soft: #ede9fe;
+        --accent-ink: #4c1d95;
+        --bg: #ffffff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: "Segoe UI", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+        color: var(--text);
+        background: #f7f7fb;
+        margin: 0;
+        padding: 32px;
+      }
+      h1 { margin: 0 0 6px 0; font-size: 28px; }
+      h2 { margin: 24px 0 12px 0; font-size: 18px; }
+      h3 { margin: 0 0 8px 0; font-size: 14px; color: var(--muted); }
+      .meta { color: var(--muted); font-size: 12px; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px;
+        background: #fff;
+      }
+      .label { color: var(--muted); font-size: 12px; }
+      .value { font-weight: 600; }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      th, td {
+        border-bottom: 1px solid var(--border);
+        padding: 8px 6px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th { color: var(--muted); font-weight: 600; }
+      .section {
+        margin-top: 18px;
+        page-break-inside: avoid;
+      }
+      .report-header {
+        background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 55%, #f5f3ff 100%);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand-mark {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 2px solid var(--accent);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 18px;
+        background: #fff;
+      }
+      .brand-text {
+        line-height: 1.2;
+      }
+      .brand-text strong {
+        display: block;
+        font-size: 15px;
+        color: var(--accent-ink);
+      }
+      .brand-text span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .header-meta {
+        text-align: right;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .header-meta strong {
+        display: block;
+        font-size: 16px;
+        color: var(--accent-ink);
+        margin-bottom: 2px;
+      }
+      .header-rule {
+        height: 4px;
+        background: var(--accent);
+        border-radius: 999px;
+        margin-top: 12px;
+      }
+      .report-footer {
+        margin-top: 32px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 11px;
+        text-align: center;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 6px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      @media print {
+        body { padding: 0; background: #fff; }
+        .card { break-inside: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="report-header">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div class="brand-text">
+          <strong>MDJ Consultants Ltd</strong>
+          <span>Client report</span>
+        </div>
+      </div>
+      <div class="header-meta">
+        <strong>Client Report</strong>
+        <div>{{companyName}}</div>
+        <div>Ref: {{clientRef}} · {{generatedDate}}</div>
+      </div>
+    </header>
+    <div class="header-rule"></div>
+
+    <section class="section">
+      <h2>Company Overview</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="label">Company Number</div>
+          <div class="value">{{companyNumber}}</div>
+          <div class="label" style="margin-top:6px;">Type</div>
+          <div class="value">{{companyType}}</div>
+          <div class="label" style="margin-top:6px;">Status</div>
+          <div class="value">{{status}}</div>
+        </div>
+        <div class="card">
+          <div class="label">Portfolio</div>
+          <div class="value">{{portfolio}}</div>
+          <div class="label" style="margin-top:6px;">UTR</div>
+          <div class="value">{{utr}}</div>
+          <div class="label" style="margin-top:6px;">Incorporation Date</div>
+          <div class="value">{{incorporationDate}}</div>
+        </div>
+        <div class="card">
+          <div class="label">Address</div>
+          <div class="value">{{address}}</div>
+          <div class="label" style="margin-top:6px;">Email</div>
+          <div class="value">{{email}}</div>
+          <div class="label" style="margin-top:6px;">Phone</div>
+          <div class="value">{{phone}}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Accounts & Compliance</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Accounts</h3>
+          <div class="label">Last Made Up To</div>
+          <div class="value">{{lastAccountsDate}}</div>
+          <div class="label" style="margin-top:6px;">Next Due</div>
+          <div class="value">{{nextAccountsDate}}</div>
+        </div>
+        <div class="card">
+          <h3>Confirmation Statement</h3>
+          <div class="label">Last Made Up To</div>
+          <div class="value">{{lastCSDate}}</div>
+          <div class="label" style="margin-top:6px;">Next Due</div>
+          <div class="value">{{nextCSDate}}</div>
+        </div>
+        <div class="card">
+          <h3>Engagement</h3>
+          <div class="label">AML Review</div>
+          <div class="value">{{amlReviewDate}}</div>
+          <div class="label" style="margin-top:6px;">Status</div>
+          <div class="value">{{engagementStatus}}</div>
+          <div class="label" style="margin-top:6px;">Renewal Date</div>
+          <div class="value">{{renewalDate}}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Contacts</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="label">Main Contact</div>
+          <div class="value">{{mainContact}}</div>
+          <div class="label" style="margin-top:6px;">Responsible Manager</div>
+          <div class="value">{{responsibleManager}}</div>
+        </div>
+        <div class="card">
+          <div class="label">Parties</div>
+          <div class="value">{{parties}}</div>
+        </div>
+        <div class="card">
+          <div class="label">Directors</div>
+          <div class="value">{{directors}}</div>
+          <div class="label" style="margin-top:6px;">PSC</div>
+          <div class="value">{{psc}}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Services</h2>
+      {{#if (gt (length services) 0)}}
+        <table>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Frequency</th>
+              <th>Fee</th>
+              <th>Next Due</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each services}}
+            <tr>
+              <td>{{name}}</td>
+              <td>{{frequency}}</td>
+              <td>{{fee}}</td>
+              <td>{{nextDue}}</td>
+              <td><span class="badge">{{status}}</span></td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      {{else}}
+        <div class="card">No services recorded.</div>
+      {{/if}}
+    </section>
+
+    <section class="section">
+      <h2>Filing History</h2>
+      {{#if (gt (length filings) 0)}}
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each filings}}
+            <tr>
+              <td>{{date}}</td>
+              <td>{{type}}</td>
+              <td>{{description}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      {{else}}
+        <div class="card">No filing history available.</div>
+      {{/if}}
+    </section>
+
+    <section class="section">
+      <h2>Documents</h2>
+      {{#if (gt (length documents) 0)}}
+        <table>
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Category</th>
+              <th>Uploaded</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each documents}}
+            <tr>
+              <td>{{filename}}</td>
+              <td>{{category}}</td>
+              <td>{{uploadedAt}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      {{else}}
+        <div class="card">No documents available.</div>
+      {{/if}}
+    </section>
+    <footer class="report-footer">
+      MDJ Consultants Ltd · Canal View, 8B Slate Lane, Audenshaw, Manchester · Tel: 07713 697615
+    </footer>
+  </body>
+</html>
