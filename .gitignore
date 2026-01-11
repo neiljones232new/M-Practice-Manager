@@ -22,3 +22,6 @@ apps/api/storage/
 
 # IDE
 .vscode/
+
+# Internal specs
+.kiro/
