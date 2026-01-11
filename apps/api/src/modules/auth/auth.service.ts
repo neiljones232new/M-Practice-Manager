@@ -224,7 +224,7 @@ export class AuthService {
     if (payload.sub === 'demo-user') {
       return {
         id: 'demo-user',
-        email: 'demo@mdjpractice.com',
+        email: 'demo@example.com',
         firstName: 'Demo',
         lastName: 'User',
         role: 'MANAGER',
@@ -295,7 +295,7 @@ export class AuthService {
     // Create a demo user object (not persisted to storage)
     const demoUser: User = {
       id: 'demo-user',
-      email: 'demo@mdjpractice.com',
+      email: 'demo@example.com',
       firstName: 'Demo',
       lastName: 'User',
       passwordHash: '', // Not needed for demo
