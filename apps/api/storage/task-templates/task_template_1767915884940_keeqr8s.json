@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767915884940_keeqr8s",
+  "title": "Check shared inbox",
+  "description": "Check and respond to general enquiries in shared inboxes (e.g. info@)",
+  "category": "Email & Correspondence",
+  "priority": "MEDIUM",
+  "tags": [
+    "email",
+    "inbox"
+  ],
+  "createdAt": "2026-01-08T23:44:44.940Z",
+  "updatedAt": "2026-01-08T23:44:44.940Z"
+}

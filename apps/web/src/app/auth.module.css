@@ -1,0 +1,176 @@
+/* === MDJ Auth Pages - Lavender Design System === */
+.authPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, var(--bg-sidebar) 0%, #000000 100%);
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text-inverse);
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Card --- */
+.authCard {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid var(--border-focus);
+  box-shadow: var(--shadow-brand-glow);
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  width: 380px;
+  text-align: center;
+  animation: fadeIn 0.6s ease-in-out;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.authCard * {
+  box-sizing: border-box;
+}
+
+/* --- Logo --- */
+.authCard img {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem;
+  filter: drop-shadow(0 0 15px var(--brand-lavender));
+}
+
+/* --- Titles --- */
+.authTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-inverse);
+  margin-bottom: 0.25rem;
+}
+
+.authSubtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.authPowered {
+  font-size: 0.85rem;
+  color: var(--brand-lavender);
+  margin-bottom: 1.5rem;
+}
+
+/* --- Inputs --- */
+.authInput {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-inverse);
+  padding: 0.75rem 0.9rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.authInput::placeholder {
+  color: var(--text-muted);
+}
+
+.authInput:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+/* --- Buttons --- */
+.authButton {
+  width: 100%;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  margin-bottom: 0.75rem;
+}
+
+.authButton:hover {
+  background: linear-gradient(135deg, var(--brand-primary-hover) 0%, #7C3AED 100%);
+}
+
+.authButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.authSecondary {
+  background: transparent;
+  border: 1px solid var(--brand-primary);
+  color: var(--brand-lavender);
+}
+
+.authSecondary:hover {
+  background: var(--focus-ring);
+}
+
+/* --- Links & Footer --- */
+.authCard a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+.authCard a:hover {
+  color: var(--brand-lavender);
+}
+
+.authFooter {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 1rem;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Background Glow Animation --- */
+.authPage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(
+    from 0deg,
+    var(--focus-ring),
+    var(--brand-primary-tint),
+    var(--focus-ring)
+  );
+  filter: blur(40px);
+  z-index: 0;
+  animation: rotateGlow 12s linear infinite;
+}
+
+@keyframes rotateGlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 480px) {
+  .authCard {
+    width: 90%;
+    padding: 2rem 1.5rem;
+  }
+}

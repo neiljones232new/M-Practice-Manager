@@ -1,0 +1,341 @@
+/* ============================================
+   CLIENT DISPLAY STYLES - MDJ Lavender v1
+   ============================================ */
+
+/* Form Label Utility */
+.label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+/* Client Name Separator (•) */
+.client-separator {
+  color: var(--text-muted);
+  opacity: 0.7;
+  font-weight: 400;
+  margin: 0 0.35rem;
+}
+
+/* Client Reference in Parentheses */
+.client-ref-display {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-family: 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+  font-weight: 400;
+  margin-left: 0.5rem;
+}
+
+.client-ref-inline {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-family: 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+  font-weight: 400;
+}
+
+/* "Not Found" Indicator */
+.client-not-found {
+  color: var(--status-danger);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.client-not-found-icon {
+  font-size: 1.1rem;
+}
+
+.client-not-found-helper {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 0.5rem;
+}
+
+.client-error {
+  color: var(--status-danger);
+  font-weight: 600;
+}
+
+/* Client Name Link Styling */
+.client-name-link {
+  color: var(--text-link);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.client-name-link:hover {
+  text-decoration: underline;
+  color: var(--brand-primary-hover);
+}
+
+.client-name-link:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+/* ClientSelect Dropdown Enhancements */
+.client-select-dropdown {
+  position: absolute;
+  z-index: 1000;
+  width: 100%;
+  margin-top: 0.25rem;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.client-select-option {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.15s ease;
+}
+
+.client-select-option:hover {
+  background-color: var(--surface-card-hover);
+}
+
+.client-select-option:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: -2px;
+  background-color: var(--surface-card-hover);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.client-select-option:last-child {
+  border-bottom: none;
+}
+
+.client-select-option-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.client-select-option-ref {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+}
+
+.client-select-clear {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.client-select-clear-label {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.client-select-loading {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.client-select-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-subtle);
+  border-top: 2px solid var(--brand-primary);
+  border-radius: 50%;
+  animation: client-select-spin 0.6s linear infinite;
+}
+
+@keyframes client-select-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.client-select-clear-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.client-select-clear-btn:hover {
+  color: var(--text-primary);
+}
+
+.client-select-clear-btn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+/* Selected Client Display */
+.client-selected-info {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.client-selected-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.client-selected-ref {
+  font-family: 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+  margin-left: 0.25rem;
+}
+
+/* Calendar Event Title with Client Name */
+.calendar-event-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.calendar-event-client {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Client Information Section in Modal */
+.client-info-section {
+  padding: 1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background-color: var(--surface-card);
+}
+
+.client-info-label {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.client-info-content {
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.client-info-primary {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.client-ref-only {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.client-ref-label {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-right: 0.25rem;
+}
+
+.client-ref-value {
+  font-family: 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Validation Error Display */
+.client-validation-error {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--status-danger-bg);
+  border: 1px solid var(--status-danger-border);
+  border-radius: 6px;
+  color: var(--status-danger);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.client-validation-error-icon {
+  font-size: 1rem;
+}
+
+/* Error Message with Retry Option */
+.client-error-message {
+  padding: 1rem;
+  text-align: center;
+  color: var(--status-danger);
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.client-error-text {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.client-retry-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  background-color: var(--brand-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.client-retry-btn:hover {
+  background-color: var(--brand-primary-hover);
+}
+
+.client-retry-btn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+/* No Results Message */
+.client-no-results {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}

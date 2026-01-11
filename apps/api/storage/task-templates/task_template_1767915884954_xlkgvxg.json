@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1767915884954_xlkgvxg",
+  "title": "Review jobs nearing deadlines",
+  "description": "Review jobs nearing deadlines and assign priorities",
+  "category": "Client Job Workflow",
+  "priority": "HIGH",
+  "tags": [
+    "workflow",
+    "deadline",
+    "review"
+  ],
+  "createdAt": "2026-01-08T23:44:44.954Z",
+  "updatedAt": "2026-01-08T23:44:44.954Z"
+}

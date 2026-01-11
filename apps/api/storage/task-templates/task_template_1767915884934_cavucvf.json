@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767915884934_cavucvf",
+  "title": "Allocate tasks to team",
+  "description": "Allocate tasks to team members and update progress",
+  "category": "Practice Administration",
+  "priority": "HIGH",
+  "tags": [
+    "workflow",
+    "team-management"
+  ],
+  "createdAt": "2026-01-08T23:44:44.934Z",
+  "updatedAt": "2026-01-08T23:44:44.934Z"
+}

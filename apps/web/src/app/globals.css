@@ -1,0 +1,53 @@
+/* ==========================================================
+   MDJ Practice Manager — Global Styles
+   MDJ Lavender (Light Purple) v1 Design System
+   ========================================================== */
+
+/* Import the main MDJ stylesheet */
+@import '../styles/mdjnew.ui.css';
+
+/* Import client display styles */
+@import '../styles/client-display.css';
+
+/* --- Base Resets --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #F7F6FF; /* Clean light lavender app background */
+  color: #0F172A; /* Primary text */
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+/* --- Scrollbars --- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #6D28D9; /* Brand primary */
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,.5);
+}
+
+/* --- Focus Styles --- */
+*:focus-visible {
+  outline: 2px solid rgba(109,40,217,0.35); /* Focus border */
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(167,139,250,0.22); /* Focus ring */
+}
+
+/* --- Selection Styles --- */
+::selection {
+  background: rgba(167,139,250,0.22);
+  color: #0F172A;
+}

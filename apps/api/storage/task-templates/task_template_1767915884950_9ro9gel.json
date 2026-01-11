@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767915884950_9ro9gel",
+  "title": "Create new client job",
+  "description": "Create new client jobs in practice management software",
+  "category": "Client Job Workflow",
+  "priority": "HIGH",
+  "tags": [
+    "workflow",
+    "job-creation"
+  ],
+  "createdAt": "2026-01-08T23:44:44.950Z",
+  "updatedAt": "2026-01-08T23:44:44.950Z"
+}

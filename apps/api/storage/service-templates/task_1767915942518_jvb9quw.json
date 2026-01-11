@@ -1,0 +1,53 @@
+{
+  "id": "task_1767915942518_jvb9quw",
+  "serviceKind": "Corporation Tax",
+  "frequency": "ANNUAL",
+  "taskTemplates": [
+    {
+      "title": "Prepare corporation tax computation",
+      "description": "Calculate corporation tax liability based on annual accounts",
+      "daysBeforeDue": 90,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "computation"
+      ],
+      "id": "task_1767915942518_kh3749l"
+    },
+    {
+      "title": "Review tax planning opportunities",
+      "description": "Review potential tax planning strategies and reliefs",
+      "daysBeforeDue": 60,
+      "priority": "MEDIUM",
+      "tags": [
+        "planning",
+        "optimization"
+      ],
+      "id": "task_1767915942518_9w7lcr9"
+    },
+    {
+      "title": "Prepare CT600 return",
+      "description": "Complete corporation tax return form CT600",
+      "daysBeforeDue": 30,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "ct600"
+      ],
+      "id": "task_1767915942518_90sxhre"
+    },
+    {
+      "title": "Submit corporation tax return",
+      "description": "File CT600 return with HMRC",
+      "daysBeforeDue": 7,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "hmrc"
+      ],
+      "id": "task_1767915942518_z3b57r9"
+    }
+  ],
+  "createdAt": "2026-01-08T23:45:42.518Z",
+  "updatedAt": "2026-01-08T23:45:42.518Z"
+}
