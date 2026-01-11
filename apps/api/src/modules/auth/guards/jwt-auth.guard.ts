@@ -1,4 +1,4 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
@@ -21,21 +21,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     const request = context.switchToHttp().getRequest();
-    
-    // Allow demo mode access
-    if (request.query.demo === 'true' || request.headers['x-demo-mode'] === 'true') {
-      request.user = {
-        id: 'demo-user',
-        email: 'demo@example.com',
-        firstName: 'Demo',
-        lastName: 'User',
-        role: 'MANAGER',
-        portfolios: [1, 2],
-        isActive: true,
-        emailVerified: true,
-      };
-      return true;
-    }
 
     return super.canActivate(context);
   }
@@ -43,6 +28,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
     if (err || !user) {
       throw err || new UnauthorizedException('Invalid token');
+    }
+    if (user?.id === 'demo-user') {
+      const request = context.switchToHttp().getRequest();
+      const path = String(request?.path || request?.url || '');
+      const allowlist = ['/auth/me', '/auth/logout'];
+      const allowed = allowlist.some((entry) => path.includes(entry));
+      if (!allowed) {
+        throw new ForbiddenException('Demo access is limited to avoid exposing local client data.');
+      }
     }
     return user;
   }
