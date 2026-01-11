@@ -10,7 +10,8 @@ import {
   HttpCode,
   HttpStatus,
   Header,
-  NotFoundException
+  NotFoundException,
+  Request
 } from '@nestjs/common';
 import { Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
@@ -38,6 +39,10 @@ export class TasksController {
     private readonly configService: IntegrationConfigService,
   ) {}
 
+  private isDemoUser(req: any) {
+    return req?.user?.id === 'demo-user';
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all tasks with optional filters' })
   @ApiQuery({ name: 'clientId', required: false, type: String })
@@ -49,59 +54,106 @@ export class TasksController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
-  async findAllTasks(@Query() filters: TaskFilters) {
+  async findAllTasks(@Request() req: any, @Query() filters: TaskFilters) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.tasksService.findAll(filters);
   }
 
   @Get('with-client-details')
   @ApiOperation({ summary: 'Get tasks with client details' })
-  async findTasksWithClientDetails(@Query() filters: TaskFilters) {
+  async findTasksWithClientDetails(@Request() req: any, @Query() filters: TaskFilters) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.tasksService.findAllWithClientDetails(filters);
   }
 
   @Get('summary')
   @ApiOperation({ summary: 'Get task summary statistics' })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
-  async getTaskSummary(@Query('portfolioCode') portfolioCode?: string) {
+  async getTaskSummary(@Request() req: any, @Query('portfolioCode') portfolioCode?: string) {
+    if (this.isDemoUser(req)) {
+      return {
+        totalTasks: 0,
+        openTasks: 0,
+        inProgressTasks: 0,
+        completedTasks: 0,
+        cancelledTasks: 0,
+        overdueTasks: 0,
+        dueSoonTasks: 0,
+        tasksByPriority: {
+          LOW: 0,
+          MEDIUM: 0,
+          HIGH: 0,
+          URGENT: 0,
+        },
+        tasksByStatus: {
+          OPEN: 0,
+          IN_PROGRESS: 0,
+          COMPLETED: 0,
+          CANCELLED: 0,
+        },
+      };
+    }
     const portfolio = portfolioCode ? parseInt(portfolioCode) : undefined;
     return this.tasksService.getTaskSummary(portfolio);
   }
 
   @Get('overdue')
   @ApiOperation({ summary: 'Get overdue tasks' })
-  async getOverdueTasks() {
+  async getOverdueTasks(@Request() req: any) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.tasksService.findOverdue();
   }
 
   @Get('due-soon')
   @ApiOperation({ summary: 'Get tasks due soon' })
   @ApiQuery({ name: 'days', required: false, type: Number, description: 'Number of days ahead to look (default: 7)' })
-  async getTasksDueSoon(@Query('days') days?: string) {
+  async getTasksDueSoon(@Request() req: any, @Query('days') days?: string) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     const daysAhead = days ? parseInt(days) : 7;
     return this.tasksService.findDueSoon(daysAhead);
   }
 
   @Get('client/:clientId')
   @ApiOperation({ summary: 'Get tasks by client ID' })
-  async findByClient(@Param('clientId') clientId: string) {
+  async findByClient(@Request() req: any, @Param('clientId') clientId: string) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.tasksService.findByClient(clientId);
   }
 
   @Get('service/:serviceId')
   @ApiOperation({ summary: 'Get tasks by service ID' })
-  async findByService(@Param('serviceId') serviceId: string) {
+  async findByService(@Request() req: any, @Param('serviceId') serviceId: string) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.tasksService.findByService(serviceId);
   }
 
   @Get('assignee/:assignee')
   @ApiOperation({ summary: 'Get tasks by assignee' })
-  async findByAssignee(@Param('assignee') assignee: string) {
+  async findByAssignee(@Request() req: any, @Param('assignee') assignee: string) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.tasksService.findByAssignee(assignee);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get task by ID' })
-  async findOneTask(@Param('id') id: string) {
+  async findOneTask(@Request() req: any, @Param('id') id: string) {
+    if (this.isDemoUser(req)) {
+      return null;
+    }
     return this.tasksService.findOne(id);
   }
 

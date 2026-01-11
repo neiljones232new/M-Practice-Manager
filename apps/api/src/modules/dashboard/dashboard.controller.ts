@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Delete } from '@nestjs/common';
+import { Controller, Get, Query, Delete, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { DashboardService, DashboardKPIs, WeekAheadView, PriorityRecommendations } from './dashboard.service';
 import { Header } from '@nestjs/common';
@@ -8,11 +8,61 @@ import { Header } from '@nestjs/common';
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
+  private isDemoUser(req: any) {
+    return req?.user?.id === 'demo-user';
+  }
+
   @Get('kpis')
   @ApiOperation({ summary: 'Get dashboard KPIs and metrics' })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Dashboard KPIs retrieved successfully' })
-  async getDashboardKPIs(@Query('portfolioCode') portfolioCode?: string): Promise<DashboardKPIs> {
+  async getDashboardKPIs(@Request() req: any, @Query('portfolioCode') portfolioCode?: string): Promise<DashboardKPIs> {
+    if (this.isDemoUser(req)) {
+      return {
+        clients: {
+          total: 0,
+          active: 0,
+          inactive: 0,
+          newThisMonth: 0,
+          trend: { monthOverMonth: 0, direction: 'neutral' },
+        },
+        services: {
+          total: 0,
+          active: 0,
+          totalAnnualFees: 0,
+          averageFeePerClient: 0,
+          serviceBreakdown: {},
+          trend: { revenueChange: 0, direction: 'neutral' },
+        },
+        tasks: {
+          total: 0,
+          open: 0,
+          inProgress: 0,
+          completed: 0,
+          overdue: 0,
+          dueThisWeek: 0,
+          completionRate: 0,
+          trend: { completionRateChange: 0, direction: 'neutral' },
+        },
+        compliance: {
+          total: 0,
+          pending: 0,
+          overdue: 0,
+          dueThisMonth: 0,
+          filed: 0,
+          complianceRate: 0,
+          trend: { complianceRateChange: 0, direction: 'neutral' },
+        },
+        calendar: {
+          totalEvents: 0,
+          upcomingEvents: 0,
+          eventsThisWeek: 0,
+          meetingsThisWeek: 0,
+        },
+        lastUpdated: new Date(),
+        refreshInterval: 300,
+      };
+    }
     const portfolio = portfolioCode ? parseInt(portfolioCode) : undefined;
     return this.dashboardService.getDashboardKPIs(portfolio);
   }
@@ -21,7 +71,10 @@ export class DashboardController {
   @ApiOperation({ summary: 'Get week-ahead view of tasks, compliance, and events' })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Week-ahead view retrieved successfully' })
-  async getWeekAheadView(@Query('portfolioCode') portfolioCode?: string): Promise<WeekAheadView> {
+  async getWeekAheadView(@Request() req: any, @Query('portfolioCode') portfolioCode?: string): Promise<WeekAheadView> {
+    if (this.isDemoUser(req)) {
+      return { tasks: [], compliance: [], events: [] };
+    }
     const portfolio = portfolioCode ? parseInt(portfolioCode) : undefined;
     return this.dashboardService.getWeekAheadView(portfolio);
   }
@@ -30,7 +83,10 @@ export class DashboardController {
   @ApiOperation({ summary: 'Get priority recommendations and business insights' })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Priority recommendations retrieved successfully' })
-  async getPriorityRecommendations(@Query('portfolioCode') portfolioCode?: string): Promise<PriorityRecommendations> {
+  async getPriorityRecommendations(@Request() req: any, @Query('portfolioCode') portfolioCode?: string): Promise<PriorityRecommendations> {
+    if (this.isDemoUser(req)) {
+      return { urgentTasks: [], complianceFlags: [], businessInsights: [] };
+    }
     const portfolio = portfolioCode ? parseInt(portfolioCode) : undefined;
     return this.dashboardService.getPriorityRecommendations(portfolio);
   }
@@ -39,7 +95,10 @@ export class DashboardController {
   @ApiOperation({ summary: 'Force refresh dashboard data and clear cache' })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Dashboard data refreshed successfully' })
-  async refreshDashboard(@Query('portfolioCode') portfolioCode?: string): Promise<DashboardKPIs> {
+  async refreshDashboard(@Request() req: any, @Query('portfolioCode') portfolioCode?: string): Promise<DashboardKPIs> {
+    if (this.isDemoUser(req)) {
+      return this.getDashboardKPIs(req, portfolioCode);
+    }
     const portfolio = portfolioCode ? parseInt(portfolioCode) : undefined;
     return this.dashboardService.refreshDashboardData(portfolio);
   }
@@ -47,7 +106,10 @@ export class DashboardController {
   @Get('cache/status')
   @ApiOperation({ summary: 'Get dashboard cache status' })
   @ApiResponse({ status: 200, description: 'Cache status retrieved successfully' })
-  async getCacheStatus(): Promise<{ entries: number; keys: string[] }> {
+  async getCacheStatus(@Request() req: any): Promise<{ entries: number; keys: string[] }> {
+    if (this.isDemoUser(req)) {
+      return { entries: 0, keys: [] };
+    }
     return this.dashboardService.getCacheStatus();
   }
 
@@ -63,11 +125,17 @@ export class DashboardController {
   @ApiOperation({ summary: 'Export dashboard summary as PDF' })
   @Header('Content-Type', 'application/pdf')
   @Header('Content-Disposition', `attachment; filename="dashboard-${new Date().toISOString().slice(0,10)}.pdf"`)
-  async exportDashboardPDF(@Query('portfolioCode') portfolioCode?: string): Promise<Buffer> {
+  async exportDashboardPDF(@Request() req: any, @Query('portfolioCode') portfolioCode?: string): Promise<Buffer> {
     const portfolio = portfolioCode ? parseInt(portfolioCode) : undefined;
-    const kpis = await this.dashboardService.getDashboardKPIs(portfolio, true);
-    const weekAhead = await this.dashboardService.getWeekAheadView(portfolio);
-    const recommendations = await this.dashboardService.getPriorityRecommendations(portfolio);
+    const kpis = this.isDemoUser(req)
+      ? await this.getDashboardKPIs(req, portfolioCode)
+      : await this.dashboardService.getDashboardKPIs(portfolio, true);
+    const weekAhead = this.isDemoUser(req)
+      ? { tasks: [], compliance: [], events: [] }
+      : await this.dashboardService.getWeekAheadView(portfolio);
+    const recommendations = this.isDemoUser(req)
+      ? { urgentTasks: [], complianceFlags: [], businessInsights: [] }
+      : await this.dashboardService.getPriorityRecommendations(portfolio);
     const PdfMake = require('pdfmake/build/pdfmake');
     const pdfFonts = require('pdfmake/build/vfs_fonts');
     PdfMake.vfs = pdfFonts.pdfMake?.vfs || pdfFonts;
