@@ -264,6 +264,29 @@ export default function DashboardPage() {
     },
   ];
 
+  const taxTools = [
+    {
+      title: 'Salary & Dividend Optimisation',
+      body: 'Model the most tax-efficient split for directors.',
+      href: '/tax-calculations/new',
+    },
+    {
+      title: 'Personal Tax',
+      body: 'Calculate income tax and NI for individuals.',
+      href: '/tax-calculations/new',
+    },
+    {
+      title: 'Corporation Tax',
+      body: 'Estimate company tax with marginal relief.',
+      href: '/tax-calculations/new',
+    },
+    {
+      title: 'Scenario Comparison',
+      body: 'Compare multiple salary/dividend scenarios.',
+      href: '/tax-calculations/new',
+    },
+  ];
+
   return (
     <MDJShell
       pageTitle="Dashboard"
@@ -342,6 +365,22 @@ export default function DashboardPage() {
                     <strong>{(metrics?.compliance.complianceRate ?? 0).toFixed(0)}%</strong>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="card-mdj flex-column">
+              <h3>Tax Calculations</h3>
+              <p className="text-dim">Jump into M Powered™ tax tools.</p>
+              <div className="quick-links">
+                {taxTools.map((tool) => (
+                  <Link key={tool.title} href={tool.href} className="quick-card">
+                    <div>
+                      <h4>{tool.title}</h4>
+                      <p>{tool.body}</p>
+                    </div>
+                    <span className="quick-arrow">→</span>
+                  </Link>
+                ))}
               </div>
             </div>
 

@@ -10,6 +10,7 @@ interface AccountingPoliciesStepProps {
 }
 
 export function AccountingPoliciesStep({ accountsSet, onUpdate }: AccountingPoliciesStepProps) {
+  const isSoleTrader = accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL';
   const [formData, setFormData] = useState<AccountingPoliciesSection>(() => {
     return accountsSet.sections.accountingPolicies || {
       basisOfPreparation: 'These accounts have been prepared under the historical cost convention and in accordance with applicable UK accounting standards.',
@@ -156,7 +157,7 @@ export function AccountingPoliciesStep({ accountsSet, onUpdate }: AccountingPoli
       <MDJCard title="Going Concern">
         <div style={{ display: 'grid', gap: '1rem' }}>
           <MDJCheckbox
-            label="Company is a going concern"
+            label={isSoleTrader ? 'Business is a going concern' : 'Company is a going concern'}
             checked={formData.goingConcern.isGoingConcern}
             onChange={(e) => handleInputChange('goingConcern.isGoingConcern', e.target.checked)}
           />
@@ -181,7 +182,9 @@ export function AccountingPoliciesStep({ accountsSet, onUpdate }: AccountingPoli
           }}>
             <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
               {formData.goingConcern.isGoingConcern 
-                ? 'The directors have assessed that the company will continue as a going concern for the foreseeable future.'
+                ? isSoleTrader
+                  ? 'The proprietor has assessed that the business will continue as a going concern for the foreseeable future.'
+                  : 'The directors have assessed that the company will continue as a going concern for the foreseeable future.'
                 : 'Going concern issues require additional disclosure and may affect the audit opinion.'
               }
             </p>
@@ -215,11 +218,13 @@ export function AccountingPoliciesStep({ accountsSet, onUpdate }: AccountingPoli
                 type="button"
                 className="btn-outline-primary btn-sm"
                 onClick={() => handleInputChange('turnoverPolicyText', 
-                  'Turnover represents the amounts derived from the provision of goods and services falling within the company\'s ordinary activities, after deduction of trade discounts, VAT and other sales related taxes.'
+                  isSoleTrader
+                    ? 'Turnover represents the amounts derived from the provision of goods and services falling within the business\'s ordinary activities, after deduction of trade discounts, VAT and other sales related taxes.'
+                    : 'Turnover represents the amounts derived from the provision of goods and services falling within the company\'s ordinary activities, after deduction of trade discounts, VAT and other sales related taxes.'
                 )}
                 style={{ justifyContent: 'flex-start', textAlign: 'left' }}
               >
-                Standard service company policy
+                {isSoleTrader ? 'Standard service business policy' : 'Standard service company policy'}
               </button>
               <button
                 type="button"
@@ -240,7 +245,7 @@ export function AccountingPoliciesStep({ accountsSet, onUpdate }: AccountingPoli
       <MDJCard title="Tangible Fixed Assets">
         <div style={{ display: 'grid', gap: '1rem' }}>
           <MDJCheckbox
-            label="Company has tangible fixed assets"
+            label={isSoleTrader ? 'Business has tangible fixed assets' : 'Company has tangible fixed assets'}
             checked={formData.tangibleFixedAssets?.hasAssets || false}
             onChange={(e) => handleInputChange('tangibleFixedAssets.hasAssets', e.target.checked)}
           />
@@ -338,7 +343,9 @@ export function AccountingPoliciesStep({ accountsSet, onUpdate }: AccountingPoli
             <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
               {formData.tangibleFixedAssets?.hasAssets 
                 ? 'Depreciation policies will be included in the accounts notes. Ensure rates are appropriate for the asset types.'
-                : 'If the company has no tangible fixed assets, no depreciation policy is required.'
+                : isSoleTrader
+                  ? 'If the business has no tangible fixed assets, no depreciation policy is required.'
+                  : 'If the company has no tangible fixed assets, no depreciation policy is required.'
               }
             </p>
           </div>

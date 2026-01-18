@@ -56,6 +56,44 @@ export class TaxCalculationsService {
   }
 
   /**
+   * Save result summary/breakdown for reporting
+   */
+  async saveCalculationResult(
+    id: string,
+    payload: {
+      summary?: {
+        totalTax: number;
+        effectiveTaxRate: number;
+        netIncome: number;
+        grossIncome?: number;
+      };
+      breakdown?: {
+        incomeTax: number;
+        nationalInsurance: number;
+        corporationTax: number;
+        dividendTax: number;
+      };
+    }
+  ): Promise<TaxCalculationResult> {
+    try {
+      const calculation = await this.fileStorage.readJson<TaxCalculationResult>('tax-calculations', id);
+      if (!calculation) {
+        throw new NotFoundException(`Tax calculation ${id} not found`);
+      }
+      calculation.result = {
+        ...(calculation.result || {}),
+        ...(payload.summary ? { summary: payload.summary } : {}),
+        ...(payload.breakdown ? { breakdown: payload.breakdown } : {}),
+      };
+      await this.fileStorage.writeJson('tax-calculations', id, calculation);
+      return calculation;
+    } catch (error) {
+      this.logger.error(`Failed to save result for calculation ${id}: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
    * Get tax calculations for a client
    */
   async getClientCalculations(clientId: string, limit?: number): Promise<TaxCalculationResult[]> {
@@ -126,43 +164,55 @@ export class TaxCalculationsService {
     netDividend: number;
   }> {
     const rates = await this.taxRates.getTaxRates(dto.taxYear);
-    const taxableDividend = Math.max(0, dto.dividendAmount - rates.dividendAllowance);
-    
+    const totalIncome = dto.otherIncome + dto.dividendAmount;
+    const personalAllowance = this.taxRates.getPersonalAllowance(totalIncome, dto.taxYear);
+
+    const dividendAllowance = rates.dividendAllowance ?? rates.dividendTax?.allowance ?? 0;
+    const dividendBasicRate = rates.dividendBasicRate ?? ((rates.dividendTax?.basicRate ?? 0) / 100);
+    const dividendHigherRate = rates.dividendHigherRate ?? ((rates.dividendTax?.higherRate ?? 0) / 100);
+    const dividendAdditionalRate = rates.dividendAdditionalRate ?? ((rates.dividendTax?.additionalRate ?? 0) / 100);
+    const basicRateThreshold = rates.basicRateThreshold ?? rates.incomeTax?.basicRateThreshold ?? 0;
+    const higherRateThreshold = rates.higherRateThreshold ?? rates.incomeTax?.higherRateThreshold ?? 0;
+
+    const remainingPersonalAllowance = Math.max(0, personalAllowance - dto.otherIncome);
+    const dividendAfterAllowance = Math.max(0, dto.dividendAmount - remainingPersonalAllowance);
+    const taxableDividend = Math.max(0, dividendAfterAllowance - dividendAllowance);
+
     let basicRateTax = 0;
     let higherRateTax = 0;
     let additionalRateTax = 0;
-    
+
     if (taxableDividend > 0) {
-      const totalIncome = dto.otherIncome + dto.dividendAmount;
+      const taxableNonDividend = Math.max(0, dto.otherIncome - personalAllowance);
+      const basicRateLimit = Math.max(0, basicRateThreshold - personalAllowance);
+      const higherRateLimit = Math.max(0, higherRateThreshold - personalAllowance);
+      const basicRateRemaining = Math.max(0, basicRateLimit - taxableNonDividend);
+      const higherRateRemaining = Math.max(0, higherRateLimit - taxableNonDividend - basicRateRemaining);
+
       let remainingDividend = taxableDividend;
-      
-      // Basic rate band
-      const basicRateLimit = Math.max(0, rates.basicRateThreshold - dto.otherIncome);
-      if (remainingDividend > 0 && basicRateLimit > 0) {
-        const basicRatePortion = Math.min(remainingDividend, basicRateLimit);
-        basicRateTax = basicRatePortion * rates.dividendBasicRate;
+
+      if (remainingDividend > 0 && basicRateRemaining > 0) {
+        const basicRatePortion = Math.min(remainingDividend, basicRateRemaining);
+        basicRateTax = basicRatePortion * dividendBasicRate;
         remainingDividend -= basicRatePortion;
       }
-      
-      // Higher rate band
-      const higherRateLimit = Math.max(0, rates.higherRateThreshold - Math.max(dto.otherIncome, rates.basicRateThreshold));
-      if (remainingDividend > 0 && higherRateLimit > 0) {
-        const higherRatePortion = Math.min(remainingDividend, higherRateLimit);
-        higherRateTax = higherRatePortion * rates.dividendHigherRate;
+
+      if (remainingDividend > 0 && higherRateRemaining > 0) {
+        const higherRatePortion = Math.min(remainingDividend, higherRateRemaining);
+        higherRateTax = higherRatePortion * dividendHigherRate;
         remainingDividend -= higherRatePortion;
       }
-      
-      // Additional rate band
+
       if (remainingDividend > 0) {
-        additionalRateTax = remainingDividend * rates.dividendAdditionalRate;
+        additionalRateTax = remainingDividend * dividendAdditionalRate;
       }
     }
-    
+
     const totalDividendTax = basicRateTax + higherRateTax + additionalRateTax;
 
     return {
       dividendAmount: dto.dividendAmount,
-      dividendAllowance: rates.dividendAllowance,
+      dividendAllowance,
       taxableDividend,
       basicRateTax,
       higherRateTax,
@@ -192,6 +242,11 @@ export class TaxCalculationsService {
     const rates = await this.taxRates.getTaxRates(dto.taxYear);
     const pensionContributions = dto.pensionContributions || 0;
     const personalAllowance = this.taxRates.getPersonalAllowance(dto.salary, dto.taxYear);
+    const basicRateThreshold = rates.basicRateThreshold ?? rates.incomeTax?.basicRateThreshold ?? 0;
+    const higherRateThreshold = rates.higherRateThreshold ?? rates.incomeTax?.higherRateThreshold ?? 0;
+    const basicRate = rates.basicRate ?? ((rates.incomeTax?.basicRate ?? 0) / 100);
+    const higherRate = rates.higherRate ?? ((rates.incomeTax?.higherRate ?? 0) / 100);
+    const additionalRate = rates.additionalRate ?? ((rates.incomeTax?.additionalRate ?? 0) / 100);
     
     // Calculate income tax
     const adjustedSalary = Math.max(0, dto.salary - pensionContributions);
@@ -200,21 +255,21 @@ export class TaxCalculationsService {
     let incomeTax = 0;
     if (taxableIncome > 0) {
       // Basic rate
-      const basicRateTaxable = Math.min(taxableIncome, rates.basicRateThreshold - personalAllowance);
-      incomeTax += basicRateTaxable * rates.basicRate;
+      const basicRateTaxable = Math.min(taxableIncome, basicRateThreshold - personalAllowance);
+      incomeTax += basicRateTaxable * basicRate;
       
       // Higher rate
-      if (taxableIncome > rates.basicRateThreshold - personalAllowance) {
+      if (taxableIncome > basicRateThreshold - personalAllowance) {
         const higherRateTaxable = Math.min(
-          taxableIncome - (rates.basicRateThreshold - personalAllowance),
-          rates.higherRateThreshold - rates.basicRateThreshold
+          taxableIncome - (basicRateThreshold - personalAllowance),
+          higherRateThreshold - basicRateThreshold
         );
-        incomeTax += higherRateTaxable * rates.higherRate;
+        incomeTax += higherRateTaxable * higherRate;
         
         // Additional rate
-        if (taxableIncome > rates.higherRateThreshold - personalAllowance) {
-          const additionalRateTaxable = taxableIncome - (rates.higherRateThreshold - personalAllowance);
-          incomeTax += additionalRateTaxable * rates.additionalRate;
+        if (taxableIncome > higherRateThreshold - personalAllowance) {
+          const additionalRateTaxable = taxableIncome - (higherRateThreshold - personalAllowance);
+          incomeTax += additionalRateTaxable * additionalRate;
         }
       }
     }
@@ -222,11 +277,27 @@ export class TaxCalculationsService {
     // Calculate National Insurance
     let employeeNI = 0;
     let employerNI = 0;
+
+    const employeeLowerLimit = rates.niLowerEarningsLimit ?? rates.nationalInsurance?.employeePrimaryThreshold ?? 12570;
+    const employeeUpperLimit = rates.niUpperEarningsLimit ?? rates.nationalInsurance?.employeeUpperEarningsLimit ?? 50270;
+    const employeeRate = rates.niEmployeeRate ?? ((rates.nationalInsurance?.employeeRate ?? 0) / 100);
+    const employeeAdditionalRate = rates.nationalInsurance?.employeeAdditionalRate
+      ? rates.nationalInsurance.employeeAdditionalRate / 100
+      : 0.02;
+    const employerLowerLimit = rates.nationalInsurance?.employerPrimaryThreshold ?? rates.niLowerEarningsLimit ?? 9100;
+    const employerRate = rates.niEmployerRate ?? ((rates.nationalInsurance?.employerRate ?? 0) / 100);
     
-    if (dto.salary > rates.niLowerEarningsLimit) {
-      const niableSalary = Math.min(dto.salary - rates.niLowerEarningsLimit, rates.niUpperEarningsLimit - rates.niLowerEarningsLimit);
-      employeeNI = niableSalary * rates.niEmployeeRate;
-      employerNI = (dto.salary - rates.niLowerEarningsLimit) * rates.niEmployerRate;
+    if (dto.salary > employeeLowerLimit) {
+      const mainBandEarnings = Math.min(dto.salary, employeeUpperLimit) - employeeLowerLimit;
+      employeeNI = Math.max(0, mainBandEarnings) * employeeRate;
+      if (dto.salary > employeeUpperLimit) {
+        const additionalEarnings = dto.salary - employeeUpperLimit;
+        employeeNI += additionalEarnings * employeeAdditionalRate;
+      }
+    }
+
+    if (dto.salary > employerLowerLimit) {
+      employerNI = (dto.salary - employerLowerLimit) * employerRate;
     }
     
     const totalDeductions = incomeTax + employeeNI;

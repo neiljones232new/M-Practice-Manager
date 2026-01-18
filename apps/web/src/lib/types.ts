@@ -102,10 +102,15 @@ export interface ApiListResult<T> {
 }
 
 // Accounts Production Types (imported from backend interfaces)
-export type AccountingFramework = 'MICRO_FRS105' | 'SMALL_FRS102_1A' | 'DORMANT';
+export type AccountingFramework =
+  | 'MICRO_FRS105'
+  | 'SMALL_FRS102_1A'
+  | 'DORMANT'
+  | 'SOLE_TRADER'
+  | 'INDIVIDUAL';
 export type AccountsSetStatus = 'DRAFT' | 'IN_REVIEW' | 'READY' | 'LOCKED';
 export type DepreciationMethod = 'STRAIGHT_LINE' | 'REDUCING_BALANCE';
-export type ExemptionStatementKey = 'CA2006_S477_SMALL' | 'MICRO_ENTITY' | 'DORMANT';
+export type ExemptionStatementKey = 'CA2006_S477_SMALL' | 'MICRO_ENTITY' | 'DORMANT' | 'NOT_APPLICABLE';
 export type SignatureType = 'TYPED_NAME' | 'UPLOADED_SIGNATURE';
 
 export interface Address {
@@ -139,9 +144,9 @@ export interface CompanyPeriodSection {
   framework: AccountingFramework;
   company: {
     name: string;
-    companyNumber: string;
+    companyNumber?: string;
     registeredOffice: Address;
-    directors: Director[];
+    directors?: Director[];
   };
   period: {
     startDate: string; // YYYY-MM-DD
@@ -264,7 +269,7 @@ export interface NotesSection {
       values: number[];
     }>;
   };
-  shareCapital: {
+  shareCapital?: {
     shareClass: string;
     numberOfShares: number;
     nominalValue: number;

@@ -21,11 +21,13 @@ interface AccountsProductionWizardProps {
 const WIZARD_STEPS: WizardStepConfig[] = [
   {
     key: 'companyPeriod',
-    title: 'Company & Period',
-    description: 'Company information and accounting period',
+    title: 'Client & Period',
+    description: 'Client information and accounting period',
     isComplete: (accountsSet) => {
       const section = accountsSet.sections.companyPeriod;
-      return !!(section?.company.name && section?.company.companyNumber && section?.period.startDate && section?.period.endDate);
+      const isSoleTrader = accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL';
+      const hasCompanyNumber = isSoleTrader || !!section?.company.companyNumber;
+      return !!(section?.company.name && hasCompanyNumber && section?.period.startDate && section?.period.endDate);
     },
     hasErrors: (accountsSet) => {
       return accountsSet.validation.errors.some(error => error.section === 'companyPeriod');
@@ -85,7 +87,8 @@ const WIZARD_STEPS: WizardStepConfig[] = [
     description: 'Additional notes and disclosures',
     isComplete: (accountsSet) => {
       const section = accountsSet.sections.notes;
-      return !!(section?.countryOfIncorporation && section?.shareCapital);
+      const isSoleTrader = accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL';
+      return !!(section?.countryOfIncorporation && (isSoleTrader || section?.shareCapital));
     },
     hasErrors: (accountsSet) => {
       return accountsSet.validation.errors.some(error => error.section === 'notes');

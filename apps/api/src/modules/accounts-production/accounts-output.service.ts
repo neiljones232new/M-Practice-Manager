@@ -7,6 +7,7 @@ import * as Handlebars from 'handlebars';
 import * as puppeteer from 'puppeteer';
 import { AccountsSet } from './interfaces/accounts-set.interface';
 import { FinancialCalculationService } from './financial-calculation.service';
+import { ClientsService } from '../clients/clients.service';
 
 @Injectable()
 export class AccountsOutputService {
@@ -19,6 +20,7 @@ export class AccountsOutputService {
   constructor(
     private readonly configService: ConfigService,
     private readonly calculationService: FinancialCalculationService,
+    private readonly clientsService: ClientsService,
   ) {
     const cwd = process.cwd();
     const repoRoot = cwd.endsWith(path.join('apps', 'api')) ? path.resolve(cwd, '..', '..') : cwd;
@@ -229,6 +231,14 @@ export class AccountsOutputService {
   private async prepareTemplateData(accountsSet: AccountsSet): Promise<any> {
     // Calculate all financial totals
     const calculations = this.calculationService.calculateTotals(accountsSet);
+    const client = await this.clientsService.findOne(accountsSet.clientId);
+    const fallbackClient = {
+      name: accountsSet.sections.companyPeriod?.company?.name || 'Client',
+      type:
+        accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL'
+          ? 'SOLE_TRADER'
+          : 'COMPANY',
+    };
     
     // Prepare comparative calculations if needed
     let comparativeCalculations = null;
@@ -252,7 +262,13 @@ export class AccountsOutputService {
       auditExemption: {
         isAuditExempt: true,
         exemptionStatementKey:
-          accountsSet.framework === 'MICRO_FRS105' ? 'MICRO_ENTITY' : 'CA2006_S477_SMALL',
+          accountsSet.framework === 'MICRO_FRS105'
+            ? 'MICRO_ENTITY'
+            : accountsSet.framework === 'DORMANT'
+            ? 'DORMANT'
+            : accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL'
+            ? 'NOT_APPLICABLE'
+            : 'CA2006_S477_SMALL',
       },
       includePLInClientPack: true,
       includeDirectorsReport: true,
@@ -262,6 +278,8 @@ export class AccountsOutputService {
     const practice = await this.getPracticeSettings();
 
     return {
+      client: client ?? fallbackClient,
+      framework: accountsSet.framework,
       company: accountsSet.sections.companyPeriod?.company,
       period: accountsSet.period,
       profitAndLoss: accountsSet.sections.profitAndLoss,
@@ -311,6 +329,20 @@ export class AccountsOutputService {
     }
   }
 
+  private getTemplateName(templateData: any): string {
+    const clientType = templateData?.client?.type;
+    const framework = templateData?.framework;
+    if (
+      clientType === 'SOLE_TRADER' ||
+      clientType === 'INDIVIDUAL' ||
+      framework === 'SOLE_TRADER' ||
+      framework === 'INDIVIDUAL'
+    ) {
+      return 'sole-trader-accounts.hbs';
+    }
+    return 'statutory-accounts.hbs';
+  }
+
   private async generateHTML(templateData: any): Promise<string> {
     try {
       // Check if templates directory exists
@@ -320,12 +352,19 @@ export class AccountsOutputService {
       }
 
       // Read the Handlebars template
-      const templatePath = path.join(this.templatesPath, 'statutory-accounts.hbs');
+      const templateName = this.getTemplateName(templateData);
+      let templatePath = path.join(this.templatesPath, templateName);
       this.logger.log(`Looking for template at: ${templatePath}`);
       
       if (!existsSync(templatePath)) {
-        this.logger.error(`Template file not found: ${templatePath}`);
-        return this.generateFallbackHTML(templateData);
+        const fallbackPath = path.join(this.templatesPath, 'statutory-accounts.hbs');
+        if (templatePath !== fallbackPath && existsSync(fallbackPath)) {
+          this.logger.warn(`Template not found (${templatePath}); falling back to statutory template`);
+          templatePath = fallbackPath;
+        } else {
+          this.logger.error(`Template file not found: ${templatePath}`);
+          return this.generateFallbackHTML(templateData);
+        }
       }
 
       const templateContent = await fs.readFile(templatePath, 'utf8');

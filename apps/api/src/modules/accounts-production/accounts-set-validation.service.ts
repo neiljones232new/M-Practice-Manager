@@ -144,7 +144,7 @@ export class AccountsSetValidationService {
         this.validateBalanceSheetRules(sectionData, accountsSet, errors, warnings);
         break;
       case 'notes':
-        this.validateNotesRules(sectionData, errors, warnings);
+        this.validateNotesRules(sectionData, accountsSet, errors, warnings);
         break;
       case 'directorsApproval':
         this.validateDirectorsApprovalRules(sectionData, errors, warnings);
@@ -184,7 +184,8 @@ export class AccountsSetValidationService {
       }
     }
 
-    if (data.company?.directors?.length === 0) {
+    const isSoleTrader = data.framework === 'SOLE_TRADER' || data.framework === 'INDIVIDUAL';
+    if (!isSoleTrader && data.company?.directors?.length === 0) {
       errors.push({
         field: 'company.directors',
         message: 'At least one director is required',
@@ -281,9 +282,21 @@ export class AccountsSetValidationService {
 
   private validateNotesRules(
     data: any,
+    accountsSet: AccountsSet,
     errors: ValidationError[],
     warnings: ValidationWarning[],
   ): void {
+    const isSoleTrader =
+      accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL';
+    if (!isSoleTrader && !data.shareCapital) {
+      errors.push({
+        field: 'shareCapital',
+        message: 'Share capital is required for company accounts',
+        code: 'MISSING_SHARE_CAPITAL',
+        section: 'notes',
+      });
+    }
+
     if (data.employees?.include && !data.employees?.averageEmployees) {
       errors.push({
         field: 'employees.averageEmployees',

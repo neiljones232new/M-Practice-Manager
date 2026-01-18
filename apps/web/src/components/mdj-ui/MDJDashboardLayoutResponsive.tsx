@@ -1,6 +1,6 @@
 // =====================================================
 // apps/web/components/mdj-ui/MDJDashboardLayoutResponsive.tsx
-// MDJ Responsive Dashboard Layout (auto-collapsing sidebar)
+// M Responsive Dashboard Layout (auto-collapsing sidebar)
 // =====================================================
 
 'use client';
@@ -40,7 +40,7 @@ export const MDJDashboardLayoutResponsive: React.FC<LayoutProps> = ({
     { href: '/clients', label: 'Clients', icon: '👥' },
     { href: '/tasks', label: 'Tasks', icon: '✅' },
     { href: '/filings', label: 'Filings', icon: '📁' },
-    { href: '/assist', label: 'MDJ Assist', icon: '✨' },
+    { href: '/assist', label: 'M Assist', icon: '✨' },
     { href: '/settings', label: 'Settings', icon: '⚙️' },
   ];
 

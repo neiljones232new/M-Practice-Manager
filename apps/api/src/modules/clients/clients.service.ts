@@ -8,7 +8,6 @@ import {
   ClientParty,
   CreateFullClientDto,
   CreateFullClientServiceDto,
-  CreateFullClientDirectorDto,
   Address,
 } from './interfaces/client.interface';
 import { ReferenceGeneratorService } from './services/reference-generator.service';
@@ -17,6 +16,9 @@ import { ClientPartyService } from './services/client-party.service';
 import { ServicesService } from '../services/services.service';
 import { TasksService } from '../tasks/tasks.service';
 import { ComplianceService } from '../filings/compliance.service';
+import { PORTFOLIO_CONFIG, isValidPortfolioCode, getPortfolioValidationError, getValidPortfolioCodes } from '../../common/constants/portfolio.constants';
+import { CLIENT_DEFAULTS, DEFAULT_SERVICES } from '../../common/constants/client.constants';
+import { parseCsv, csvToRecords, escapeCsvValue, pickCsvField } from '../../common/utils/csv.util';
 
 @Injectable()
 export class ClientsService {
@@ -75,7 +77,7 @@ export class ClientsService {
       name: createClientDto.name,
       type: createClientDto.type,
       portfolioCode: createClientDto.portfolioCode,
-      status: createClientDto.status || 'ACTIVE',
+      status: createClientDto.status || CLIENT_DEFAULTS.STATUS,
       mainEmail: createClientDto.mainEmail,
       mainPhone: createClientDto.mainPhone,
       registeredNumber: createClientDto.registeredNumber,
@@ -138,14 +140,7 @@ export class ClientsService {
     // 3) Determine services to create
     let servicesToCreate: CreateFullClientServiceDto[] = payload.services || [];
     if (payload.defaultServices) {
-      const defaults: CreateFullClientServiceDto[] = [
-        { kind: 'Annual Accounts', frequency: 'ANNUAL', fee: 600, status: 'ACTIVE' },
-        { kind: 'Corporation Tax Return', frequency: 'ANNUAL', fee: 250, status: 'ACTIVE' },
-        { kind: 'Company Secretarial', frequency: 'ANNUAL', fee: 60, status: 'ACTIVE' },
-        { kind: 'Payroll Services', frequency: 'MONTHLY', fee: 100, status: 'ACTIVE' },
-        { kind: 'VAT Returns', frequency: 'QUARTERLY', fee: 120, status: 'ACTIVE' },
-        { kind: 'Self Assessment', frequency: 'ANNUAL', fee: 350, status: 'ACTIVE' },
-      ];
+      const defaults: CreateFullClientServiceDto[] = DEFAULT_SERVICES.map(s => ({ ...s }));
       servicesToCreate = [...defaults, ...servicesToCreate];
       // Deduplicate by kind+frequency, prefer explicit payload entries (placed last)
       const map = new Map<string, CreateFullClientServiceDto>();
@@ -269,8 +264,8 @@ export class ClientsService {
   }
 
   async findByPortfolio(portfolioCode: number): Promise<Client[]> {
-    if (portfolioCode < 1 || portfolioCode > 10) {
-      throw new BadRequestException('Portfolio code must be between 1 and 10');
+    if (!isValidPortfolioCode(portfolioCode)) {
+      throw new BadRequestException(getPortfolioValidationError());
     }
 
     const clients = await this.fileStorage.searchFiles<Client>('clients', () => true, portfolioCode);
@@ -329,8 +324,8 @@ export class ClientsService {
     }
 
     if (!Number.isFinite(day) || !Number.isFinite(month)) {
-      day = 31;
-      month = 3;
+      day = CLIENT_DEFAULTS.ACCOUNTING_REFERENCE_DAY;
+      month = CLIENT_DEFAULTS.ACCOUNTING_REFERENCE_MONTH;
     }
 
     const updatedClient: Client = {
@@ -387,14 +382,6 @@ export class ClientsService {
       'address.country',
     ];
 
-    const esc = (v: any) => {
-      if (v === null || v === undefined) return '';
-      const s = typeof v === 'string' ? v : v instanceof Date ? v.toISOString() : String(v);
-      const needsQuotes = /[",\n]/.test(s);
-      const t = s.replace(/"/g, '""');
-      return needsQuotes ? `"${t}"` : t;
-    };
-
     const rows = [headers.join(',')];
     for (const c of items) {
       const line = [
@@ -420,7 +407,7 @@ export class ClientsService {
         c.address?.county || '',
         c.address?.postcode || '',
         c.address?.country || '',
-      ].map(esc);
+      ].map(escapeCsvValue);
       rows.push(line.join(','));
     }
     return rows.join('\n');
@@ -438,37 +425,29 @@ export class ClientsService {
    * - Address Line 1/2, City, County, Postcode, Country
    */
   async importFromCsv(csv: string): Promise<{ created: number; errors: Array<{ row: any; error: string }> }> {
-    const rows = this.parseCsv(csv);
-    const records = this.toRecords(rows);
+    const rows = parseCsv(csv);
+    const records = csvToRecords(rows);
     const errors: Array<{ row: any; error: string }> = [];
     let created = 0;
     for (const r of records) {
       try {
-        const get = (k: string) => r[k] || r[k.toLowerCase()] || '';
-        const pick = (...names: string[]) => {
-          for (const n of names) {
-            const v = r[n] ?? r[n.toLowerCase()];
-            if (v !== undefined && v !== null && String(v).trim() !== '') return String(v).trim();
-          }
-          return '';
-        };
-        const name = pick('Company Name', 'Name');
+        const name = pickCsvField(r, 'Company Name', 'Name');
         if (!name) throw new BadRequestException('Name is required');
-        const type = (pick('Type') || 'COMPANY').toUpperCase() as any;
-        const portfolioCode = parseInt(pick('Portfolio Code', 'Portfolio') || '1', 10) || 1;
-        const status = (pick('Status') || 'ACTIVE').toUpperCase() as any;
-        const registeredNumber = pick('Company Number', 'Registered Number') || undefined;
-        const mainEmail = pick('Email', 'Main Email') || undefined;
-        const mainPhone = pick('Phone', 'Main Phone') || undefined;
-        const accountsAccountingReferenceDay = parseInt(pick('Accounting Reference Day', 'Accounts Accounting Reference Day', 'ARD Day') || '', 10);
-        const accountsAccountingReferenceMonth = parseInt(pick('Accounting Reference Month', 'Accounts Accounting Reference Month', 'ARD Month') || '', 10);
+        const type = (pickCsvField(r, 'Type') || CLIENT_DEFAULTS.TYPE).toUpperCase() as any;
+        const portfolioCode = parseInt(pickCsvField(r, 'Portfolio Code', 'Portfolio') || String(PORTFOLIO_CONFIG.DEFAULT_CODE), 10) || PORTFOLIO_CONFIG.DEFAULT_CODE;
+        const status = (pickCsvField(r, 'Status') || CLIENT_DEFAULTS.STATUS).toUpperCase() as any;
+        const registeredNumber = pickCsvField(r, 'Company Number', 'Registered Number') || undefined;
+        const mainEmail = pickCsvField(r, 'Email', 'Main Email') || undefined;
+        const mainPhone = pickCsvField(r, 'Phone', 'Main Phone') || undefined;
+        const accountsAccountingReferenceDay = parseInt(pickCsvField(r, 'Accounting Reference Day', 'Accounts Accounting Reference Day', 'ARD Day') || '', 10);
+        const accountsAccountingReferenceMonth = parseInt(pickCsvField(r, 'Accounting Reference Month', 'Accounts Accounting Reference Month', 'ARD Month') || '', 10);
         const address = {
-          line1: pick('Address Line 1', 'Line1', 'Address') || undefined,
-          line2: pick('Address Line 2', 'Line2') || undefined,
-          city: pick('City') || undefined,
-          county: pick('County') || undefined,
-          postcode: pick('Postcode') || undefined,
-          country: pick('Country') || undefined,
+          line1: pickCsvField(r, 'Address Line 1', 'Line1', 'Address') || undefined,
+          line2: pickCsvField(r, 'Address Line 2', 'Line2') || undefined,
+          city: pickCsvField(r, 'City') || undefined,
+          county: pickCsvField(r, 'County') || undefined,
+          postcode: pickCsvField(r, 'Postcode') || undefined,
+          country: pickCsvField(r, 'Country') || undefined,
         } as any;
 
         const dto: CreateClientDto = {
@@ -498,13 +477,14 @@ export class ClientsService {
    * Does not write any data.
    */
   async previewImportCsv(csv: string): Promise<{ total: number; valid: number; rows: Array<{ name: string; portfolioCode: number; suggestedRef?: string; error?: string }> }> {
-    const rows = this.toRecords(this.parseCsv(csv));
+    const rows = csvToRecords(parseCsv(csv));
     const out: Array<{ name: string; portfolioCode: number; suggestedRef?: string; error?: string }> = [];
 
     // Build used map and counters from storage (like regenerateAllRefs)
     const used = new Set<string>();
     const counters = new Map<string, number>();
-    for (let port = 1; port <= 10; port++) {
+    const portfolioCodes = getValidPortfolioCodes();
+    for (const port of portfolioCodes) {
       const files = await this.fileStorage.listFiles('clients', port);
       for (const ref of files) {
         used.add(ref);
@@ -521,9 +501,9 @@ export class ClientsService {
     }
 
     for (const r of rows) {
-      const name = (r['Company Name'] || r['Name'] || '').trim();
-      if (!name) { out.push({ name: '', portfolioCode: 1, error: 'Missing name' }); continue; }
-      const port = parseInt((r['Portfolio Code'] || r['Portfolio'] || '1').trim() || '1', 10) || 1;
+      const name = pickCsvField(r, 'Company Name', 'Name');
+      if (!name) { out.push({ name: '', portfolioCode: PORTFOLIO_CONFIG.DEFAULT_CODE, error: 'Missing name' }); continue; }
+      const port = parseInt(pickCsvField(r, 'Portfolio Code', 'Portfolio') || String(PORTFOLIO_CONFIG.DEFAULT_CODE)) || PORTFOLIO_CONFIG.DEFAULT_CODE;
 
       // derive alpha
       const alpha = this.referenceGenerator.deriveAlphaFromName(name);
@@ -542,41 +522,6 @@ export class ClientsService {
 
     const valid = out.filter(r => !r.error).length;
     return { total: out.length, valid, rows: out };
-  }
-
-  /** Basic CSV parser (compatible with the importer script) */
-  private parseCsv(content: string): string[][] {
-    const rows: string[][] = [];
-    let current: string[] = [];
-    let value = '';
-    let inQuotes = false;
-    const pushValue = () => { current.push(value); value = ''; };
-    const pushRow = () => { if (current.length > 0) rows.push(current); current = []; };
-    const text = (content || '').replace(/^\uFEFF/, '');
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-      if (ch === '"') {
-        const next = text[i + 1];
-        if (inQuotes && next === '"') { value += '"'; i++; }
-        else { inQuotes = !inQuotes; }
-        continue;
-      }
-      if (ch === ',' && !inQuotes) { pushValue(); continue; }
-      if ((ch === '\n' || ch === '\r') && !inQuotes) { pushValue(); pushRow(); while (text[i + 1] === '\n' || text[i + 1] === '\r') i++; continue; }
-      value += ch;
-    }
-    if (value.length > 0 || current.length > 0) { pushValue(); pushRow(); }
-    return rows;
-  }
-
-  private toRecords(rows: string[][]): any[] {
-    if (!rows || rows.length === 0) return [];
-    const headers = rows[0].map(h => (h || '').trim());
-    return rows.slice(1).map(row => {
-      const rec: any = {};
-      headers.forEach((h, idx) => { rec[h] = (row[idx] || '').trim(); rec[h.toLowerCase()] = rec[h]; });
-      return rec;
-    });
   }
 
   async update(id: string, updateClientDto: UpdateClientDto): Promise<Client> {
@@ -711,8 +656,8 @@ export class ClientsService {
    * Keeps the same client id and all relations (services/tasks/documents) intact.
    */
   async movePortfolio(id: string, newPortfolioCode: number): Promise<Client> {
-    if (newPortfolioCode < 1 || newPortfolioCode > 10) {
-      throw new BadRequestException('Portfolio code must be between 1 and 10');
+    if (!isValidPortfolioCode(newPortfolioCode)) {
+      throw new BadRequestException(getPortfolioValidationError());
     }
 
     const existing = await this.findOne(id);
@@ -797,7 +742,8 @@ export class ClientsService {
   async getPortfolioStats(): Promise<Record<number, { count: number; active: number; inactive: number }>> {
     const stats: Record<number, { count: number; active: number; inactive: number }> = {};
 
-    for (let portfolioCode = 1; portfolioCode <= 10; portfolioCode++) {
+    const portfolioCodes = getValidPortfolioCodes();
+    for (const portfolioCode of portfolioCodes) {
       const clients = await this.findByPortfolio(portfolioCode);
       const active = clients.filter(c => c.status === 'ACTIVE').length;
       const inactive = clients.filter(c => c.status !== 'ACTIVE').length;
@@ -959,7 +905,8 @@ export class ClientsService {
     const counters = new Map<string, number>(); // key: `${port}-${alpha}` -> max index
 
     // Seed with existing stored refs
-    for (let port = 1; port <= 10; port++) {
+    const portfolioCodes = getValidPortfolioCodes();
+    for (const port of portfolioCodes) {
       const files = await this.fileStorage.listFiles('clients', port);
       for (const ref of files) {
         used.add(ref);

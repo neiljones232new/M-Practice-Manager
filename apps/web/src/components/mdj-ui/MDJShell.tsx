@@ -415,7 +415,7 @@ export default function MDJShell({
         <div className="mdj-pagebody">{children}</div>
       </main>
 
-      {/* MDJ Assist - Bottom Right */}
+      {/* M Assist - Bottom Right */}
       <MDJAssist />
     </div>
   );

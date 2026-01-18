@@ -10,6 +10,7 @@ interface NotesStepProps {
 }
 
 export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
+  const isSoleTrader = accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL';
   const defaultTangibleAssets = {
     columns: ['Land & Property', 'Motor Vehicles', 'Total'],
     rows: [
@@ -71,12 +72,16 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
 
     return {
       countryOfIncorporation: 'England and Wales',
-      shareCapital: {
-        shareClass: 'Ordinary shares',
-        numberOfShares: 1, // Must be > 0
-        nominalValue: 1, // Must be > 0
-        currency: 'GBP'
-      },
+      ...(isSoleTrader
+        ? {}
+        : {
+            shareCapital: {
+              shareClass: 'Ordinary shares',
+              numberOfShares: 1,
+              nominalValue: 1,
+              currency: 'GBP',
+            },
+          }),
       principalActivity: '',
       employees: {
         include: false,
@@ -121,7 +126,7 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
     }).format(amount);
   };
 
-  const totalShareCapitalValue = formData.shareCapital.numberOfShares * formData.shareCapital.nominalValue;
+  const totalShareCapitalValue = (formData.shareCapital?.numberOfShares ?? 0) * (formData.shareCapital?.nominalValue ?? 0);
 
   const updateTangibleColumn = (index: number, value: string) => {
     const tangible = formData.tangibleAssets || defaultTangibleAssets;
@@ -166,10 +171,10 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
   return (
     <div style={{ display: 'grid', gap: '1.5rem' }}>
       {/* Company Information */}
-      <MDJCard title="Company Information">
+      <MDJCard title={isSoleTrader ? 'Business Information' : 'Company Information'}>
         <div style={{ display: 'grid', gap: '1rem' }}>
           <MDJSelect
-            label="Country of Incorporation"
+            label={isSoleTrader ? 'Country of Residence' : 'Country of Incorporation'}
             value={formData.countryOfIncorporation}
             onChange={(e) => handleInputChange('countryOfIncorporation', e.target.value)}
             required
@@ -180,21 +185,22 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
           </MDJSelect>
           
           <MDJTextarea
-            label="Principal Activity"
+            label={isSoleTrader ? 'Business Activity' : 'Principal Activity'}
             value={formData.principalActivity || ''}
             onChange={(e) => handleInputChange('principalActivity', e.target.value)}
-            placeholder="Describe the company's main business activity..."
+            placeholder={isSoleTrader ? 'Describe the business activity...' : 'Describe the company\'s main business activity...'}
             rows={3}
           />
         </div>
       </MDJCard>
 
       {/* Share Capital */}
-      <MDJCard title="Share Capital">
+      {!isSoleTrader && (
+        <MDJCard title="Share Capital">
         <div style={{ display: 'grid', gap: '1rem' }}>
           <MDJInput
             label="Share Class"
-            value={formData.shareCapital.shareClass}
+            value={formData.shareCapital?.shareClass || ''}
             onChange={(e) => handleInputChange('shareCapital.shareClass', e.target.value)}
             placeholder="e.g., Ordinary shares"
           />
@@ -203,32 +209,32 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
             <MDJInput
               label="Number of Shares"
               type="number"
-              value={formData.shareCapital.numberOfShares.toString()}
+              value={(formData.shareCapital?.numberOfShares ?? 0).toString()}
               onChange={(e) => {
-                const value = Math.max(1, parseInt(e.target.value) || 1); // Ensure minimum of 1
+                const value = Math.max(0, parseInt(e.target.value) || 0);
                 handleInputChange('shareCapital.numberOfShares', value);
               }}
               placeholder="1"
-              min="1"
+              min="0"
             />
             
             <MDJInput
               label="Nominal Value per Share"
               type="number"
-              value={formData.shareCapital.nominalValue.toString()}
+              value={(formData.shareCapital?.nominalValue ?? 0).toString()}
               onChange={(e) => {
-                const value = Math.max(0.01, parseFloat(e.target.value) || 0.01); // Ensure minimum of 0.01
+                const value = Math.max(0, parseFloat(e.target.value) || 0);
                 handleInputChange('shareCapital.nominalValue', value);
               }}
               placeholder="1.00"
               step="0.01"
-              min="0.01"
+              min="0"
             />
           </div>
           
           <MDJSelect
             label="Currency"
-            value={formData.shareCapital.currency}
+            value={formData.shareCapital?.currency || 'GBP'}
             onChange={(e) => handleInputChange('shareCapital.currency', e.target.value)}
           >
             <option value="GBP">GBP (£)</option>
@@ -258,11 +264,12 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
             color: 'var(--text-muted)'
           }}>
             <strong>Share Capital Summary:</strong><br />
-            {formData.shareCapital.numberOfShares.toLocaleString()} {formData.shareCapital.shareClass.toLowerCase()} 
-            of {formatCurrency(formData.shareCapital.nominalValue)} each
+            {(formData.shareCapital?.numberOfShares ?? 0).toLocaleString()} {(formData.shareCapital?.shareClass || 'shares').toLowerCase()} 
+            of {formatCurrency(formData.shareCapital?.nominalValue ?? 0)} each
           </div>
         </div>
       </MDJCard>
+      )}
 
       {/* Employee Information */}
       <MDJCard title="Employee Information">
@@ -297,7 +304,7 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
                 fontSize: '0.875rem',
                 color: 'var(--text-muted)'
               }}>
-                <strong>Note:</strong> Include all employees (including directors) who worked during the year.
+                <strong>Note:</strong> Include all employees (including owners or directors) who worked during the year.
               </div>
             </div>
           )}
@@ -399,7 +406,7 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
               <li>Post balance sheet events</li>
               <li>Commitments and contingencies</li>
               <li>Related party transactions</li>
-              <li>Directors' loan account details</li>
+              <li>{isSoleTrader ? 'Owner\'s loan account details' : 'Directors\' loan account details'}</li>
               <li>Accounting policy changes</li>
               <li>Going concern considerations</li>
             </ul>
@@ -411,13 +418,15 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
       <MDJCard title="Notes Summary">
         <div style={{ display: 'grid', gap: '0.75rem', fontSize: '0.9rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
-            <span>Country of Incorporation:</span>
+            <span>{isSoleTrader ? 'Country of Residence:' : 'Country of Incorporation:'}</span>
             <span style={{ fontWeight: 600 }}>{formData.countryOfIncorporation}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
-            <span>Share Capital:</span>
-            <span style={{ fontWeight: 600 }}>{formatCurrency(totalShareCapitalValue)}</span>
-          </div>
+          {!isSoleTrader && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
+              <span>Share Capital:</span>
+              <span style={{ fontWeight: 600 }}>{formatCurrency(totalShareCapitalValue)}</span>
+            </div>
+          )}
           {formData.employees?.include && (
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
               <span>Average Employees:</span>
@@ -426,7 +435,7 @@ export function NotesStep({ accountsSet, onUpdate }: NotesStepProps) {
           )}
           {formData.principalActivity && (
             <div style={{ padding: '0.5rem 0', borderTop: '1px solid var(--border-subtle)' }}>
-              <strong>Principal Activity:</strong>
+              <strong>{isSoleTrader ? 'Business Activity:' : 'Principal Activity:'}</strong>
               <div style={{ marginTop: '0.25rem', color: 'var(--text-muted)' }}>
                 {formData.principalActivity}
               </div>

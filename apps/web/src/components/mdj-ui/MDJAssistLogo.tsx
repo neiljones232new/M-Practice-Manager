@@ -60,7 +60,7 @@ export const MDJAssistLogo: React.FC<MDJAssistLogoProps> = ({
           size === 'lg' && 'text-base',
           size === 'xl' && 'text-xl'
         )}>
-          MDJ
+          M
         </span>
 
         {/* Orbital Ring */}

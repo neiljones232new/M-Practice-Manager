@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 
     const data = await resp.json();
 
-    // TODO: store these securely in your DB, linked to the logged-in MDJ user
+    // TODO: store these securely in your DB, linked to the logged-in M user
     // data.access_token
     // data.refresh_token
     // data.expires_in, etc.

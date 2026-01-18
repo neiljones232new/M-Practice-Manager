@@ -113,7 +113,7 @@ export default function AccountsProductionPage() {
 
   return (
     <MDJShell
-      pageTitle={`Accounts Production - ${accountsSet.sections.companyPeriod?.company.name || 'Company'}`}
+      pageTitle={`Accounts Production - ${accountsSet.sections.companyPeriod?.company.name || 'Client'}`}
       pageSubtitle={`${accountsSet.framework} accounts for period ending ${new Date(accountsSet.sections.companyPeriod?.period.endDate || accountsSet.period.endDate).toLocaleDateString('en-GB')}`}
       showBack
       backHref={`/clients/${accountsSet.clientId}`}

@@ -66,7 +66,7 @@ async function bootstrap() {
     .addTag('Letters', 'Letter generation and management')
     .addTag('Accounts Production', 'Accounts production workflows')
     .addTag('User Management', 'User roles and permissions')
-    .addTag('MDJ Assist', 'Assistant and automation endpoints')
+    .addTag('M Assist', 'Assistant and automation endpoints')
     .addTag('Performance', 'File system performance and cleanup tools')
     .addTag('File System Audit', 'Storage audit and cleanup utilities')
     .addTag('Migration', 'Database migration utilities')

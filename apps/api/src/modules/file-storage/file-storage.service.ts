@@ -441,7 +441,7 @@ export class FileStorageService {
   }
 
   private async acquireLock(lockKey: string): Promise<void> {
-    const lockFile = path.join(this.lockPath, `${lockKey.replace('/', '_')}.lock`);
+    const lockFile = path.join(this.lockPath, `${lockKey.replace(/[\\/]/g, '_')}.lock`);
     const maxRetries = 10;
     const retryDelay = 100;
 
@@ -465,7 +465,7 @@ export class FileStorageService {
   }
 
   private async releaseLock(lockKey: string): Promise<void> {
-    const lockFile = path.join(this.lockPath, `${lockKey.replace('/', '_')}.lock`);
+    const lockFile = path.join(this.lockPath, `${lockKey.replace(/[\\/]/g, '_')}.lock`);
     
     try {
       if (existsSync(lockFile)) {

@@ -107,26 +107,29 @@ export function CompanyPeriodStep({ accountsSet, onUpdate }: CompanyPeriodStepPr
     });
   };
 
+  const isSoleTrader = formData.framework === 'SOLE_TRADER' || formData.framework === 'INDIVIDUAL';
+
   return (
     <div style={{ display: 'grid', gap: '1.5rem' }}>
-      {/* Company Information */}
-      <MDJCard title="Company Information">
+      {/* Company / Trader Information */}
+      <MDJCard title={isSoleTrader ? 'Trader Information' : 'Company Information'}>
         <div style={{ display: 'grid', gap: '1rem' }}>
           <MDJInput
-            label="Company Name"
+            label={isSoleTrader ? 'Trading Name' : 'Company Name'}
             value={formData.company.name}
             onChange={(e) => handleInputChange('company.name', e.target.value)}
-            placeholder="Enter company name"
+            placeholder={isSoleTrader ? 'Enter trading name' : 'Enter company name'}
             required
           />
-          
-          <MDJInput
-            label="Company Number"
-            value={formData.company.companyNumber}
-            onChange={(e) => handleInputChange('company.companyNumber', e.target.value)}
-            placeholder="e.g. 12345678"
-            required
-          />
+          {!isSoleTrader && (
+            <MDJInput
+              label="Company Number"
+              value={formData.company.companyNumber || ''}
+              onChange={(e) => handleInputChange('company.companyNumber', e.target.value)}
+              placeholder="e.g. 12345678"
+              required
+            />
+          )}
           
           <MDJSelect
             label="Accounting Framework"
@@ -134,15 +137,21 @@ export function CompanyPeriodStep({ accountsSet, onUpdate }: CompanyPeriodStepPr
             onChange={(e) => handleInputChange('framework', e.target.value)}
             required
           >
-            <option value="MICRO_FRS105">Micro-entity (FRS 105)</option>
-            <option value="SMALL_FRS102_1A">Small company (FRS 102 1A)</option>
-            <option value="DORMANT">Dormant company</option>
+            {isSoleTrader ? (
+              <option value={formData.framework}>Sole trader / Individual</option>
+            ) : (
+              <>
+                <option value="MICRO_FRS105">Micro-entity (FRS 105)</option>
+                <option value="SMALL_FRS102_1A">Small company (FRS 102 1A)</option>
+                <option value="DORMANT">Dormant company</option>
+              </>
+            )}
           </MDJSelect>
         </div>
       </MDJCard>
 
       {/* Registered Office */}
-      <MDJCard title="Registered Office Address">
+      <MDJCard title={isSoleTrader ? 'Business Address' : 'Registered Office Address'}>
         <div style={{ display: 'grid', gap: '1rem' }}>
           <MDJInput
             label="Address Line 1"
@@ -226,7 +235,7 @@ export function CompanyPeriodStep({ accountsSet, onUpdate }: CompanyPeriodStepPr
               checked={!formData.period.isFirstYear}
               onChange={(e) => handleInputChange('period.isFirstYear', !e.target.checked)}
             />
-            <span>This is not the company’s first accounting period</span>
+            <span>{isSoleTrader ? 'This is not the business’s first accounting period' : 'This is not the company’s first accounting period'}</span>
           </label>
           
           <div style={{ 
@@ -245,71 +254,76 @@ export function CompanyPeriodStep({ accountsSet, onUpdate }: CompanyPeriodStepPr
             </div>
             <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
               {formData.period.isFirstYear 
-                ? 'This is the first set of accounts for this company. Comparative figures will not be required.'
-                : 'This company has filed accounts before. Comparative figures from the prior period will be required.'
+                ? isSoleTrader
+                  ? 'This is the first set of accounts for this business. Comparative figures will not be required.'
+                  : 'This is the first set of accounts for this company. Comparative figures will not be required.'
+                : isSoleTrader
+                  ? 'This business has filed accounts before. Comparative figures from the prior period will be required.'
+                  : 'This company has filed accounts before. Comparative figures from the prior period will be required.'
               }
             </p>
           </div>
         </div>
       </MDJCard>
 
-      {/* Directors */}
-      <MDJCard 
-        title="Directors" 
-        actions={
-          <button 
-            onClick={addDirector}
-            className="btn-outline-primary btn-sm"
-          >
-            Add Director
-          </button>
-        }
-      >
-        {formData.company.directors.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '2rem', 
-            color: 'var(--text-muted)',
-            backgroundColor: 'var(--surface-subtle)',
-            borderRadius: '6px'
-          }}>
-            <p>No directors added yet.</p>
-            <button onClick={addDirector} className="btn-primary btn-sm">
-              Add First Director
+      {!isSoleTrader && (
+        <MDJCard 
+          title="Directors" 
+          actions={
+            <button 
+              onClick={addDirector}
+              className="btn-outline-primary btn-sm"
+            >
+              Add Director
             </button>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {formData.company.directors.map((director, index) => (
-              <div key={index} style={{ 
-                display: 'flex', 
-                gap: '1rem', 
-                alignItems: 'flex-end',
-                padding: '1rem',
-                backgroundColor: 'var(--surface-subtle)',
-                borderRadius: '6px'
-              }}>
-                <div style={{ flex: 1 }}>
-                  <MDJInput
-                    label={`Director ${index + 1} Name`}
-                    value={director.name}
-                    onChange={(e) => updateDirector(index, e.target.value)}
-                    placeholder="Enter director name"
-                    required
-                  />
+          }
+        >
+          {formData.company.directors.length === 0 ? (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '2rem', 
+              color: 'var(--text-muted)',
+              backgroundColor: 'var(--surface-subtle)',
+              borderRadius: '6px'
+            }}>
+              <p>No directors added yet.</p>
+              <button onClick={addDirector} className="btn-primary btn-sm">
+                Add First Director
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gap: '1rem' }}>
+              {formData.company.directors.map((director, index) => (
+                <div key={index} style={{ 
+                  display: 'flex', 
+                  gap: '1rem', 
+                  alignItems: 'flex-end',
+                  padding: '1rem',
+                  backgroundColor: 'var(--surface-subtle)',
+                  borderRadius: '6px'
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <MDJInput
+                      label={`Director ${index + 1} Name`}
+                      value={director.name}
+                      onChange={(e) => updateDirector(index, e.target.value)}
+                      placeholder="Enter director name"
+                      required
+                    />
+                  </div>
+                  <button
+                    onClick={() => removeDirector(index)}
+                    className="btn-outline-primary btn-sm"
+                    style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
+                  >
+                    Remove
+                  </button>
                 </div>
-                <button
-                  onClick={() => removeDirector(index)}
-                  className="btn-outline-primary btn-sm"
-                  style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </MDJCard>
+              ))}
+            </div>
+          )}
+        </MDJCard>
+      )}
     </div>
   );
 }

@@ -4,16 +4,22 @@ import { AssistService, AssistContext } from './assist.service';
 import { QueryTemplatesService } from './query-templates.service';
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { ClientsService } from '../clients/clients.service';
+import { ClientPartyService } from '../clients/services/client-party.service';
+import { PersonService } from '../clients/services/person.service';
 import { TasksService } from '../tasks/tasks.service';
 import { ServicesService } from '../services/services.service';
 import { ComplianceService } from '../filings/compliance.service';
+import { IntegrationConfigService } from '../integrations/services/integration-config.service';
 
 describe('AssistService', () => {
   let service: AssistService;
   let configService: jest.Mocked<ConfigService>;
   let queryTemplatesService: jest.Mocked<QueryTemplatesService>;
   let fileStorageService: jest.Mocked<FileStorageService>;
+  let integrationConfigService: jest.Mocked<IntegrationConfigService>;
   let clientsService: jest.Mocked<ClientsService>;
+  let clientPartyService: jest.Mocked<ClientPartyService>;
+  let personService: jest.Mocked<PersonService>;
   let tasksService: jest.Mocked<TasksService>;
   let servicesService: jest.Mocked<ServicesService>;
   let complianceService: jest.Mocked<ComplianceService>;
@@ -103,11 +109,26 @@ describe('AssistService', () => {
     const mockFileStorageService = {
       read: jest.fn(),
       write: jest.fn(),
+      readFile: jest.fn(),
+      writeFile: jest.fn(),
+    } as any;
+
+    const mockIntegrationConfigService = {
+      getIntegrationByType: jest.fn(),
+      getDecryptedApiKey: jest.fn(),
     } as any;
 
     const mockClientsService = {
       findAll: jest.fn(),
       findByRef: jest.fn(),
+    } as any;
+
+    const mockClientPartyService = {
+      findAll: jest.fn(),
+    } as any;
+
+    const mockPersonService = {
+      findAll: jest.fn(),
     } as any;
 
     const mockTasksService = {
@@ -128,7 +149,10 @@ describe('AssistService', () => {
         { provide: ConfigService, useValue: mockConfigService },
         { provide: QueryTemplatesService, useValue: mockQueryTemplatesService },
         { provide: FileStorageService, useValue: mockFileStorageService },
+        { provide: IntegrationConfigService, useValue: mockIntegrationConfigService },
         { provide: ClientsService, useValue: mockClientsService },
+        { provide: ClientPartyService, useValue: mockClientPartyService },
+        { provide: PersonService, useValue: mockPersonService },
         { provide: TasksService, useValue: mockTasksService },
         { provide: ServicesService, useValue: mockServicesService },
         { provide: ComplianceService, useValue: mockComplianceService },
@@ -139,7 +163,10 @@ describe('AssistService', () => {
     configService = module.get(ConfigService);
     queryTemplatesService = module.get(QueryTemplatesService);
     fileStorageService = module.get(FileStorageService);
+    integrationConfigService = module.get(IntegrationConfigService);
     clientsService = module.get(ClientsService);
+    clientPartyService = module.get(ClientPartyService);
+    personService = module.get(PersonService);
     tasksService = module.get(TasksService);
     servicesService = module.get(ServicesService);
     complianceService = module.get(ComplianceService);
@@ -151,6 +178,10 @@ describe('AssistService', () => {
     complianceService.findAll.mockResolvedValue(mockCompliance as any);
     fileStorageService.readFile.mockResolvedValue(null);
     fileStorageService.writeFile.mockResolvedValue(undefined);
+    integrationConfigService.getIntegrationByType.mockResolvedValue(null);
+    integrationConfigService.getDecryptedApiKey.mockResolvedValue(null);
+    clientPartyService.findAll.mockResolvedValue([]);
+    personService.findAll.mockResolvedValue([]);
   });
 
   describe('Service Initialization', () => {
@@ -416,7 +447,10 @@ describe('AssistService', () => {
         configService,
         queryTemplatesService,
         fileStorageService,
+        integrationConfigService,
         clientsService,
+        clientPartyService,
+        personService,
         tasksService,
         servicesService,
         complianceService,

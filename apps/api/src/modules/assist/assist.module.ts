@@ -8,6 +8,7 @@ import { ClientsModule } from '../clients/clients.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { ServicesModule } from '../services/services.module';
 import { FilingsModule } from '../filings/filings.module';
+import { IntegrationsModule } from '../integrations/integrations.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { FilingsModule } from '../filings/filings.module';
     forwardRef(() => TasksModule),
     forwardRef(() => ServicesModule),
     forwardRef(() => FilingsModule),
+    forwardRef(() => IntegrationsModule),
   ],
   controllers: [AssistController],
   providers: [AssistService, ServerLifecycleService, QueryTemplatesService],

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { api } from '@/lib/api';
 
-// MDJ UI atoms/molecules (keep using these where available)
+// M UI atoms/molecules (keep using these where available)
 import { MDJButton, MDJCard, MDJTable, MDJSection, MDJInput } from '@/components/mdj-ui';
 
 interface IntegrationConfig {
@@ -85,7 +85,7 @@ export default function PeoplePage() {
         // Fallbacks so the screen still renders in demo/offline
         const ps = (settingsData as any)?.data ?? settingsData ?? {
             id: 'demo',
-            practiceName: 'MDJ Practice',
+            practiceName: 'M Practice',
             defaultPortfolioCode: 1,
             portfolios: [{ code: 1, name: 'Main' }],
           };

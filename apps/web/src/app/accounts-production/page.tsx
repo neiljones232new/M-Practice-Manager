@@ -112,6 +112,8 @@ export default function AccountsProductionPage() {
       'MICRO_FRS105': 'Micro-entity (FRS 105)',
       'SMALL_FRS102_1A': 'Small company (FRS 102 1A)',
       'DORMANT': 'Dormant company',
+      'SOLE_TRADER': 'Sole trader / Individual',
+      'INDIVIDUAL': 'Sole trader / Individual',
     };
     return frameworkLabels[framework as keyof typeof frameworkLabels] || framework;
   };

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accounts - {{client.name}}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    :root {
+      --brand-primary: #6D28D9;
+      --brand-muted: #EDE9FE;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --border-subtle: rgba(2,6,23,0.12);
+    }
+
+    @page {
+      size: A4;
+      margin: 10mm;
+    }
+
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.4;
+      margin: 0;
+      padding: 32mm 14mm 25mm;
+      color: var(--text-primary);
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      color-adjust: exact;
+    }
+
+    p { margin: 6px 0; }
+
+    .cover {
+      text-align: center;
+      margin-top: 70mm;
+    }
+
+    .cover h1 {
+      color: var(--brand-primary);
+      font-size: 20pt;
+      margin-bottom: 10px;
+    }
+
+    .cover .meta {
+      font-size: 11pt;
+      color: var(--text-secondary);
+    }
+
+    .page-header {
+      margin-top: 10mm;
+      margin-bottom: 14px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--brand-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .page-header .company {
+      font-weight: 600;
+      color: var(--brand-primary);
+    }
+
+    .page-header .period {
+      font-size: 9.5pt;
+      color: var(--text-secondary);
+    }
+
+    .section {
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .section.page-break {
+      page-break-before: always;
+    }
+
+    .section-title {
+      font-size: 12pt;
+      font-weight: 600;
+      color: var(--brand-primary);
+      margin: 12px 0 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 20px;
+    }
+
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .amount {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .note {
+      font-size: 9.5pt;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <h1>{{client.name}}</h1>
+    <div class="meta">Unaudited accounts</div>
+    <div class="meta">For the year ended {{formatDate period.endDate}}</div>
+  </div>
+
+  <div class="section page-break">
+    <div class="page-header">
+      <div class="company">Client information</div>
+      <div class="period">Year ended {{formatDate period.endDate}}</div>
+    </div>
+    <table>
+      <tr><th>Client name</th><td>{{client.name}}</td></tr>
+      <tr><th>UTR</th><td>{{client.utrNumber}}</td></tr>
+      <tr><th>Address</th><td>{{client.address.line1}} {{client.address.line2}} {{client.address.city}} {{client.address.county}} {{client.address.postcode}} {{client.address.country}}</td></tr>
+      <tr><th>Accounting period</th><td>{{formatDate period.startDate}} to {{formatDate period.endDate}}</td></tr>
+      <tr><th>Prepared by</th><td>{{practice.name}}</td></tr>
+    </table>
+  </div>
+
+  <div class="section page-break">
+    <div class="page-header">
+      <div class="company">Income statement</div>
+      <div class="period">Year ended {{formatDate period.endDate}}</div>
+    </div>
+    <table>
+      <tr><th></th><th class="amount">£</th></tr>
+      <tr><th>Turnover</th><td class="amount">{{formatCurrency profitAndLoss.lines.turnover}}</td></tr>
+      <tr><th>Cost of sales</th><td class="amount">({{formatCurrency profitAndLoss.lines.costOfSales}})</td></tr>
+      <tr><th><strong>Gross profit / (loss)</strong></th><td class="amount"><strong>{{formatCurrency calculations.profitAndLoss.grossProfit}}</strong></td></tr>
+      <tr><th>Administrative expenses</th><td class="amount">({{formatCurrency calculations.profitAndLoss.totalExpenses}})</td></tr>
+      <tr><th>Other income</th><td class="amount">{{formatCurrency profitAndLoss.lines.otherIncome}}</td></tr>
+      <tr><th><strong>Operating profit / (loss)</strong></th><td class="amount"><strong>{{formatCurrency calculations.profitAndLoss.operatingProfit}}</strong></td></tr>
+      <tr><th>Interest payable</th><td class="amount">({{formatCurrency profitAndLoss.lines.interestPayable}})</td></tr>
+      <tr><th><strong>Profit / (loss) for the year</strong></th><td class="amount"><strong>{{formatCurrency calculations.profitAndLoss.profitAfterTax}}</strong></td></tr>
+    </table>
+    <div class="note">The notes form part of these financial statements.</div>
+  </div>
+
+  <div class="section page-break">
+    <div class="page-header">
+      <div class="company">Statement of financial position</div>
+      <div class="period">As at {{formatDate period.endDate}}</div>
+    </div>
+    <table>
+      <tr><th></th><th class="amount">£</th></tr>
+      <tr><th><strong>Fixed assets</strong></th><td class="amount"><strong>{{formatCurrency calculations.balanceSheet.totalFixedAssets}}</strong></td></tr>
+      <tr><th>Current assets</th><td class="amount">{{formatCurrency calculations.balanceSheet.totalCurrentAssets}}</td></tr>
+      <tr><th>Creditors: amounts falling due within one year</th><td class="amount">({{formatCurrency calculations.balanceSheet.totalCurrentLiabilities}})</td></tr>
+      <tr><th><strong>Net current assets / (liabilities)</strong></th><td class="amount"><strong>{{formatCurrency (subtract calculations.balanceSheet.totalCurrentAssets calculations.balanceSheet.totalCurrentLiabilities)}}</strong></td></tr>
+      <tr><th>Creditors: amounts falling due after more than one year</th><td class="amount">({{formatCurrency calculations.balanceSheet.totalLongTermLiabilities}})</td></tr>
+      <tr><th><strong>Net assets / (liabilities)</strong></th><td class="amount"><strong>{{formatCurrency calculations.balanceSheet.netAssets}}</strong></td></tr>
+      <tr><th><strong>Capital account</strong></th><td class="amount"><strong>{{formatCurrency calculations.balanceSheet.totalEquity}}</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="section page-break">
+    <div class="page-header">
+      <div class="company">Notes</div>
+      <div class="period">Year ended {{formatDate period.endDate}}</div>
+    </div>
+    <p><strong>Basis of preparation:</strong> {{accountingPolicies.basisOfPreparation}}</p>
+    <p><strong>Turnover:</strong> {{accountingPolicies.turnoverPolicyText}}</p>
+    <p class="note">These accounts are prepared for the proprietor and are not intended for filing at Companies House.</p>
+  </div>
+</body>
+</html>

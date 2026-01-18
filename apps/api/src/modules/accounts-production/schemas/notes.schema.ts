@@ -1,6 +1,5 @@
 export const notesSchema = {
   type: 'object',
-  required: ['shareCapital'],
   properties: {
     principalActivity: { type: 'string' },
     countryOfIncorporation: { type: 'string', default: 'England and Wales' },

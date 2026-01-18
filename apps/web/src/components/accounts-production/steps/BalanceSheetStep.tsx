@@ -11,6 +11,8 @@ interface BalanceSheetStepProps {
 
 export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProps) {
   const isFirstYear = accountsSet.period?.isFirstYear ?? true;
+  const isSoleTrader = accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL';
+  const minShareCapital = isSoleTrader ? 0 : 1;
   
   const [formData, setFormData] = useState<BalanceSheetSection>(() => {
     const defaultData: BalanceSheetData = {
@@ -41,7 +43,7 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
         }
       },
       equity: {
-        shareCapital: 1, // Required field, must be > 0
+        shareCapital: minShareCapital,
         retainedEarnings: 0, // Required field
         otherReserves: 0
       }
@@ -79,7 +81,7 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
         }
       },
       equity: {
-        shareCapital: Math.max(1, existingData.equity?.shareCapital ?? 1),
+        shareCapital: Math.max(minShareCapital, existingData.equity?.shareCapital ?? minShareCapital),
         retainedEarnings: existingData.equity?.retainedEarnings ?? 0, // Can be negative
         otherReserves: Math.max(0, existingData.equity?.otherReserves ?? 0)
       }
@@ -122,7 +124,7 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
     
     // Share capital must be at least 1 if it's being set
     if (field === 'shareCapital') {
-      numericValue = Math.max(1, numericValue);
+      numericValue = Math.max(minShareCapital, numericValue);
     }
     
     setFormData(prev => {
@@ -158,7 +160,7 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
               creditorsWithinOneYear: { tradeCreditors: 0, taxes: 0, accrualsDeferredIncome: 0, directorsLoan: 0, otherCreditors: 0 },
               creditorsAfterOneYear: { loans: 0, other: 0 }
             },
-            equity: { shareCapital: 1, retainedEarnings: 0, otherReserves: 0 }
+            equity: { shareCapital: minShareCapital, retainedEarnings: 0, otherReserves: 0 }
           }
         };
       }
@@ -170,11 +172,13 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
       if (!newData.liabilities) newData.liabilities = { creditorsWithinOneYear: { tradeCreditors: 0, taxes: 0, accrualsDeferredIncome: 0, directorsLoan: 0, otherCreditors: 0 }, creditorsAfterOneYear: { loans: 0, other: 0 } };
       if (!newData.liabilities.creditorsWithinOneYear) newData.liabilities.creditorsWithinOneYear = { tradeCreditors: 0, taxes: 0, accrualsDeferredIncome: 0, directorsLoan: 0, otherCreditors: 0 };
       if (!newData.liabilities.creditorsAfterOneYear) newData.liabilities.creditorsAfterOneYear = { loans: 0, other: 0 };
-      if (!newData.equity) newData.equity = { shareCapital: 1, retainedEarnings: 0, otherReserves: 0 };
+      if (!newData.equity) newData.equity = { shareCapital: minShareCapital, retainedEarnings: 0, otherReserves: 0 };
       
       // Ensure required fields have valid values
       if (typeof newData.assets.currentAssets.cash !== 'number') newData.assets.currentAssets.cash = 0;
-      if (typeof newData.equity.shareCapital !== 'number' || newData.equity.shareCapital < 1) newData.equity.shareCapital = 1;
+      if (typeof newData.equity.shareCapital !== 'number' || newData.equity.shareCapital < minShareCapital) {
+        newData.equity.shareCapital = minShareCapital;
+      }
       if (typeof newData.equity.retainedEarnings !== 'number') newData.equity.retainedEarnings = 0;
       
       // Call onUpdate with the new data immediately when user makes changes
@@ -202,7 +206,7 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
     }
 
     if (field === 'shareCapital') {
-      numericValue = Math.max(1, numericValue);
+      numericValue = Math.max(minShareCapital, numericValue);
     }
 
     setFormData(prev => {
@@ -216,7 +220,7 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
           creditorsWithinOneYear: { tradeCreditors: 0, taxes: 0, accrualsDeferredIncome: 0, directorsLoan: 0, otherCreditors: 0 },
           creditorsAfterOneYear: { loans: 0, other: 0 }
         },
-        equity: { shareCapital: 1, retainedEarnings: 0, otherReserves: 0 }
+        equity: { shareCapital: minShareCapital, retainedEarnings: 0, otherReserves: 0 }
       };
 
       const sections = section.split('.');
@@ -602,7 +606,11 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
             
             <div style={inputRowStyle}>
               <MDJInput
-                label={isFirstYear ? "Directors' Loan Account" : "Directors' Loan Account (Current Year)"}
+                label={
+                  isFirstYear
+                    ? isSoleTrader ? "Owner's Loan Account" : "Directors' Loan Account"
+                    : isSoleTrader ? "Owner's Loan Account (Current Year)" : "Directors' Loan Account (Current Year)"
+                }
                 type="number"
                 value={formData.liabilities.creditorsWithinOneYear.directorsLoan.toString()}
                 onChange={(e) => handleInputChange('liabilities.creditorsWithinOneYear', 'directorsLoan', e.target.value)}
@@ -611,7 +619,7 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
               />
               {!isFirstYear && (
                 <MDJInput
-                  label="Directors' Loan Account (Prior Year)"
+                  label={isSoleTrader ? "Owner's Loan Account (Prior Year)" : "Directors' Loan Account (Prior Year)"}
                   type="number"
                   value={(formData.comparatives?.prior?.liabilities.creditorsWithinOneYear.directorsLoan ?? 0).toString()}
                   onChange={(e) => handleComparativeInputChange('liabilities.creditorsWithinOneYear', 'directorsLoan', e.target.value)}
@@ -744,7 +752,11 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
         <div style={{ display: 'grid', gap: '1rem' }}>
           <div style={inputRowStyle}>
             <MDJInput
-              label={isFirstYear ? 'Called up Share Capital' : 'Called up Share Capital (Current Year)'}
+              label={
+                isFirstYear
+                  ? isSoleTrader ? 'Capital Account' : 'Called up Share Capital'
+                  : isSoleTrader ? 'Capital Account (Current Year)' : 'Called up Share Capital (Current Year)'
+              }
               type="number"
               value={formData.equity.shareCapital.toString()}
               onChange={(e) => handleInputChange('equity', 'shareCapital', e.target.value)}
@@ -753,11 +765,11 @@ export function BalanceSheetStep({ accountsSet, onUpdate }: BalanceSheetStepProp
             />
             {!isFirstYear && (
               <MDJInput
-                label="Called up Share Capital (Prior Year)"
+                label={isSoleTrader ? 'Capital Account (Prior Year)' : 'Called up Share Capital (Prior Year)'}
                 type="number"
-                value={(formData.comparatives?.prior?.equity.shareCapital ?? 1).toString()}
+                value={(formData.comparatives?.prior?.equity.shareCapital ?? minShareCapital).toString()}
                 onChange={(e) => handleComparativeInputChange('equity', 'shareCapital', e.target.value)}
-                placeholder="1"
+                placeholder={minShareCapital.toString()}
                 step="0.01"
               />
             )}

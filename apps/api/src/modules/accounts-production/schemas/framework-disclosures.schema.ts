@@ -4,7 +4,7 @@ export const frameworkDisclosuresSchema = {
   properties: {
     framework: {
       type: 'string',
-      enum: ['MICRO_FRS105', 'SMALL_FRS102_1A', 'DORMANT'],
+      enum: ['MICRO_FRS105', 'SMALL_FRS102_1A', 'DORMANT', 'SOLE_TRADER', 'INDIVIDUAL'],
     },
     auditExemption: {
       type: 'object',
@@ -13,7 +13,7 @@ export const frameworkDisclosuresSchema = {
         isAuditExempt: { type: 'boolean' },
         exemptionStatementKey: {
           type: 'string',
-          enum: ['CA2006_S477_SMALL', 'MICRO_ENTITY', 'DORMANT'],
+          enum: ['CA2006_S477_SMALL', 'MICRO_ENTITY', 'DORMANT', 'NOT_APPLICABLE'],
         },
       },
       additionalProperties: false,

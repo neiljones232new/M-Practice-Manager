@@ -108,7 +108,7 @@ export interface TaxCalculationResult {
   id: string;
   clientId: string;
   companyId?: string;
-  calculationType: 'SALARY_OPTIMIZATION' | 'SCENARIO_COMPARISON' | 'CORPORATION_TAX' | 'DIVIDEND_TAX' | 'INCOME_TAX';
+  calculationType: 'SALARY_OPTIMIZATION' | 'SCENARIO_COMPARISON' | 'CORPORATION_TAX' | 'DIVIDEND_TAX' | 'INCOME_TAX' | 'SOLE_TRADER';
   taxYear: string;
   parameters: any; // JSON
   optimizedSalary?: number;

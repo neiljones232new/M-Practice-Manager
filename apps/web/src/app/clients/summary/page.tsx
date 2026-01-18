@@ -114,7 +114,7 @@ export default function ClientsSummaryPage() {
           <table className="mdj-table">
             <thead>
               <tr>
-                <th>MDJ Code</th>
+                <th>M Code</th>
                 <th>Status</th>
                 <th>Company Name</th>
                 <th>Company Number</th>

@@ -13,6 +13,10 @@ import {
   SalaryOptimizationParams,
   TaxAmountType,
   TaxCalculationReport,
+  ScenarioInput,
+  CompanyResult,
+  PersonalResult,
+  ScenarioResult,
 } from './interfaces/tax-calculation.interface';
 import { Client } from '../clients/interfaces/client.interface';
 import { v4 as uuidv4 } from 'uuid';
@@ -90,6 +94,10 @@ export class EnhancedTaxCalculationsService {
       taxRates
     );
 
+    result.scenarioResults = scenarios.map((scenario) =>
+      this.calculateScenarioResult(params, scenario.salary, taxRates)
+    );
+
     // Generate recommendations using the recommendation service
     const recommendations = await this.recommendationService.generateRecommendations(
       result,
@@ -117,20 +125,23 @@ export class EnhancedTaxCalculationsService {
   ): Promise<TaxCalculationResult> {
     const taxRates = await this.taxRatesService.getTaxRates(params.taxYear);
     const calculatedScenarios: TaxScenario[] = [];
+    const scenarioResults: ScenarioResult[] = [];
 
     const baseParams: TaxCalculationParams = {
       ...params,
-      availableProfit: params.availableProfit || Math.max(...scenarios.map((scenario) => scenario.salary + scenario.dividend), 0),
+      availableProfit: params.availableProfit || Math.max(...scenarios.map((scenario) => scenario.salary), 0),
     };
 
     for (const scenario of scenarios) {
-      const calculated = await this.calculateSingleScenario({
-        ...baseParams,
-        salary: scenario.salary,
-        dividend: scenario.dividend,
-      }, taxRates);
-      
-      calculatedScenarios.push(calculated);
+      const scenarioResult = this.calculateScenarioResult(
+        {
+          ...baseParams,
+        },
+        scenario.salary,
+        taxRates
+      );
+      scenarioResults.push(scenarioResult);
+      calculatedScenarios.push(this.scenarioResultToLegacyScenario(scenarioResult));
     }
 
     // Find best scenario
@@ -147,6 +158,7 @@ export class EnhancedTaxCalculationsService {
       taxRates
     );
 
+    result.scenarioResults = scenarioResults;
     await this.persistenceService.storeCalculation(result);
     return result;
   }
@@ -154,14 +166,23 @@ export class EnhancedTaxCalculationsService {
   async calculateCorporationTax(params: {
     clientId: string;
     companyId?: string;
-    profit: number;
+    profit?: number;
+    revenue?: number;
+    expenses?: number;
+    pensionContributions?: number;
+    salaryExpense?: number;
     taxYear?: string;
     accountingPeriodEndYear?: number;
   }, userId: string): Promise<TaxCalculationResult> {
     if (!params.clientId) {
       throw new BadRequestException('clientId is required for corporation tax calculations');
     }
-    if (params.profit === null || params.profit === undefined || params.profit < 0) {
+    const hasProfit = params.profit !== null && params.profit !== undefined;
+    const hasRevenue = params.revenue !== null && params.revenue !== undefined;
+    if (!hasProfit && !hasRevenue) {
+      throw new BadRequestException('profit or revenue is required for corporation tax calculations');
+    }
+    if (hasProfit && params.profit !== undefined && params.profit < 0) {
       throw new BadRequestException('profit must be zero or greater');
     }
 
@@ -286,6 +307,86 @@ export class EnhancedTaxCalculationsService {
     return result;
   }
 
+  async calculateSoleTraderTax(
+    params: {
+      clientId: string;
+      revenue: number;
+      expenses: number;
+      taxYear: string;
+      payClass2?: boolean;
+    },
+    userId: string,
+    calculationId?: string
+  ): Promise<TaxCalculationResult> {
+    if (!params.clientId) {
+      throw new BadRequestException('clientId is required for sole trader calculations');
+    }
+    if (!params.taxYear) {
+      throw new BadRequestException('taxYear is required for sole trader calculations');
+    }
+
+    const revenue = Number(params.revenue) || 0;
+    const expenses = Number(params.expenses) || 0;
+    if (revenue < 0 || expenses < 0) {
+      throw new BadRequestException('revenue and expenses must be zero or greater');
+    }
+
+    const profitBeforeTax = Math.max(0, revenue - expenses);
+    const taxRates = await this.taxRatesService.getTaxRates(params.taxYear);
+
+    const incomeTax = this.calculateIncomeTax(
+      profitBeforeTax,
+      taxRates,
+      params.taxYear,
+      0,
+      0,
+      false,
+      profitBeforeTax
+    );
+
+    const class4NIC = this.calculateClass4NIC(profitBeforeTax);
+    const class2NIC = this.calculateClass2NIC(profitBeforeTax, params.payClass2);
+    const totalTax = incomeTax + class4NIC + class2NIC;
+    const netProfitAfterTax = profitBeforeTax - totalTax;
+    const effectiveTaxRate = profitBeforeTax > 0 ? totalTax / profitBeforeTax : 0;
+
+    const result: TaxCalculationResult = {
+      id: calculationId || uuidv4(),
+      clientId: params.clientId,
+      calculationType: 'SOLE_TRADER',
+      taxYear: params.taxYear,
+      parameters: {
+        revenue,
+        expenses,
+        profitBeforeTax,
+        payClass2: params.payClass2 || false,
+      },
+      amountType: 'profit',
+      totalTakeHome: netProfitAfterTax,
+      totalTaxLiability: totalTax,
+      result: {
+        summary: {
+          grossIncome: profitBeforeTax,
+          totalTax,
+          netIncome: netProfitAfterTax,
+          effectiveTaxRate,
+        },
+        breakdown: {
+          incomeTax,
+          class4NIC,
+          class2NIC,
+          totalTax,
+        },
+      },
+      calculatedAt: new Date(),
+      calculatedBy: userId,
+      recommendations: [],
+    };
+
+    await this.persistenceService.storeCalculation(result);
+    return result;
+  }
+
   async recalculateCalculation(id: string, userId: string): Promise<TaxCalculationResult> {
     const calculation = await this.persistenceService.getCalculation(id);
     if (!calculation) {
@@ -316,6 +417,9 @@ export class EnhancedTaxCalculationsService {
         calculation.id,
         taxRates
       );
+      result.scenarioResults = scenarios.map((scenario) =>
+        this.calculateScenarioResult(params, scenario.salary, taxRates)
+      );
       await this.persistenceService.storeCalculation(result);
       return result;
     }
@@ -342,6 +446,9 @@ export class EnhancedTaxCalculationsService {
         optimalScenario,
         calculation.id,
         taxRates
+      );
+      result.scenarioResults = scenarios.map((scenario) =>
+        this.calculateScenarioResult(params, scenario.salary, taxRates)
       );
       await this.persistenceService.storeCalculation(result);
       return result;
@@ -645,7 +752,11 @@ export class EnhancedTaxCalculationsService {
     params: {
       clientId: string;
       companyId?: string;
-      profit: number;
+      profit?: number;
+      revenue?: number;
+      expenses?: number;
+      pensionContributions?: number;
+      salaryExpense?: number;
       taxYear?: string;
       accountingPeriodEndYear?: number;
     },
@@ -659,19 +770,29 @@ export class EnhancedTaxCalculationsService {
       accountingPeriodEndYear: params.accountingPeriodEndYear,
     });
 
-    const effectiveRate = this.taxRatesService.getEffectiveCorporationTaxRate(params.profit, taxYear);
-    const corporationTax = params.profit * effectiveRate;
-    const netProfit = params.profit - corporationTax;
+    const taxRates = await this.taxRatesService.getTaxRates(taxYear);
+    const revenue = Number(params.revenue) || 0;
+    const expenses = Number(params.expenses) || 0;
+    const pensionContributions = Number(params.pensionContributions) || 0;
+    const salaryExpense = Number(params.salaryExpense) || 0;
+    const employerNIC = salaryExpense > 0 ? this.calculateEmployerNI(salaryExpense, taxRates) : 0;
+    const totalExpenses = expenses + pensionContributions + salaryExpense + employerNIC;
+    const profitBeforeTax = params.profit ?? (revenue - totalExpenses);
+    const taxableProfit = Math.max(0, profitBeforeTax);
+
+    const effectiveRate = this.taxRatesService.getEffectiveCorporationTaxRate(taxableProfit, taxYear);
+    const corporationTax = taxableProfit * effectiveRate;
+    const netProfit = taxableProfit - corporationTax;
     const summary = {
-      grossIncome: params.profit,
+      grossIncome: taxableProfit,
       totalTax: corporationTax,
       netIncome: netProfit,
-      effectiveTaxRate: params.profit > 0 ? corporationTax / params.profit : 0,
+      effectiveTaxRate: taxableProfit > 0 ? corporationTax / taxableProfit : 0,
     };
     const breakdown = {
       incomeTax: 0,
       employeeNI: 0,
-      employerNI: 0,
+      employerNI: employerNIC,
       nationalInsurance: 0,
       corporationTax,
       dividendTax: 0,
@@ -683,19 +804,22 @@ export class EnhancedTaxCalculationsService {
       clientId: params.clientId,
       calculationType: 'corporationTax',
       inputs: {
-        companyProfitBeforeTax: params.profit,
-        yearEndDate: endDate,
+        companyProfitBeforeTax: profitBeforeTax,
+        expenses,
+        salaryExpense,
+        employerNIC,
         taxYear,
+        yearEndDate: endDate,
       },
       results: {
         company: {
-          profitBeforeTax: params.profit,
-          salaryExpense: 0,
-          employerNIC: 0,
-          taxableProfit: params.profit,
+          profitBeforeTax,
+          salaryExpense,
+          employerNIC,
+          taxableProfit,
           corporationTax,
           dividendsPaid: 0,
-          netCompanyCashAfterTax: params.profit - corporationTax,
+          netCompanyCashAfterTax: netProfit,
         },
       },
       reportSummary: {},
@@ -709,6 +833,14 @@ export class EnhancedTaxCalculationsService {
       taxYear,
       parameters: {
         ...params,
+        revenue,
+        expenses,
+        pensionContributions,
+        salaryExpense,
+        employerNIC,
+        totalExpenses,
+        profitBeforeTax,
+        taxableProfit,
         amountType: 'profit',
         accountingPeriodStart: startDate,
         accountingPeriodEnd: endDate,
@@ -759,6 +891,119 @@ export class EnhancedTaxCalculationsService {
 
   // Private calculation methods
 
+  private buildScenarioInput(params: TaxCalculationParams, salary: number): ScenarioInput {
+    return {
+      availableProfit: params.availableProfit || 0,
+      salary,
+      taxYear: params.taxYear,
+      personal: {
+        otherIncome: params.otherIncome || 0,
+      },
+    };
+  }
+
+  private calculateCompanyResult(input: ScenarioInput, taxRates: TaxRates): CompanyResult {
+    const salary = input.salary;
+    const employerNI = this.calculateEmployerNI(salary, taxRates);
+    const taxableProfit = input.availableProfit - salary - employerNI;
+    const corporationTax = this.calculateCorporationTaxLiability(taxableProfit, taxRates);
+    const profitAfterTax = taxableProfit - corporationTax;
+
+    return {
+      salary,
+      employerNI,
+      taxableProfit,
+      corporationTax,
+      profitAfterTax,
+      dividendPool: Math.max(0, profitAfterTax),
+    };
+  }
+
+  private calculatePersonalResult(
+    company: CompanyResult,
+    input: ScenarioInput,
+    taxRates: TaxRates,
+    params: TaxCalculationParams
+  ): PersonalResult {
+    const salary = company.salary;
+    const dividends = company.dividendPool;
+    const otherIncome = input.personal.otherIncome || 0;
+
+    const incomeTax = this.calculateIncomeTax(
+      salary,
+      taxRates,
+      input.taxYear,
+      params.personalAllowanceUsed || 0,
+      otherIncome,
+      params.scottishTaxpayer || false,
+      salary + otherIncome + dividends
+    );
+
+    const employeeNI = this.calculateEmployeeNI(salary, taxRates, params.studentLoan);
+
+    const dividendTax = this.calculateDividendTax(
+      dividends,
+      salary + otherIncome,
+      taxRates,
+      input.taxYear,
+      params.personalAllowanceUsed || 0,
+      params.dividendAllowanceUsed || 0
+    );
+
+    const totalPersonalTax = incomeTax + employeeNI + dividendTax;
+    const netPersonalCash = salary + dividends - totalPersonalTax;
+
+    return {
+      salary,
+      dividends,
+      incomeTax,
+      employeeNI,
+      dividendTax,
+      totalPersonalTax,
+      netPersonalCash,
+    };
+  }
+
+  private calculateScenarioResult(
+    params: TaxCalculationParams,
+    salary: number,
+    taxRates: TaxRates
+  ): ScenarioResult {
+    const input = this.buildScenarioInput(params, salary);
+    const company = this.calculateCompanyResult(input, taxRates);
+    const personal = this.calculatePersonalResult(company, input, taxRates, params);
+    const totalTax = company.corporationTax + company.employerNI + personal.totalPersonalTax;
+    const effectiveTaxRate = input.availableProfit > 0 ? totalTax / input.availableProfit : 0;
+
+    return {
+      input,
+      company,
+      personal,
+      summary: {
+        totalTax,
+        effectiveTaxRate,
+      },
+    };
+  }
+
+  private scenarioResultToLegacyScenario(result: ScenarioResult): TaxScenario {
+    return {
+      salary: result.personal.salary,
+      dividend: result.personal.dividends,
+      incomeTax: result.personal.incomeTax,
+      employeeNI: result.personal.employeeNI,
+      employerNI: result.company.employerNI,
+      corporationTax: result.company.corporationTax,
+      dividendTax: result.personal.dividendTax,
+      totalTax: result.summary.totalTax,
+      takeHome: result.personal.netPersonalCash,
+      effectiveRate: result.summary.effectiveTaxRate,
+      netCost: result.company.salary + result.company.employerNI + result.company.corporationTax,
+      personalNetIncome: result.personal.netPersonalCash,
+      companyNetProfit: result.company.profitAfterTax,
+    };
+  }
+
   private async generateSalaryScenarios(
     params: SalaryOptimizationParams, 
     taxRates: TaxRates
@@ -787,20 +1032,18 @@ export class EnhancedTaxCalculationsService {
     ]);
 
     for (const salary of Array.from(salariesToTest).sort((a, b) => a - b)) {
-      const employerNI = this.calculateEmployerNI(salary, taxRates);
-      const profitAfterSalary = params.availableProfit - salary - employerNI;
-      const corporationTax = this.calculateCorporationTaxLiability(profitAfterSalary, taxRates);
-      const availableForDividend = profitAfterSalary - corporationTax;
-      
-      if (availableForDividend < 0) continue;
-
-      const scenario = await this.calculateSingleScenario({
-        ...params,
+      const scenarioResult = this.calculateScenarioResult(
+        {
+          ...params,
+          availableProfit: params.availableProfit,
+        },
         salary,
-        dividend: availableForDividend,
-      }, taxRates);
+        taxRates
+      );
 
-      scenarios.push(scenario);
+      if (scenarioResult.company.dividendPool < 0) continue;
+
+      scenarios.push(this.scenarioResultToLegacyScenario(scenarioResult));
     }
 
     return scenarios.sort((a, b) => b.takeHome - a.takeHome);
@@ -810,58 +1053,8 @@ export class EnhancedTaxCalculationsService {
     params: TaxCalculationParams & { salary: number; dividend: number },
     taxRates: TaxRates
   ): Promise<TaxScenario> {
-    // Calculate income tax
-    const incomeTax = this.calculateIncomeTax(
-      params.salary, 
-      taxRates, 
-      params.taxYear,
-      params.personalAllowanceUsed || 0,
-      params.otherIncome || 0,
-      params.scottishTaxpayer || false,
-      params.salary + (params.otherIncome || 0) + params.dividend
-    );
-
-    // Calculate National Insurance
-    const employeeNI = this.calculateEmployeeNI(params.salary, taxRates, params.studentLoan);
-    const employerNI = this.calculateEmployerNI(params.salary, taxRates);
-
-    // Calculate corporation tax on profits after salary and employer NI
-    const profitAfterSalary = params.availableProfit - params.salary - employerNI;
-    const corporationTax = this.calculateCorporationTaxLiability(profitAfterSalary, taxRates);
-    const dividendPool = Math.max(0, profitAfterSalary - corporationTax);
-    const dividendPaid = Math.max(0, Math.min(params.dividend, dividendPool));
-
-    // Calculate dividend tax
-    const dividendTax = this.calculateDividendTax(
-      dividendPaid,
-      params.salary + (params.otherIncome || 0),
-      taxRates,
-      params.taxYear,
-      params.personalAllowanceUsed || 0,
-      params.dividendAllowanceUsed || 0
-    );
-
-    const personalTax = incomeTax + employeeNI + dividendTax;
-    const totalTax = personalTax + corporationTax;
-    const additionalIncome = params.otherIncome || 0;
-    const takeHome = params.salary + dividendPaid + additionalIncome - incomeTax - employeeNI - dividendTax;
-    const netCost = params.salary + employerNI + corporationTax;
-    const grossIncome = params.salary + dividendPaid + additionalIncome;
-    const effectiveRate = grossIncome > 0 ? personalTax / grossIncome : 0;
-
-    return {
-      salary: params.salary,
-      dividend: dividendPaid,
-      incomeTax,
-      employeeNI,
-      employerNI,
-      dividendTax,
-      corporationTax,
-      totalTax,
-      takeHome,
-      effectiveRate,
-      netCost,
-    };
+    const scenarioResult = this.calculateScenarioResult(params, params.salary, taxRates);
+    return this.scenarioResultToLegacyScenario(scenarioResult);
   }
 
   private buildSummaryFromScenario(scenario: TaxScenario, additionalIncome: number = 0): {
@@ -871,9 +1064,9 @@ export class EnhancedTaxCalculationsService {
     effectiveTaxRate: number;
   } {
     const grossIncome = scenario.salary + scenario.dividend + additionalIncome;
-    const totalTax = (scenario.incomeTax || 0) + (scenario.employeeNI || 0) + (scenario.dividendTax || 0);
+    const totalTax = scenario.totalTax ?? ((scenario.incomeTax || 0) + (scenario.employeeNI || 0) + (scenario.dividendTax || 0));
     const netIncome = scenario.takeHome || Math.max(0, grossIncome - totalTax);
-    const effectiveTaxRate = grossIncome > 0 ? totalTax / grossIncome : 0;
+    const effectiveTaxRate = scenario.effectiveRate ?? (grossIncome > 0 ? totalTax / grossIncome : 0);
     return {
       grossIncome,
       totalTax,
@@ -1048,7 +1241,7 @@ export class EnhancedTaxCalculationsService {
     const availableDividendAllowance = Math.max(0, taxRates.dividendTax.allowance - dividendAllowanceUsed);
     const taxableDividend = Math.max(0, dividendAfterPersonalAllowance - availableDividendAllowance);
 
-    if (taxableDividend === 0) {
+    if (dividendAfterPersonalAllowance === 0) {
       return {
         taxableDividend: 0,
         taxByBand: { basicRate: 0, higherRate: 0, additionalRate: 0 },
@@ -1062,27 +1255,58 @@ export class EnhancedTaxCalculationsService {
     const basicRateRemaining = Math.max(0, basicRateLimit - taxableNonDividend);
     const higherRateRemaining = Math.max(0, higherRateLimit - taxableNonDividend - basicRateRemaining);
 
-    let remainingDividend = taxableDividend;
+    let remainingDividendForBands = dividendAfterPersonalAllowance;
+    const bandDividends = {
+      basicRate: 0,
+      higherRate: 0,
+      additionalRate: 0,
+    };
+
+    if (basicRateRemaining > 0 && remainingDividendForBands > 0) {
+      const basicRateDividend = Math.min(remainingDividendForBands, basicRateRemaining);
+      bandDividends.basicRate = basicRateDividend;
+      remainingDividendForBands -= basicRateDividend;
+    }
+
+    if (higherRateRemaining > 0 && remainingDividendForBands > 0) {
+      const higherRateDividend = Math.min(remainingDividendForBands, higherRateRemaining);
+      bandDividends.higherRate = higherRateDividend;
+      remainingDividendForBands -= higherRateDividend;
+    }
+
+    if (remainingDividendForBands > 0) {
+      bandDividends.additionalRate = remainingDividendForBands;
+    }
+
+    let remainingAllowance = availableDividendAllowance;
+    const applyAllowance = (amount: number) => {
+      const applied = Math.min(amount, remainingAllowance);
+      remainingAllowance -= applied;
+      return amount - applied;
+    };
+
+    const taxableBands = {
+      basicRate: applyAllowance(bandDividends.basicRate),
+      higherRate: applyAllowance(bandDividends.higherRate),
+      additionalRate: applyAllowance(bandDividends.additionalRate),
+    };
+
     const taxByBand = {
       basicRate: 0,
       higherRate: 0,
       additionalRate: 0,
     };
 
-    if (basicRateRemaining > 0 && remainingDividend > 0) {
-      const basicRateDividend = Math.min(remainingDividend, basicRateRemaining);
-      taxByBand.basicRate = basicRateDividend * (taxRates.dividendTax.basicRate / 100);
-      remainingDividend -= basicRateDividend;
+    if (taxableBands.basicRate > 0) {
+      taxByBand.basicRate = taxableBands.basicRate * (taxRates.dividendTax.basicRate / 100);
     }
 
-    if (higherRateRemaining > 0 && remainingDividend > 0) {
-      const higherRateDividend = Math.min(remainingDividend, higherRateRemaining);
-      taxByBand.higherRate = higherRateDividend * (taxRates.dividendTax.higherRate / 100);
-      remainingDividend -= higherRateDividend;
+    if (taxableBands.higherRate > 0) {
+      taxByBand.higherRate = taxableBands.higherRate * (taxRates.dividendTax.higherRate / 100);
     }
 
-    if (remainingDividend > 0) {
-      taxByBand.additionalRate = remainingDividend * (taxRates.dividendTax.additionalRate / 100);
+    if (taxableBands.additionalRate > 0) {
+      taxByBand.additionalRate = taxableBands.additionalRate * (taxRates.dividendTax.additionalRate / 100);
     }
 
     return {
@@ -1161,6 +1385,22 @@ export class EnhancedTaxCalculationsService {
     }
 
     return ni;
+  }
+
+  private calculateClass4NIC(profit: number): number {
+    const lowerThreshold = 12570;
+    const upperThreshold = 50270;
+    if (profit <= lowerThreshold) return 0;
+    const mainBand = Math.min(profit, upperThreshold) - lowerThreshold;
+    const additionalBand = Math.max(0, profit - upperThreshold);
+    return mainBand * 0.06 + additionalBand * 0.02;
+  }
+
+  private calculateClass2NIC(profit: number, payClass2?: boolean): number {
+    const smallProfitsThreshold = 6845;
+    if (!payClass2 || profit >= smallProfitsThreshold) return 0;
+    const weeklyRate = 3.5;
+    return weeklyRate * 52;
   }
 
   private calculateDividendTax(
@@ -1273,7 +1513,7 @@ export class EnhancedTaxCalculationsService {
     const totalPersonalTax = incomeTax + employeeNI + dividendTax;
     const netPersonalIncome = salary + dividendPool + otherIncome - totalPersonalTax;
     const totalTaxAndNI = totalPersonalTax + employerNI + corporationTax;
-    const netTakeHome = Math.max(0, availableProfit - totalTaxAndNI);
+    const netTakeHome = Math.max(0, salary + dividendPool + otherIncome - totalPersonalTax);
     const effectiveRate = availableProfit > 0 ? totalTaxAndNI / availableProfit : 0;
 
     return {
@@ -1315,7 +1555,10 @@ export class EnhancedTaxCalculationsService {
     const personal = this.buildPersonalResults(params, scenario, taxRates);
     const company = this.buildCompanyResults(params, scenario);
     const totalTaxAndNI = personal.totalTax + (company.employerNIC || 0) + (company.corporationTax || 0);
-    const netTakeHome = Math.max(0, (params.availableProfit || 0) - totalTaxAndNI);
+    const netTakeHome = Math.max(
+      0,
+      (scenario.salary || 0) + (scenario.dividend || 0) + (params.otherIncome || 0) - personal.totalTax
+    );
     const optimisation = {
       optimalSalary: scenario.salary || 0,
       optimalDividends: scenario.dividend || 0,
@@ -1368,9 +1611,8 @@ export class EnhancedTaxCalculationsService {
 
     // Marginal relief applies between thresholds
     const mainRateTax = profit * (taxRates.corporationTax.mainRate / 100);
-    const marginalRelief = (taxRates.corporationTax.marginalReliefUpperLimit - profit) * 
-                          ((taxRates.corporationTax.mainRate - taxRates.corporationTax.smallCompaniesRate) / 100) * 
-                          (1 / 400); // Standard marginal relief fraction
+    const marginalReliefFraction = taxRates.corporationTax.marginalReliefFraction ?? 0.015;
+    const marginalRelief = (taxRates.corporationTax.marginalReliefUpperLimit - profit) * marginalReliefFraction;
 
     return mainRateTax - marginalRelief;
   }
