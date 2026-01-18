@@ -26,6 +26,7 @@ interface CalculationResult {
 }
 
 export function ReviewAndOutputsStep({ accountsSet, onUpdate }: ReviewAndOutputsStepProps) {
+  const isSoleTrader = accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL';
   const [generating, setGenerating] = useState(false);
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
@@ -488,7 +489,9 @@ export function ReviewAndOutputsStep({ accountsSet, onUpdate }: ReviewAndOutputs
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
             <h3 style={{ margin: '0 0 0.5rem 0' }}>Accounts Production Complete</h3>
             <p style={{ margin: '0 0 1.5rem 0', opacity: 0.9 }}>
-              The statutory accounts have been successfully prepared, validated, approved, and generated.
+              {isSoleTrader
+                ? 'The accounts pack has been successfully prepared, validated, approved, and generated.'
+                : 'The statutory accounts have been successfully prepared, validated, approved, and generated.'}
             </p>
             <div style={{ 
               display: 'grid', 
@@ -501,7 +504,7 @@ export function ReviewAndOutputsStep({ accountsSet, onUpdate }: ReviewAndOutputs
                 <div style={{ opacity: 0.9 }}>✅ Complete</div>
               </div>
               <div>
-                <div style={{ fontWeight: 600 }}>Approved By</div>
+                <div style={{ fontWeight: 600 }}>{isSoleTrader ? 'Signatory' : 'Approved By'}</div>
                 <div style={{ opacity: 0.9 }}>{accountsSet.sections.directorsApproval?.directorName}</div>
               </div>
               <div>

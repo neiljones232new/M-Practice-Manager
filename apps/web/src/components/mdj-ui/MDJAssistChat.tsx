@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { API_BASE_URL } from '@/lib/api';
 
 type Role = 'user' | 'assistant';
 type Message = { id: string; role: Role; text: string };
 
-const API_STATUS = '/api/assist/status';
-const API_QUERY  = '/api/assist/query';
+const API_STATUS = `${API_BASE_URL}/assist/status`;
+const API_QUERY = `${API_BASE_URL}/assist/query`;
 
 // Safe UUID (fallback if crypto.randomUUID is unavailable)
 function uid() {
@@ -109,6 +110,66 @@ export const MDJAssistChat: React.FC = () => {
       } catch {
         /* noop */
       }
+      const lowerText = text.toLowerCase();
+      try {
+        const path = window.location.pathname;
+        const isClientsPage = path.startsWith('/clients');
+        const isTasksPage = path.startsWith('/tasks');
+        const isCompliancePage = path.startsWith('/compliance');
+        const isServicesPage = path.startsWith('/services');
+        const isDashboardPage = path === '/dashboard';
+        context.pageContext = {
+          path,
+          section: isClientsPage
+            ? 'clients'
+            : isTasksPage
+            ? 'tasks'
+            : isCompliancePage
+            ? 'compliance'
+            : isServicesPage
+            ? 'services'
+            : isDashboardPage
+            ? 'dashboard'
+            : 'other',
+          search: window.location.search || '',
+        };
+        const params = new URLSearchParams(window.location.search);
+        const portfolioCode = params.get('portfolioCode');
+        if (portfolioCode && !Number.isNaN(Number(portfolioCode))) {
+          context.portfolioCode = Number(portfolioCode);
+        }
+        if (isClientsPage) context.includeClients = true;
+        if (isTasksPage) context.includeTasks = true;
+        if (isCompliancePage) context.includeCompliance = true;
+        if (isServicesPage) context.includeServices = true;
+      } catch {
+        /* noop */
+      }
+      if (lowerText.includes('client') || lowerText.includes('clients') || lowerText.includes('portfolio')) {
+        context.includeClients = true;
+        context.includeServices = true;
+      }
+      if (
+        lowerText.includes('task') ||
+        lowerText.includes('deadline') ||
+        lowerText.includes('overdue') ||
+        lowerText.includes('due')
+      ) {
+        context.includeTasks = true;
+      }
+      if (
+        lowerText.includes('compliance') ||
+        lowerText.includes('filing') ||
+        lowerText.includes('ct600') ||
+        lowerText.includes('vat') ||
+        lowerText.includes('paye') ||
+        lowerText.includes('cis')
+      ) {
+        context.includeCompliance = true;
+      }
+      if (lowerText.includes('service') || lowerText.includes('fee')) {
+        context.includeServices = true;
+      }
 
       const res = await fetch(API_QUERY, {
         method: 'POST',
@@ -141,7 +202,7 @@ export const MDJAssistChat: React.FC = () => {
       setBackendOnline(false);
       setError(
         err?.message ??
-          'Could not reach the MDJ Assist backend. Check that the API server is running and the Next.js rewrite is correct.',
+          'Could not reach the M Assist backend. Check that the API server is running and the Next.js rewrite is correct.',
       );
       setMessages(prev => [
         ...prev,
@@ -150,7 +211,7 @@ export const MDJAssistChat: React.FC = () => {
           role: 'assistant',
           text:
             'I could not contact the backend right now.\n' +
-            'Please verify your API is reachable at /api/assist/query (proxied to http://localhost:3001/api/v1/assist/query).',
+            `Please verify your API is reachable at ${API_QUERY}.`,
         },
       ]);
     } finally {
@@ -180,7 +241,7 @@ export const MDJAssistChat: React.FC = () => {
             textAlign: 'center',
           }}
         >
-          MDJ Assist can’t reach the backend. Check your API server/rewrite.
+          M Assist can’t reach the backend. Check your API server/rewrite.
         </div>
       )}
 
@@ -261,7 +322,7 @@ export const MDJAssistChat: React.FC = () => {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Ask MDJ Assist… (Shift+Enter for newline)"
+          placeholder="Ask M Assist… (Shift+Enter for newline)"
           style={{
             flex: 1,
             height: 44,

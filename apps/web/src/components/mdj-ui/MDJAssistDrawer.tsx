@@ -14,7 +14,7 @@ export const MDJAssistDrawer: React.FC<MDJAssistDrawerProps> = ({
   open,
   onClose,
   children,
-  ariaLabel = 'MDJ Assist Drawer',
+  ariaLabel = 'M Assist Drawer',
 }) => {
   const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -109,14 +109,14 @@ export const MDJAssistDrawer: React.FC<MDJAssistDrawerProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <img
               src={DEFAULT_LOGO}
-              alt="MDJ Assist Lion"
+              alt="M Assist Lion"
               style={{ width: 22, height: 22, filter: 'none' }}
             />
-            <span className="mdj-brand-text" style={{ color: 'var(--brand-primary)', fontWeight: 800, letterSpacing: '.3px' }}>MDJ Assist</span>
+            <span className="mdj-brand-text" style={{ color: 'var(--brand-primary)', fontWeight: 800, letterSpacing: '.3px' }}>M Assist</span>
           </div>
           <button
             onClick={onClose}
-            aria-label="Close MDJ Assist"
+            aria-label="Close M Assist"
             style={{
               background: 'transparent',
               color: '#f9f9f9',

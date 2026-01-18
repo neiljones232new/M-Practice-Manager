@@ -266,7 +266,7 @@ export default function ReportsPage() {
               <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-light)', marginBottom: '0.5rem' }}>Report Features</h3>
               <ul style={{ fontSize: '14px', color: 'var(--dim)', lineHeight: '1.6' }}>
                 <li>• PDF format for easy sharing</li>
-                <li>• Professional MDJ branding</li>
+                <li>• Professional M branding</li>
                 <li>• Comprehensive data tables</li>
                 <li>• Automatic date stamping</li>
                 <li>• Customizable sections</li>

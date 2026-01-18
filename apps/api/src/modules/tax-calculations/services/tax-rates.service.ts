@@ -28,12 +28,12 @@ export class TaxRatesService {
       nationalInsurance: {
         employeePrimaryThreshold: 12570,
         employeeUpperEarningsLimit: 50270,
-        employeeRate: 8,
+        employeeRate: 12,
         employeeAdditionalRate: 2,
-        employerPrimaryThreshold: 9100,
+        employerPrimaryThreshold: 5000,
         employerUpperSecondaryThreshold: 50270,
-        employerRate: 13.8,
-        employerAdditionalRate: 13.8,
+        employerRate: 15,
+        employerAdditionalRate: 15,
       },
 
       corporationTax: {
@@ -41,6 +41,7 @@ export class TaxRatesService {
         mainRate: 25,
         marginalReliefThreshold: 50000,
         marginalReliefUpperLimit: 250000,
+        marginalReliefFraction: 0.015,
       },
 
       dividendTax: {
@@ -59,8 +60,8 @@ export class TaxRatesService {
       additionalRate: 0.45,
       niLowerEarningsLimit: 12570,
       niUpperEarningsLimit: 50270,
-      niEmployeeRate: 0.08,
-      niEmployerRate: 0.138,
+      niEmployeeRate: 0.12,
+      niEmployerRate: 0.15,
       corporationTaxRate: 0.25,
       smallCompanyRate: 0.19,
       smallCompanyThreshold: 250000,
@@ -86,7 +87,7 @@ export class TaxRatesService {
       nationalInsurance: {
         employeePrimaryThreshold: 12570,
         employeeUpperEarningsLimit: 50270,
-        employeeRate: 8,
+        employeeRate: 12,
         employeeAdditionalRate: 2,
         employerPrimaryThreshold: 9100,
         employerUpperSecondaryThreshold: 50270,
@@ -99,6 +100,7 @@ export class TaxRatesService {
         mainRate: 25,
         marginalReliefThreshold: 50000,
         marginalReliefUpperLimit: 250000,
+        marginalReliefFraction: 0.015,
       },
       
       dividendTax: {
@@ -117,7 +119,7 @@ export class TaxRatesService {
       additionalRate: 0.45,
       niLowerEarningsLimit: 12570,
       niUpperEarningsLimit: 50270,
-      niEmployeeRate: 0.08,
+      niEmployeeRate: 0.12,
       niEmployerRate: 0.138,
       corporationTaxRate: 0.25,
       smallCompanyRate: 0.19,
@@ -157,6 +159,7 @@ export class TaxRatesService {
         mainRate: 25,
         marginalReliefThreshold: 50000,
         marginalReliefUpperLimit: 250000,
+        marginalReliefFraction: 0.015,
       },
       
       dividendTax: {
@@ -215,6 +218,7 @@ export class TaxRatesService {
         mainRate: 19,
         marginalReliefThreshold: 50000,
         marginalReliefUpperLimit: 250000,
+        marginalReliefFraction: 0.015,
       },
       
       dividendTax: {
@@ -372,20 +376,22 @@ export class TaxRatesService {
     
     const smallCompanyThreshold = rates.smallCompanyThreshold || rates.corporationTax?.marginalReliefThreshold || 50000;
     const marginalReliefUpperLimit = rates.corporationTax?.marginalReliefUpperLimit || 250000;
-    
+
     if (profit <= smallCompanyThreshold) {
       return smallCompanyRate;
     }
-    
+
     if (profit >= marginalReliefUpperLimit) {
       return mainRate;
     }
+
+    if (mainRate <= smallCompanyRate || marginalReliefUpperLimit <= smallCompanyThreshold) {
+      return mainRate;
+    }
     
-    // Apply marginal relief calculation
-    const marginalRate = smallCompanyRate + 
-      ((mainRate - smallCompanyRate) * 
-       (profit - smallCompanyThreshold) / 
-       (marginalReliefUpperLimit - smallCompanyThreshold));
-    return Math.min(mainRate, marginalRate);
+    const marginalReliefFraction = rates.corporationTax?.marginalReliefFraction ?? 0.015;
+    const mainRateTax = profit * mainRate;
+    const marginalRelief = (marginalReliefUpperLimit - profit) * marginalReliefFraction;
+    return (mainRateTax - marginalRelief) / profit;
   }
 }

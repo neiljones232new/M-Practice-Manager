@@ -5,7 +5,7 @@ import MDJAppWrapper from '@/components/mdj-ui/MDJAppWrapper';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'MDJ Practice Manager',
+  title: 'M Practice Manager',
   description: 'Modern client CRM for professional practices',
 };
 

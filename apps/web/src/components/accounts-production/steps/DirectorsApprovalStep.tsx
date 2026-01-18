@@ -19,6 +19,7 @@ export function DirectorsApprovalStep({ accountsSet, onUpdate }: DirectorsApprov
     };
   });
 
+  const isSoleTrader = accountsSet.framework === 'SOLE_TRADER' || accountsSet.framework === 'INDIVIDUAL';
   // Get directors from company period section
   const directors = accountsSet.sections.companyPeriod?.company.directors || [];
   const hasDirectors = directors.length > 0;
@@ -74,6 +75,7 @@ export function DirectorsApprovalStep({ accountsSet, onUpdate }: DirectorsApprov
   };
 
   const canApprove = isReadyForApproval();
+  const signatoryLabel = isSoleTrader ? 'Signing Proprietor' : 'Signing Director';
 
   return (
     <div style={{ display: 'grid', gap: '1.5rem' }}>
@@ -116,7 +118,7 @@ export function DirectorsApprovalStep({ accountsSet, onUpdate }: DirectorsApprov
                 <li>All sections must be completed</li>
                 <li>Balance sheet must be balanced</li>
                 <li>No validation errors</li>
-                <li>Director must be selected</li>
+                <li>{isSoleTrader ? 'Signatory name must be provided' : 'Director must be selected'}</li>
                 <li>Approval date must be set</li>
               </ul>
             </div>
@@ -124,9 +126,29 @@ export function DirectorsApprovalStep({ accountsSet, onUpdate }: DirectorsApprov
         </div>
       </MDJCard>
 
-      {/* Director Selection */}
-      <MDJCard title="Director Selection">
-        {!hasDirectors ? (
+      {/* Director / Proprietor Selection */}
+      <MDJCard title={isSoleTrader ? 'Proprietor Sign-off' : 'Director Selection'}>
+        {isSoleTrader ? (
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            <MDJInput
+              label={signatoryLabel}
+              value={formData.directorName || ''}
+              onChange={(e) => handleInputChange('directorName', e.target.value)}
+              placeholder="Enter proprietor name"
+              required
+              disabled={!canApprove}
+            />
+            <div style={{ 
+              padding: '1rem', 
+              backgroundColor: 'var(--surface-subtle)', 
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              color: 'var(--text-muted)'
+            }}>
+              <strong>Note:</strong> The proprietor will be shown as the signatory on the accounts.
+            </div>
+          </div>
+        ) : !hasDirectors ? (
           <div style={{ 
             padding: '2rem', 
             textAlign: 'center',
@@ -144,7 +166,7 @@ export function DirectorsApprovalStep({ accountsSet, onUpdate }: DirectorsApprov
         ) : (
           <div style={{ display: 'grid', gap: '1rem' }}>
             <MDJSelect
-              label="Signing Director"
+              label={signatoryLabel}
               value={formData.directorName || ''}
               onChange={(e) => handleInputChange('directorName', e.target.value)}
               required
@@ -202,7 +224,7 @@ export function DirectorsApprovalStep({ accountsSet, onUpdate }: DirectorsApprov
               borderRadius: '6px',
               fontSize: '0.875rem'
             }}>
-              <strong>Uploaded Signature:</strong> This feature will allow directors to upload their signature image. 
+              <strong>Uploaded Signature:</strong> This feature will allow signatories to upload their signature image. 
               For now, the typed name will be used as the signature.
             </div>
           )}
@@ -240,13 +262,12 @@ export function DirectorsApprovalStep({ accountsSet, onUpdate }: DirectorsApprov
               </div>
             ) : (
               <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                By checking this box, you confirm that the director named above has reviewed and approved these accounts 
-                for filing with Companies House.
+                By checking this box, you confirm that the signatory named above has reviewed and approved these accounts.
               </div>
             )}
           </div>
 
-          {formData.approved && (
+            {formData.approved && (
             <div style={{ 
               padding: '1rem', 
               backgroundColor: 'var(--status-info-bg)', 
@@ -257,7 +278,7 @@ export function DirectorsApprovalStep({ accountsSet, onUpdate }: DirectorsApprov
               <ul style={{ margin: '0.5rem 0 0 1.25rem', paddingLeft: 0 }}>
                 <li>Generate final PDF and HTML outputs</li>
                 <li>Lock accounts to prevent further editing</li>
-                <li>File with Companies House (if required)</li>
+                <li>{isSoleTrader ? 'Share with the client for sign-off' : 'File with Companies House (if required)'}</li>
                 <li>Distribute to relevant parties</li>
               </ul>
             </div>
@@ -286,7 +307,7 @@ export function DirectorsApprovalStep({ accountsSet, onUpdate }: DirectorsApprov
               <span style={{ fontWeight: 600, color: 'var(--success)' }}>✅ Approved</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
-              <span>Signing Director:</span>
+              <span>{isSoleTrader ? 'Signing Proprietor:' : 'Signing Director:'}</span>
               <span style={{ fontWeight: 600 }}>{formData.directorName}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>

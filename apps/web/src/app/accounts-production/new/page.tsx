@@ -6,11 +6,12 @@ import { api } from '@/lib/api';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { MDJInput, MDJSelect, MDJButton, MDJCard } from '@/components/mdj-ui';
 
-type AccountingFramework = 'MICRO_FRS105' | 'SMALL_FRS102_1A' | 'DORMANT';
+type AccountingFramework = 'MICRO_FRS105' | 'SMALL_FRS102_1A' | 'DORMANT' | 'SOLE_TRADER' | 'INDIVIDUAL';
 
 interface Client {
   id: string;
   name: string;
+  type?: 'COMPANY' | 'INDIVIDUAL' | 'SOLE_TRADER' | 'PARTNERSHIP' | 'LLP';
   registeredNumber?: string;
   accountsLastMadeUpTo?: string | null;
   accountsNextDue?: string | null;
@@ -69,10 +70,12 @@ export default function NewAccountsProductionPage() {
           const yearEnd = new Date(now.getFullYear(), 11, 31); // Dec 31
           const yearStart = new Date(now.getFullYear(), 0, 1); // Jan 1
 
+          const isSoleTrader = clientData.type === 'SOLE_TRADER' || clientData.type === 'INDIVIDUAL';
           setForm(prev => ({
             ...prev,
             periodStart: suggested?.start || toIso(yearStart),
             periodEnd: suggested?.end || toIso(yearEnd),
+            framework: isSoleTrader ? 'SOLE_TRADER' : prev.framework,
           }));
         }
       } catch (err: any) {
@@ -204,7 +207,9 @@ export default function NewAccountsProductionPage() {
               <div style={{ padding: '1rem', background: 'var(--surface-subtle)', borderRadius: '8px' }}>
                 <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>{client.name}</div>
                 <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                  Company Number: {client.registeredNumber || 'Not registered'}
+                  {client.type === 'SOLE_TRADER' || client.type === 'INDIVIDUAL'
+                    ? 'Sole trader / Individual'
+                    : `Company Number: ${client.registeredNumber || 'Not registered'}`}
                 </div>
               </div>
             </div>
@@ -243,14 +248,20 @@ export default function NewAccountsProductionPage() {
                 value={form.framework}
                 onChange={(e) => handleInputChange('framework', e.target.value)}
                 required
-                options={[
-                  { value: 'MICRO_FRS105', label: 'Micro-entity (FRS 105)' },
-                  { value: 'SMALL_FRS102_1A', label: 'Small company (FRS 102 Section 1A)' },
-                  { value: 'DORMANT', label: 'Dormant company' },
-                ]}
+                options={
+                  client.type === 'SOLE_TRADER' || client.type === 'INDIVIDUAL'
+                    ? [{ value: 'SOLE_TRADER', label: 'Sole trader / Individual accounts' }]
+                    : [
+                        { value: 'MICRO_FRS105', label: 'Micro-entity (FRS 105)' },
+                        { value: 'SMALL_FRS102_1A', label: 'Small company (FRS 102 Section 1A)' },
+                        { value: 'DORMANT', label: 'Dormant company' },
+                      ]
+                }
               />
               <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-                Choose the appropriate accounting framework based on the company size and status.
+                {client.type === 'SOLE_TRADER' || client.type === 'INDIVIDUAL'
+                  ? 'Sole trader/individual accounts do not require Companies House disclosures.'
+                  : 'Choose the appropriate accounting framework based on the company size and status.'}
               </div>
             </div>
 

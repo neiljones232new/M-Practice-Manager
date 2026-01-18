@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { api } from '@/lib/api';
 
 interface TaxCalculationResult {
   id: string;
   clientId: string;
-  calculationType: 'SALARY_OPTIMIZATION' | 'SCENARIO_COMPARISON' | 'CORPORATION_TAX' | 'DIVIDEND_TAX' | 'INCOME_TAX';
+  calculationType: 'SALARY_OPTIMIZATION' | 'SCENARIO_COMPARISON' | 'CORPORATION_TAX' | 'DIVIDEND_TAX' | 'INCOME_TAX' | 'SOLE_TRADER';
   taxYear: string;
   result: {
     summary?: {
@@ -20,52 +21,67 @@ interface TaxCalculationResult {
     optimizedDividend?: number;
     scenarios?: any[];
   };
+  report?: {
+    results?: {
+      personal?: {
+        totalTax: number;
+        netTakeHome: number;
+      };
+      company?: {
+        corporationTax: number;
+        netCompanyCashAfterTax: number;
+        effectiveTaxRate?: number;
+      };
+    };
+  };
+  totalTaxLiability?: number;
+  totalTakeHome?: number;
   estimatedSavings?: number;
   createdAt: string;
   updatedAt: string;
 }
 
-interface OptimizationRequest {
-  clientId: string;
-  targetTakeHome: number;
-  taxYear: string;
-  pensionContributions?: number;
-  otherIncome?: number;
-}
+type LandingCalculationType = 'SALARY_DIVIDEND' | 'PERSONAL_TAX' | 'COMPANY_TAX' | 'SOLE_TRADER';
+
+const LANDING_TYPES: Array<{
+  value: LandingCalculationType;
+  label: string;
+  description: string;
+  icon: string;
+}> = [
+  {
+    value: 'SALARY_DIVIDEND',
+    label: 'Salary & Dividend Optimisation',
+    description: 'Model the most tax-efficient director split and compare scenarios.',
+    icon: '🎯',
+  },
+  {
+    value: 'PERSONAL_TAX',
+    label: 'Personal Tax',
+    description: 'SA302-style breakdown covering salary, dividends, and other income.',
+    icon: '👤',
+  },
+  {
+    value: 'COMPANY_TAX',
+    label: 'Company Tax',
+    description: 'Estimate corporation tax using profit before tax and year-end.',
+    icon: '🏢',
+  },
+  {
+    value: 'SOLE_TRADER',
+    label: 'Sole Trader Tax',
+    description: 'Income tax and Class 4 NICs on trading profits.',
+    icon: '🧾',
+  },
+];
 
 export default function TaxCalculationsPage() {
+  const searchParams = useSearchParams();
   const [calculations, setCalculations] = useState<TaxCalculationResult[]>([]);
-  const [clients, setClients] = useState<Array<{
-    id: string;
-    ref: string;
-    name: string;
-    type: 'INDIVIDUAL' | 'COMPANY';
-    status: string;
-  }>>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingClients, setLoadingClients] = useState(true);
-  const [showOptimizer, setShowOptimizer] = useState(false);
-  const [optimizationForm, setOptimizationForm] = useState<OptimizationRequest>({
-    clientId: '',
-    targetTakeHome: 50000,
-    taxYear: '2024-25',
-    pensionContributions: 0,
-    otherIncome: 0,
-  });
-  const [optimizing, setOptimizing] = useState(false);
-
-  const fetchClients = async () => {
-    try {
-      setLoadingClients(true);
-      const data = await api.get('/clients');
-      setClients(Array.isArray(data) ? data : []);
-    } catch (e) {
-      console.error('Failed to load clients', e);
-      setClients([]);
-    } finally {
-      setLoadingClients(false);
-    }
-  };
+  const [activeTab, setActiveTab] = useState<'overview' | 'recent'>(
+    searchParams?.get('tab') === 'recent' ? 'recent' : 'overview'
+  );
 
   const fetchCalculations = async () => {
     try {
@@ -83,40 +99,16 @@ export default function TaxCalculationsPage() {
 
   useEffect(() => {
     fetchCalculations();
-    fetchClients();
   }, []);
 
-  const handleOptimize = async () => {
-    if (!optimizationForm.clientId || optimizationForm.targetTakeHome <= 0) {
-      alert('Please select a client and enter a valid target take-home amount');
-      return;
+  useEffect(() => {
+    const tabParam = searchParams?.get('tab');
+    if (tabParam === 'recent') {
+      setActiveTab('recent');
+    } else if (tabParam === 'overview') {
+      setActiveTab('overview');
     }
-
-    try {
-      setOptimizing(true);
-      const result = await api.post('/tax-calculations/optimize-salary', optimizationForm);
-      
-      // Refresh calculations list
-      await fetchCalculations();
-      
-      // Reset form and hide optimizer
-      setOptimizationForm({
-        clientId: '',
-        targetTakeHome: 50000,
-        taxYear: '2024-25',
-        pensionContributions: 0,
-        otherIncome: 0,
-      });
-      setShowOptimizer(false);
-      
-      alert('Tax optimization completed successfully!');
-    } catch (e) {
-      console.error('Failed to optimize tax', e);
-      alert('Failed to optimize tax. Please try again.');
-    } finally {
-      setOptimizing(false);
-    }
-  };
+  }, [searchParams]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-GB', {
@@ -151,270 +143,353 @@ export default function TaxCalculationsPage() {
         return 'Dividend Tax';
       case 'INCOME_TAX':
         return 'Income Tax & NI';
+      case 'SOLE_TRADER':
+        return 'Sole Trader Tax';
       default:
         return type;
     }
   };
 
+  const getLandingType = (type: TaxCalculationResult['calculationType']) => {
+    switch (type) {
+      case 'CORPORATION_TAX':
+        return 'COMPANY_TAX';
+      case 'INCOME_TAX':
+      case 'DIVIDEND_TAX':
+        return 'PERSONAL_TAX';
+      case 'SOLE_TRADER':
+        return 'SOLE_TRADER';
+      case 'SALARY_OPTIMIZATION':
+      case 'SCENARIO_COMPARISON':
+      default:
+        return 'SALARY_DIVIDEND';
+    }
+  };
+
+  const totalSavings = useMemo(() => {
+    return calculations.reduce((sum, calc) => sum + (calc.estimatedSavings || 0), 0);
+  }, [calculations]);
+
+  const groupedCalculations = useMemo(() => {
+    const groups: Record<string, TaxCalculationResult[]> = {};
+    calculations.forEach((calc) => {
+      const label = getCalculationTypeLabel(calc.calculationType);
+      if (!groups[label]) groups[label] = [];
+      groups[label].push(calc);
+    });
+    return groups;
+  }, [calculations]);
+
+  const getDisplaySummary = (calc: TaxCalculationResult) => {
+    if (calc.result?.summary) {
+      return calc.result.summary;
+    }
+    if (typeof calc.totalTaxLiability === 'number' || typeof calc.totalTakeHome === 'number') {
+      return {
+        totalTax: calc.totalTaxLiability ?? 0,
+        effectiveTaxRate: calc.result?.summary?.effectiveTaxRate ?? 0,
+        netIncome: calc.totalTakeHome ?? 0,
+      };
+    }
+    const personal = calc.report?.results?.personal;
+    if (personal) {
+      return {
+        totalTax: personal.totalTax,
+        effectiveTaxRate: calc.result?.summary?.effectiveTaxRate ?? 0,
+        netIncome: personal.netTakeHome,
+      };
+    }
+    const company = calc.report?.results?.company;
+    if (company) {
+      return {
+        totalTax: company.corporationTax,
+        effectiveTaxRate: company.effectiveTaxRate ?? 0,
+        netIncome: company.netCompanyCashAfterTax,
+      };
+    }
+    return null;
+  };
+
   return (
     <MDJShell
       pageTitle="Tax Calculations"
-      pageSubtitle="M Powered™ Tax Engine - Salary/Dividend Optimization & Tax Planning"
+      pageSubtitle="M Powered™ Tax Engine - Run calculations, compare scenarios, and track recent results"
       showBack
       backHref="/dashboard"
       backLabel="Back to Dashboard"
       breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Tax Calculations' }]}
       actions={[
         { label: 'Refresh', onClick: fetchCalculations, variant: 'outline' },
-        { label: 'Quick Optimization', onClick: () => setShowOptimizer(true), variant: 'outline' },
         { label: 'New Calculation', href: '/tax-calculations/new', variant: 'primary' },
       ]}
     >
-      {/* Quick Optimization Form */}
-      {showOptimizer && (
-        <div className="card-mdj" style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1rem', color: 'var(--gold)' }}>
-            🧮 Salary/Dividend Optimization
-          </h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-            <div>
-              <label className="label-mdj">Client</label>
-              {loadingClients ? (
-                <div className="input-mdj" style={{ color: 'var(--text-muted)' }}>Loading clients...</div>
-              ) : (
-                <select
-                  className="input-mdj"
-                  value={optimizationForm.clientId}
-                  onChange={(e) => setOptimizationForm({ ...optimizationForm, clientId: e.target.value })}
-                >
-                  <option value="">Select a client...</option>
-                  {clients.map((client) => (
-                    <option key={client.id} value={client.id}>
-                      {client.name} ({client.ref})
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-            
-            <div>
-              <label className="label-mdj">Target Take-Home</label>
-              <input
-                type="number"
-                className="input-mdj"
-                value={optimizationForm.targetTakeHome}
-                onChange={(e) => setOptimizationForm({ ...optimizationForm, targetTakeHome: Number(e.target.value) })}
-              />
-            </div>
-            
-            <div>
-              <label className="label-mdj">Tax Year</label>
-              <select
-                className="input-mdj"
-                value={optimizationForm.taxYear}
-                onChange={(e) => setOptimizationForm({ ...optimizationForm, taxYear: e.target.value })}
-              >
-                <option value="2024-25">2024-25</option>
-                <option value="2023-24">2023-24</option>
-                <option value="2022-23">2022-23</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="label-mdj">Pension Contributions</label>
-              <input
-                type="number"
-                className="input-mdj"
-                value={optimizationForm.pensionContributions}
-                onChange={(e) => setOptimizationForm({ ...optimizationForm, pensionContributions: Number(e.target.value) })}
-              />
-            </div>
-          </div>
-          
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div className="tax-page">
+        <div className="tax-hero">
+          <div className="tax-tabs">
             <button
-              className="btn-gold"
-              onClick={handleOptimize}
-              disabled={optimizing}
+              type="button"
+              className={`tax-tab ${activeTab === 'overview' ? 'active' : ''}`}
+              onClick={() => setActiveTab('overview')}
             >
-              {optimizing ? 'Optimizing...' : 'Calculate Optimization'}
+              Overview
             </button>
             <button
-              className="btn-outline-gold"
-              onClick={() => setShowOptimizer(false)}
+              type="button"
+              className={`tax-tab ${activeTab === 'recent' ? 'active' : ''}`}
+              onClick={() => setActiveTab('recent')}
             >
-              Cancel
+              Recent Calculations
             </button>
           </div>
         </div>
-      )}
 
-      {/* Tax Calculation Results */}
-      <div className="card-mdj">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h3 style={{ margin: 0 }}>Recent Tax Calculations</h3>
-          <span className="mdj-badge">
-            {calculations.length} calculation{calculations.length !== 1 ? 's' : ''}
-          </span>
-        </div>
-
-        {loading ? (
-          <p style={{ color: 'var(--text-muted)', padding: '2rem', textAlign: 'center' }}>
-            Loading tax calculations...
-          </p>
-        ) : calculations.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧮</div>
-            <h4 style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>No Tax Calculations Yet</h4>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
-              Start optimizing your clients' tax efficiency with the M Powered™ Tax Engine
-            </p>
-            <button
-              className="btn-gold"
-              onClick={() => window.location.href = '/tax-calculations/new'}
-            >
-              Create First Calculation
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {calculations.map((calc) => (
-              <div
-                key={calc.id}
-                style={{
-                  padding: '1.5rem',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  backgroundColor: 'var(--bg-subtle)',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                  <div>
-                    <h4 style={{ margin: 0, marginBottom: '0.25rem' }}>
-                      {getCalculationTypeLabel(calc.calculationType)}
-                    </h4>
-                    <div style={{ display: 'flex', gap: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                      <span>Client: {calc.clientId}</span>
-                      <span>Tax Year: {calc.taxYear}</span>
-                      <span>Created: {formatDate(calc.createdAt)}</span>
-                    </div>
-                  </div>
-                  
-                  <div style={{ textAlign: 'right' }}>
-                    {calc.estimatedSavings && calc.estimatedSavings > 0 && (
-                      <div style={{ color: 'var(--success)', fontWeight: 600, marginBottom: '0.25rem' }}>
-                        💰 {formatCurrency(calc.estimatedSavings)} savings
-                      </div>
-                    )}
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                      ID: {calc.id.slice(-8)}
-                    </div>
-                  </div>
-                </div>
-
-                {calc.result?.summary && (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-                    <div className="kpi-card" style={{ padding: '0.75rem' }}>
-                      <div className="kpi-value" style={{ fontSize: '1.1rem' }}>
-                        {formatCurrency(calc.result?.summary?.totalTax || 0)}
-                      </div>
-                      <div className="kpi-label">Total Tax</div>
-                    </div>
-                    
-                    <div className="kpi-card" style={{ padding: '0.75rem' }}>
-                      <div className="kpi-value" style={{ fontSize: '1.1rem' }}>
-                        {(((calc.result?.summary?.effectiveTaxRate || 0) * 100)).toFixed(1)}%
-                      </div>
-                      <div className="kpi-label">Effective Rate</div>
-                    </div>
-                    
-                    <div className="kpi-card" style={{ padding: '0.75rem' }}>
-                      <div className="kpi-value" style={{ fontSize: '1.1rem' }}>
-                        {formatCurrency(calc.result?.summary?.netIncome || 0)}
-                      </div>
-                      <div className="kpi-label">Net Income</div>
-                    </div>
-                  </div>
-                )}
-
-                {calc.calculationType === 'SALARY_OPTIMIZATION' && calc.result?.optimizedSalary && calc.result?.optimizedDividend && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                    <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-muted)', borderRadius: '6px' }}>
-                      <div style={{ fontWeight: 600, color: 'var(--gold)' }}>Optimized Salary</div>
-                      <div style={{ fontSize: '1.2rem', fontWeight: 600 }}>
-                        {formatCurrency(calc.result?.optimizedSalary || 0)}
-                      </div>
-                    </div>
-                    
-                    <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-muted)', borderRadius: '6px' }}>
-                      <div style={{ fontWeight: 600, color: 'var(--gold)' }}>Optimized Dividend</div>
-                      <div style={{ fontSize: '1.2rem', fontWeight: 600 }}>
-                        {formatCurrency(calc.result?.optimizedDividend || 0)}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                  <Link
-                    href={`/tax-calculations/${calc.id}`}
-                    className="btn-outline-gold btn-sm"
-                  >
-                    View Details
-                  </Link>
-                  <button
-                    className="btn-outline-gold btn-sm"
-                    onClick={() => {
-                      // Copy calculation settings to form for editing
-                      setOptimizationForm({
-                        clientId: calc.clientId,
-                        targetTakeHome: calc.result?.summary?.netIncome || 50000,
-                        taxYear: calc.taxYear,
-                        pensionContributions: 0,
-                        otherIncome: 0,
-                      });
-                      setShowOptimizer(true);
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn-outline-gold btn-sm"
-                    onClick={() => {
-                      // Copy calculation settings to form
-                      setOptimizationForm({
-                        clientId: calc.clientId,
-                        targetTakeHome: calc.result?.summary?.netIncome || 50000,
-                        taxYear: calc.taxYear,
-                        pensionContributions: 0,
-                        otherIncome: 0,
-                      });
-                      setShowOptimizer(true);
-                    }}
-                  >
-                    Recalculate
-                  </button>
-                  <button
-                    className="btn-danger btn-sm"
-                    onClick={async () => {
-                      if (confirm('Are you sure you want to delete this tax calculation? This action cannot be undone.')) {
-                        try {
-                          await api.delete(`/tax-calculations/${calc.id}`);
-                          await fetchCalculations(); // Refresh the list
-                          alert('Tax calculation deleted successfully');
-                        } catch (e) {
-                          console.error('Failed to delete calculation', e);
-                          alert('Failed to delete calculation. Please try again.');
-                        }
-                      }
-                    }}
-                  >
-                    Delete
-                  </button>
-                </div>
+        {activeTab === 'overview' && (
+          <div className="card-mdj tax-section">
+            <div className="tax-hero">
+              <div className="tax-section-header">
+                <h3>Choose your calculation</h3>
+                <p style={{ color: 'var(--text-muted)' }}>
+                  Start with a focused calculation or launch a full salary/dividend optimisation.
+                </p>
               </div>
-            ))}
+              <Link href="/tax-calculations/new" className="btn-gold">
+                Start New Calculation
+              </Link>
+            </div>
+
+            <div className="tax-card-grid">
+              {LANDING_TYPES.map((type) => (
+                <Link
+                  key={type.value}
+                  href={`/tax-calculations/new?type=${type.value}`}
+                  className="card-mdj"
+                  style={{
+                    textAlign: 'left',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-subtle)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '1.5rem' }}>{type.icon}</span>
+                    <strong>{type.label}</strong>
+                  </div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{type.description}</div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="tax-kpi-strip">
+              <div className="kpi-card" style={{ padding: '0.75rem' }}>
+                <div className="kpi-value" style={{ fontSize: '1.1rem' }}>{calculations.length}</div>
+                <div className="kpi-label">Recent calculations</div>
+              </div>
+              <div className="kpi-card" style={{ padding: '0.75rem' }}>
+                <div className="kpi-value" style={{ fontSize: '1.1rem' }}>
+                  {formatCurrency(totalSavings)}
+                </div>
+                <div className="kpi-label">Savings identified</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'recent' && (
+          <div className="tax-section">
+            {loading ? (
+              <div className="card-mdj">
+                <p style={{ color: 'var(--text-muted)', padding: '2rem', textAlign: 'center' }}>
+                  Loading tax calculations...
+                </p>
+              </div>
+            ) : calculations.length === 0 ? (
+              <div className="card-mdj" style={{ textAlign: 'center', padding: '3rem' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧮</div>
+                <h4 style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>No Tax Calculations Yet</h4>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+                  Start optimizing your clients' tax efficiency with the M Powered™ Tax Engine
+                </p>
+                <button
+                  className="btn-gold"
+                  onClick={() => window.location.href = '/tax-calculations/new'}
+                >
+                  Create First Calculation
+                </button>
+              </div>
+            ) : (
+              Object.entries(groupedCalculations).map(([typeLabel, items]) => (
+                <div key={typeLabel} className="card-mdj tax-section">
+                  <div className="tax-hero">
+                    <h3 style={{ margin: 0 }}>{typeLabel}</h3>
+                    <span className="mdj-badge">{items.length} calculation{items.length !== 1 ? 's' : ''}</span>
+                  </div>
+                  <div className="tax-results-list">
+                    {items.map((calc) => (
+                      (() => {
+                        const summary = getDisplaySummary(calc);
+                        if (!summary) {
+                          return (
+                            <div key={calc.id} className="tax-result-card">
+                              <div className="tax-hero" style={{ marginBottom: '1rem' }}>
+                                <div>
+                                  <h4 style={{ margin: 0, marginBottom: '0.25rem' }}>
+                                    {getCalculationTypeLabel(calc.calculationType)}
+                                  </h4>
+                                  <div className="tax-result-meta">
+                                    <span>Client: {calc.clientId}</span>
+                                    <span>Tax Year: {calc.taxYear}</span>
+                                    <span>Created: {formatDate(calc.createdAt)}</span>
+                                  </div>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                  {calc.estimatedSavings && calc.estimatedSavings > 0 && (
+                                    <div style={{ color: 'var(--success)', fontWeight: 600, marginBottom: '0.25rem' }}>
+                                      💰 {formatCurrency(calc.estimatedSavings)} savings
+                                    </div>
+                                  )}
+                                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                                    ID: {calc.id.slice(-8)}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="tax-result-actions">
+                                <Link
+                                  href={`/tax-calculations/${calc.id}`}
+                                  className="btn-outline-gold btn-sm"
+                                >
+                                  View Details
+                                </Link>
+                                <Link
+                                  href={`/tax-calculations/new?clientId=${encodeURIComponent(calc.clientId)}&taxYear=${encodeURIComponent(calc.taxYear)}&type=${getLandingType(calc.calculationType)}`}
+                                  className="btn-outline-gold btn-sm"
+                                >
+                                  Recalculate
+                                </Link>
+                                <button
+                                  className="btn-danger btn-sm"
+                                  onClick={async () => {
+                                    if (confirm('Are you sure you want to delete this tax calculation? This action cannot be undone.')) {
+                                      try {
+                                        await api.delete(`/tax-calculations/${calc.id}`);
+                                        await fetchCalculations(); // Refresh the list
+                                        alert('Tax calculation deleted successfully');
+                                      } catch (e) {
+                                        console.error('Failed to delete calculation', e);
+                                        alert('Failed to delete calculation. Please try again.');
+                                      }
+                                    }
+                                  }}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return (
+                      <div key={calc.id} className="tax-result-card">
+                        <div className="tax-hero" style={{ marginBottom: '1rem' }}>
+                          <div>
+                            <h4 style={{ margin: 0, marginBottom: '0.25rem' }}>
+                              {getCalculationTypeLabel(calc.calculationType)}
+                            </h4>
+                            <div className="tax-result-meta">
+                              <span>Client: {calc.clientId}</span>
+                              <span>Tax Year: {calc.taxYear}</span>
+                              <span>Created: {formatDate(calc.createdAt)}</span>
+                            </div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            {calc.estimatedSavings && calc.estimatedSavings > 0 && (
+                              <div style={{ color: 'var(--success)', fontWeight: 600, marginBottom: '0.25rem' }}>
+                                💰 {formatCurrency(calc.estimatedSavings)} savings
+                              </div>
+                            )}
+                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                              ID: {calc.id.slice(-8)}
+                            </div>
+                          </div>
+                        </div>
+
+                        {summary && (
+                          <div className="tax-card-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', marginBottom: '1rem' }}>
+                            <div className="kpi-card" style={{ padding: '0.75rem' }}>
+                              <div className="kpi-value" style={{ fontSize: '1.1rem' }}>
+                                {formatCurrency(summary.totalTax || 0)}
+                              </div>
+                              <div className="kpi-label">Total Tax</div>
+                            </div>
+                            <div className="kpi-card" style={{ padding: '0.75rem' }}>
+                              <div className="kpi-value" style={{ fontSize: '1.1rem' }}>
+                                {(((summary.effectiveTaxRate || 0) * 100)).toFixed(1)}%
+                              </div>
+                              <div className="kpi-label">Effective Rate</div>
+                            </div>
+                            <div className="kpi-card" style={{ padding: '0.75rem' }}>
+                              <div className="kpi-value" style={{ fontSize: '1.1rem' }}>
+                                {formatCurrency(summary.netIncome || 0)}
+                              </div>
+                              <div className="kpi-label">Net Income</div>
+                            </div>
+                          </div>
+                        )}
+
+                        {calc.calculationType === 'SALARY_OPTIMIZATION' && calc.result?.optimizedSalary && calc.result?.optimizedDividend && (
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                            <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-muted)', borderRadius: '6px' }}>
+                              <div style={{ fontWeight: 600, color: 'var(--gold)' }}>Optimized Salary</div>
+                              <div style={{ fontSize: '1.2rem', fontWeight: 600 }}>
+                                {formatCurrency(calc.result?.optimizedSalary || 0)}
+                              </div>
+                            </div>
+                            <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-muted)', borderRadius: '6px' }}>
+                              <div style={{ fontWeight: 600, color: 'var(--gold)' }}>Optimized Dividend</div>
+                              <div style={{ fontSize: '1.2rem', fontWeight: 600 }}>
+                                {formatCurrency(calc.result?.optimizedDividend || 0)}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="tax-result-actions">
+                          <Link
+                            href={`/tax-calculations/${calc.id}`}
+                            className="btn-outline-gold btn-sm"
+                          >
+                            View Details
+                          </Link>
+                          <Link
+                            href={`/tax-calculations/new?clientId=${encodeURIComponent(calc.clientId)}&taxYear=${encodeURIComponent(calc.taxYear)}&type=${getLandingType(calc.calculationType)}`}
+                            className="btn-outline-gold btn-sm"
+                          >
+                            Recalculate
+                          </Link>
+                          <button
+                            className="btn-danger btn-sm"
+                            onClick={async () => {
+                              if (confirm('Are you sure you want to delete this tax calculation? This action cannot be undone.')) {
+                                try {
+                                  await api.delete(`/tax-calculations/${calc.id}`);
+                                  await fetchCalculations(); // Refresh the list
+                                  alert('Tax calculation deleted successfully');
+                                } catch (e) {
+                                  console.error('Failed to delete calculation', e);
+                                  alert('Failed to delete calculation. Please try again.');
+                                }
+                              }
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                        );
+                      })()
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>

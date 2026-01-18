@@ -1,5 +1,6 @@
 import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { FileStorageService } from './file-storage.service';
+import { getValidPortfolioCodes } from '../../common/constants/portfolio.constants';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { existsSync } from 'fs';
@@ -130,7 +131,8 @@ export class SearchService {
       
       if (category === 'clients') {
         // Handle portfolio-based clients
-        for (let portfolioCode = 1; portfolioCode <= 10; portfolioCode++) {
+        const portfolioCodes = getValidPortfolioCodes();
+        for (const portfolioCode of portfolioCodes) {
           const files = await this.fileStorageService.listFiles(category, portfolioCode);
           
           for (const id of files) {

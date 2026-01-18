@@ -75,6 +75,13 @@ export class AccountsProductionService {
       throw new NotFoundException(`Client ${createDto.clientId} not found`);
     }
 
+    const isSoleTraderClient = client.type === 'SOLE_TRADER' || client.type === 'INDIVIDUAL';
+    const resolvedFramework: AccountingFramework = isSoleTraderClient
+      ? client.type === 'INDIVIDUAL'
+        ? 'INDIVIDUAL'
+        : 'SOLE_TRADER'
+      : createDto.framework;
+
     // Determine if this is the first year by checking for existing accounts sets
     const clientAccountsSets = await this.getClientAccountsSets(createDto.clientId);
     const priorAccountsSet = clientAccountsSets[0];
@@ -84,7 +91,7 @@ export class AccountsProductionService {
     // Get company details from Companies House if we have a company number
     let companyDetails = null;
     let officers = [];
-    if (client.registeredNumber) {
+    if (!isSoleTraderClient && client.registeredNumber) {
       try {
         companyDetails = await this.companiesHouseService.getCompanyDetails(client.registeredNumber);
         officers = await this.companiesHouseService.getCompanyOfficers(client.registeredNumber);
@@ -147,8 +154,8 @@ export class AccountsProductionService {
     const accountsSet: AccountsSet = {
       id,
       clientId: createDto.clientId,
-      companyNumber: client.registeredNumber || '',
-      framework: createDto.framework,
+      companyNumber: isSoleTraderClient ? '' : client.registeredNumber || '',
+      framework: resolvedFramework,
       status: 'DRAFT' as AccountsSetStatus,
       period: {
         startDate: createDto.periodStart,
@@ -158,12 +165,12 @@ export class AccountsProductionService {
       sections: {
         // Pre-populate company period section with client and Companies House data
         companyPeriod: {
-          framework: createDto.framework,
+          framework: resolvedFramework,
           company: {
             name: companyDetails?.company_name || client.name,
-            companyNumber: client.registeredNumber || '',
+            companyNumber: isSoleTraderClient ? '' : client.registeredNumber || '',
             registeredOffice: this.mapAddressFromCompaniesHouse(companyDetails?.registered_office_address) || this.mapAddressFromClient(client),
-            directors: this.mapDirectorsFromCompaniesHouse(officers) || [{ name: '' }],
+            directors: isSoleTraderClient ? [] : this.mapDirectorsFromCompaniesHouse(officers) || [{ name: '' }],
           },
           period: {
             startDate: createDto.periodStart,
@@ -243,7 +250,7 @@ export class AccountsProductionService {
       entityId: accountsSet.id,
       entityRef: `${client.name} (${createDto.clientId})`,
       metadata: {
-        framework: createDto.framework,
+        framework: resolvedFramework,
         isFirstYear,
         companyNumber: client.registeredNumber,
       },
@@ -379,6 +386,13 @@ export class AccountsProductionService {
       }
       if (sectionData?.framework) {
         accountsSet.framework = sectionData.framework;
+      }
+      if (sectionData?.framework === 'SOLE_TRADER' || sectionData?.framework === 'INDIVIDUAL') {
+        accountsSet.companyNumber = '';
+        if (sectionData?.company) {
+          sectionData.company.companyNumber = '';
+          sectionData.company.directors = [];
+        }
       }
 
       const isFirstYear = sectionData?.period?.isFirstYear;

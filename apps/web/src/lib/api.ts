@@ -1,7 +1,7 @@
 // apps/web/lib/api.ts
 
 /**
- * Minimal, robust API client for MDJ Practice Manager
+ * Minimal, robust API client for M Practice Manager
  * - Directly targets the API on port 3001
  * - Handles access token, refresh, 204, JSON/text responses
  * - Exposes axios-like get/post/put/delete for convenience

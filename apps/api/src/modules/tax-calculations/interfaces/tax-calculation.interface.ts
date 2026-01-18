@@ -4,7 +4,7 @@ export interface TaxCalculationResult {
   id: string;
   clientId: string;
   companyId?: string;
-  calculationType: 'SALARY_OPTIMIZATION' | 'SCENARIO_COMPARISON' | 'CORPORATION_TAX' | 'DIVIDEND_TAX' | 'INCOME_TAX';
+  calculationType: 'SALARY_OPTIMIZATION' | 'SCENARIO_COMPARISON' | 'CORPORATION_TAX' | 'DIVIDEND_TAX' | 'INCOME_TAX' | 'SOLE_TRADER';
   taxYear: string;
   parameters: Record<string, any>;
   amountType?: TaxAmountType;
@@ -21,6 +21,7 @@ export interface TaxCalculationResult {
   
   // Detailed scenarios
   scenarios?: TaxScenario[];
+  scenarioResults?: ScenarioResult[];
   recommendations?: TaxRecommendation[];
   
   // Metadata (flexible for backward compatibility)
@@ -37,7 +38,7 @@ export interface TaxCalculationResult {
 export interface TaxCalculationReport {
   calculationId: string;
   clientId: string;
-  calculationType: 'salaryDividendOptimisation' | 'personalTax' | 'corporationTax' | 'scenarioComparison';
+  calculationType: 'salaryDividendOptimisation' | 'personalTax' | 'corporationTax' | 'scenarioComparison' | 'soleTraderTax';
   inputs: {
     salaryGross?: number;
     benefits?: number;
@@ -150,6 +151,44 @@ export interface TaxScenario {
   personalNetIncome?: number; // Legacy support
 }
 
+export interface ScenarioInput {
+  availableProfit: number;
+  salary: number;
+  taxYear: string;
+  personal: {
+    otherIncome?: number;
+  };
+}
+
+export interface CompanyResult {
+  salary: number;
+  employerNI: number;
+  taxableProfit: number;
+  corporationTax: number;
+  profitAfterTax: number;
+  dividendPool: number;
+}
+
+export interface PersonalResult {
+  salary: number;
+  dividends: number;
+  incomeTax: number;
+  employeeNI: number;
+  dividendTax: number;
+  totalPersonalTax: number;
+  netPersonalCash: number;
+}
+
+export interface ScenarioResult {
+  input: ScenarioInput;
+  company: CompanyResult;
+  personal: PersonalResult;
+  summary: {
+    totalTax: number;
+    effectiveTaxRate: number;
+  };
+}
+
 export interface TaxRecommendation {
   type: 'SALARY_OPTIMIZATION' | 'PENSION_CONTRIBUTION' | 'COMPLIANCE' | 'PLANNING' | 'WARNING' | 'OPTIMIZATION';
   priority: 'HIGH' | 'MEDIUM' | 'LOW';
@@ -231,6 +270,7 @@ export interface TaxRates {
     mainRate: number;
     marginalReliefThreshold: number;
     marginalReliefUpperLimit: number;
+    marginalReliefFraction?: number;
   };
   
   // Dividend Tax

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { FileStorageService } from './file-storage.service';
 import { SearchService, SearchOptions, PaginatedResults } from './search.service';
 import { FilterService, FilterOptions, FilteredResults } from './filter.service';
+import { getValidPortfolioCodes } from '../../common/constants/portfolio.constants';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { existsSync } from 'fs';
@@ -157,7 +158,7 @@ export class IndexingService {
         for (const category of categories) {
           if (category === 'clients') {
             // Handle portfolio-based clients
-            const portfolioCodes = options.portfolioCode ? [options.portfolioCode] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const portfolioCodes = options.portfolioCode ? [options.portfolioCode] : getValidPortfolioCodes();
             for (const portfolioCode of portfolioCodes) {
               const files = await this.fileStorageService.listFiles(category, portfolioCode);
               const bulkData = await this.fileStorageService.bulkReadJson<T>(category, files, portfolioCode);

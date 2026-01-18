@@ -1,14 +1,17 @@
-import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { ClientsService } from '../clients/clients.service';
+import { ClientPartyService } from '../clients/services/client-party.service';
+import { PersonService } from '../clients/services/person.service';
 import { TasksService } from '../tasks/tasks.service';
 import { ServicesService } from '../services/services.service';
 import { ComplianceService } from '../filings/compliance.service';
 import { QueryTemplatesService, QueryTemplate, QuickAction } from './query-templates.service';
+import { IntegrationConfigService } from '../integrations/services/integration-config.service';
 
 export interface AssistContext {
   clientRef?: string;
@@ -18,6 +21,11 @@ export interface AssistContext {
   includeTasks?: boolean;
   includeServices?: boolean;
   includeCompliance?: boolean;
+  pageContext?: {
+    path?: string;
+    section?: string;
+    search?: string;
+  };
   dateRange?: {
     start: Date;
     end: Date;
@@ -36,21 +44,32 @@ export interface CachedResponse {
 export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
 
 @Injectable()
-export class AssistService {
+export class AssistService implements OnModuleInit {
   private readonly logger = new Logger(AssistService.name);
   private openai: OpenAI | null = null;
   private isOnline = false;
   private cachedResponses: Map<string, CachedResponse> = new Map();
   private readonly cacheExpiryHours = 24;
-  private readonly defaultModel: string;
+  private defaultModel: string;
+  private readonly envApiKey: string | null;
+  private readonly assistProvider: 'auto' | 'openai' | 'ollama';
+  private readonly ollamaUrl: string;
+  private readonly ollamaModel: string;
+  private ollamaOnline: boolean | null = null;
 
   constructor(
     private configService: ConfigService,
     private queryTemplatesService: QueryTemplatesService,
     @Inject(forwardRef(() => FileStorageService))
     private fileStorage: FileStorageService,
+    @Inject(forwardRef(() => IntegrationConfigService))
+    private integrationConfigService: IntegrationConfigService,
     @Inject(forwardRef(() => ClientsService))
     private clientsService: ClientsService,
+    @Inject(forwardRef(() => ClientPartyService))
+    private clientPartyService: ClientPartyService,
+    @Inject(forwardRef(() => PersonService))
+    private personService: PersonService,
     @Inject(forwardRef(() => TasksService))
     private tasksService: TasksService,
     @Inject(forwardRef(() => ServicesService))
@@ -59,12 +78,22 @@ export class AssistService {
     private complianceService: ComplianceService,
   ) {
     this.defaultModel = this.configService.get<string>('OPENAI_MODEL') || 'gpt-4';
-    this.initializeOpenAI();
+    this.envApiKey = this.configService.get<string>('OPENAI_API_KEY') || null;
+    this.assistProvider = (this.configService.get<string>('ASSIST_PROVIDER') || 'auto') as
+      | 'auto'
+      | 'openai'
+      | 'ollama';
+    this.ollamaUrl = this.configService.get<string>('OLLAMA_URL') || 'http://localhost:11434';
+    this.ollamaModel = this.configService.get<string>('OLLAMA_MODEL') || 'llama3.1:8b';
+    this.initializeOpenAI(this.envApiKey);
     this.loadCachedResponses(); // fire-and-forget
   }
 
-  private initializeOpenAI() {
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+  async onModuleInit() {
+    await this.refreshOpenAIFromIntegrations();
+  }
+
+  private initializeOpenAI(apiKey?: string | null) {
     if (apiKey) {
       this.openai = new OpenAI({ apiKey });
       this.isOnline = true;
@@ -72,6 +101,84 @@ export class AssistService {
     } else {
       this.logger.warn('OpenAI API key not found — running in OFFLINE mode');
       this.isOnline = false;
+    }
+  }
+
+  private async refreshOpenAIFromIntegrations(): Promise<void> {
+    try {
+      const [integration, decryptedKey] = await Promise.all([
+        this.integrationConfigService.getIntegrationByType('OPENAI'),
+        this.integrationConfigService.getDecryptedApiKey('OPENAI'),
+      ]);
+
+      const integrationModel = integration?.settings?.model;
+      if (typeof integrationModel === 'string' && integrationModel.trim()) {
+        this.defaultModel = integrationModel.trim();
+      }
+
+      if (decryptedKey) {
+        this.initializeOpenAI(decryptedKey);
+        return;
+      }
+
+      if (this.envApiKey) {
+        this.initializeOpenAI(this.envApiKey);
+        return;
+      }
+
+      this.initializeOpenAI(null);
+    } catch (error) {
+      this.logger.warn('Failed to refresh OpenAI integration settings; falling back to env key');
+      if (this.envApiKey) {
+        this.initializeOpenAI(this.envApiKey);
+      } else {
+        this.initializeOpenAI(null);
+      }
+    }
+  }
+
+  private shouldUseOllama(): boolean {
+    if (this.assistProvider === 'ollama') return true;
+    if (this.assistProvider === 'openai') return false;
+    return !this.isOnline || !this.openai;
+  }
+
+  private async callOllama(messages: ChatMessage[]): Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90_000);
+    const base = this.ollamaUrl.replace(/\/+$/, '');
+    const apiBase = base.endsWith('/api') ? base : `${base}/api`;
+
+    try {
+      const res = await fetch(`${apiBase}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: this.ollamaModel,
+          messages,
+          stream: false,
+        }),
+      });
+
+      if (!res.ok) {
+        this.ollamaOnline = false;
+        throw new Error(`Ollama error ${res.status}`);
+      }
+
+      const data = await res.json();
+      const content = data?.message?.content;
+      if (!content) {
+        this.ollamaOnline = false;
+        throw new Error('Ollama response missing content');
+      }
+      this.ollamaOnline = true;
+      return content;
+    } catch (error) {
+      this.ollamaOnline = false;
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -107,6 +214,20 @@ export class AssistService {
     if (cached) {
       this.logger.debug('Returning cached chat response');
       return cached.response;
+    }
+
+    if (!this.isOnline || !this.openai) {
+      await this.refreshOpenAIFromIntegrations();
+    }
+
+    if (this.shouldUseOllama()) {
+      try {
+        const response = await this.callOllama(prepared);
+        this.cacheResponse(cacheKey, '[chat/ollama]', response, context);
+        return response;
+      } catch (err) {
+        this.logger.warn('Ollama chat error; falling back to offline mode');
+      }
     }
 
     // OFFLINE fallback
@@ -149,15 +270,138 @@ export class AssistService {
    * Single-turn helper (kept exactly as you had it).
    */
   async processQuery(prompt: string, context: AssistContext = {}): Promise<string> {
-    // Check cache first
-    const cacheKey = this.generateCacheKey(prompt, context);
-    const cached = this.getCachedResponse(cacheKey);
-    if (cached) {
-      this.logger.debug('Returning cached response');
-      return cached.response;
+    const lowerPrompt = (prompt || '').toLowerCase();
+    const isMissingYearEndsQuery =
+      lowerPrompt.includes('missing year end') ||
+      lowerPrompt.includes('missing year-end') ||
+      lowerPrompt.includes('missing year ends') ||
+      lowerPrompt.includes('missing year-ends') ||
+      lowerPrompt.includes('missing yearend') ||
+      lowerPrompt.includes('missing yearends');
+    const isAccountsLastMadeUpToCheck =
+      lowerPrompt.includes('accountslastmadeupto') ||
+      lowerPrompt.includes('accounts last made up to') ||
+      lowerPrompt.includes('accounts last made-up to') ||
+      lowerPrompt.includes('accounts last made-up-to');
+    const isMainContactCheck =
+      lowerPrompt.includes('maincontact') ||
+      lowerPrompt.includes('main contact') ||
+      lowerPrompt.includes('main-contact');
+    const isDeterministic =
+      isMissingYearEndsQuery || isAccountsLastMadeUpToCheck || isMainContactCheck;
+
+    if (!isDeterministic) {
+      const cacheKey = this.generateCacheKey(prompt, context);
+      const cached = this.getCachedResponse(cacheKey);
+      if (cached) {
+        this.logger.debug('Returning cached response');
+        return cached.response;
+      }
     }
 
     const contextData = await this.generateContextData(context);
+
+    if (isMissingYearEndsQuery && Array.isArray(contextData.clients)) {
+      const missing = contextData.clients
+        .filter((client: any) => {
+          const hasLastMadeUpTo = Boolean(client.accountsLastMadeUpTo);
+          const hasARD =
+            Number.isFinite(client.accountsAccountingReferenceDay) &&
+            Number.isFinite(client.accountsAccountingReferenceMonth);
+          return !hasLastMadeUpTo && !hasARD;
+        })
+        .map((client: any) => ({
+          ref: client.ref || '—',
+          name: client.name || 'Unnamed client',
+        }));
+
+      if (!missing.length) {
+        return 'All clients in the current list have a year end recorded.';
+      }
+
+      const lines = missing
+        .slice(0, 50)
+        .map((client: any) => `- ${client.name} (${client.ref})`)
+        .join('\n');
+
+      return `Clients missing year end data (${missing.length}):\n${lines}\n\nUpdate the year end (accounts last made up to or accounting reference day/month) for these clients.`;
+    }
+
+    if (isMissingYearEndsQuery && !Array.isArray(contextData.clients)) {
+      return 'I do not have a client list in context. Open the Clients page and try again so I can read the current list.';
+    }
+
+    if (isAccountsLastMadeUpToCheck && Array.isArray(contextData.clients)) {
+      const missing = contextData.clients
+        .filter((client: any) => !client.accountsLastMadeUpTo)
+        .map((client: any) => ({
+          ref: client.ref || '—',
+          name: client.name || 'Unnamed client',
+        }));
+
+      if (!missing.length) {
+        return 'All clients in the current list have accountsLastMadeUpTo populated.';
+      }
+
+      const lines = missing
+        .slice(0, 50)
+        .map((client: any) => `- ${client.name} (${client.ref})`)
+        .join('\n');
+
+      return `Clients missing accountsLastMadeUpTo (${missing.length}):\n${lines}\n\nUpdate accountsLastMadeUpTo for these clients.`;
+    }
+
+    if (isAccountsLastMadeUpToCheck && !Array.isArray(contextData.clients)) {
+      return 'I do not have a client list in context. Open the Clients page and try again so I can read the current list.';
+    }
+
+    if (isMainContactCheck && Array.isArray(contextData.clients)) {
+      const clientIds = contextData.clients.map((client: any) => client.id).filter(Boolean);
+      const primaryByClient = await this.getPrimaryContacts(clientIds);
+      const missing = contextData.clients
+        .filter((client: any) => {
+          const primary = primaryByClient[client.id];
+          return !primary && !client.mainEmail && !client.mainPhone;
+        })
+        .map((client: any) => ({
+          ref: client.ref || '—',
+          name: client.name || 'Unnamed client',
+        }));
+
+      if (!missing.length) {
+        return 'All clients in the current list have a main contact (primary contact or main email/phone).';
+      }
+
+      const lines = missing
+        .slice(0, 50)
+        .map((client: any) => `- ${client.name} (${client.ref})`)
+        .join('\n');
+
+      return `Clients missing a main contact (${missing.length}):\n${lines}\n\nSet a primary contact or add a main email/phone for these clients.`;
+    }
+
+    if (isMainContactCheck && !Array.isArray(contextData.clients)) {
+      return 'I do not have a client list in context. Open the Clients page and try again so I can read the current list.';
+    }
+
+    const cacheKey = this.generateCacheKey(prompt, context);
+
+    if (!this.isOnline || !this.openai) {
+      await this.refreshOpenAIFromIntegrations();
+    }
+
+    if (this.shouldUseOllama()) {
+      try {
+        const response = await this.callOllama([
+          { role: 'system', content: this.buildSystemPrompt(contextData) },
+          { role: 'user', content: prompt },
+        ]);
+        this.cacheResponse(cacheKey, '[ollama]', response, context);
+        return response;
+      } catch (err) {
+        this.logger.warn('Ollama query error; falling back to offline mode');
+      }
+    }
 
     if (!this.isOnline || !this.openai) {
       const response = await this.getOfflineResponse(prompt, contextData);
@@ -249,8 +493,15 @@ export class AssistService {
       mode: this.isOnline ? 'online' : 'offline',
     };
 
+    if (context.pageContext) {
+      contextData.pageContext = context.pageContext;
+    }
+
+    const includeClients = context.includeClients || !!context.clientRef;
+    const includeServices = context.includeServices || includeClients;
+
     try {
-      if (context.includeClients) {
+      if (includeClients) {
         const filters: any = {};
         if (context.portfolioCode) filters.portfolioCode = context.portfolioCode;
 
@@ -273,7 +524,7 @@ export class AssistService {
         contextData.tasks = tasks.slice(0, 100);
       }
 
-      if (context.includeServices) {
+      if (includeServices) {
         const serviceFilters: any = {};
         if (context.clientRef) serviceFilters.clientRef = context.clientRef;
 
@@ -297,9 +548,29 @@ export class AssistService {
     return contextData;
   }
 
+  private async getPrimaryContacts(clientIds: string[]): Promise<Record<string, string>> {
+    if (!clientIds.length) return {};
+    const [parties, people] = await Promise.all([
+      this.clientPartyService.findAll(),
+      this.personService.findAll(),
+    ]);
+    const peopleMap: Record<string, any> = {};
+    people.forEach((person: any) => {
+      if (person?.id) peopleMap[person.id] = person;
+    });
+    const primaryByClient: Record<string, string> = {};
+    parties.forEach((party: any) => {
+      if (!party?.primaryContact) return;
+      if (!party?.clientId || !clientIds.includes(party.clientId)) return;
+      const person = peopleMap[party.personId];
+      if (person?.fullName) primaryByClient[party.clientId] = person.fullName;
+    });
+    return primaryByClient;
+  }
+
   private buildSystemPrompt(contextData: any): string {
     return `
-You are MDJ Assist — a professional practice assistant for accounting and tax professionals.
+You are M Assist — a professional practice assistant for accounting and tax professionals.
 You help with client management, compliance deadlines, task prioritization, and business insights.
 
 CURRENT CONTEXT:
@@ -311,8 +582,8 @@ GUIDELINES:
 - Prioritize urgent items (overdue tasks, approaching deadlines)
 - Use specific data from the context when available
 - Format responses clearly with bullet points or numbered lists when appropriate
-- Always mention specific client references, dates, and amounts when relevant
-- If data is limited, acknowledge this and provide general guidance
+- Only mention client names, references, dates, or amounts that appear in the context
+- If data is limited or missing, acknowledge this and provide general guidance
 
 RESPONSE FORMAT:
 - Start with a brief summary
@@ -367,7 +638,7 @@ For intelligent prioritization, please configure your OpenAI API key in settings
       return 'In offline mode: Visit the tasks page to view, create, and manage work items. Use filters to find tasks by client, assignee, or due date.';
     }
 
-    return 'MDJ Assist is currently in offline mode. For full AI assistance, please configure your OpenAI API key in the integrations settings.';
+    return 'M Assist is currently in offline mode. Configure OpenAI in integrations or run a local Ollama model.';
   }
 
   private generateCacheKey(promptOrMessages: string, context: AssistContext): string {
@@ -573,6 +844,15 @@ Focus on actionable insights to protect revenue and maintain client relationship
   }
 
   getStatus() {
+    if (this.shouldUseOllama()) {
+      const online = this.ollamaOnline === true;
+      return {
+        online,
+        mode: online ? 'Online' : 'Offline',
+        provider: 'Ollama',
+      };
+    }
+
     return {
       online: this.isOnline,
       mode: this.isOnline ? 'Online' : 'Offline',

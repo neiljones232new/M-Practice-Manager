@@ -11,7 +11,7 @@ export class CreateAccountsSetDto {
   @IsDateString()
   periodEnd: string;
 
-  @IsEnum(['MICRO_FRS105', 'SMALL_FRS102_1A', 'DORMANT'])
+  @IsEnum(['MICRO_FRS105', 'SMALL_FRS102_1A', 'DORMANT', 'SOLE_TRADER', 'INDIVIDUAL'])
   framework: AccountingFramework;
 
   @IsOptional()

@@ -540,8 +540,8 @@ export default function SettingsPage() {
       } catch {
         loadedPracticeSettings = {
           id: '1',
-          practiceName: 'MDJ Practice',
-          tradingName: 'MDJ Accounting Services',
+          practiceName: 'M Software Ltd',
+          tradingName: 'M Practice Manager',
           legalForm: 'LIMITED',
           companyNumber: '12345678',
           vatNumber: 'GB999999973',
@@ -815,8 +815,8 @@ export default function SettingsPage() {
             <div className="card-mdj">
               <h3>Branding</h3>
               <p className="text-dim">
-                Upload your practice logo for the top bar and printed reports. MDJ Assist will
-                continue to use the MDJ lion.
+                Upload your practice logo for the top bar and printed reports. M Practice Manager
+                Assist will continue to use the default assistant icon.
               </p>
               <div className="row gap-2" style={{ alignItems: 'center', marginTop: '.5rem' }}>
                 <img
@@ -1630,7 +1630,7 @@ export default function SettingsPage() {
                   {int.type === 'XERO' && (
                     <div className="form-group">
                       <p className="text-dim">
-                        Connect MDJ Practice Manager to your Xero organisation. No API key required –
+                        Connect M Practice Manager to your Xero organisation. No API key required –
                         you&apos;ll be redirected to Xero to approve access.
                       </p>
                       <button

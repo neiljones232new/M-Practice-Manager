@@ -17,6 +17,7 @@ interface Client {
   status: ClientStatus;
   mainEmail?: string;
   registeredNumber?: string | null;
+  utrNumber?: string | null;
   portfolioCode?: number | null;
   createdAt?: string;
   updatedAt?: string;
@@ -49,6 +50,8 @@ export default function ClientsPage() {
   const [filters, setFilters] = useState<Record<string, string>>({
     ref: '',
     name: '',
+    registeredNumber: '',
+    utrNumber: '',
     mainContact: '',
     mainPhone: '',
     accountsNextDue: '',
@@ -81,6 +84,8 @@ export default function ClientsPage() {
   const defaultColumnIds = [
     'ref',
     'name',
+    'registeredNumber',
+    'utrNumber',
     'status',
     'type',
     'portfolio',
@@ -321,6 +326,12 @@ export default function ClientsPage() {
     return base.filter(c => {
       const matchesRef = !filters.ref || getText(c.ref).includes(filters.ref.toLowerCase());
       const matchesName = !filters.name || getText(c.name).includes(filters.name.toLowerCase());
+      const matchesCompanyNo =
+        !filters.registeredNumber ||
+        getText(c.registeredNumber).includes(filters.registeredNumber.toLowerCase());
+      const matchesUtr =
+        !filters.utrNumber ||
+        getText(c.utrNumber).includes(filters.utrNumber.toLowerCase());
       const contactValue = c.mainContact ?? c.mainEmail ?? '';
       const matchesContact = !filters.mainContact || getText(contactValue).includes(filters.mainContact.toLowerCase());
       const matchesPhone = !filters.mainPhone || getText(c.mainPhone).includes(filters.mainPhone.toLowerCase());
@@ -347,6 +358,8 @@ export default function ClientsPage() {
       return (
         matchesRef &&
         matchesName &&
+        matchesCompanyNo &&
+        matchesUtr &&
         matchesContact &&
         matchesPhone &&
         matchesAccountsDue &&
@@ -419,6 +432,8 @@ export default function ClientsPage() {
     setFilters({
       ref: '',
       name: '',
+      registeredNumber: '',
+      utrNumber: '',
       mainContact: '',
       mainPhone: '',
       accountsNextDue: '',
@@ -452,6 +467,16 @@ export default function ClientsPage() {
           {c.name}
         </Link>
       ),
+    },
+    {
+      id: 'registeredNumber',
+      label: 'Company No.',
+      render: (c: Client) => c.registeredNumber ?? '—',
+    },
+    {
+      id: 'utrNumber',
+      label: 'UTR',
+      render: (c: Client) => c.utrNumber ?? '—',
     },
     {
       id: 'status',
@@ -814,6 +839,8 @@ export default function ClientsPage() {
                   </div>
                   <h4>{c.name}</h4>
                   <p className="client-card-sub">Main Contact: {c.mainContact ?? c.mainEmail ?? '—'}</p>
+                  <p className="client-card-info">Company No.: {c.registeredNumber ?? '—'}</p>
+                  <p className="client-card-info">UTR: {c.utrNumber ?? '—'}</p>
                   <p className="client-card-info">Tel: {c.mainPhone ?? '—'}</p>
                   <p className="client-card-info">Year End Due: {renderComplianceDate(c.accountsNextDue, c.compAccounts)}</p>
                   <p className="client-card-info">Year End: {c.accountsLastMadeUpTo ? new Date(c.accountsLastMadeUpTo).toLocaleDateString('en-GB') : '—'}</p>

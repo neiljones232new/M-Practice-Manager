@@ -62,6 +62,28 @@ export class TaxCalculationsController {
     return this.taxCalculationsService.getCalculation(id);
   }
 
+  @Post(':id/save-result')
+  @ApiOperation({ summary: 'Save calculation summary/breakdown for reporting' })
+  async saveCalculationResult(
+    @Param('id') id: string,
+    @Body() payload: {
+      summary?: {
+        totalTax: number;
+        effectiveTaxRate: number;
+        netIncome: number;
+        grossIncome?: number;
+      };
+      breakdown?: {
+        incomeTax: number;
+        nationalInsurance: number;
+        corporationTax: number;
+        dividendTax: number;
+      };
+    }
+  ): Promise<TaxCalculationResult> {
+    return this.taxCalculationsService.saveCalculationResult(id, payload);
+  }
+
   @Get('client/:clientId')
   @ApiOperation({ summary: 'Get tax calculations for client' })
   async getClientCalculations(
@@ -183,6 +205,21 @@ export class TaxCalculationsController {
     @Query('userId') userId: string = 'system'
   ): Promise<TaxCalculationResult> {
     return this.enhancedTaxCalculationsService.calculatePersonalTax(dto, userId);
+  }
+
+  @Post('enhanced/sole-trader')
+  @ApiOperation({ summary: 'Enhanced sole trader tax calculation' })
+  async enhancedSoleTraderTax(
+    @Body() dto: {
+      clientId: string;
+      revenue: number;
+      expenses: number;
+      taxYear: string;
+      payClass2?: boolean;
+    },
+    @Query('userId') userId: string = 'system'
+  ): Promise<TaxCalculationResult> {
+    return this.enhancedTaxCalculationsService.calculateSoleTraderTax(dto, userId);
   }
 
   @Get('enhanced/:id')

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",
+    "postbuild": "mkdir -p .next/standalone/apps/web/.next && cp -R .next/static .next/standalone/apps/web/.next/ && cp -R public .next/standalone/apps/web/",
     "start": "node .next/standalone/apps/web/server.js",
     "lint": "next lint",
     "type-check": "tsc --noEmit"

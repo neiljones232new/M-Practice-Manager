@@ -223,7 +223,7 @@ export function MDJLayout({
         {children}
       </main>
 
-      {/* === MDJ Assist - Bottom Right === */}
+      {/* === M Assist - Bottom Right === */}
       <MDJAssist />
     </div>
   );

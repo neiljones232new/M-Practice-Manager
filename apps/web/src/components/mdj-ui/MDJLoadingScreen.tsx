@@ -8,7 +8,7 @@ interface MDJLoadingScreenProps {
 }
 
 /**
- * Full-screen MDJ splash that:
+ * Full-screen M splash that:
  *  - shows concentric rotating rings around the logo
  *  - spawns soft floating particles
  *  - cycles through 4 status lines
@@ -87,8 +87,8 @@ export default function MDJLoadingScreen({ onComplete }: MDJLoadingScreenProps) 
   const status = [
     { title: 'Starting Servers', detail: 'Initializing backend and frontend services…' },
     { title: 'Loading Database', detail: 'Connecting to PostgreSQL database…' },
-    { title: 'Checking Integrations', detail: 'Verifying Companies House & MDJ services…' },
-    { title: 'Ready', detail: 'All systems operational. Welcome to MDJ Practice Manager!' },
+    { title: 'Checking Integrations', detail: 'Verifying Companies House & M services…' },
+    { title: 'Ready', detail: 'All systems operational. Welcome to M Practice Manager!' },
   ][phase];
 
   return (
@@ -134,13 +134,13 @@ export default function MDJLoadingScreen({ onComplete }: MDJLoadingScreenProps) 
           </div>
 
           {/* logo */}
-          <img src={DEFAULT_LOGO} className="mdj-logo" alt="MDJ Assist Lion" />
+          <img src={DEFAULT_LOGO} className="mdj-logo" alt="M Assist Lion" />
 
           {/* floating particles */}
           <div className="mdj-particles" />
         </div>
 
-        <h1 className="mdj-title">MDJ Assist</h1>
+        <h1 className="mdj-title">M Assist</h1>
 
         <div className="mdj-status">
           <div className="mdj-status__line">{status.title}</div>
@@ -159,7 +159,7 @@ export default function MDJLoadingScreen({ onComplete }: MDJLoadingScreenProps) 
         .mdj-splash {
           position: fixed;
           inset: 0;
-          z-index: 99999; /* above everything, incl. MDJ Assist */
+          z-index: 99999; /* above everything, incl. M Assist */
           display: grid;
           place-items: center;
           background: radial-gradient(circle at center, #383e42 0%, #000000 100%);

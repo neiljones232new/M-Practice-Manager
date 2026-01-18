@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { MDJAssistFAB } from './MDJAssistFAB';
 import { MDJAssistDrawer } from './MDJAssistDrawer';
 import { MDJAssistChat } from './MDJAssistChat';
+import { API_BASE_URL } from '@/lib/api';
 
 interface MDJAssistProps {
   inline?: boolean;
@@ -12,8 +13,16 @@ interface MDJAssistProps {
 export const MDJAssist: React.FC<MDJAssistProps> = ({ inline = false }) => {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<'ok' | 'warn' | 'error'>('ok');
+  const [assistOnline, setAssistOnline] = useState<boolean | null>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
-  const openDrawer = useCallback(() => setOpen(true), []);
+  const openDrawer = useCallback(() => {
+    setOpen(true);
+    setShowTooltip(false);
+    try {
+      localStorage.setItem('m-assist-tooltip-seen', '1');
+    } catch {}
+  }, []);
   const closeDrawer = useCallback(() => setOpen(false), []);
 
   // Lightweight page status detection
@@ -113,6 +122,48 @@ export const MDJAssist: React.FC<MDJAssistProps> = ({ inline = false }) => {
     };
   }, []);
 
+  // Check backend availability for status chip
+  useEffect(() => {
+    let alive = true;
+    const checkStatus = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/assist/status`, { cache: 'no-store' });
+        if (!alive) return;
+        if (!res.ok) {
+          setAssistOnline(false);
+          return;
+        }
+        const data = await res.json();
+        setAssistOnline(Boolean(data?.online));
+      } catch {
+        if (!alive) return;
+        setAssistOnline(false);
+      }
+    };
+
+    checkStatus();
+    const intervalId = window.setInterval(checkStatus, 60_000);
+    return () => {
+      alive = false;
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  // One-time tooltip
+  useEffect(() => {
+    try {
+      const seen = localStorage.getItem('m-assist-tooltip-seen');
+      if (!seen && !inline) {
+        setShowTooltip(true);
+        const timer = window.setTimeout(() => {
+          setShowTooltip(false);
+          localStorage.setItem('m-assist-tooltip-seen', '1');
+        }, 5000);
+        return () => window.clearTimeout(timer);
+      }
+    } catch {}
+  }, [inline]);
+
   return (
     <>
       {/* FAB or inline button */}
@@ -123,10 +174,15 @@ export const MDJAssist: React.FC<MDJAssistProps> = ({ inline = false }) => {
         inline={inline}
         position="bottom-right"
         sizePx={inline ? 48 : undefined}
+        label="M Assist"
+        showLabel={!inline}
+        online={assistOnline}
+        showTooltip={showTooltip}
+        tooltipText="Ask M Assist"
       />
 
       {/* Drawer with translucent background + chat inside */}
-      <MDJAssistDrawer open={open} onClose={closeDrawer} ariaLabel="MDJ Assist">
+      <MDJAssistDrawer open={open} onClose={closeDrawer} ariaLabel="M Assist">
         <MDJAssistChat />
       </MDJAssistDrawer>
     </>

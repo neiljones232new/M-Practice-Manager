@@ -112,7 +112,7 @@ class ChatDto {
   temperature?: number;
 }
 
-@ApiTags('MDJ Assist')
+@ApiTags('M Assist')
 @Controller('assist')
 export class AssistController {
   constructor(
@@ -125,13 +125,13 @@ export class AssistController {
      ----------------------- */
 
   @Get('health')
-  @ApiOperation({ summary: 'Health check for MDJ Assist' })
+  @ApiOperation({ summary: 'Health check for M Assist' })
   health() {
     return { ok: true, service: 'assist', time: new Date().toISOString() };
   }
 
   @Get('status')
-  @ApiOperation({ summary: 'Get MDJ Assist status' })
+  @ApiOperation({ summary: 'Get M Assist status' })
   getStatus() {
     return this.assistService.getStatus();
   }

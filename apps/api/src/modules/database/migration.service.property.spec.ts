@@ -102,7 +102,7 @@ describe('MigrationService Property Tests', () => {
   const taxCalculationArbitrary = fc.record({
     id: fc.string({ minLength: 10, maxLength: 50 }),
     clientId: companyNumberArbitrary,
-    calculationType: fc.constantFrom('SALARY_OPTIMIZATION', 'SCENARIO_COMPARISON', 'CORPORATION_TAX'),
+    calculationType: fc.constantFrom('SALARY_OPTIMIZATION', 'SCENARIO_COMPARISON', 'CORPORATION_TAX', 'SOLE_TRADER'),
     taxYear: fc.constantFrom('2023-24', '2024-25', '2025-26'),
     optimizedSalary: fc.option(fc.float({ min: 0, max: 100000 })),
     optimizedDividend: fc.option(fc.float({ min: 0, max: 500000 })),

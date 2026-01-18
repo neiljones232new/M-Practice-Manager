@@ -76,8 +76,9 @@ export class TaxCalculationPersistenceService {
       
       if (calculation) {
         const formatted = this.formatCalculationForDisplay(calculation);
-        const hydrated = await this.hydrateReportFromFileStorage(formatted);
-        return this.ensureAccountingPeriodForCorpTax(hydrated);
+        const hydratedReport = await this.hydrateReportFromFileStorage(formatted);
+        const hydratedResult = await this.hydrateResultFromFileStorage(hydratedReport);
+        return this.ensureAccountingPeriodForCorpTax(hydratedResult);
       }
 
       // Fallback to file storage for legacy calculations
@@ -112,6 +113,27 @@ export class TaxCalculationPersistenceService {
       return { ...calculation, report: fileCalculation.report };
     } catch (error) {
       this.logger.warn(`Failed to load report for calculation ${calculation.id}: ${error.message}`);
+      return calculation;
+    }
+  }
+
+  private async hydrateResultFromFileStorage(
+    calculation: TaxCalculationResult
+  ): Promise<TaxCalculationResult> {
+    if (calculation.result?.summary || calculation.result?.breakdown) {
+      return calculation;
+    }
+    try {
+      const fileCalculation = await this.fileStorageService.readJson<TaxCalculationResult>(
+        'tax-calculations',
+        calculation.id
+      );
+      if (!fileCalculation?.result) {
+        return calculation;
+      }
+      return { ...calculation, result: fileCalculation.result };
+    } catch (error) {
+      this.logger.warn(`Failed to load result for calculation ${calculation.id}: ${error.message}`);
       return calculation;
     }
   }
@@ -491,6 +513,7 @@ export class TaxCalculationPersistenceService {
   private inferAmountType(calculationType: TaxCalculationResult['calculationType']): TaxAmountType {
     switch (calculationType) {
       case 'CORPORATION_TAX':
+      case 'SOLE_TRADER':
         return 'profit';
       case 'DIVIDEND_TAX':
         return 'dividend';
@@ -579,6 +602,7 @@ export class TaxCalculationPersistenceService {
       'CORPORATION_TAX': 'Corporation Tax',
       'DIVIDEND_TAX': 'Dividend Tax',
       'INCOME_TAX': 'Income Tax',
+      'SOLE_TRADER': 'Sole Trader Tax',
     };
     return displayMap[type] || type;
   }

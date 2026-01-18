@@ -4,14 +4,14 @@ export const companyPeriodSchema = {
   properties: {
     framework: {
       type: 'string',
-      enum: ['MICRO_FRS105', 'SMALL_FRS102_1A', 'DORMANT'],
+      enum: ['MICRO_FRS105', 'SMALL_FRS102_1A', 'DORMANT', 'SOLE_TRADER', 'INDIVIDUAL'],
     },
     company: {
       type: 'object',
-      required: ['name', 'companyNumber', 'registeredOffice', 'directors'],
+      required: ['name', 'registeredOffice'],
       properties: {
         name: { type: 'string', minLength: 1 },
-        companyNumber: { type: 'string', minLength: 1 },
+        companyNumber: { type: 'string' },
         registeredOffice: {
           type: 'object',
           required: ['line1', 'postcode', 'country'],
@@ -27,7 +27,7 @@ export const companyPeriodSchema = {
         },
         directors: {
           type: 'array',
-          minItems: 1,
+          minItems: 0,
           items: {
             type: 'object',
             required: ['name'],

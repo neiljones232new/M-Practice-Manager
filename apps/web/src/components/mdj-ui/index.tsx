@@ -1,4 +1,4 @@
-// MDJ UI Components (re-exports unchanged)
+// M UI Components (re-exports unchanged)
 export { MDJLayout } from './MDJLayout';
 export { MDJAssist } from './MDJAssist';
 export { MDJAssistChat } from './MDJAssistChat';

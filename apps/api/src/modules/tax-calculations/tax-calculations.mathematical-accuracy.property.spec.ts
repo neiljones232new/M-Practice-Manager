@@ -161,12 +161,21 @@ describe('Tax Calculations Mathematical Accuracy Property Tests', () => {
             // Verify dividend allowance is applied correctly
             const rates = await taxRatesService.getTaxRates(params.taxYear);
             const dividendAllowance = rates.dividendTax?.allowance || rates.dividendAllowance || 1000;
+            const personalAllowance = taxRatesService.getPersonalAllowance(
+              params.otherIncome + params.dividendAmount,
+              params.taxYear
+            );
+            const remainingPersonalAllowance = Math.max(0, personalAllowance - params.otherIncome);
+            const expectedTaxableDividend = Math.max(
+              0,
+              params.dividendAmount - remainingPersonalAllowance - dividendAllowance
+            );
             
             expect(result.dividendAllowance).toBe(dividendAllowance);
-            expect(result.taxableDividend).toBe(Math.max(0, params.dividendAmount - dividendAllowance));
+            expect(result.taxableDividend).toBe(expectedTaxableDividend);
             
             // If dividend is within allowance, no tax should be charged
-            if (params.dividendAmount <= dividendAllowance) {
+            if (expectedTaxableDividend === 0) {
               expect(result.totalDividendTax).toBe(0);
               expect(result.taxableDividend).toBe(0);
             }
@@ -224,16 +233,25 @@ describe('Tax Calculations Mathematical Accuracy Property Tests', () => {
             // National Insurance thresholds
             const niLowerLimit = rates.niLowerEarningsLimit || rates.nationalInsurance?.employeePrimaryThreshold || 12570;
             const niUpperLimit = rates.niUpperEarningsLimit || rates.nationalInsurance?.employeeUpperEarningsLimit || 50270;
+            const employerLowerLimit = rates.nationalInsurance?.employerPrimaryThreshold || rates.niLowerEarningsLimit || 9100;
+            const employeeRate = rates.niEmployeeRate || (rates.nationalInsurance?.employeeRate || 12) / 100;
+            const employeeAdditionalRate = rates.nationalInsurance?.employeeAdditionalRate
+              ? rates.nationalInsurance.employeeAdditionalRate / 100
+              : 0.02;
             
             // If salary is below NI lower limit, no NI should be charged
             if (params.salary <= niLowerLimit) {
               expect(result.employeeNI).toBe(0);
+            }
+            
+            if (params.salary <= employerLowerLimit) {
               expect(result.employerNI).toBe(0);
             }
             
             // Employee NI should not exceed the amount calculated on upper earnings limit
             if (params.salary > niUpperLimit) {
-              const maxEmployeeNI = (niUpperLimit - niLowerLimit) * (rates.niEmployeeRate || 0.12);
+              const maxEmployeeNI = (niUpperLimit - niLowerLimit) * employeeRate +
+                (params.salary - niUpperLimit) * employeeAdditionalRate;
               expect(result.employeeNI).toBeLessThanOrEqual(maxEmployeeNI + 0.01); // Allow small rounding
             }
           }

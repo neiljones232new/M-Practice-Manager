@@ -1,6 +1,6 @@
 # Client Display CSS Classes
 
-This document describes the CSS classes available for styling client information display throughout the MDJ Practice Manager application.
+This document describes the CSS classes available for styling client information display throughout the M Practice Manager application.
 
 ## Overview
 
@@ -217,7 +217,7 @@ The `client-display.css` stylesheet provides consistent styling for client names
 
 ## Design System Integration
 
-All classes follow the MDJ UI design system:
+All classes follow the M UI design system:
 - Uses CSS custom properties (--gold, --text-muted, etc.)
 - Consistent border radius (10px for inputs, 8px for sections)
 - Standard spacing scale (0.25rem, 0.5rem, 0.75rem, 1rem)

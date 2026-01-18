@@ -1,9 +1,9 @@
 /* ==========================================================
-   MDJ Practice Manager — Global Styles
-   MDJ Lavender (Light Purple) v1 Design System
+   M Practice Manager — Global Styles
+   M Lavender (Light Purple) v1 Design System
    ========================================================== */
 
-/* Import the main MDJ stylesheet */
+/* Import the main UI stylesheet */
 @import '../styles/mdjnew.ui.css';
 
 /* Import client display styles */

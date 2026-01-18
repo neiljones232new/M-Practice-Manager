@@ -23,10 +23,10 @@ export function ReportHeader({ title, subtitle }: { title: string; subtitle?: st
     })();
   }, []);
 
-  const practiceName = practice?.practiceName || 'MDJ Consultants Ltd';
+  const practiceName = practice?.practiceName || 'M Software Ltd';
   const practiceLines = [
-    practice?.practiceAddress || '8b Slate Lane, Audenshaw, Manchester, M34 5GW',
-    [practice?.practicePhone, practice?.practiceWebsite].filter(Boolean).join(' | ') || 'Tel: +44 (0)161 123 4567 | www.mdjconsultants.co.uk',
+    practice?.practiceAddress || '123 Business Street, London, SW1A 1AA',
+    [practice?.practicePhone, practice?.practiceWebsite].filter(Boolean).join(' | ') || 'Tel: +44 (0)161 123 4567 | www.msoftware.co.uk/mpracticemanager',
   ];
 
   return (
@@ -63,14 +63,14 @@ export function ReportFooter() {
   useEffect(() => {
     api.get('/integrations/settings/practice').then(setPractice).catch(() => null);
   }, []);
-  const practiceName = practice?.practiceName || 'MDJ Consultants Ltd';
+  const practiceName = practice?.practiceName || 'M Software Ltd';
   return (
     <div className="print-footer" style={{ padding: '16px 8px' }}>
       <hr className="mdj-gold-divider" />
       <div className="mdj-sub">Prepared by {practiceName} — Confidential; for internal practice use only.</div>
       <div style={{ marginTop: 8 }}>
         <div className="mdj-sub">Signed electronically by:</div>
-        <div style={{ fontWeight: 700 }}>Neil Jones</div>
+        <div style={{ fontWeight: 700 }}>Authorized Signatory</div>
       </div>
     </div>
   );

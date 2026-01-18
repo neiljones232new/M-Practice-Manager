@@ -9,15 +9,16 @@ import {
   Query,
   HttpCode,
   HttpStatus,
-  Request
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { ClientsService } from './clients.service';
 import { PersonService } from './services/person.service';
 import { ClientPartyService } from './services/client-party.service';
+import { DemoUserGuard } from '../../common/guards/demo-user.guard';
+import { AllowDemoUser } from '../../common/decorators/allow-demo-user.decorator';
 import { 
   Client, 
-  Person,
   ClientParty,
   CreateClientDto, 
   UpdateClientDto,
@@ -31,16 +32,13 @@ import {
 
 @ApiTags('Clients')
 @Controller('clients')
+@UseGuards(DemoUserGuard)
 export class ClientsController {
   constructor(
     private readonly clientsService: ClientsService,
     private readonly personService: PersonService,
     private readonly clientPartyService: ClientPartyService
   ) {}
-
-  private isDemoUser(req: any) {
-    return req?.user?.id === 'demo-user';
-  }
 
   // Client endpoints
   @Get()
@@ -51,19 +49,13 @@ export class ClientsController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
-  async findAllClients(@Request() req: any, @Query() filters: ClientFilters) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
+  async findAllClients(@Query() filters: ClientFilters) {
     return this.clientsService.findAll(filters);
   }
 
   @Get('portfolio/:portfolioCode')
   @ApiOperation({ summary: 'Get clients by portfolio' })
-  async findByPortfolio(@Request() req: any, @Param('portfolioCode') portfolioCode: string) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
+  async findByPortfolio(@Param('portfolioCode') portfolioCode: string) {
     return this.clientsService.findByPortfolio(parseInt(portfolioCode));
   }
 
@@ -72,23 +64,16 @@ export class ClientsController {
   @ApiQuery({ name: 'q', required: true, type: String })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   async searchClients(
-    @Request() req: any,
     @Query('q') query: string,
     @Query('portfolioCode') portfolioCode?: string
   ) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
     const portfolio = portfolioCode ? parseInt(portfolioCode) : undefined;
     return this.clientsService.search(query, portfolio);
   }
 
   @Get('stats/portfolios')
   @ApiOperation({ summary: 'Get portfolio statistics' })
-  async getPortfolioStats(@Request() req: any) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
+  async getPortfolioStats() {
     return this.clientsService.getPortfolioStats();
   }
 
@@ -101,10 +86,7 @@ export class ClientsController {
 
   @Get('export.csv')
   @ApiOperation({ summary: 'Export clients as CSV' })
-  async exportClientsCsv(@Request() req: any, @Query() filters: ClientFilters) {
-    if (this.isDemoUser(req)) {
-      return 'Company Name,Type,Portfolio Code,Status,Company Number,Email,Phone,Address Line 1,Address Line 2,City,County,Postcode,Country\n';
-    }
+  async exportClientsCsv(@Query() filters: ClientFilters) {
     const csv = await this.clientsService.exportCsv(filters);
     // Return as plain text CSV
     return csv;
@@ -112,6 +94,7 @@ export class ClientsController {
 
   @Get('import/template.csv')
   @ApiOperation({ summary: 'Download CSV template for client import' })
+  @AllowDemoUser()
   async getImportTemplate(): Promise<string> {
     const headers = [
       'Company Name',
@@ -155,19 +138,13 @@ export class ClientsController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get client by ID or reference' })
-  async findOneClient(@Request() req: any, @Param('id') id: string) {
-    if (this.isDemoUser(req)) {
-      return null;
-    }
+  async findOneClient(@Param('id') id: string) {
     return this.clientsService.findOne(id);
   }
 
   @Get(':id/with-parties')
   @ApiOperation({ summary: 'Get client with party details' })
-  async getClientWithParties(@Request() req: any, @Param('id') id: string) {
-    if (this.isDemoUser(req)) {
-      return null;
-    }
+  async getClientWithParties(@Param('id') id: string) {
     return this.clientsService.getClientWithParties(id);
   }
 
@@ -216,29 +193,20 @@ export class ClientsController {
   // Person endpoints
   @Get('people/all')
   @ApiOperation({ summary: 'Get all people' })
-  async findAllPeople(@Request() req: any) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
+  async findAllPeople() {
     return this.personService.findAll();
   }
 
   @Get('people/search')
   @ApiOperation({ summary: 'Search people' })
   @ApiQuery({ name: 'q', required: true, type: String })
-  async searchPeople(@Request() req: any, @Query('q') query: string) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
+  async searchPeople(@Query('q') query: string) {
     return this.personService.search(query);
   }
 
   @Get('people/:id')
   @ApiOperation({ summary: 'Get person by ID or reference' })
-  async findOnePerson(@Request() req: any, @Param('id') id: string) {
-    if (this.isDemoUser(req)) {
-      return null;
-    }
+  async findOnePerson(@Param('id') id: string) {
     return this.personService.findOne(id);
   }
 
@@ -266,55 +234,37 @@ export class ClientsController {
   // Client-Party relationship endpoints
   @Get('parties/all')
   @ApiOperation({ summary: 'Get all client-party relationships' })
-  async findAllClientParties(@Request() req: any) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
+  async findAllClientParties() {
     return this.clientPartyService.findAll();
   }
 
   @Get('parties/client/:clientId')
   @ApiOperation({ summary: 'Get parties for a client' })
-  async findPartiesByClient(@Request() req: any, @Param('clientId') clientId: string) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
+  async findPartiesByClient(@Param('clientId') clientId: string) {
     return this.clientPartyService.findByClient(clientId);
   }
 
   @Get('parties/person/:personId')
   @ApiOperation({ summary: 'Get client relationships for a person' })
-  async findPartiesByPerson(@Request() req: any, @Param('personId') personId: string) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
+  async findPartiesByPerson(@Param('personId') personId: string) {
     return this.clientPartyService.findByPerson(personId);
   }
 
   @Get('parties/:id')
   @ApiOperation({ summary: 'Get client-party relationship by ID' })
-  async findOneClientParty(@Request() req: any, @Param('id') id: string) {
-    if (this.isDemoUser(req)) {
-      return null;
-    }
+  async findOneClientParty(@Param('id') id: string) {
     return this.clientPartyService.findOne(id);
   }
 
   @Get(':clientId/primary-contact')
   @ApiOperation({ summary: 'Get primary contact for a client' })
-  async getPrimaryContact(@Request() req: any, @Param('clientId') clientId: string) {
-    if (this.isDemoUser(req)) {
-      return null;
-    }
+  async getPrimaryContact(@Param('clientId') clientId: string) {
     return this.clientPartyService.findPrimaryContact(clientId);
   }
 
   @Get(':clientId/ownership-summary')
   @ApiOperation({ summary: 'Get ownership summary for a client' })
-  async getOwnershipSummary(@Request() req: any, @Param('clientId') clientId: string) {
-    if (this.isDemoUser(req)) {
-      return [];
-    }
+  async getOwnershipSummary(@Param('clientId') clientId: string) {
     return this.clientPartyService.getOwnershipSummary(clientId);
   }
 

@@ -143,7 +143,7 @@ describe('DashboardController', () => {
     it('should return dashboard KPIs', async () => {
       dashboardService.getDashboardKPIs.mockResolvedValue(mockKPIs);
 
-      const result = await controller.getDashboardKPIs();
+      const result = await controller.getDashboardKPIs({} as any);
 
       expect(result).toEqual(mockKPIs);
       expect(dashboardService.getDashboardKPIs).toHaveBeenCalledWith(undefined);
@@ -152,7 +152,7 @@ describe('DashboardController', () => {
     it('should handle portfolio code parameter', async () => {
       dashboardService.getDashboardKPIs.mockResolvedValue(mockKPIs);
 
-      await controller.getDashboardKPIs('1');
+      await controller.getDashboardKPIs({} as any, '1');
 
       expect(dashboardService.getDashboardKPIs).toHaveBeenCalledWith(1);
     });
@@ -162,7 +162,7 @@ describe('DashboardController', () => {
     it('should return week ahead view', async () => {
       dashboardService.getWeekAheadView.mockResolvedValue(mockWeekAhead);
 
-      const result = await controller.getWeekAheadView();
+      const result = await controller.getWeekAheadView({} as any);
 
       expect(result).toEqual(mockWeekAhead);
       expect(dashboardService.getWeekAheadView).toHaveBeenCalledWith(undefined);
@@ -171,7 +171,7 @@ describe('DashboardController', () => {
     it('should handle portfolio code parameter', async () => {
       dashboardService.getWeekAheadView.mockResolvedValue(mockWeekAhead);
 
-      await controller.getWeekAheadView('2');
+      await controller.getWeekAheadView({} as any, '2');
 
       expect(dashboardService.getWeekAheadView).toHaveBeenCalledWith(2);
     });
@@ -181,7 +181,7 @@ describe('DashboardController', () => {
     it('should return priority recommendations', async () => {
       dashboardService.getPriorityRecommendations.mockResolvedValue(mockPriorities);
 
-      const result = await controller.getPriorityRecommendations();
+      const result = await controller.getPriorityRecommendations({} as any);
 
       expect(result).toEqual(mockPriorities);
       expect(dashboardService.getPriorityRecommendations).toHaveBeenCalledWith(undefined);
@@ -192,7 +192,7 @@ describe('DashboardController', () => {
     it('should refresh dashboard data', async () => {
       dashboardService.refreshDashboardData.mockResolvedValue(mockKPIs);
 
-      const result = await controller.refreshDashboard();
+      const result = await controller.refreshDashboard({} as any);
 
       expect(result).toEqual(mockKPIs);
       expect(dashboardService.refreshDashboardData).toHaveBeenCalledWith(undefined);
@@ -204,7 +204,7 @@ describe('DashboardController', () => {
       const mockCacheStatus = { entries: 3, keys: ['kpis_all', 'kpis_1', 'kpis_2'] };
       dashboardService.getCacheStatus.mockReturnValue(mockCacheStatus);
 
-      const result = await controller.getCacheStatus();
+      const result = await controller.getCacheStatus({} as any);
 
       expect(result).toEqual(mockCacheStatus);
       expect(dashboardService.getCacheStatus).toHaveBeenCalled();
