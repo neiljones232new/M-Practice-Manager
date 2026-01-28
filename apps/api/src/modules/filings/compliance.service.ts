@@ -3,6 +3,7 @@ import { FileStorageService } from '../file-storage/file-storage.service';
 import { ClientsService } from '../clients/clients.service';
 import { ServicesService } from '../services/services.service';
 import { ComplianceItem, CreateComplianceItemDto } from '../companies-house/interfaces/companies-house.interface';
+import { Client } from '../clients/interfaces/client.interface';
 
 @Injectable()
 export class ComplianceService {
@@ -1059,9 +1060,9 @@ export class ComplianceService {
             if (clientFile.endsWith('.json')) {
               try {
                 const clientId = clientFile.replace('.json', '');
-                const client = await this.fileStorageService.readJson('clients', clientId, portfolio);
-                if (client && (client as any).id) {
-                  validClientIds.add((client as any).id);
+                const client = await this.fileStorageService.readJson<Client>('clients', clientId, portfolio);
+                if (client?.id) {
+                  validClientIds.add(client.id);
                 }
               } catch (error) {
                 this.logger.warn(`Failed to read client ${clientFile} from portfolio ${portfolio}: ${error.message}`);

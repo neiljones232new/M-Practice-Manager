@@ -16,6 +16,7 @@ import { ServicesModule } from '../services/services.module';
 import { DocumentsModule } from '../documents/documents.module';
 import { AuthModule } from '../auth/auth.module';
 import { AuditModule } from '../audit/audit.module';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuditModule } from '../audit/audit.module';
     DocumentsModule,
     AuthModule,
     AuditModule,
+    DatabaseModule,
   ],
   controllers: [TemplatesController, LettersController],
   providers: [

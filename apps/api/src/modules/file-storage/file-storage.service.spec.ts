@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { FileStorageService } from './file-storage.service';
+import { EncryptionService } from '../security/services/encryption.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { existsSync } from 'fs';
@@ -26,19 +27,25 @@ describe('FileStorageService - File Operations Unit Tests', () => {
   let service: FileStorageService;
   let configService: ConfigService;
   let testStoragePath: string;
+  let encryptionKey: string;
 
   beforeEach(async () => {
     // Create a real temporary directory for each test
     testStoragePath = await createTempDir();
+    // Generate a fixed encryption key for the test
+    encryptionKey = crypto.randomBytes(32).toString('hex');
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FileStorageService,
+        EncryptionService,
         {
           provide: ConfigService,
           useValue: {
             get: jest.fn().mockImplementation((key: string) => {
               if (key === 'STORAGE_PATH') return testStoragePath;
+              if (key === 'ENCRYPTION_KEY') return encryptionKey;
+              if (key === 'FILE_STORAGE_ENCRYPTION') return 'true';
               return undefined;
             }),
           },
@@ -75,10 +82,10 @@ describe('FileStorageService - File Operations Unit Tests', () => {
       const filePath = path.join(testStoragePath, category, `${id}.json`);
       expect(existsSync(filePath)).toBe(true);
 
-      // Verify the content is correct
+      // Verify the content is encrypted at rest
       const content = await fs.readFile(filePath, 'utf8');
       const parsedData = JSON.parse(content);
-      expect(parsedData).toEqual(testData);
+      expect(parsedData.__encrypted).toBe(true);
     });
 
     it('should read JSON data correctly', async () => {
@@ -142,7 +149,7 @@ describe('FileStorageService - File Operations Unit Tests', () => {
     const category = 'clients';
     const id = 'backup-test';
 
-    it('should create backup when overwriting existing file', async () => {
+    it('should not create backups when overwriting existing file (backups disabled)', async () => {
       // Write initial data
       await service.writeJson(category, id, testData);
 
@@ -150,18 +157,15 @@ describe('FileStorageService - File Operations Unit Tests', () => {
       const updatedData = { ...testData, name: 'Updated Client', updatedAt: new Date().toISOString() };
       await service.writeJson(category, id, updatedData);
 
-      // Check that backup directory exists and contains backup
+      // Check that backup directory, if present, contains no backups
       const backupDir = path.join(testStoragePath, 'backups', category);
-      expect(existsSync(backupDir)).toBe(true);
-
-      const backupFiles = await fs.readdir(backupDir);
-      const backupFile = backupFiles.find(file => file.startsWith(`${id}_`));
-      expect(backupFile).toBeDefined();
-
-      // Verify backup contains original data
-      const backupContent = await fs.readFile(path.join(backupDir, backupFile!), 'utf8');
-      const backupData = JSON.parse(backupContent);
-      expect(backupData).toEqual(testData);
+      if (existsSync(backupDir)) {
+        const backupFiles = await fs.readdir(backupDir);
+        const backupFile = backupFiles.find(file => file.startsWith(`${id}_`));
+        expect(backupFile).toBeUndefined();
+      } else {
+        expect(existsSync(backupDir)).toBe(false);
+      }
     });
 
     it('should maintain data integrity with checksums', async () => {
@@ -187,7 +191,7 @@ describe('FileStorageService - File Operations Unit Tests', () => {
       expect(result).toEqual(testData);
     });
 
-    it('should create backup before deletion', async () => {
+    it('should not create backups before deletion (backups disabled)', async () => {
       // Write data first
       await service.writeJson(category, id, testData);
 
@@ -198,11 +202,15 @@ describe('FileStorageService - File Operations Unit Tests', () => {
       const filePath = path.join(testStoragePath, category, `${id}.json`);
       expect(existsSync(filePath)).toBe(false);
 
-      // Verify backup was created
+      // Verify backup was not created
       const backupDir = path.join(testStoragePath, 'backups', category);
-      const backupFiles = await fs.readdir(backupDir);
-      const backupFile = backupFiles.find(file => file.startsWith(`${id}_`));
-      expect(backupFile).toBeDefined();
+      if (existsSync(backupDir)) {
+        const backupFiles = await fs.readdir(backupDir);
+        const backupFile = backupFiles.find(file => file.startsWith(`${id}_`));
+        expect(backupFile).toBeUndefined();
+      } else {
+        expect(existsSync(backupDir)).toBe(false);
+      }
     });
 
     it('should handle corrupted index gracefully', async () => {

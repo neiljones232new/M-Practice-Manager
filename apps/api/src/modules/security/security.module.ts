@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EncryptionService } from './services/encryption.service';
 import { DataRedactionService } from './services/data-redaction.service';
@@ -7,7 +7,7 @@ import { SecureFileStorageService } from './services/secure-file-storage.service
 import { FileStorageModule } from '../file-storage/file-storage.module';
 
 @Module({
-  imports: [ConfigModule, FileStorageModule],
+  imports: [ConfigModule, forwardRef(() => FileStorageModule)],
   providers: [
     EncryptionService,
     DataRedactionService,

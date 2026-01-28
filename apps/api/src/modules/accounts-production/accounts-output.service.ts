@@ -28,7 +28,7 @@ export class AccountsOutputService {
     const storagePath = this.configService.get<string>('STORAGE_PATH') || './storage';
     const resolvedStoragePath = path.isAbsolute(storagePath)
       ? storagePath
-      : path.resolve(repoRoot, storagePath);
+      : path.resolve(cwd, storagePath);
     // Use absolute path for outputs to make them easily accessible
     this.outputsPath = path.resolve(resolvedStoragePath, 'outputs');
     this.storageRoot = path.dirname(this.outputsPath);

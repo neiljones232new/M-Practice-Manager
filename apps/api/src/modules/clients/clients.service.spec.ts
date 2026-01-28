@@ -297,7 +297,7 @@ describe('ClientsService', () => {
         id: 'hacked_id',
         ref: 'HACKED',
         portfolioCode: 999,
-      } as any;
+      };
 
       const result = await service.update('client_123', maliciousUpdate);
 

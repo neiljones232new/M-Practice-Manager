@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useBranding } from '@/contexts/BrandingContext';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
@@ -32,7 +31,7 @@ export function ReportHeader({ title, subtitle }: { title: string; subtitle?: st
   return (
     <div className="print-header" style={{ padding: '16px 8px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Image src={resolvedLogo} alt="Practice Logo" width={42} height={42} />
+        <img src={resolvedLogo} alt="Practice Logo" style={{ width: 42, height: 42 }} />
         <div>
           <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{practiceName}</div>
           <div className="mdj-sub">{practiceLines[0]}</div>

@@ -8,7 +8,7 @@ describe('EncryptionService', () => {
 
   beforeEach(async () => {
     const mockConfigService = {
-      get: jest.fn(),
+      get: jest.fn().mockReturnValue('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'), // 64 char hex = 32 bytes
     };
 
     const module: TestingModule = await Test.createTestingModule({

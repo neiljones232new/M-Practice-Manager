@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { api } from '@/lib/api';
-import type { Client } from '@/lib/types';
+import type { ClientContext } from '@/lib/types';
 
 const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB') : '—');
 const isOverdue = (d?: string | null) => (d ? new Date(d) < new Date() : false);
@@ -15,7 +15,7 @@ const isDueSoon = (d?: string | null, days = 30) => {
 };
 
 export default function ClientsSummaryPage() {
-  const [rows, setRows] = useState<Client[]>([]);
+  const [rows, setRows] = useState<ClientContext[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
   const [portfolio, setPortfolio] = useState<string>('');
@@ -41,24 +41,26 @@ export default function ClientsSummaryPage() {
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return rows.filter((c) => {
-      const txt = `${c.name} ${c.ref || ''} ${c.registeredNumber || ''} ${c.utrNumber || ''}`.toLowerCase();
+      const node = c.node;
+      const txt = `${node.name} ${node.ref || ''} ${node.registeredNumber || ''} ${node.utrNumber || ''}`.toLowerCase();
       const matchesQ = !needle || txt.includes(needle);
-      const matchesP = !portfolio || String(c.portfolioCode || '') === portfolio;
-      const matchesS = !status || c.status === status;
+      const matchesP = !portfolio || String(node.portfolioCode || '') === portfolio;
+      const matchesS = !status || node.status === status;
       return matchesQ && matchesP && matchesS;
     });
   }, [rows, q, portfolio, status]);
 
-  const addressLine = (a?: Client['address']) => a ? [a.line1, a.line2, a.city, a.county, a.postcode, a.country].filter(Boolean).join(', ') : '—';
+  const addressLine = (a?: ClientContext['node']['address']) =>
+    a ? [a.line1, a.line2, a.city, a.county, a.postcode, a.country].filter(Boolean).join(', ') : '—';
 
   // Lazy load party counts when toggled on (best-effort for first 50 to avoid hammering)
   useEffect(() => {
     if (!showCounts) return;
-    const toFetch = filtered.slice(0, 50).filter((c) => !(counts[c.id]));
+    const toFetch = filtered.slice(0, 50).filter((c) => !(counts[c.node.id]));
     if (toFetch.length === 0) return;
     (async () => {
       const results = await Promise.allSettled(
-        toFetch.map((c) => api.get(`/clients/${c.id}/with-parties`).catch(() => null))
+        toFetch.map((c) => api.get(`/clients/${c.node.id}/with-parties`).catch(() => null))
       );
       const next: Record<string, { directors: number; pscs: number }> = { ...counts };
       results.forEach((r, idx) => {
@@ -67,13 +69,13 @@ export default function ClientsSummaryPage() {
           const parties: any[] = (r.value as any).partiesDetails;
           const directors = parties.filter((p) => p.role === 'DIRECTOR').length;
           const pscs = parties.filter((p) => p.role === 'UBO' || p.role === 'OWNER' || p.role === 'SHAREHOLDER').length;
-          next[base.id] = { directors, pscs };
+          next[base.node.id] = { directors, pscs };
         }
       });
       setCounts(next);
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showCounts, filtered.map((c) => c.id).join('|')]);
+  }, [showCounts, filtered.map((c) => c.node.id).join('|')]);
 
   return (
     <MDJShell
@@ -131,28 +133,28 @@ export default function ClientsSummaryPage() {
             </thead>
             <tbody>
               {filtered.map((c) => (
-                <tr key={c.id}>
-                  <td><span className="gold-ref">{c.ref || '—'}</span></td>
-                  <td>{c.status}</td>
-                  <td>{c.name}</td>
-                  <td>{c.registeredNumber || '—'}</td>
-                  <td>{c.utrNumber || '—'}</td>
-                  {showCounts && <td>{counts[c.id]?.directors ?? '—'}</td>}
-                  {showCounts && <td>{counts[c.id]?.pscs ?? '—'}</td>}
-                  <td>{fmt(c.accountsLastMadeUpTo)}</td>
+                <tr key={c.node.id}>
+                  <td><span className="gold-ref">{c.node.ref || '—'}</span></td>
+                  <td>{c.node.status}</td>
+                  <td>{c.node.name}</td>
+                  <td>{c.node.registeredNumber || '—'}</td>
+                  <td>{c.node.utrNumber || '—'}</td>
+                  {showCounts && <td>{counts[c.node.id]?.directors ?? '—'}</td>}
+                  {showCounts && <td>{counts[c.node.id]?.pscs ?? '—'}</td>}
+                  <td>{fmt(c.node.accountsLastMadeUpTo)}</td>
                   <td>
-                    {fmt(c.accountsNextDue)}
-                    {isOverdue(c.accountsNextDue) && <span style={{ marginLeft: 6 }} className="mdj-badge mdj-badge-danger">OVERDUE</span>}
-                    {!isOverdue(c.accountsNextDue) && isDueSoon(c.accountsNextDue) && <span style={{ marginLeft: 6 }} className="mdj-badge mdj-badge-warn">Due soon</span>}
+                    {fmt(c.node.accountsNextDue)}
+                    {isOverdue(c.node.accountsNextDue) && <span style={{ marginLeft: 6 }} className="mdj-badge mdj-badge-danger">OVERDUE</span>}
+                    {!isOverdue(c.node.accountsNextDue) && isDueSoon(c.node.accountsNextDue) && <span style={{ marginLeft: 6 }} className="mdj-badge mdj-badge-warn">Due soon</span>}
                   </td>
-                  <td>{fmt(c.confirmationLastMadeUpTo)}</td>
+                  <td>{fmt(c.node.confirmationLastMadeUpTo)}</td>
                   <td>
-                    {fmt(c.confirmationNextDue)}
-                    {isOverdue(c.confirmationNextDue) && <span style={{ marginLeft: 6 }} className="mdj-badge mdj-badge-danger">OVERDUE</span>}
-                    {!isOverdue(c.confirmationNextDue) && isDueSoon(c.confirmationNextDue) && <span style={{ marginLeft: 6 }} className="mdj-badge mdj-badge-warn">Due soon</span>}
+                    {fmt(c.node.confirmationNextDue)}
+                    {isOverdue(c.node.confirmationNextDue) && <span style={{ marginLeft: 6 }} className="mdj-badge mdj-badge-danger">OVERDUE</span>}
+                    {!isOverdue(c.node.confirmationNextDue) && isDueSoon(c.node.confirmationNextDue) && <span style={{ marginLeft: 6 }} className="mdj-badge mdj-badge-warn">Due soon</span>}
                   </td>
-                  <td>{fmt(c.incorporationDate)}</td>
-                  <td>{addressLine(c.address)}</td>
+                  <td>{fmt(c.node.incorporationDate)}</td>
+                  <td>{addressLine(c.node.address)}</td>
                 </tr>
               ))}
             </tbody>

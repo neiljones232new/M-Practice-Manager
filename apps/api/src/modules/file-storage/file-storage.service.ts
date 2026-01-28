@@ -4,6 +4,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { existsSync } from 'fs';
 import * as crypto from 'crypto';
+import { EncryptionService, EncryptedData } from '../security/services/encryption.service';
 
 export interface FileStorageTransaction {
   id: string;
@@ -38,17 +39,22 @@ export class FileStorageService {
   private readonly snapshotPath: string;
   private readonly indexPath: string;
   private readonly lockPath: string;
+  private readonly encryptAtRest: boolean;
   private readonly activeLocks = new Set<string>();
   private readonly pendingTransactions = new Map<string, FileStorageTransaction>();
 
   private searchService: any; // Will be injected later to avoid circular dependency
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly encryptionService: EncryptionService,
+  ) {
     this.storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
     this.backupPath = path.join(this.storagePath, 'backups');
     this.snapshotPath = path.join(this.storagePath, 'snapshots');
     this.indexPath = path.join(this.storagePath, 'indexes');
     this.lockPath = path.join(this.storagePath, '.locks');
+    this.encryptAtRest = this.resolveEncryptionSetting();
     this.initializeStorage();
   }
 
@@ -126,6 +132,56 @@ export class FileStorageService {
     }
   }
 
+  private resolveEncryptionSetting(): boolean {
+    const setting = this.configService.get<string>('FILE_STORAGE_ENCRYPTION');
+    const disabled = setting !== undefined
+      && ['false', '0', 'off'].includes(String(setting).toLowerCase());
+    if (disabled) {
+      return false;
+    }
+
+    const hasKey = this.encryptionService.hasConfiguredKey();
+    if (setting !== undefined && !hasKey) {
+      this.logger.warn('FILE_STORAGE_ENCRYPTION enabled but ENCRYPTION_KEY is missing; disabling at-rest encryption.');
+      return false;
+    }
+
+    if (setting === undefined) {
+      return hasKey;
+    }
+
+    return true;
+  }
+
+  private encryptPayload(jsonData: string): { __encrypted: true; version: number; payload: EncryptedData } {
+    return {
+      __encrypted: true,
+      version: 1,
+      payload: this.encryptionService.encrypt(jsonData),
+    };
+  }
+
+  private decryptIfNeeded(parsed: unknown): string {
+    if (this.isEncryptedPayload(parsed)) {
+      return this.encryptionService.decrypt(parsed.payload);
+    }
+    return JSON.stringify(parsed);
+  }
+
+  private isEncryptedPayload(value: unknown): value is { __encrypted: true; version: number; payload: EncryptedData } {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+    const record = value as Record<string, unknown>;
+    const payload = record.payload as EncryptedData | undefined;
+    return record.__encrypted === true
+      && typeof record.version === 'number'
+      && payload
+      && typeof payload.data === 'string'
+      && typeof payload.iv === 'string'
+      && typeof payload.tag === 'string';
+  }
+
   async writeJson<T>(category: string, id: string, data: T, portfolioCode?: number): Promise<void> {
     const lockKey = `${category}/${id}`;
     
@@ -142,11 +198,14 @@ export class FileStorageService {
       // Write data atomically using a temporary file
       const tempPath = `${filePath}.tmp`;
       const jsonData = JSON.stringify(data, null, 2);
-      await fs.writeFile(tempPath, jsonData, 'utf8');
+      const storedContent = this.encryptAtRest
+        ? JSON.stringify(this.encryptPayload(jsonData), null, 2)
+        : jsonData;
+      await fs.writeFile(tempPath, storedContent, 'utf8');
       await fs.rename(tempPath, filePath);
       
       // Update index
-      await this.updateIndex(category, id, jsonData);
+      await this.updateIndex(category, id, storedContent);
       
       // Update search index if search service is available
       if (this.searchService) {
@@ -210,7 +269,9 @@ export class FileStorageService {
       }
 
       const content = await fs.readFile(filePath, 'utf8');
-      const data = JSON.parse(content) as T;
+      const parsed = JSON.parse(content) as unknown;
+      const jsonContent = this.decryptIfNeeded(parsed);
+      const data = JSON.parse(jsonContent) as T;
       
       // Temporarily disable data integrity check for debugging
       // await this.verifyDataIntegrity(category, id, content);
@@ -488,7 +549,7 @@ export class FileStorageService {
     }
   }
 
-  private async updateIndex(category: string, id: string, jsonData: string): Promise<void> {
+  private async updateIndex(category: string, id: string, storedContent: string): Promise<void> {
     const indexFile = path.join(this.indexPath, `${category}.json`);
     
     try {
@@ -498,8 +559,8 @@ export class FileStorageService {
 
       index[id] = {
         lastModified: new Date(),
-        size: Buffer.byteLength(jsonData, 'utf8'),
-        checksum: crypto.createHash('sha256').update(jsonData).digest('hex')
+        size: Buffer.byteLength(storedContent, 'utf8'),
+        checksum: crypto.createHash('sha256').update(storedContent).digest('hex')
       };
 
       await fs.writeFile(indexFile, JSON.stringify(index, null, 2), 'utf8');

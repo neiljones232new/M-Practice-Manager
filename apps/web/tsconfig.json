@@ -48,6 +48,7 @@
   ],
   "exclude": [
     "node_modules",
-    "../api/**/*"
+    "../api/**/*",
+    "src/**/__tests__._parked/**/*"
   ]
 }

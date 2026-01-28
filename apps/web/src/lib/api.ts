@@ -10,7 +10,7 @@
 export const DEFAULT_API = 'http://127.0.0.1:3001/api/v1';
 export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || DEFAULT_API).replace(/\/+$/, '');
 
-import type { Client, Service, Task } from './types';
+import type { Client, ClientContext, Service, Task } from './types';
 
 export interface LoginRequest {
   email: string;
@@ -323,9 +323,12 @@ class ApiClient {
   }
 
   // ---- Example domain calls (typed) ----
-  async getClients(params?: Record<string, any>): Promise<Client[]> {
-    const query = new URLSearchParams(params || {}).toString();
-    return this.request<Client[]>(`/clients${query ? `?${query}` : ''}`);
+  async getClients(params?: Record<string, any>): Promise<ClientContext[]> {
+    const query = new URLSearchParams({
+      ...(params || {}),
+      includeContext: 'true',
+    }).toString();
+    return this.request<ClientContext[]>(`/clients${query ? `?${query}` : ''}`);
   }
 
   async getClient(id: string): Promise<Client> {

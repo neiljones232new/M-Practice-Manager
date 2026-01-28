@@ -310,6 +310,7 @@ export const MDJCheckbox: React.FC<{
   checked?: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   className?: string;
+  disabled?: boolean;
 }> = ({ label, checked, onChange, className = '', ...props }) => (
   <label className={`flex items-center gap-2 ${className}`} style={{ color: 'var(--text-dark)' }}>
     <input

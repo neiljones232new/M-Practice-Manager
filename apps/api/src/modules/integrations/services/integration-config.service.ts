@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { FileStorageService } from '../../file-storage/file-storage.service';
-import { EncryptionService } from './encryption.service';
+import { EncryptionService } from '../../security/services/encryption.service';
 import {
   IntegrationConfig,
   CreateIntegrationConfigDto,
@@ -72,7 +72,7 @@ export class IntegrationConfigService {
       name: dto.name,
       type: dto.type,
       enabled: dto.enabled ?? true,
-      apiKey: dto.apiKey ? this.encryption.encrypt(dto.apiKey) : undefined,
+      apiKey: dto.apiKey || undefined,
       baseUrl: dto.baseUrl || '',
       settings: dto.settings || {},
       status: 'DISCONNECTED',
@@ -107,9 +107,7 @@ export class IntegrationConfigService {
     integrations[index] = {
       ...integration,
       ...dto,
-      apiKey: dto.apiKey
-        ? this.encryption.encrypt(dto.apiKey)
-        : integration.apiKey,
+      apiKey: dto.apiKey || integration.apiKey,
       updatedAt: new Date(),
     };
 
@@ -130,12 +128,7 @@ export class IntegrationConfigService {
     const integration = integrations.find((i) => i.type === type && i.enabled);
     if (!integration?.apiKey) return null;
 
-    try {
-      return this.encryption.decrypt(integration.apiKey);
-    } catch (err) {
-      this.logger.error(`Failed to decrypt key for ${type}`, err);
-      return null;
-    }
+    return integration.apiKey;
   }
 
   async updateIntegrationStatus(
@@ -275,9 +268,7 @@ export class IntegrationConfigService {
         name: 'OpenAI GPT',
         type: 'OPENAI',
         enabled: !!process.env.OPENAI_API_KEY,
-        apiKey: process.env.OPENAI_API_KEY
-          ? this.encryption.encrypt(process.env.OPENAI_API_KEY)
-          : undefined,
+        apiKey: process.env.OPENAI_API_KEY || undefined,
         baseUrl: 'https://api.openai.com/v1',
         settings: { model: 'gpt-4' },
         status: process.env.OPENAI_API_KEY ? 'CONNECTED' : 'DISCONNECTED',
@@ -289,9 +280,7 @@ export class IntegrationConfigService {
         name: 'Companies House',
         type: 'COMPANIES_HOUSE',
         enabled: !!process.env.COMPANIES_HOUSE_API_KEY,
-        apiKey: process.env.COMPANIES_HOUSE_API_KEY
-          ? this.encryption.encrypt(process.env.COMPANIES_HOUSE_API_KEY)
-          : undefined,
+        apiKey: process.env.COMPANIES_HOUSE_API_KEY || undefined,
         baseUrl: 'https://api.company-information.service.gov.uk',
         settings: { rateLimit: 600 },
         status: process.env.COMPANIES_HOUSE_API_KEY ? 'CONNECTED' : 'DISCONNECTED',
@@ -303,9 +292,7 @@ export class IntegrationConfigService {
         name: 'GOV.UK Notify',
         type: 'GOV_NOTIFY',
         enabled: !!process.env.GOVUK_NOTIFY_API_KEY,
-        apiKey: process.env.GOVUK_NOTIFY_API_KEY
-          ? this.encryption.encrypt(process.env.GOVUK_NOTIFY_API_KEY)
-          : undefined,
+        apiKey: process.env.GOVUK_NOTIFY_API_KEY || undefined,
         baseUrl: 'https://api.notifications.service.gov.uk',
         settings: {},
         status: process.env.GOVUK_NOTIFY_API_KEY ? 'CONNECTED' : 'DISCONNECTED',

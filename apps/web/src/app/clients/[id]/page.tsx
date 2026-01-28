@@ -1,23 +1,12 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { api, API_BASE_URL } from '@/lib/api';
-import { MDJModal } from '@/components/mdj-ui';
+import type { ClientContextWithParties, ServiceEligibility } from '@/lib/types';
 
 type ClientType = 'COMPANY' | 'INDIVIDUAL' | 'SOLE_TRADER' | 'PARTNERSHIP' | 'LLP';
-type ClientStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
-type ClientPartyRole =
-  | 'DIRECTOR'
-  | 'SHAREHOLDER'
-  | 'PARTNER'
-  | 'MEMBER'
-  | 'OWNER'
-  | 'UBO'
-  | 'SECRETARY'
-  | 'CONTACT';
-
 type Person = {
   id: string;
   ref?: string;
@@ -40,78 +29,26 @@ type Person = {
   updatedAt?: string;
 };
 
-type ClientParty = {
-  id: string;
-  clientId: string;
-  personId: string;
-  role: ClientPartyRole;
-  ownershipPercent?: number;
-  appointedAt?: string;
-  resignedAt?: string;
-  primaryContact: boolean;
-  suffixLetter: string;
-};
-
-type Client = {
-  id: string;
-  ref?: string;
-  name: string;
-  type: ClientType;
-  status: ClientStatus;
-  portfolioCode?: number;
-  mainEmail?: string;
-  mainPhone?: string;
-  registeredNumber?: string;
-  utrNumber?: string;
-  vatNumber?: string;
-  payeReference?: string;
-  accountsOfficeReference?: string;
-  cisUtr?: string;
-  mtdVatEnabled?: boolean;
-  mtdItsaEnabled?: boolean;
-  eoriNumber?: string;
-  hmrcCtStatus?: HMRCRegistrationStatus;
-  hmrcSaStatus?: HMRCRegistrationStatus;
-  hmrcVatStatus?: HMRCRegistrationStatus;
-  hmrcPayeStatus?: HMRCRegistrationStatus;
-  hmrcCisStatus?: HMRCRegistrationStatus;
-  hmrcMtdVatStatus?: HMRCRegistrationStatus;
-  hmrcMtdItsaStatus?: HMRCRegistrationStatus;
-  hmrcEoriStatus?: HMRCRegistrationStatus;
-  incorporationDate?: string;
-  accountsAccountingReferenceDay?: number;
-  accountsAccountingReferenceMonth?: number;
-  accountsLastMadeUpTo?: string;
-  accountsNextDue?: string;
-  confirmationLastMadeUpTo?: string;
-  confirmationNextDue?: string;
-  address?: {
-    line1?: string;
-    line2?: string;
-    city?: string;
-    county?: string;
-    postcode?: string;
-    country?: string;
-  };
-  partiesDetails?: ClientParty[];
-  createdAt: string;
-  updatedAt: string;
-};
-
 type Task = {
   id: string;
   title: string;
   description?: string;
   status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'OVERDUE' | string;
   dueDate?: string;
+  tags?: string[];
+  serviceId?: string;
 };
 
 type Compliance = {
   id: string;
+  clientId?: string;
+  serviceId?: string;
   type: string;
   description?: string;
   status: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT' | string;
   dueDate?: string;
+  period?: string;
+  source?: 'COMPANIES_HOUSE' | 'HMRC' | 'MANUAL' | string;
 };
 
 type Document = {
@@ -132,6 +69,7 @@ type Service = {
   annualized?: number;
   status?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   nextDue?: string;
+  eligibility?: ServiceEligibility;
 };
 
 type AccountsSet = {
@@ -214,12 +152,6 @@ const currencyFormatter = new Intl.NumberFormat('en-GB', {
 });
 
 const formatCurrency = (value?: number) => (typeof value === 'number' ? currencyFormatter.format(value) : '—');
-const toDateInput = (value?: string) => {
-  if (!value) return '';
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toISOString().slice(0, 10);
-};
 const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const HMRC_STATUS_LABELS: Record<HMRCRegistrationStatus, string> = {
   NOT_REGISTERED: 'Not registered',
@@ -227,23 +159,41 @@ const HMRC_STATUS_LABELS: Record<HMRCRegistrationStatus, string> = {
   APPLIED_FOR: 'Applied for',
   REGISTERED: 'Registered',
   DEREGISTERED: 'Deregistered',
-  MISSING_DATA: 'Missing data',
+  MISSING_DATA: 'Not recorded',
+};
+
+const normalizeHmrcStatus = (value?: string | null): HMRCRegistrationStatus => {
+  const key = String(value || '').toUpperCase();
+  if (key === 'NOT_REGISTERED') return 'NOT_REGISTERED';
+  if (key === 'NOT_APPLICABLE') return 'NOT_APPLICABLE';
+  if (key === 'APPLIED_FOR') return 'APPLIED_FOR';
+  if (key === 'REGISTERED') return 'REGISTERED';
+  if (key === 'DEREGISTERED') return 'DEREGISTERED';
+  return 'MISSING_DATA';
 };
 
 const hmrcStatusBadge = (status: HMRCRegistrationStatus) => {
   if (status === 'REGISTERED') return 'success';
   if (status === 'APPLIED_FOR') return 'warning';
   if (status === 'NOT_REGISTERED') return 'default';
-  if (status === 'MISSING_DATA') return 'danger';
+  if (status === 'MISSING_DATA') return 'default';
   return 'default';
+};
+
+const complianceAuthority = (source?: string | null) => {
+  const key = String(source || '').toUpperCase();
+  if (key === 'COMPANIES_HOUSE') return 'Companies House';
+  if (key === 'HMRC') return 'HMRC';
+  return 'Manual';
 };
 
 export default function ClientDetailsPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
   const clientId = params?.id as string;
 
-  const [client, setClient] = useState<Client | null>(null);
+  const [clientContext, setClientContext] = useState<ClientContextWithParties | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -263,31 +213,11 @@ export default function ClientDetailsPage() {
   const [chOfficers, setChOfficers] = useState<any[]>([]);
   const [chPscs, setChPscs] = useState<any[]>([]);
   const [chFilings, setChFilings] = useState<any[]>([]);
-  const [editOpen, setEditOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [deletingParty, setDeletingParty] = useState<Record<string, boolean>>({});
-  const [partyMsg, setPartyMsg] = useState<string | null>(null);
-  const [settingPrimary, setSettingPrimary] = useState<Record<string, boolean>>({});
   const [docDeleting, setDocDeleting] = useState<Record<string, boolean>>({});
-  const [complianceDeleting, setComplianceDeleting] = useState<Record<string, boolean>>({});
   const [lettersDownloading, setLettersDownloading] = useState<Record<string, boolean>>({});
   const [tabMessage, setTabMessage] = useState<{ text: string; error?: boolean } | null>(null);
-  const [editMessage, setEditMessage] = useState<{ text: string; error?: boolean } | null>(null);
   const [chError, setChError] = useState<string | null>(null);
   const [actionsOpen, setActionsOpen] = useState(false);
-
-  const [form, setForm] = useState<any>({});
-  const [portfolios, setPortfolios] = useState<Array<{ code: number; name: string }>>([]);
-  const [newPortfolio, setNewPortfolio] = useState<number | null>(null);
-  const [moving, setMoving] = useState(false);
-  const [moveMsg, setMoveMsg] = useState<string | null>(null);
-  const [refValue, setRefValue] = useState<string>('');
-  const [refSaving, setRefSaving] = useState(false);
-  const [partyEditOpen, setPartyEditOpen] = useState(false);
-  const [partyEditing, setPartyEditing] = useState<{ party: ClientParty; person: Person | null } | null>(null);
-  const [partyForm, setPartyForm] = useState<any>({});
-  const [partySaving, setPartySaving] = useState(false);
-  const [partyEditMsg, setPartyEditMsg] = useState<string | null>(null);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [docCategory, setDocCategory] = useState<string>('OTHER');
   const [docDescription, setDocDescription] = useState<string>('');
@@ -303,29 +233,17 @@ export default function ClientDetailsPage() {
   const [showFormerOfficers, setShowFormerOfficers] = useState(false);
   const [showFormerPscs, setShowFormerPscs] = useState(false);
 
-  // Set default tab to 'services' for better UX
-  const [tab, setTab] = useState<'info' | 'services' | 'accounts' | 'tax' | 'tasks' | 'compliance' | 'documents' | 'letters' | 'ch' | 'people'>('info');
+  const [tab, setTab] = useState<'profile' | 'services' | 'accounts' | 'tax' | 'tasks' | 'compliance' | 'documents' | 'letters' | 'ch' | 'people'>('profile');
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
+  const [refreshTick, setRefreshTick] = useState(0);
   const peopleCacheRef = useRef<Record<string, Person | null>>({});
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const list = await api.get('/portfolios');
-        const items = (Array.isArray(list) ? list : [])
-          .map((p: any) => ({
-            code: Number(p.code ?? p.portfolioCode ?? p.id),
-            name: p.name || `Portfolio ${p.code ?? p.portfolioCode ?? p.id}`,
-          }))
-          .filter((p: any) => Number.isFinite(p.code))
-          .sort((a: any, b: any) => a.code - b.code);
-        setPortfolios(items);
-      } catch {
-        setPortfolios([]);
-      }
-    })();
-  }, []);
+  const client = clientContext?.node ?? null;
+  const profile = clientContext?.profile;
+  const computed = clientContext?.computed;
+  const partiesDetails = useMemo(() => clientContext?.partiesDetails ?? [], [clientContext?.partiesDetails]);
+
 
   useEffect(() => {
     (async () => {
@@ -347,11 +265,11 @@ export default function ClientDetailsPage() {
       try {
         setLoading(true);
         setErr(null);
-        const c = await api.get<Client>(`/clients/${clientId}/with-parties`).catch((e) => {
+        const c = await api.get<ClientContextWithParties>(`/clients/${clientId}/with-parties`, { params: { t: refreshTick } }).catch((e) => {
           throw new Error((e as Error)?.message || 'Failed to load client');
         });
 
-        const effectiveId = c?.id || clientId;
+        const effectiveId = c?.node?.id || clientId;
         const [s, t, d, comp, ltrs, aSets, tCalcs] = await Promise.all([
           api.get(`/services/client/${effectiveId}`).catch(() => []) as Promise<Service[]>,
           api.get(`/tasks/client/${effectiveId}`).catch(() => []) as Promise<Task[]>,
@@ -363,7 +281,7 @@ export default function ClientDetailsPage() {
         ]);
 
         if (on) {
-          setClient(c);
+          setClientContext(c);
           setPartyPeople({});
           peopleCacheRef.current = {};
           setServices(Array.isArray(s) ? s : []);
@@ -383,6 +301,33 @@ export default function ClientDetailsPage() {
     })();
     return () => {
       on = false;
+    };
+  }, [clientId, refreshTick]);
+
+  useEffect(() => {
+    const updated = searchParams?.get('updated');
+    if (updated) {
+      setRefreshTick((t) => t + 1);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel('mdj');
+      bc.onmessage = (ev) => {
+        if (ev?.data?.topic === 'clients:changed') {
+          setRefreshTick((t) => t + 1);
+        }
+        if (ev?.data?.topic === 'client:updated' && ev?.data?.clientId === clientId) {
+          setRefreshTick((t) => t + 1);
+        }
+      };
+    } catch {
+      // ignore BroadcastChannel issues
+    }
+    return () => {
+      try { bc?.close(); } catch {}
     };
   }, [clientId]);
 
@@ -473,21 +418,6 @@ export default function ClientDetailsPage() {
     }
   };
 
-  const handleDeleteCompliance = async (id: string) => {
-    const ok = window.confirm('Delete this compliance item?');
-    if (!ok) return;
-    setComplianceDeleting((prev) => ({ ...prev, [id]: true }));
-    setTabMessage(null);
-    try {
-      await api.delete(`/compliance/${id}`);
-      setCompliance((prev) => prev.filter((item) => item.id !== id));
-      setTabMessage({ text: 'Compliance item deleted.' });
-    } catch (e: any) {
-      setTabMessage({ text: e?.message || 'Failed to delete compliance item.', error: true });
-    } finally {
-      setComplianceDeleting((prev) => ({ ...prev, [id]: false }));
-    }
-  };
 
   const handleDocumentDownload = async (doc: Document, preview = false) => {
     try {
@@ -633,15 +563,17 @@ export default function ClientDetailsPage() {
   };
 
   useEffect(() => {
-    const parties = client?.partiesDetails ?? [];
+    const parties = partiesDetails ?? [];
     if (parties.length === 0) {
-      setPartyPeople({});
+      setPartyPeople((prev) => (Object.keys(prev).length === 0 ? prev : {}));
       return;
     }
 
     let on = true;
     (async () => {
-      const uniqueIds = Array.from(new Set(parties.map((party) => party.personId).filter(Boolean)));
+      const uniqueIds = Array.from(
+        new Set(parties.map((party) => party.personId).filter((id): id is string => Boolean(id)))
+      );
       const cachedMap = peopleCacheRef.current;
       const missingIds = uniqueIds.filter((personId) => !(personId in cachedMap));
 
@@ -672,7 +604,7 @@ export default function ClientDetailsPage() {
     return () => {
       on = false;
     };
-  }, [client?.partiesDetails]);
+  }, [partiesDetails]);
 
   const addressLine = useMemo(() => {
     if (!client?.address) return '';
@@ -681,11 +613,11 @@ export default function ClientDetailsPage() {
   }, [client]);
 
   const primaryParty = useMemo(() => {
-    return client?.partiesDetails?.find((party) => party.primaryContact);
-  }, [client?.partiesDetails]);
+    return partiesDetails.find((party) => party.primaryContact);
+  }, [partiesDetails]);
 
-  const primaryPerson = primaryParty ? partyPeople[primaryParty.personId] : null;
-  const parties = client?.partiesDetails ?? [];
+  const primaryPerson = primaryParty?.personId ? partyPeople[primaryParty.personId] : null;
+  const parties = partiesDetails;
   const sortedFilings = useMemo(() => {
     const list = Array.isArray(chFilings) ? [...chFilings] : [];
     const getDate = (item: any) => item?.date || item?.transaction_date || item?.received_date;
@@ -831,6 +763,22 @@ export default function ClientDetailsPage() {
       ? 'default'
       : 'default';
 
+  const badgeForLifecycle = (s?: string) => {
+    const key = String(s || '').toUpperCase();
+    if (key === 'ACTIVE') return 'success';
+    if (key === 'ONBOARDING' || key === 'PROSPECT') return 'warning';
+    if (key === 'DORMANT' || key === 'CEASED') return 'default';
+    return 'default';
+  };
+
+  const badgeForRisk = (rating?: string) => {
+    const key = String(rating || '').toLowerCase();
+    if (key.includes('high')) return 'danger';
+    if (key.includes('medium')) return 'warning';
+    if (key.includes('low')) return 'success';
+    return 'default';
+  };
+
   const handleSync = async () => {
     if (!client?.ref) return;
     setSyncMessage(null);
@@ -838,9 +786,9 @@ export default function ClientDetailsPage() {
     try {
       const res = await api.post<{ message?: string }>(`/companies-house/sync/${client.ref}`);
       setSyncMessage({ text: res?.message || 'Synchronized with Companies House', error: false });
-      const refreshed = await api.get<Client>(`/clients/${clientId}/with-parties`).catch(() => null);
+      const refreshed = await api.get<ClientContextWithParties>(`/clients/${clientId}/with-parties`).catch(() => null);
       if (refreshed) {
-        setClient(refreshed);
+        setClientContext(refreshed);
         try { new BroadcastChannel('mdj').postMessage({ topic: 'clients:changed' }); } catch {}
       }
     } catch (error: any) {
@@ -878,285 +826,7 @@ export default function ClientDetailsPage() {
     }
   };
 
-  const setField = (key: string, value: any) => {
-    setForm((prev: any) => ({ ...prev, [key]: value }));
-  };
 
-  const setAddressField = (key: string, value: string) => {
-    setForm((prev: any) => ({
-      ...prev,
-      address: { ...(prev.address || {}), [key]: value },
-    }));
-  };
-
-  const openEdit = () => {
-    if (!client) return;
-    setForm({
-      name: client.name || '',
-      type: client.type,
-      status: client.status,
-      mainEmail: client.mainEmail || '',
-      mainPhone: client.mainPhone || '',
-      registeredNumber: client.registeredNumber || '',
-      utrNumber: client.utrNumber || '',
-      vatNumber: client.vatNumber || '',
-      payeReference: client.payeReference || '',
-      accountsOfficeReference: client.accountsOfficeReference || '',
-      cisUtr: client.cisUtr || '',
-      eoriNumber: client.eoriNumber || '',
-      mtdVatEnabled: Boolean(client.mtdVatEnabled),
-      mtdItsaEnabled: Boolean(client.mtdItsaEnabled),
-      hmrcCtStatus: client.hmrcCtStatus || 'MISSING_DATA',
-      hmrcSaStatus: client.hmrcSaStatus || 'MISSING_DATA',
-      hmrcVatStatus: client.hmrcVatStatus || 'MISSING_DATA',
-      hmrcPayeStatus: client.hmrcPayeStatus || 'MISSING_DATA',
-      hmrcCisStatus: client.hmrcCisStatus || 'MISSING_DATA',
-      hmrcMtdVatStatus: client.hmrcMtdVatStatus || 'MISSING_DATA',
-      hmrcMtdItsaStatus: client.hmrcMtdItsaStatus || 'MISSING_DATA',
-      hmrcEoriStatus: client.hmrcEoriStatus || 'MISSING_DATA',
-      incorporationDate: toDateInput(client.incorporationDate),
-      accountsAccountingReferenceDay: client.accountsAccountingReferenceDay ?? '',
-      accountsAccountingReferenceMonth: client.accountsAccountingReferenceMonth ?? '',
-      accountsLastMadeUpTo: toDateInput(client.accountsLastMadeUpTo),
-      accountsNextDue: toDateInput(client.accountsNextDue),
-      confirmationLastMadeUpTo: toDateInput(client.confirmationLastMadeUpTo),
-      confirmationNextDue: toDateInput(client.confirmationNextDue),
-      address: {
-        line1: client.address?.line1 || '',
-        line2: client.address?.line2 || '',
-        city: client.address?.city || '',
-        county: client.address?.county || '',
-        postcode: client.address?.postcode || '',
-        country: client.address?.country || 'United Kingdom',
-      },
-    });
-    setRefValue(client.ref || '');
-    setNewPortfolio(client.portfolioCode ?? null);
-    setEditMessage(null);
-    setMoveMsg(null);
-    setEditOpen(true);
-  };
-
-  const handleSaveClient = async () => {
-    if (!client) return;
-    setSaving(true);
-    setEditMessage(null);
-    try {
-      const payload = {
-        name: form.name?.trim() || client.name,
-        type: form.type,
-        status: form.status,
-        mainEmail: form.mainEmail || '',
-        mainPhone: form.mainPhone || '',
-        registeredNumber: form.registeredNumber || '',
-        utrNumber: form.utrNumber || '',
-        vatNumber: form.vatNumber || '',
-        payeReference: form.payeReference || '',
-        accountsOfficeReference: form.accountsOfficeReference || '',
-        cisUtr: form.cisUtr || '',
-        eoriNumber: form.eoriNumber || '',
-        mtdVatEnabled: Boolean(form.mtdVatEnabled),
-        mtdItsaEnabled: Boolean(form.mtdItsaEnabled),
-        hmrcCtStatus: form.hmrcCtStatus,
-        hmrcSaStatus: form.hmrcSaStatus,
-        hmrcVatStatus: form.hmrcVatStatus,
-        hmrcPayeStatus: form.hmrcPayeStatus,
-        hmrcCisStatus: form.hmrcCisStatus,
-        hmrcMtdVatStatus: form.hmrcMtdVatStatus,
-        hmrcMtdItsaStatus: form.hmrcMtdItsaStatus,
-        hmrcEoriStatus: form.hmrcEoriStatus,
-        incorporationDate: form.incorporationDate || null,
-        accountsAccountingReferenceDay: form.accountsAccountingReferenceDay ? Number(form.accountsAccountingReferenceDay) : null,
-        accountsAccountingReferenceMonth: form.accountsAccountingReferenceMonth ? Number(form.accountsAccountingReferenceMonth) : null,
-        accountsLastMadeUpTo: form.accountsLastMadeUpTo || null,
-        accountsNextDue: form.accountsNextDue || null,
-        confirmationLastMadeUpTo: form.confirmationLastMadeUpTo || null,
-        confirmationNextDue: form.confirmationNextDue || null,
-        address: {
-          line1: form.address?.line1 || '',
-          line2: form.address?.line2 || '',
-          city: form.address?.city || '',
-          county: form.address?.county || '',
-          postcode: form.address?.postcode || '',
-          country: form.address?.country || 'United Kingdom',
-        },
-      };
-
-      await api.put(`/clients/${client.id}`, payload);
-      const refreshed = await api.get<Client>(`/clients/${client.id}/with-parties`);
-      setClient(refreshed);
-      setEditOpen(false);
-    } catch (e: any) {
-      setEditMessage({ text: e?.message || 'Failed to update client.', error: true });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleUpdateRef = async () => {
-    if (!client) return;
-    const nextRef = refValue.trim();
-    if (!nextRef || nextRef === client.ref) return;
-    setRefSaving(true);
-    setEditMessage(null);
-    try {
-      await api.put(`/clients/${client.id}/ref`, { ref: nextRef });
-      const refreshed = await api.get<Client>(`/clients/${client.id}/with-parties`);
-      setClient(refreshed);
-      router.replace(`/clients/${refreshed.id}`);
-    } catch (e: any) {
-      setEditMessage({ text: e?.message || 'Failed to update client reference.', error: true });
-    } finally {
-      setRefSaving(false);
-    }
-  };
-
-  const handleMovePortfolio = async () => {
-    if (!client || newPortfolio === null || newPortfolio === client.portfolioCode) return;
-    setMoving(true);
-    setMoveMsg(null);
-    try {
-      await api.put(`/clients/${client.id}/portfolio`, { portfolioCode: newPortfolio });
-      const refreshed = await api.get<Client>(`/clients/${client.id}/with-parties`);
-      setClient(refreshed);
-      router.replace(`/clients/${refreshed.id}`);
-    } catch (e: any) {
-      setMoveMsg(e?.message || 'Failed to move portfolio.');
-    } finally {
-      setMoving(false);
-    }
-  };
-
-  const handleSetPrimary = async (party: ClientParty) => {
-    if (!client?.id) return;
-    setSettingPrimary((prev) => ({ ...prev, [party.id]: true }));
-    setPartyMsg(null);
-    try {
-      await api.put(`/clients/parties/${party.id}`, { primaryContact: true });
-      const refreshed = await api.get<Client>(`/clients/${client?.id}/with-parties`);
-      setClient(refreshed);
-    } catch (e: any) {
-      setPartyMsg(e?.message || 'Failed to update primary contact.');
-    } finally {
-      setSettingPrimary((prev) => ({ ...prev, [party.id]: false }));
-    }
-  };
-
-  const handleResignParty = async (party: ClientParty) => {
-    if (!client?.id) return;
-    const ok = window.confirm('Mark this party as resigned?');
-    if (!ok) return;
-    setPartyMsg(null);
-    try {
-      await api.put(`/clients/parties/${party.id}/resign`, {});
-      const refreshed = await api.get<Client>(`/clients/${client?.id}/with-parties`);
-      setClient(refreshed);
-    } catch (e: any) {
-      setPartyMsg(e?.message || 'Failed to resign party.');
-    }
-  };
-
-  const handleDeleteParty = async (party: ClientParty) => {
-    if (!client?.id) return;
-    const ok = window.confirm('Remove this party from the client?');
-    if (!ok) return;
-    setDeletingParty((prev) => ({ ...prev, [party.id]: true }));
-    setPartyMsg(null);
-    try {
-      await api.delete(`/clients/parties/${party.id}`);
-      const refreshed = await api.get<Client>(`/clients/${client?.id}/with-parties`);
-      setClient(refreshed);
-    } catch (e: any) {
-      setPartyMsg(e?.message || 'Failed to delete party.');
-    } finally {
-      setDeletingParty((prev) => ({ ...prev, [party.id]: false }));
-    }
-  };
-
-  const openPartyEditor = async (party: ClientParty) => {
-    setPartyEditMsg(null);
-    let person = partyPeople[party.personId] || null;
-    if (!person) {
-      try {
-        person = await api.get<Person>(`/clients/people/${party.personId}`);
-      } catch {
-        person = null;
-      }
-    }
-
-    setPartyEditing({ party, person });
-    setPartyForm({
-      role: party.role,
-      ownershipPercent: party.ownershipPercent ?? '',
-      appointedAt: toDateInput(party.appointedAt),
-      resignedAt: toDateInput(party.resignedAt),
-      primaryContact: party.primaryContact,
-      firstName: person?.firstName || '',
-      lastName: person?.lastName || '',
-      email: person?.email || '',
-      phone: person?.phone || '',
-      nationality: person?.nationality || '',
-      dateOfBirth: toDateInput(person?.dateOfBirth),
-      address: {
-        line1: person?.address?.line1 || '',
-        line2: person?.address?.line2 || '',
-        city: person?.address?.city || '',
-        county: person?.address?.county || '',
-        postcode: person?.address?.postcode || '',
-        country: person?.address?.country || 'United Kingdom',
-      },
-    });
-    setPartyEditOpen(true);
-  };
-
-  const handleSaveParty = async () => {
-    if (!partyEditing) return;
-    setPartySaving(true);
-    setPartyEditMsg(null);
-    try {
-      const personPayload = {
-        firstName: partyForm.firstName?.trim() || '',
-        lastName: partyForm.lastName?.trim() || '',
-        email: partyForm.email || '',
-        phone: partyForm.phone || '',
-        nationality: partyForm.nationality || '',
-        dateOfBirth: partyForm.dateOfBirth || null,
-        address: {
-          line1: partyForm.address?.line1 || '',
-          line2: partyForm.address?.line2 || '',
-          city: partyForm.address?.city || '',
-          county: partyForm.address?.county || '',
-          postcode: partyForm.address?.postcode || '',
-          country: partyForm.address?.country || 'United Kingdom',
-        },
-      };
-
-      if (partyEditing.person?.id) {
-        await api.put(`/clients/people/${partyEditing.person.id}`, personPayload);
-      }
-
-      await api.put(`/clients/parties/${partyEditing.party.id}`, {
-        role: partyForm.role,
-        ownershipPercent:
-          partyForm.ownershipPercent === '' || partyForm.ownershipPercent === null
-            ? null
-            : Number(partyForm.ownershipPercent),
-        appointedAt: partyForm.appointedAt || null,
-        resignedAt: partyForm.resignedAt || null,
-        primaryContact: Boolean(partyForm.primaryContact),
-      });
-
-      const refreshed = await api.get<Client>(`/clients/${client?.id}/with-parties`);
-      setClient(refreshed);
-      setPartyPeople({});
-      peopleCacheRef.current = {};
-      setPartyEditOpen(false);
-    } catch (e: any) {
-      setPartyEditMsg(e?.message || 'Failed to update party.');
-    } finally {
-      setPartySaving(false);
-    }
-  };
   const isCompanyClient = client?.type === 'COMPANY' || client?.type === 'LLP';
   const showCompaniesHouse = isCompanyClient;
   const overviewMeta = isCompanyClient
@@ -1164,11 +834,17 @@ export default function ClientDetailsPage() {
     : (client?.utrNumber ? `UTR ${client.utrNumber}` : 'No UTR');
   const primaryDob = primaryPerson?.dateOfBirth ? new Date(primaryPerson.dateOfBirth).toLocaleDateString('en-GB') : '—';
   const primaryNationality = primaryPerson?.nationality || '—';
-  const formType = (form?.type as ClientType) || client?.type;
-  const isCompanyForm = formType === 'COMPANY' || formType === 'LLP';
   const tabKeys = showCompaniesHouse
-    ? (['info', 'services', 'accounts', 'tax', 'tasks', 'compliance', 'documents', 'letters', 'people', 'ch'] as const)
-    : (['info', 'services', 'accounts', 'tax', 'tasks', 'compliance', 'documents', 'letters', 'people'] as const);
+    ? (['profile', 'services', 'accounts', 'tax', 'tasks', 'compliance', 'documents', 'letters', 'people', 'ch'] as const)
+    : (['profile', 'services', 'accounts', 'tax', 'tasks', 'compliance', 'documents', 'letters', 'people'] as const);
+  const officerRoles = new Set(['DIRECTOR', 'SHAREHOLDER', 'PARTNER', 'MEMBER', 'OWNER', 'UBO', 'SECRETARY']);
+  const currentOfficersParties = useMemo(() => {
+    return parties.filter((party) => {
+      if (party.resignedAt) return false;
+      if (!party.role) return false;
+      return officerRoles.has(party.role);
+    });
+  }, [parties]);
   const hmrcRegistrations: HMRCRegistrationRow[] = useMemo(() => {
     if (!client) return [];
     const rows = [
@@ -1187,19 +863,19 @@ export default function ClientDetailsPage() {
       {
         type: 'VAT Registration',
         applies: true,
-        reference: client.vatNumber,
+        reference: profile?.vatNumber ?? client.vatNumber,
         status: client.hmrcVatStatus,
       },
       {
         type: 'PAYE / RTI',
         applies: true,
-        reference: client.payeReference || client.accountsOfficeReference,
+        reference: profile?.payeReference || client.payeReference || profile?.accountsOfficeReference || client.accountsOfficeReference,
         status: client.hmrcPayeStatus,
       },
       {
         type: 'Construction Industry Scheme (CIS)',
         applies: true,
-        reference: client.cisUtr,
+        reference: profile?.cisUtr ?? client.cisUtr,
         status: client.hmrcCisStatus,
       },
       {
@@ -1224,7 +900,7 @@ export default function ClientDetailsPage() {
 
     return rows.map((row) => {
       const status: HMRCRegistrationStatus = row.applies
-        ? (row.status || 'MISSING_DATA')
+        ? normalizeHmrcStatus(row.status)
         : 'NOT_APPLICABLE';
       return {
         type: row.type,
@@ -1233,6 +909,55 @@ export default function ClientDetailsPage() {
       };
     });
   }, [client, isCompanyClient]);
+
+  const complianceObligations = useMemo(() => {
+    return compliance.filter((item: any) => Boolean(item?.dueDate) && Boolean(item?.serviceId));
+  }, [compliance]);
+  const obligationsByServiceId = useMemo(() => {
+    const map = new Map<string, Compliance[]>();
+    complianceObligations.forEach((item) => {
+      if (!item.serviceId) return;
+      const current = map.get(item.serviceId) || [];
+      current.push(item);
+      map.set(item.serviceId, current);
+    });
+    return map;
+  }, [complianceObligations]);
+  const servicesById = useMemo(() => {
+    const map = new Map<string, Service>();
+    services.forEach((service) => {
+      if (service?.id) map.set(service.id, service);
+    });
+    return map;
+  }, [services]);
+  const upcomingCompliance = useMemo(() => {
+    return [...complianceObligations].sort((a: any, b: any) => {
+      const aDate = a?.dueDate ? new Date(a.dueDate).getTime() : Number.POSITIVE_INFINITY;
+      const bDate = b?.dueDate ? new Date(b.dueDate).getTime() : Number.POSITIVE_INFINITY;
+      return aDate - bDate;
+    });
+  }, [complianceObligations]);
+  const linkedTasksForCompliance = (item: any) => {
+    if (!item) return [];
+    const type = String(item.type || '').toLowerCase();
+    const desc = String(item.description || '').toLowerCase();
+    return tasks.filter((task) => {
+      if (!task?.tags?.includes('compliance')) return false;
+      const title = String(task.title || '').toLowerCase();
+      const tdesc = String(task.description || '').toLowerCase();
+      return (type && title.includes(type)) || (desc && tdesc.includes(desc));
+    });
+  };
+  const linkedComplianceForTask = (task: Task) => {
+    if (!task?.serviceId) return null;
+    const candidates = complianceObligations.filter((item: any) => item?.serviceId === task.serviceId);
+    if (candidates.length === 0) return null;
+    const title = String(task.title || '').toLowerCase();
+    const match = candidates.find((item: any) =>
+      String(item.type || '').toLowerCase().split(' ').some((token: string) => token && title.includes(token))
+    );
+    return match || candidates[0];
+  };
 
   /* ----------------- Loading / Error States ----------------- */
   if (loading) {
@@ -1305,18 +1030,28 @@ export default function ClientDetailsPage() {
                 zIndex: 20,
               }}
             >
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Operational</div>
               <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); router.push(`/clients/${client.id}/report`); }} style={{ width: '100%', justifyContent: 'flex-start' }}>
                 Export Report
               </button>
-              <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); downloadClientCsv(); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
-                Export CSV
-              </button>
-              <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); openEdit(); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
-                Quick Edit
+              <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); handleGenerateTasks(); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }} disabled={generatingTasks || services.length === 0}>
+                {generatingTasks ? 'Generating…' : 'Generate from template'}
               </button>
               <button className="btn-primary btn-sm" onClick={() => { setActionsOpen(false); router.push(`/tasks/new?clientId=${client.id}`); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
                 Add Task
               </button>
+              <div style={{ height: 1, background: 'var(--border-subtle)', margin: '0.5rem 0' }} />
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Client Management</div>
+              <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); router.push(`/clients/${client.id}/edit`); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
+                Edit Client
+              </button>
+              <div style={{ height: 1, background: 'var(--border-subtle)', margin: '0.5rem 0' }} />
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Data & Reporting</div>
+              <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); downloadClientCsv(); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
+                Export CSV
+              </button>
+              <div style={{ height: 1, background: 'var(--border-subtle)', margin: '0.5rem 0' }} />
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Danger Zone</div>
               <button className="btn-danger btn-sm" onClick={() => { setActionsOpen(false); handleDeleteClient(); }} disabled={deleting} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
                 {deleting ? 'Deleting…' : 'Delete Client'}
               </button>
@@ -1336,165 +1071,184 @@ export default function ClientDetailsPage() {
         </div>
       )}
 
-      {/* Overview + Next Actions */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(260px, 1fr)', gap: '1.5rem', marginBottom: '1rem' }}>
-        <div className="card-mdj" style={{ padding: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-            <div>
-              <h2 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 700 }}>{client.name}</h2>
-              <div style={{ marginTop: '0.35rem', color: 'var(--text-muted)' }}>{overviewMeta}</div>
-            </div>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <span className={`badge ${badgeForStatus(client.status)}`}>{client.status}</span>
-              <span className="badge">{client.type.replace(/_/g, ' ')}</span>
-              {client.portfolioCode && <span className="badge primary">Portfolio #{client.portfolioCode}</span>}
-              {showCompaniesHouse && (
-                <>
-                  <button className="btn-outline-primary btn-xs" onClick={() => window.open(`https://find-and-update.company-information.service.gov.uk/company/${client.registeredNumber}`, '_blank')} disabled={!client.registeredNumber}>
-                    View CH
-                  </button>
-                  <button className="btn-primary btn-xs" onClick={handleSync} disabled={syncing || !client.registeredNumber}>
-                    {syncing ? 'Syncing…' : 'Sync CH'}
-                  </button>
-                </>
-              )}
-              <button className="btn-outline-primary btn-xs" onClick={() => router.push(`/accounts-production/new?clientId=${client.id}`)}>
-                Accounts Production
-              </button>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem 1.25rem' }}>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Client Ref</div>
-              <div style={{ fontWeight: 600 }}>{client.ref || '—'}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Primary Contact</div>
-              <div style={{ fontWeight: 600 }}>{primaryPerson?.fullName || client.mainEmail || '—'}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>UTR</div>
-              <div style={{ fontWeight: 600 }}>{client.utrNumber || '—'}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Company No.</div>
-              <div style={{ fontWeight: 600 }}>{client.registeredNumber || '—'}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Phone</div>
-              <div style={{ fontWeight: 600 }}>{client.mainPhone || '—'}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                {isCompanyClient ? 'Incorporation Date' : 'Date of Birth'}
-              </div>
-              <div style={{ fontWeight: 600 }}>
-                {isCompanyClient
-                  ? (client.incorporationDate ? new Date(client.incorporationDate).toLocaleDateString('en-GB') : '—')
-                  : primaryDob}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Year End (ARD)</div>
-              <div style={{ fontWeight: 600 }}>
-                {client.accountsAccountingReferenceDay && client.accountsAccountingReferenceMonth
-                  ? `${client.accountsAccountingReferenceDay} ${monthNames[client.accountsAccountingReferenceMonth - 1]}`
-                  : '—'}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Year End Due</div>
-              <div style={{ fontWeight: 600 }}>
-                {client.accountsNextDue ? new Date(client.accountsNextDue).toLocaleDateString('en-GB') : '—'}
-              </div>
-            </div>
-            <div style={{ gridColumn: '1 / -1' }}>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Address</div>
-              <div style={{ fontWeight: 600, lineHeight: 1.4 }}>{addressLine || '—'}</div>
-            </div>
-          </div>
-
-          <div style={{ marginTop: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-              <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>HMRC Registrations</h4>
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Facts only</span>
-            </div>
-            <div
-              style={{
-                marginTop: '0.75rem',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-                gap: '0.75rem',
-              }}
-            >
-              {hmrcRegistrations.map((reg) => (
-                <div
-                  key={`overview-${reg.type}`}
+      <div className="mdj-page">
+        {/* Tabs */}
+        <nav className="mdj-tabs card-mdj" style={{ padding: 0, overflow: 'hidden', marginBottom: '1rem', position: 'sticky', top: '0.5rem', zIndex: 10 }}>
+          <div style={{ display: 'flex', gap: '0', borderBottom: '1px solid var(--border-subtle)', padding: 0, background: 'var(--surface-table-header)', flexWrap: 'wrap' }}>
+            {tabKeys.map((key) => {
+              const counts = {
+                profile: 0,
+                services: services.length,
+                accounts: accountsSets.length,
+                tax: taxCalculations.length,
+                tasks: tasks.length,
+                compliance: complianceObligations.length,
+                documents: documents.length,
+                letters: letters.length,
+                people: currentOfficersParties.length,
+                ch: chOfficers.length + chPscs.length + chFilings.length,
+              } as const;
+              const active = tab === key;
+              const labels = {
+                profile: 'Profile',
+                services: 'Services',
+                accounts: 'Accounts',
+                tax: 'Tax',
+                tasks: 'Tasks',
+                compliance: 'Compliance',
+                documents: 'Documents',
+                letters: 'Letters',
+                people: 'People',
+                ch: 'Companies House',
+              };
+              return (
+                <button
+                  key={key}
+                  className={`tab ${active ? 'active' : ''}`}
+                  onClick={() => setTab(key)}
                   style={{
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 10,
-                    padding: '0.75rem',
-                    background: 'var(--surface-subtle)',
+                    padding: '12px 16px',
+                    border: 'none',
+                    background: active ? 'var(--status-info-bg)' : 'transparent',
+                    cursor: 'pointer',
+                    borderBottom: active ? '2px solid var(--brand-primary)' : '2px solid transparent',
+                    color: active ? 'var(--brand-primary-active)' : 'var(--text-secondary)',
+                    fontWeight: active ? 700 : 600,
+                    fontSize: '0.875rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s ease',
                   }}
                 >
-                  <div style={{ fontWeight: 600, fontSize: '0.85rem', marginBottom: 6 }}>{reg.type}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <span className={`badge ${hmrcStatusBadge(reg.status)}`}>
-                      {HMRC_STATUS_LABELS[reg.status]}
-                    </span>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>
-                      {reg.reference || '—'}
-                    </span>
+                  <span>{labels[key]}</span>
+                  <span className={`count badge ${active ? 'primary' : 'default'}`} style={{ fontSize: '0.75rem' }}>
+                    {counts[key]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+
+        {/* Main Grid */}
+        <main className="mdj-grid two-col" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(260px, 1fr)', gap: '1.5rem', marginBottom: '1rem' }}>
+          {/* LEFT COLUMN */}
+          <section className="mdj-column">
+            {/* Client Summary */}
+            <section className="card-mdj" style={{ padding: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700 }}>{client.name}</h2>
+                  <div style={{ marginTop: '0.35rem', color: 'var(--text-muted)' }}>Client Summary</div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button className="btn-outline-primary btn-xs" onClick={() => router.push(`/clients/${client.id}/edit`)}>
+                    Edit Client
+                  </button>
+                  {showCompaniesHouse && (
+                    <>
+                      <button className="btn-outline-primary btn-xs" onClick={() => window.open(`https://find-and-update.company-information.service.gov.uk/company/${client.registeredNumber}`, '_blank')} disabled={!client.registeredNumber}>
+                        View CH
+                      </button>
+                      <button className="btn-primary btn-xs" onClick={handleSync} disabled={syncing || !client.registeredNumber}>
+                        {syncing ? 'Syncing…' : 'Sync CH'}
+                      </button>
+                    </>
+                  )}
+                  <button className="btn-outline-primary btn-xs" onClick={() => router.push(`/accounts-production/new?clientId=${client.id}`)}>
+                    Accounts Production
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                <span className={`badge ${badgeForStatus(client.status)}`}>{client.status}</span>
+                <span className="badge">{client.type ? client.type.replace(/_/g, ' ') : '—'}</span>
+                {client.portfolioCode && <span className="badge primary">Portfolio #{client.portfolioCode}</span>}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem 1.25rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Client Ref</div>
+                  <div style={{ fontWeight: 600 }}>{client.ref || '—'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Primary Contact</div>
+                  <div style={{ fontWeight: 600 }}>{profile?.mainContactName || primaryPerson?.fullName || client.mainEmail || '—'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>UTR</div>
+                  <div style={{ fontWeight: 600 }}>
+                    {isCompanyClient
+                      ? (profile?.corporationTaxUtr || client.utrNumber || '—')
+                      : (profile?.personalUtr || client.utrNumber || '—')}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="card-mdj" style={{ padding: '1.25rem', position: 'sticky', top: '1rem', alignSelf: 'start' }}>
-          <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>Next Actions</h3>
-          <div style={{ marginTop: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            Focus on the immediate deadlines and priorities.
-          </div>
-
-          {isCompanyClient ? (
-            <div style={{ display: 'grid', gap: '0.75rem', marginTop: '1rem' }}>
-              <div style={{ padding: '0.75rem', border: '1px solid var(--border-subtle)', borderRadius: 8, background: 'var(--surface-subtle)' }}>
-                <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>CT600 Due</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                  {client.accountsNextDue ? new Date(client.accountsNextDue).toLocaleDateString('en-GB') : '—'}
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    {isCompanyClient ? 'Company No.' : 'UTR'}
+                  </div>
+                  <div style={{ fontWeight: 600 }}>
+                    {isCompanyClient ? (client.registeredNumber || '—') : (profile?.personalUtr || client.utrNumber || '—')}
+                  </div>
                 </div>
-                <span className="badge success" style={{ fontSize: '0.7rem', marginTop: 6, display: 'inline-flex' }}>OK</span>
-              </div>
-              <div style={{ padding: '0.75rem', border: '1px solid var(--border-subtle)', borderRadius: 8, background: 'var(--surface-subtle)' }}>
-                <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>VAT Return</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Status set in HMRC registrations</div>
-                <span className="badge default" style={{ fontSize: '0.7rem', marginTop: 6, display: 'inline-flex' }}>Info</span>
-              </div>
-              <div style={{ padding: '0.75rem', border: '1px solid var(--border-subtle)', borderRadius: 8, background: 'var(--surface-subtle)' }}>
-                <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>Confirmation Statement</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                  {client.confirmationNextDue ? new Date(client.confirmationNextDue).toLocaleDateString('en-GB') : '—'}
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Year End (ARD)</div>
+                  <div style={{ fontWeight: 600 }}>
+                    {client.accountsAccountingReferenceDay && client.accountsAccountingReferenceMonth
+                      ? `${client.accountsAccountingReferenceDay} ${monthNames[client.accountsAccountingReferenceMonth - 1]}`
+                      : '—'}
+                  </div>
                 </div>
-                {(() => {
-                  if (!client.confirmationNextDue) return <span className="badge default" style={{ fontSize: '0.7rem', marginTop: 6, display: 'inline-flex' }}>—</span>;
-                  const due = new Date(client.confirmationNextDue);
-                  const now = new Date();
-                  const daysUntil = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                  if (daysUntil < 0) return <span className="badge danger" style={{ fontSize: '0.7rem', marginTop: 6, display: 'inline-flex' }}>Overdue</span>;
-                  if (daysUntil <= 60) return <span className="badge warning" style={{ fontSize: '0.7rem', marginTop: 6, display: 'inline-flex' }}>Due Soon</span>;
-                  return <span className="badge success" style={{ fontSize: '0.7rem', marginTop: 6, display: 'inline-flex' }}>OK</span>;
-                })()}
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Year End Due</div>
+                  <div style={{ fontWeight: 600 }}>
+                    {client.accountsNextDue ? new Date(client.accountsNextDue).toLocaleDateString('en-GB') : '—'}
+                  </div>
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Address</div>
+                  <div style={{ fontWeight: 600, lineHeight: 1.4 }}>{addressLine || '—'}</div>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div style={{ marginTop: '1rem', padding: '0.75rem', borderRadius: 8, background: 'var(--surface-subtle)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              No company filing milestones for this client type.
-            </div>
-          )}
-        </div>
+            </section>
+
+          </section>
+
+          {/* RIGHT COLUMN */}
+          <aside className="mdj-column narrow">
+            <section className="card-mdj" style={{ padding: '1.25rem', position: 'sticky', top: '1rem', alignSelf: 'start' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>Next Actions</h3>
+              <div style={{ marginTop: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                Focus on the immediate deadlines and priorities.
+              </div>
+
+              {upcomingCompliance.length > 0 ? (
+                <div style={{ display: 'grid', gap: '0.75rem', marginTop: '1rem' }}>
+                  {upcomingCompliance.slice(0, 3).map((item) => {
+                    const badge = getComplianceBadge(item.status);
+                    return (
+                      <div key={item.id} style={{ padding: '0.75rem', border: '1px solid var(--border-subtle)', borderRadius: 8, background: 'var(--surface-subtle)' }}>
+                        <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{item.type?.replace(/_/g, ' ') || 'Compliance'}</div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          {item.dueDate ? new Date(item.dueDate).toLocaleDateString('en-GB') : '—'} · {complianceAuthority(item.source)}
+                        </div>
+                        <span className={`badge ${badge}`} style={{ fontSize: '0.7rem', marginTop: 6, display: 'inline-flex' }}>
+                          {String(item.status || '').replace(/_/g, ' ').toLowerCase()}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div style={{ marginTop: '1rem', padding: '0.75rem', borderRadius: 8, background: 'var(--surface-subtle)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  No compliance obligations scheduled.
+                </div>
+              )}
+            </section>
+          </aside>
+        </main>
       </div>
 
       {tabMessage && (
@@ -1502,68 +1256,117 @@ export default function ClientDetailsPage() {
           <span style={{ color: tabMessage.error ? 'var(--danger)' : 'var(--text-muted)' }}>{tabMessage.text}</span>
         </div>
       )}
-      {/* Compact Tabs Section */}
+      {/* Tab Content */}
       <div className="card-mdj" style={{ padding: 0, overflow: 'hidden' }}>
-        {/* Enhanced Tabs Header with Counts */}
-        <div style={{ display: 'flex', gap: '0', borderBottom: '1px solid var(--border-subtle)', padding: '0', background: 'var(--surface-table-header)' }}>
-          {tabKeys.map((key) => {
-            const counts = {
-              services: services.length,
-              accounts: accountsSets.length,
-              tax: taxCalculations.length,
-              tasks: tasks.length,
-              compliance: compliance.length,
-              documents: documents.length,
-              letters: letters.length,
-              people: parties.length,
-              ch: chOfficers.length + chPscs.length + chFilings.length,
-            } as const;
-            const active = tab === key;
-            const labels = {
-              services: 'Services',
-              accounts: 'Accounts',
-              tax: 'Tax',
-              tasks: 'Tasks', 
-              compliance: 'Compliance',
-              documents: 'Documents',
-              letters: 'Letters',
-              people: 'People',
-              ch: 'Companies House'
-            };
-            return (
-              <button
-                key={key}
-                onClick={() => setTab(key)}
-                style={{
-                  padding: '12px 16px',
-                  border: 'none',
-                  background: active ? 'var(--status-info-bg)' : 'transparent',
-                  cursor: 'pointer',
-                  borderBottom: active ? '2px solid var(--brand-primary)' : '2px solid transparent',
-                  color: active ? 'var(--brand-primary-active)' : 'var(--text-secondary)',
-                  fontWeight: active ? 700 : 600,
-                  fontSize: '0.875rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <span>{labels[key]}</span>
-                <span className={`badge ${active ? 'primary' : 'default'}`} style={{ fontSize: '0.75rem' }}>
-                  {counts[key]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+
+        {tab === 'profile' && (
+          <div className="panel">
+            <div className="grid2" style={{ gridTemplateColumns: '1fr 1fr' }}>
+              <div className="card-mdj" style={{ padding: '1rem' }}>
+                <div className="card-header">
+                  <h3 className="mdj-h2">Client Details</h3>
+                  <span className="mdj-sub">Database-backed</span>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '0.75rem',
+                    marginTop: '0.75rem',
+                  }}
+                >
+                  {[
+                    { label: 'Trading Name', value: profile?.tradingName || '—' },
+                    { label: 'Contact Position', value: profile?.contactPosition || '—' },
+                    { label: 'Preferred Contact Method', value: profile?.preferredContactMethod || '—' },
+                    { label: 'Correspondence Address', value: profile?.correspondenceAddress || '—', wide: true },
+                    { label: 'Payroll Frequency', value: profile?.payrollFrequency || '—' },
+                    { label: 'Employees', value: typeof profile?.employeeCount === 'number' ? profile.employeeCount : '—' },
+                    { label: 'Fee Arrangement', value: profile?.feeArrangement || '—' },
+                    { label: 'Annual Fee', value: typeof profile?.annualFee === 'number' ? formatCurrency(profile.annualFee) : '—' },
+                    { label: 'Monthly Fee', value: typeof profile?.monthlyFee === 'number' ? formatCurrency(profile.monthlyFee) : '—' },
+                    {
+                      label: 'Business Bank',
+                      value:
+                        profile?.businessBankName || profile?.accountLastFour
+                          ? `${profile?.businessBankName || ''}${profile?.businessBankName && profile?.accountLastFour ? ' · ' : ''}${profile?.accountLastFour ? `****${profile.accountLastFour}` : ''}`
+                          : '—',
+                    },
+                    { label: 'Direct Debit', value: profile?.directDebitInPlace ? 'Yes' : 'No' },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      style={{
+                        flex: item.wide ? '1 1 100%' : '1 1 calc(50% - 0.75rem)',
+                        minWidth: 220,
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: 10,
+                        padding: '0.6rem 0.75rem',
+                        background: 'var(--surface-subtle)',
+                      }}
+                    >
+                      <div className="label">{item.label}</div>
+                      <div className="text-strong">{item.value}</div>
+                    </div>
+                  ))}
+                </div>
+                {(profile?.notes || profile?.specialCircumstances) && (
+                  <div style={{ marginTop: '0.75rem', display: 'grid', gap: '0.5rem' }}>
+                    {profile?.notes && (
+                      <div>
+                        <div className="label">Notes</div>
+                        <div className="text-strong">{profile.notes}</div>
+                      </div>
+                    )}
+                    {profile?.specialCircumstances && (
+                      <div>
+                        <div className="label">Special Circumstances</div>
+                        <div className="text-strong">{profile.specialCircumstances}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="card-mdj" style={{ padding: '1rem' }}>
+                <div className="card-header">
+                  <h3 className="mdj-h2">Registrations & IDs</h3>
+                  <span className="mdj-sub">Facts only</span>
+                </div>
+                <div style={{ marginTop: '0.75rem', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.75rem' }}>
+                  {hmrcRegistrations.map((reg) => (
+                    <div
+                      key={`overview-${reg.type}`}
+                      style={{
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: 10,
+                        padding: '0.75rem',
+                        background: 'var(--surface-subtle)',
+                      }}
+                    >
+                      <div style={{ fontWeight: 600, fontSize: '0.85rem', marginBottom: 6 }}>{reg.type}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <span className={`badge ${hmrcStatusBadge(reg.status)}`}>
+                          {HMRC_STATUS_LABELS[reg.status]}
+                        </span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                          {reg.reference || '—'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tab Content - Services */}
         {tab === 'services' && (
           <div style={{ padding: '1rem' }}>
             <div style={{ marginBottom: '1rem', display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center', justifyContent: 'space-between' }}>
               <button className="btn-outline-primary" onClick={handleGenerateTasks} disabled={generatingTasks || services.length === 0} style={{ padding: '6px 12px', fontSize: 13 }}>
-                {generatingTasks ? 'Generating…' : 'Generate upcoming tasks'}
+                {generatingTasks ? 'Generating…' : 'Generate from template'}
               </button>
               {taskMessage && (
                 <span style={{ color: taskMessage.error ? 'var(--danger)' : 'var(--text-muted)', fontSize: 13 }}>
@@ -1606,38 +1409,73 @@ export default function ClientDetailsPage() {
                       <th>Frequency</th>
                       <th>Cost (period)</th>
                       <th>Annual total</th>
+                      <th>Eligibility</th>
                       <th>Status</th>
                       <th>Next Due</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {services.map((s) => (
-                      <tr key={s.id}>
+            {services.map((s) => {
+              const obligations = s.id ? (obligationsByServiceId.get(s.id) || []) : [];
+              return (
+              <tr key={s.id}>
+                <td>
+                  <div>{s.kind || '—'}</div>
+                  {s.description && (
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{s.description}</div>
+                  )}
+                  {obligations.length > 0 && (
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
+                      Creates: {obligations.map((o) => o.type?.replace(/_/g, ' ') || '—').join(' · ')}
+                    </div>
+                  )}
+                </td>
+                <td>{s.frequency || '—'}</td>
+                <td>{formatCurrency(s.fee)}</td>
+                <td>{formatCurrency(s.annualized)}</td>
                         <td>
-                          <div>{s.kind || '—'}</div>
-                          {s.description && (
-                            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{s.description}</div>
+                          {s.eligibility ? (
+                            <>
+                              <span
+                                className={`badge ${
+                                  s.eligibility.status === 'active'
+                                    ? 'success'
+                                    : s.eligibility.status === 'warning'
+                                    ? 'warning'
+                                    : s.eligibility.status === 'blocked'
+                                    ? 'danger'
+                                    : 'default'
+                                }`}
+                              >
+                                {s.eligibility.status}
+                              </span>
+                              {s.eligibility.reasons?.length ? (
+                                <div style={{ marginTop: 4, fontSize: 12, color: 'var(--text-muted)' }}>
+                                  {s.eligibility.reasons.join(' · ')}
+                                </div>
+                              ) : null}
+                            </>
+                          ) : (
+                            '—'
                           )}
                         </td>
-                        <td>{s.frequency || '—'}</td>
-                        <td>{formatCurrency(s.fee)}</td>
-                        <td>{formatCurrency(s.annualized)}</td>
                         <td>
                           <span className={`badge ${badgeForStatus(s.status)}`}>{s.status || '—'}</span>
                         </td>
                         <td>{s.nextDue ? new Date(s.nextDue).toLocaleDateString('en-GB') : '—'}</td>
-                        <td style={{ textAlign: 'right' }}>
-                          <button
-                            className="btn-outline-primary btn-xs"
-                            onClick={() => router.push(`/services/${s.id}`)}
-                            style={{ marginRight: '0.5rem' }}
-                          >
-                            View
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                <td style={{ textAlign: 'right' }}>
+                  <button
+                    className="btn-outline-primary btn-xs"
+                    onClick={() => router.push(`/services/${s.id}`)}
+                    style={{ marginRight: '0.5rem' }}
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+              );
+            })}
                   </tbody>
                 </table>
               </div>
@@ -1784,6 +1622,11 @@ export default function ClientDetailsPage() {
         {/* Tasks Tab */}
         {tab === 'tasks' && (
           <div style={{ padding: '1rem' }}>
+            {taskMessage && (
+              <div style={{ marginBottom: '0.75rem', color: taskMessage.error ? 'var(--danger)' : 'var(--text-muted)', fontSize: 13 }}>
+                {taskMessage.text}
+              </div>
+            )}
             {tasks.length === 0 ? (
               <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
                 No tasks —{' '}
@@ -1801,6 +1644,9 @@ export default function ClientDetailsPage() {
                   <thead>
                     <tr>
                       <th>Title</th>
+                      <th>Service</th>
+                      <th>Compliance</th>
+                      <th>Origin</th>
                       <th>Status</th>
                       <th>Due</th>
                       <th></th>
@@ -1810,9 +1656,15 @@ export default function ClientDetailsPage() {
                     {tasks.map((t) => {
                       const st = getTaskBadge(t.status);
                       const label = String(t.status || '').replace(/_/g, ' ').toLowerCase();
+                      const origin = t.tags?.includes('auto-generated') ? 'Template' : 'Manual';
+                      const serviceLabel = t.serviceId ? (servicesById.get(t.serviceId)?.kind || '—') : '—';
+                      const complianceItem = linkedComplianceForTask(t);
                       return (
                         <tr key={t.id}>
                           <td>{t.title}</td>
+                          <td>{serviceLabel}</td>
+                          <td>{complianceItem?.type?.replace(/_/g, ' ') || '—'}</td>
+                          <td>{origin}</td>
                           <td>
                             <span className={`badge ${st}`}>{label}</span>
                           </td>
@@ -1838,78 +1690,75 @@ export default function ClientDetailsPage() {
         {/* Compliance Tab */}
         {tab === 'compliance' && (
           <div style={{ padding: '1rem' }}>
-            <div className="card-mdj" style={{ marginBottom: '1rem', padding: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>HMRC Registrations (facts only)</h4>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                  Services gate compliance & tasks
-                </span>
-              </div>
-              <div style={{ marginTop: '0.75rem', overflowX: 'auto' }}>
-                <table className="mdj-table">
-                  <thead>
-                    <tr>
-                      <th>Registration</th>
-                      <th>Status</th>
-                      <th>Reference</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {hmrcRegistrations.map((reg) => (
-                      <tr key={reg.type}>
-                        <td>{reg.type}</td>
-                        <td>
-                          <span className={`badge ${hmrcStatusBadge(reg.status)}`}>
-                            {HMRC_STATUS_LABELS[reg.status]}
-                          </span>
-                        </td>
-                        <td>{reg.reference || '—'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            {compliance.length === 0 ? (
+            {complianceObligations.length === 0 ? (
               <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
-                No compliance items found.
+                No service-driven compliance obligations found.
               </div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
                 <table className="mdj-table">
                   <thead>
                     <tr>
-                      <th>Type</th>
-                      <th>Status</th>
+                      <th>Obligation</th>
+                      <th>Service</th>
+                      <th>Period</th>
                       <th>Due</th>
+                      <th>Status</th>
+                      <th>Linked Tasks</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {compliance.map((item) => {
+                    {complianceObligations.map((item) => {
                       const badge = getComplianceBadge(item.status);
                       const label = String(item.status || '').replace(/_/g, ' ').toLowerCase();
+                      const linkedTasks = linkedTasksForCompliance(item);
+                      const serviceLabel = item?.serviceId ? (servicesById.get(item.serviceId)?.kind || '—') : '—';
                       return (
                         <tr key={item.id}>
-                          <td>{item.type?.replace(/_/g, ' ') || '—'}</td>
+                          <td>
+                            <div style={{ fontWeight: 600 }}>{item.type?.replace(/_/g, ' ') || '—'}</div>
+                            {item.description && (
+                              <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                                {item.description}
+                              </div>
+                            )}
+                          </td>
+                          <td>{serviceLabel}</td>
+                          <td>{item.period || '—'}</td>
+                          <td>{item.dueDate ? new Date(item.dueDate).toLocaleDateString('en-GB') : '—'}</td>
                           <td>
                             <span className={`badge ${badge}`}>{label}</span>
                           </td>
-                          <td>{item.dueDate ? new Date(item.dueDate).toLocaleDateString('en-GB') : '—'}</td>
+                          <td>
+                            {linkedTasks.length === 0 ? (
+                              <span style={{ color: 'var(--text-muted)' }}>—</span>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                {linkedTasks.slice(0, 2).map((task) => (
+                                  <button
+                                    key={task.id}
+                                    className="btn-outline-primary btn-xs"
+                                    onClick={() => router.push(`/tasks/${task.id}`)}
+                                    style={{ textAlign: 'left', justifyContent: 'flex-start' }}
+                                  >
+                                    {task.title}
+                                  </button>
+                                ))}
+                                {linkedTasks.length > 2 && (
+                                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                    +{linkedTasks.length - 2} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </td>
                           <td style={{ textAlign: 'right' }}>
                             <button
                               className="btn-outline-primary btn-xs"
                               onClick={() => router.push(`/compliance/${item.id}`)}
-                              style={{ marginRight: '0.5rem' }}
                             >
                               View
-                            </button>
-                            <button
-                              className="btn-xs danger"
-                              onClick={() => handleDeleteCompliance(item.id)}
-                              disabled={complianceDeleting[item.id]}
-                            >
-                              {complianceDeleting[item.id] ? 'Deleting…' : 'Delete'}
                             </button>
                           </td>
                         </tr>
@@ -2116,15 +1965,14 @@ export default function ClientDetailsPage() {
 
         {tab === 'people' && (
           <div style={{ padding: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-              <button className="btn-outline-primary btn-sm" onClick={() => router.push(`/clients/${client.id}/parties/new`)}>
-                Add Party
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '0.75rem' }}>
+              <button className="btn-outline-primary btn-sm" onClick={() => router.push(`/clients/${client.id}/parties`)}>
+                Manage People
               </button>
-              {partyMsg && <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>{partyMsg}</span>}
             </div>
-            {parties.length === 0 ? (
+            {currentOfficersParties.length === 0 ? (
               <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
-                No parties linked to this client.
+                No current officers linked to this client.
               </div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
@@ -2137,62 +1985,26 @@ export default function ClientDetailsPage() {
                       <th>Appointed</th>
                       <th>Resigned</th>
                       <th>Primary</th>
-                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {parties.map((party) => {
-                      const person = partyPeople[party.personId];
+                    {currentOfficersParties.map((party) => {
+                      const person = party.personId ? partyPeople[party.personId] : null;
                       return (
                         <tr key={party.id}>
                           <td>
                             <div>{person?.fullName || person?.email || 'Unknown person'}</div>
                             {(person?.email || person?.phone || !person) && (
                               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                                {[person?.email, person?.phone].filter(Boolean).join(' · ') || party.personId}
+                                {[person?.email, person?.phone].filter(Boolean).join(' · ') || party.personId || '—'}
                               </div>
                             )}
                           </td>
-                          <td>{party.role.replace(/_/g, ' ')}</td>
+                          <td>{party.role ? party.role.replace(/_/g, ' ') : '—'}</td>
                           <td>{typeof party.ownershipPercent === 'number' ? `${party.ownershipPercent}%` : '—'}</td>
                           <td>{party.appointedAt ? new Date(party.appointedAt).toLocaleDateString('en-GB') : '—'}</td>
                           <td>{party.resignedAt ? new Date(party.resignedAt).toLocaleDateString('en-GB') : '—'}</td>
                           <td>{party.primaryContact ? <span className="badge success">Primary</span> : '—'}</td>
-                          <td style={{ textAlign: 'right' }}>
-                            <button
-                              className="btn-outline-primary btn-xs"
-                              onClick={() => openPartyEditor(party)}
-                              style={{ marginRight: '0.5rem' }}
-                            >
-                              Edit
-                            </button>
-                            {!party.primaryContact && (
-                              <button
-                                className="btn-outline-primary btn-xs"
-                                onClick={() => handleSetPrimary(party)}
-                                disabled={settingPrimary[party.id]}
-                                style={{ marginRight: '0.5rem' }}
-                              >
-                                {settingPrimary[party.id] ? 'Setting…' : 'Set Primary'}
-                              </button>
-                            )}
-                            {!party.resignedAt && (
-                              <button
-                                className="btn-xs warning"
-                                onClick={() => handleResignParty(party)}
-                                style={{ marginRight: '0.5rem' }}
-                              >
-                                Resign
-                              </button>
-                            )}
-                            <button
-                              className="btn-xs danger"
-                              onClick={() => handleDeleteParty(party)}
-                              disabled={deletingParty[party.id]}
-                            >
-                              {deletingParty[party.id] ? 'Deleting…' : 'Remove'}
-                            </button>
-                          </td>
                         </tr>
                       );
                     })}
@@ -2378,533 +2190,7 @@ export default function ClientDetailsPage() {
         )}
           </div>
         )}
-      </div> s
-
-      {/* Edit Modal */}
-      <MDJModal isOpen={editOpen} onClose={() => setEditOpen(false)} title={`Edit Client: ${client.name}`}>
-        <div style={{ padding: '1rem' }}>
-          {editMessage && (
-            <div className="card-mdj" style={{ marginBottom: '1rem', padding: '.75rem 1rem' }}>
-              <span style={{ color: editMessage.error ? 'var(--danger)' : 'var(--text-muted)' }}>{editMessage.text}</span>
-            </div>
-          )}
-          <div className="kv" style={{ marginBottom: '1rem' }}>
-            <div className="k">Client Name</div>
-            <div className="v">
-              <input className="input-mdj" value={form.name || ''} onChange={(e) => setField('name', e.target.value)} />
-            </div>
-
-            <div className="k">Client Type</div>
-            <div className="v">
-              <select className="input-mdj" value={form.type || 'COMPANY'} onChange={(e) => setField('type', e.target.value)}>
-                <option value="COMPANY">Company</option>
-                <option value="INDIVIDUAL">Individual</option>
-                <option value="SOLE_TRADER">Sole Trader</option>
-                <option value="PARTNERSHIP">Partnership</option>
-                <option value="LLP">LLP</option>
-              </select>
-            </div>
-
-            <div className="k">Status</div>
-            <div className="v">
-              <select className="input-mdj" value={form.status || 'ACTIVE'} onChange={(e) => setField('status', e.target.value)}>
-                <option value="ACTIVE">Active</option>
-                <option value="INACTIVE">Inactive</option>
-                <option value="ARCHIVED">Archived</option>
-              </select>
-            </div>
-
-            {isCompanyForm && (
-              <>
-                <div className="k">Registered Number</div>
-                <div className="v">
-                  <input
-                    className="input-mdj"
-                    value={form.registeredNumber || ''}
-                    onChange={(e) => setField('registeredNumber', e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="k">UTR</div>
-            <div className="v">
-              <input className="input-mdj" value={form.utrNumber || ''} onChange={(e) => setField('utrNumber', e.target.value)} />
-            </div>
-          </div>
-
-          <h4 style={{ margin: '0 0 0.5rem 0' }}>Contact</h4>
-          <div className="kv" style={{ marginBottom: '1rem' }}>
-            <div className="k">Main Email</div>
-            <div className="v">
-              <input className="input-mdj" value={form.mainEmail || ''} onChange={(e) => setField('mainEmail', e.target.value)} />
-            </div>
-            <div className="k">Main Phone</div>
-            <div className="v">
-              <input className="input-mdj" value={form.mainPhone || ''} onChange={(e) => setField('mainPhone', e.target.value)} />
-            </div>
-          </div>
-
-          <h4 style={{ margin: '0 0 0.5rem 0' }}>HMRC Registrations (fact + status)</h4>
-          <div className="kv" style={{ marginBottom: '1rem' }}>
-            <div className="k">Corporation Tax Status</div>
-            <div className="v">
-              <select className="input-mdj" value={form.hmrcCtStatus || 'MISSING_DATA'} onChange={(e) => setField('hmrcCtStatus', e.target.value)}>
-                <option value="REGISTERED">Registered</option>
-                <option value="NOT_REGISTERED">Not registered</option>
-                <option value="MISSING_DATA">Missing data</option>
-                <option value="APPLIED_FOR">Applied for</option>
-                <option value="DEREGISTERED">Deregistered</option>
-                <option value="NOT_APPLICABLE">Not applicable</option>
-              </select>
-            </div>
-            <div className="k">Self Assessment Status</div>
-            <div className="v">
-              <select className="input-mdj" value={form.hmrcSaStatus || 'MISSING_DATA'} onChange={(e) => setField('hmrcSaStatus', e.target.value)}>
-                <option value="REGISTERED">Registered</option>
-                <option value="NOT_REGISTERED">Not registered</option>
-                <option value="MISSING_DATA">Missing data</option>
-                <option value="APPLIED_FOR">Applied for</option>
-                <option value="DEREGISTERED">Deregistered</option>
-                <option value="NOT_APPLICABLE">Not applicable</option>
-              </select>
-            </div>
-            <div className="k">VAT Status</div>
-            <div className="v">
-              <select className="input-mdj" value={form.hmrcVatStatus || 'MISSING_DATA'} onChange={(e) => setField('hmrcVatStatus', e.target.value)}>
-                <option value="REGISTERED">Registered</option>
-                <option value="NOT_REGISTERED">Not registered</option>
-                <option value="MISSING_DATA">Missing data</option>
-                <option value="APPLIED_FOR">Applied for</option>
-                <option value="DEREGISTERED">Deregistered</option>
-                <option value="NOT_APPLICABLE">Not applicable</option>
-              </select>
-            </div>
-            <div className="k">VAT Number</div>
-            <div className="v">
-              <input className="input-mdj" value={form.vatNumber || ''} onChange={(e) => setField('vatNumber', e.target.value)} />
-            </div>
-            <div className="k">PAYE Status</div>
-            <div className="v">
-              <select className="input-mdj" value={form.hmrcPayeStatus || 'MISSING_DATA'} onChange={(e) => setField('hmrcPayeStatus', e.target.value)}>
-                <option value="REGISTERED">Registered</option>
-                <option value="NOT_REGISTERED">Not registered</option>
-                <option value="MISSING_DATA">Missing data</option>
-                <option value="APPLIED_FOR">Applied for</option>
-                <option value="DEREGISTERED">Deregistered</option>
-                <option value="NOT_APPLICABLE">Not applicable</option>
-              </select>
-            </div>
-            <div className="k">PAYE Reference</div>
-            <div className="v">
-              <input className="input-mdj" value={form.payeReference || ''} onChange={(e) => setField('payeReference', e.target.value)} />
-            </div>
-            <div className="k">Accounts Office Ref</div>
-            <div className="v">
-              <input className="input-mdj" value={form.accountsOfficeReference || ''} onChange={(e) => setField('accountsOfficeReference', e.target.value)} />
-            </div>
-            <div className="k">CIS Status</div>
-            <div className="v">
-              <select className="input-mdj" value={form.hmrcCisStatus || 'MISSING_DATA'} onChange={(e) => setField('hmrcCisStatus', e.target.value)}>
-                <option value="REGISTERED">Registered</option>
-                <option value="NOT_REGISTERED">Not registered</option>
-                <option value="MISSING_DATA">Missing data</option>
-                <option value="APPLIED_FOR">Applied for</option>
-                <option value="DEREGISTERED">Deregistered</option>
-                <option value="NOT_APPLICABLE">Not applicable</option>
-              </select>
-            </div>
-            <div className="k">CIS UTR</div>
-            <div className="v">
-              <input className="input-mdj" value={form.cisUtr || ''} onChange={(e) => setField('cisUtr', e.target.value)} />
-            </div>
-            <div className="k">MTD VAT Status</div>
-            <div className="v">
-              <select className="input-mdj" value={form.hmrcMtdVatStatus || 'MISSING_DATA'} onChange={(e) => setField('hmrcMtdVatStatus', e.target.value)}>
-                <option value="REGISTERED">Registered</option>
-                <option value="NOT_REGISTERED">Not registered</option>
-                <option value="MISSING_DATA">Missing data</option>
-                <option value="APPLIED_FOR">Applied for</option>
-                <option value="DEREGISTERED">Deregistered</option>
-                <option value="NOT_APPLICABLE">Not applicable</option>
-              </select>
-            </div>
-            <div className="k">MTD ITSA Status</div>
-            <div className="v">
-              <select className="input-mdj" value={form.hmrcMtdItsaStatus || 'MISSING_DATA'} onChange={(e) => setField('hmrcMtdItsaStatus', e.target.value)}>
-                <option value="REGISTERED">Registered</option>
-                <option value="NOT_REGISTERED">Not registered</option>
-                <option value="MISSING_DATA">Missing data</option>
-                <option value="APPLIED_FOR">Applied for</option>
-                <option value="DEREGISTERED">Deregistered</option>
-                <option value="NOT_APPLICABLE">Not applicable</option>
-              </select>
-            </div>
-            <div className="k">EORI Status</div>
-            <div className="v">
-              <select className="input-mdj" value={form.hmrcEoriStatus || 'MISSING_DATA'} onChange={(e) => setField('hmrcEoriStatus', e.target.value)}>
-                <option value="REGISTERED">Registered</option>
-                <option value="NOT_REGISTERED">Not registered</option>
-                <option value="MISSING_DATA">Missing data</option>
-                <option value="APPLIED_FOR">Applied for</option>
-                <option value="DEREGISTERED">Deregistered</option>
-                <option value="NOT_APPLICABLE">Not applicable</option>
-              </select>
-            </div>
-            <div className="k">EORI Number</div>
-            <div className="v">
-              <input className="input-mdj" value={form.eoriNumber || ''} onChange={(e) => setField('eoriNumber', e.target.value)} />
-            </div>
-          </div>
-
-          {isCompanyForm && (
-            <>
-              <h4 style={{ margin: '0 0 0.5rem 0' }}>Key Dates</h4>
-              <div className="kv" style={{ marginBottom: '1rem' }}>
-                <div className="k">Incorporation Date</div>
-                <div className="v">
-                  <input
-                    className="input-mdj"
-                    type="date"
-                    value={form.incorporationDate || ''}
-                    onChange={(e) => setField('incorporationDate', e.target.value)}
-                  />
-                </div>
-                <div className="k">Accounting Reference Day</div>
-                <div className="v">
-                  <input
-                    className="input-mdj"
-                    type="number"
-                    min={1}
-                    max={31}
-                    value={form.accountsAccountingReferenceDay || ''}
-                    onChange={(e) => setField('accountsAccountingReferenceDay', e.target.value)}
-                  />
-                </div>
-                <div className="k">Accounting Reference Month</div>
-                <div className="v">
-                  <input
-                    className="input-mdj"
-                    type="number"
-                    min={1}
-                    max={12}
-                    value={form.accountsAccountingReferenceMonth || ''}
-                    onChange={(e) => setField('accountsAccountingReferenceMonth', e.target.value)}
-                  />
-                </div>
-                <div className="k">Accounts Last Made Up To</div>
-                <div className="v">
-                  <input
-                    className="input-mdj"
-                    type="date"
-                    value={form.accountsLastMadeUpTo || ''}
-                    onChange={(e) => setField('accountsLastMadeUpTo', e.target.value)}
-                  />
-                </div>
-                <div className="k">Accounts Next Due</div>
-                <div className="v">
-                  <input
-                    className="input-mdj"
-                    type="date"
-                    value={form.accountsNextDue || ''}
-                    onChange={(e) => setField('accountsNextDue', e.target.value)}
-                  />
-                </div>
-                <div className="k">Confirmation Last Made Up To</div>
-                <div className="v">
-                  <input
-                    className="input-mdj"
-                    type="date"
-                    value={form.confirmationLastMadeUpTo || ''}
-                    onChange={(e) => setField('confirmationLastMadeUpTo', e.target.value)}
-                  />
-                </div>
-                <div className="k">Confirmation Next Due</div>
-                <div className="v">
-                  <input
-                    className="input-mdj"
-                    type="date"
-                    value={form.confirmationNextDue || ''}
-                    onChange={(e) => setField('confirmationNextDue', e.target.value)}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          <h4 style={{ margin: '0 0 0.5rem 0' }}>Address</h4>
-          <div className="kv" style={{ marginBottom: '1rem' }}>
-            <div className="k">Address Line 1</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={form.address?.line1 || ''}
-                onChange={(e) => setAddressField('line1', e.target.value)}
-              />
-            </div>
-            <div className="k">Address Line 2</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={form.address?.line2 || ''}
-                onChange={(e) => setAddressField('line2', e.target.value)}
-              />
-            </div>
-            <div className="k">City</div>
-            <div className="v">
-              <input className="input-mdj" value={form.address?.city || ''} onChange={(e) => setAddressField('city', e.target.value)} />
-            </div>
-            <div className="k">County/State</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={form.address?.county || ''}
-                onChange={(e) => setAddressField('county', e.target.value)}
-              />
-            </div>
-            <div className="k">Postcode</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={form.address?.postcode || ''}
-                onChange={(e) => setAddressField('postcode', e.target.value)}
-              />
-            </div>
-            <div className="k">Country</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={form.address?.country || ''}
-                onChange={(e) => setAddressField('country', e.target.value)}
-              />
-            </div>
-          </div>
-
-          <h4 style={{ margin: '0 0 0.5rem 0' }}>Reference & Portfolio</h4>
-          <div className="kv" style={{ marginBottom: '1rem' }}>
-            <div className="k">Client ID</div>
-            <div className="v">
-              <input className="input-mdj" value={client.id} readOnly />
-            </div>
-            <div className="k">Client Ref</div>
-            <div className="v">
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input
-                  className="input-mdj"
-                  value={refValue}
-                  onChange={(e) => setRefValue(e.target.value)}
-                />
-                <button className="btn-outline-primary" onClick={handleUpdateRef} disabled={refSaving || refValue.trim() === client.ref}>
-                  {refSaving ? 'Updating…' : 'Update'}
-                </button>
-              </div>
-            </div>
-            <div className="k">Portfolio</div>
-            <div className="v">
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <select
-                  className="input-mdj"
-                  value={String(newPortfolio ?? client.portfolioCode ?? '')}
-                  onChange={(e) => setNewPortfolio(Number(e.target.value))}
-                >
-                  {portfolios.length === 0 && (
-                    <option value={client.portfolioCode || ''}>#{client.portfolioCode || '—'}</option>
-                  )}
-                  {portfolios.map((p) => (
-                    <option key={p.code} value={p.code}>#{p.code} — {p.name}</option>
-                  ))}
-                </select>
-                <button
-                  className="btn-outline-primary"
-                  onClick={handleMovePortfolio}
-                  disabled={moving || newPortfolio === null || newPortfolio === client.portfolioCode}
-                >
-                  {moving ? 'Moving…' : 'Move'}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {moveMsg && (
-            <div className="card-mdj" style={{ marginBottom: '1rem', padding: '.75rem 1rem' }}>
-              <span style={{ color: 'var(--danger)' }}>{moveMsg}</span>
-            </div>
-          )}
-
-          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-            <button className="btn-outline-primary" onClick={() => setEditOpen(false)}>
-              Cancel
-            </button>
-            <button className="btn-primary" onClick={handleSaveClient} disabled={saving}>
-              {saving ? 'Saving…' : 'Save Changes'}
-            </button>
-          </div>
-        </div>
-      </MDJModal>
-
-      <MDJModal
-        isOpen={partyEditOpen}
-        onClose={() => setPartyEditOpen(false)}
-        title={`Edit Party${partyEditing?.person?.fullName ? `: ${partyEditing.person.fullName}` : ''}`}
-      >
-        <div style={{ padding: '1rem' }}>
-          {partyEditMsg && (
-            <div className="card-mdj" style={{ marginBottom: '1rem', padding: '.75rem 1rem' }}>
-              <span style={{ color: 'var(--danger)' }}>{partyEditMsg}</span>
-            </div>
-          )}
-          <div className="kv" style={{ marginBottom: '1rem' }}>
-            <div className="k">First Name</div>
-            <div className="v">
-              <input className="input-mdj" value={partyForm.firstName || ''} onChange={(e) => setPartyForm((p: any) => ({ ...p, firstName: e.target.value }))} />
-            </div>
-            <div className="k">Last Name</div>
-            <div className="v">
-              <input className="input-mdj" value={partyForm.lastName || ''} onChange={(e) => setPartyForm((p: any) => ({ ...p, lastName: e.target.value }))} />
-            </div>
-            <div className="k">Email</div>
-            <div className="v">
-              <input className="input-mdj" value={partyForm.email || ''} onChange={(e) => setPartyForm((p: any) => ({ ...p, email: e.target.value }))} />
-            </div>
-            <div className="k">Phone</div>
-            <div className="v">
-              <input className="input-mdj" value={partyForm.phone || ''} onChange={(e) => setPartyForm((p: any) => ({ ...p, phone: e.target.value }))} />
-            </div>
-            <div className="k">Nationality</div>
-            <div className="v">
-              <input className="input-mdj" value={partyForm.nationality || ''} onChange={(e) => setPartyForm((p: any) => ({ ...p, nationality: e.target.value }))} />
-            </div>
-            <div className="k">Date of Birth</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                type="date"
-                value={partyForm.dateOfBirth || ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, dateOfBirth: e.target.value }))}
-              />
-            </div>
-          </div>
-
-          <h4 style={{ margin: '0 0 0.5rem 0' }}>Party Details</h4>
-          <div className="kv" style={{ marginBottom: '1rem' }}>
-            <div className="k">Role</div>
-            <div className="v">
-              <select className="input-mdj" value={partyForm.role || 'CONTACT'} onChange={(e) => setPartyForm((p: any) => ({ ...p, role: e.target.value }))}>
-                <option value="DIRECTOR">Director</option>
-                <option value="SHAREHOLDER">Shareholder</option>
-                <option value="PARTNER">Partner</option>
-                <option value="MEMBER">Member</option>
-                <option value="OWNER">Owner</option>
-                <option value="UBO">UBO</option>
-                <option value="SECRETARY">Secretary</option>
-                <option value="CONTACT">Contact</option>
-              </select>
-            </div>
-            <div className="k">Ownership %</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                type="number"
-                min="0"
-                max="100"
-                step="0.01"
-                value={partyForm.ownershipPercent ?? ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, ownershipPercent: e.target.value }))}
-              />
-            </div>
-            <div className="k">Appointed</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                type="date"
-                value={partyForm.appointedAt || ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, appointedAt: e.target.value }))}
-              />
-            </div>
-            <div className="k">Resigned</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                type="date"
-                value={partyForm.resignedAt || ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, resignedAt: e.target.value }))}
-              />
-            </div>
-            <div className="k">Primary Contact</div>
-            <div className="v">
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input
-                  type="checkbox"
-                  checked={Boolean(partyForm.primaryContact)}
-                  onChange={(e) => setPartyForm((p: any) => ({ ...p, primaryContact: e.target.checked }))}
-                />
-                Set as primary contact
-              </label>
-            </div>
-          </div>
-
-          <h4 style={{ margin: '0 0 0.5rem 0' }}>Address</h4>
-          <div className="kv" style={{ marginBottom: '1rem' }}>
-            <div className="k">Address Line 1</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={partyForm.address?.line1 || ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, address: { ...(p.address || {}), line1: e.target.value } }))}
-              />
-            </div>
-            <div className="k">Address Line 2</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={partyForm.address?.line2 || ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, address: { ...(p.address || {}), line2: e.target.value } }))}
-              />
-            </div>
-            <div className="k">City</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={partyForm.address?.city || ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, address: { ...(p.address || {}), city: e.target.value } }))}
-              />
-            </div>
-            <div className="k">County/State</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={partyForm.address?.county || ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, address: { ...(p.address || {}), county: e.target.value } }))}
-              />
-            </div>
-            <div className="k">Postcode</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={partyForm.address?.postcode || ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, address: { ...(p.address || {}), postcode: e.target.value } }))}
-              />
-            </div>
-            <div className="k">Country</div>
-            <div className="v">
-              <input
-                className="input-mdj"
-                value={partyForm.address?.country || ''}
-                onChange={(e) => setPartyForm((p: any) => ({ ...p, address: { ...(p.address || {}), country: e.target.value } }))}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-            <button className="btn-outline-primary" onClick={() => setPartyEditOpen(false)}>
-              Cancel
-            </button>
-            <button className="btn-primary" onClick={handleSaveParty} disabled={partySaving}>
-              {partySaving ? 'Saving…' : 'Save'}
-            </button>
-          </div>
-        </div>
-      </MDJModal>
+      </div>
     </MDJShell>
   );
 }

@@ -20,9 +20,9 @@ export class DataRedactionService {
     ukPhone: /(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}/g,
     postcode: /\b[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9][A-Z]{2}\b/gi,
     niNumber: /\b[A-CEGHJ-PR-TW-Z]{1}[A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-D]{1}\b/gi,
-    utr: /\bUTR:\s*[0-9]{10}\b/gi,
-    companyNumber: /\b[0-9]{8}\b/g,
-    bankAccount: /\bAccount:\s*[0-9]{8}\b/gi,
+    utr: /\bUTR:?\s*[0-9]{10}\b/gi,
+    companyNumber: /\b\d{8}\b/g, // Keep broad for now, but order matters
+    bankAccount: /\bAccount:?\s*\d{8}\b/gi,
     sortCode: /\b[0-9]{2}-[0-9]{2}-[0-9]{2}\b/g,
     creditCard: /\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3[0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b/g,
   };
@@ -37,7 +37,19 @@ export class DataRedactionService {
 
     let redactedText = text;
 
-    // Apply default redactions
+    // Apply default redactions - more specific patterns first
+    if (options.redactFinancial !== false) {
+      redactedText = redactedText.replace(this.patterns.bankAccount, '[ACCOUNT_REDACTED]');
+      redactedText = redactedText.replace(this.patterns.sortCode, '[SORT_CODE_REDACTED]');
+      redactedText = redactedText.replace(this.patterns.creditCard, '[CARD_REDACTED]');
+    }
+
+    if (options.redactPersonalIds !== false) {
+      redactedText = redactedText.replace(this.patterns.utr, '[UTR_REDACTED]');
+      redactedText = redactedText.replace(this.patterns.niNumber, '[NI_NUMBER_REDACTED]');
+      redactedText = redactedText.replace(this.patterns.companyNumber, '[COMPANY_NUMBER_REDACTED]');
+    }
+
     if (options.redactEmails !== false) {
       redactedText = redactedText.replace(this.patterns.email, '[EMAIL_REDACTED]');
     }
@@ -49,18 +61,6 @@ export class DataRedactionService {
 
     if (options.redactAddresses !== false) {
       redactedText = redactedText.replace(this.patterns.postcode, '[POSTCODE_REDACTED]');
-    }
-
-    if (options.redactPersonalIds !== false) {
-      redactedText = redactedText.replace(this.patterns.niNumber, '[NI_NUMBER_REDACTED]');
-      redactedText = redactedText.replace(this.patterns.utr, '[UTR_REDACTED]');
-      redactedText = redactedText.replace(this.patterns.companyNumber, '[COMPANY_NUMBER_REDACTED]');
-    }
-
-    if (options.redactFinancial !== false) {
-      redactedText = redactedText.replace(this.patterns.bankAccount, '[ACCOUNT_REDACTED]');
-      redactedText = redactedText.replace(this.patterns.sortCode, '[SORT_CODE_REDACTED]');
-      redactedText = redactedText.replace(this.patterns.creditCard, '[CARD_REDACTED]');
     }
 
     // Apply custom patterns
@@ -97,8 +97,15 @@ export class DataRedactionService {
     } else {
       // Redact all string fields
       for (const [key, value] of Object.entries(redacted)) {
+        // Check if field name indicates sensitive data
+        const isSensitiveField = /(password|secret|token|key|auth|credential|postcode)/i.test(key);
+        
         if (typeof value === 'string') {
-          redacted[key as keyof T] = this.redactString(value, options) as T[keyof T];
+          let redactedValue = this.redactString(value, options);
+          if (isSensitiveField) {
+            redactedValue = this.getFieldRedactionPlaceholder(key);
+          }
+          redacted[key as keyof T] = redactedValue as T[keyof T];
         } else if (typeof value === 'object' && value !== null) {
           // Recursively redact nested objects
           redacted[key as keyof T] = this.redactObject(value, options) as T[keyof T];
@@ -107,6 +114,21 @@ export class DataRedactionService {
     }
 
     return redacted;
+  }
+
+  /**
+   * Get placeholder for sensitive field names
+   */
+  private getFieldRedactionPlaceholder(fieldName: string): string {
+    const lowerField = fieldName.toLowerCase();
+    if (lowerField.includes('password')) return '[PASSWORD_FIELD]';
+    if (lowerField.includes('secret')) return '[SECRET_FIELD]';
+    if (lowerField.includes('token')) return '[TOKEN_FIELD]';
+    if (lowerField.includes('key')) return '[KEY_FIELD]';
+    if (lowerField.includes('auth')) return '[AUTH_FIELD]';
+    if (lowerField.includes('credential')) return '[CREDENTIAL_FIELD]';
+    if (lowerField.includes('postcode')) return '[POSTCODE_FIELD]';
+    return '[REDACTED_FIELD]';
   }
 
   /**
@@ -178,8 +200,10 @@ export class DataRedactionService {
       this.patterns.email,
       this.patterns.phone,
       this.patterns.ukPhone,
+      this.patterns.postcode,
       this.patterns.niNumber,
       this.patterns.utr,
+      this.patterns.companyNumber,
       this.patterns.bankAccount,
       this.patterns.sortCode,
       this.patterns.creditCard,

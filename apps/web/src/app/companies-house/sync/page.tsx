@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { MDJLayout } from '@/components/mdj-ui';
 import { apiClient, api } from '@/lib/api';
-import type { Client } from '@/lib/types';
+import type { ClientContext } from '@/lib/types';
 export default function CompaniesHouseSyncPage() {
-  const [clients, setClients] = useState<Client[]>([]);
+  const [clients, setClients] = useState<ClientContext[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [syncingClients, setSyncingClients] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +25,7 @@ export default function CompaniesHouseSyncPage() {
       });
       
       // Filter clients that have registered numbers (Companies House companies)
-      const companyClients = allClients.filter(client => client.registeredNumber);
+      const companyClients = allClients.filter(client => client.node.registeredNumber);
       setClients(companyClients);
     } catch (err: any) {
       setError(err.message || 'Failed to load company clients');
@@ -57,12 +57,12 @@ export default function CompaniesHouseSyncPage() {
   };
 
   const handleSyncAll = async () => {
-    const companyClients = clients.filter(client => client.registeredNumber);
+    const companyClients = clients.filter(client => client.node.registeredNumber);
     
     for (const client of companyClients) {
-      if (!client.ref) continue;
-      if (!syncingClients.has(client.ref)) {
-        await handleSync(client.ref);
+      if (!client.node.ref) continue;
+      if (!syncingClients.has(client.node.ref)) {
+        await handleSync(client.node.ref);
         // Add a small delay between syncs to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
@@ -172,7 +172,7 @@ export default function CompaniesHouseSyncPage() {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">
-                  {clients.filter(c => c.status === 'ACTIVE').length}
+                  {clients.filter(c => c.node.status === 'ACTIVE').length}
                 </div>
                 <div className="text-sm text-gray-600">Active Companies</div>
               </div>
@@ -208,41 +208,41 @@ export default function CompaniesHouseSyncPage() {
                   </thead>
                   <tbody>
                     {clients.map((client) => (
-                      <tr key={client.id}>
+                      <tr key={client.node.id}>
                         <td>
-                          <div className="font-medium">{client.name}</div>
-                          <div className="text-sm text-gray-500">{client.ref ?? '—'}</div>
+                          <div className="font-medium">{client.node.name}</div>
+                          <div className="text-sm text-gray-500">{client.node.ref ?? '—'}</div>
                         </td>
-                        <td className="font-mono">{client.registeredNumber}</td>
+                        <td className="font-mono">{client.node.registeredNumber}</td>
                         <td>
-                          <span className={`mdj-badge ${getTypeBadgeClass(client.type)}`}>
-                            {client.type}
+                          <span className={`mdj-badge ${getTypeBadgeClass(client.node.type)}`}>
+                            {client.node.type}
                           </span>
                         </td>
                         <td>
-                          <span className={`mdj-badge ${getStatusBadgeClass(client.status)}`}>
-                            {client.status}
+                          <span className={`mdj-badge ${getStatusBadgeClass(client.node.status)}`}>
+                            {client.node.status}
                           </span>
                         </td>
-                        <td>{client.updatedAt ? formatDate(client.updatedAt) : '—'}</td>
+                        <td>{client.node.updatedAt ? formatDate(client.node.updatedAt) : '—'}</td>
                         <td>
                           <div className="flex gap-2">
                             <button
                               className="mdj-button mdj-button-secondary mdj-button-sm"
-                              onClick={() => client.ref && handleSync(client.ref)}
-                              disabled={!client.ref || syncingClients.has(client.ref)}
+                              onClick={() => client.node.ref && handleSync(client.node.ref)}
+                              disabled={!client.node.ref || syncingClients.has(client.node.ref)}
                             >
-                              {client.ref && syncingClients.has(client.ref) ? (
+                              {client.node.ref && syncingClients.has(client.node.ref) ? (
                                 <>
                                   <div className="mdj-loader mdj-loader-xs"></div>
                                   Syncing...
                                 </>
                               ) : (
-                                client.ref ? 'Sync' : 'No ref'
+                                client.node.ref ? 'Sync' : 'No ref'
                               )}
                             </button>
                             <a
-                              href={`/clients/${client.id}`}
+                              href={`/clients/${client.node.id}`}
                               className="mdj-button mdj-button-outline mdj-button-sm"
                             >
                               View

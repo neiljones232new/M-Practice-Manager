@@ -2095,9 +2095,12 @@ tbody tr:hover {
 
 /* ── Print styles (hide chrome, show report chrome) ───────── */
 @media print {
+  @page { margin: 14mm; }
+
   /* Hide UI chrome */
-  .mdj-topbar, .mdj-sidebar-fixed, .mdj-sidebar-backdrop, .mdj-assist, .mdj-page-actions, .mdj-backlink { display: none !important; }
-  .mdj-content-offset { margin: 0 !important; padding: 0 16px !important; }
+  .mdj-topbar, .mdj-sidebar-fixed, .mdj-sidebar-backdrop, .mdj-assist, .mdj-assist-fab, .mdj-page-actions, .mdj-backlink { display: none !important; }
+  .mdj-shell-fixed, .mdj-content-offset, .mdj-pagebody, body { background: #fff !important; }
+  .mdj-content-offset { margin: 0 !important; padding: 0 !important; }
   
   /* Show print-specific elements */
   .print-header, .print-footer { display: block !important; }
@@ -2110,6 +2113,14 @@ tbody tr:hover {
     background: #fff !important; 
     border: 1px solid #ddd !important; 
     box-shadow: none !important; 
+  }
+
+  /* Remove nested card chrome (tighten layout) */
+  .card-mdj .card-mdj {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
   }
   
   /* Purple elements should print as dark for readability */
@@ -2128,6 +2139,48 @@ tbody tr:hover {
   /* Ensure text is dark and readable */
   .text-muted { color: #666 !important; }
   .mdj-title, .mdj-h1, .mdj-h2 { color: #000 !important; }
+
+  /* Page header as report header */
+  .mdj-pagehead {
+    margin: 0 0 14px !important;
+    padding: 16px 18px !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 16px !important;
+    background: #fff !important;
+  }
+  .mdj-page-title {
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.01em !important;
+    color: #1f2937 !important;
+  }
+  .mdj-page-subtitle {
+    margin-top: 6px !important;
+    font-size: .78rem !important;
+    font-weight: 700 !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase !important;
+    color: var(--brand-primary) !important;
+  }
+  .mdj-gold-rule { margin: 10px 0 16px !important; }
+
+  /* Section spacing */
+  .content-grid { gap: 12px !important; }
+  .card-mdj { padding: 12px 14px !important; }
+  .card-mdj.tight { padding: 0 !important; }
+
+  /* Section headers inside cards */
+  .card-mdj .mdj-pagehead {
+    padding: 0 !important;
+    border: 0 !important;
+    margin-bottom: 8px !important;
+  }
+  .card-mdj .mdj-pagehead .mdj-h2 {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    color: #1f2937 !important;
+  }
+  .card-mdj .mdj-gold-rule { margin: 6px 0 10px !important; }
   
   /* Hide interactive elements */
   .btn-outline-purple, .btn-outline-gold, button:not(.print-keep) { display: none !important; }
@@ -2156,14 +2209,40 @@ tbody tr:hover {
     padding-bottom: 1rem;
     margin-bottom: 2rem;
   }
-  
+  .print-header img { display: block; }
+
   .print-footer {
     border-top: 1px solid #ddd;
     padding-top: 1rem;
-    margin-top: 2rem;
+    margin-top: 1rem;
     font-size: 0.9rem;
     color: #666;
   }
+
+  /* Compact data lists (CH details) */
+  .kv {
+    grid-template-columns: 140px 1fr !important;
+    gap: 4px 12px !important;
+  }
+  .kv .k {
+    text-transform: uppercase !important;
+    font-size: 10px !important;
+    letter-spacing: .08em !important;
+    color: #6b7280 !important;
+  }
+  .kv .v { font-size: 12px !important; }
+  .list-compact { gap: 8px !important; }
+  .list-compact .item {
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    background: #fff !important;
+  }
+  .badge {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+    border-radius: 999px !important;
+  }
+  .gold-ref { color: var(--brand-primary) !important; }
 }
 .print-header, .print-footer { display: none; }
 

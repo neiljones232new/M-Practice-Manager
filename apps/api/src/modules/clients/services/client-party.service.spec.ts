@@ -4,6 +4,8 @@ import { ClientPartyService } from './client-party.service';
 import { FileStorageService } from '../../file-storage/file-storage.service';
 import { ReferenceGeneratorService } from './reference-generator.service';
 import { ClientParty, CreateClientPartyDto, UpdateClientPartyDto } from '../interfaces/client.interface';
+import { PersonService } from './person.service';
+import { ClientsService } from '../clients.service';
 
 describe('ClientPartyService', () => {
   let service: ClientPartyService;
@@ -33,6 +35,16 @@ describe('ClientPartyService', () => {
       generateSuffixLetter: jest.fn(),
     };
 
+    const mockPersonService = {
+      findOne: jest.fn(),
+      findByEmail: jest.fn(),
+      create: jest.fn(),
+    };
+
+    const mockClientsService = {
+      findOne: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ClientPartyService,
@@ -43,6 +55,14 @@ describe('ClientPartyService', () => {
         {
           provide: ReferenceGeneratorService,
           useValue: mockReferenceGeneratorService,
+        },
+        {
+          provide: PersonService,
+          useValue: mockPersonService,
+        },
+        {
+          provide: ClientsService,
+          useValue: mockClientsService,
         },
       ],
     }).compile();
@@ -64,9 +84,9 @@ describe('ClientPartyService', () => {
 
     beforeEach(() => {
       // Mock validation methods
-      jest.spyOn(service as any, 'validateClientExists').mockResolvedValue(undefined);
-      jest.spyOn(service as any, 'validatePersonExists').mockResolvedValue(undefined);
-      jest.spyOn(service as any, 'updateClientParties').mockResolvedValue(undefined);
+      jest.spyOn(service as unknown as { validateClientExists: jest.Mock }, 'validateClientExists').mockResolvedValue(undefined);
+      jest.spyOn(service as unknown as { validatePersonExists: jest.Mock }, 'validatePersonExists').mockResolvedValue(undefined);
+      jest.spyOn(service as unknown as { updateClientParties: jest.Mock }, 'updateClientParties').mockResolvedValue(undefined);
     });
 
     it('should create client-party relationship successfully', async () => {
@@ -240,7 +260,7 @@ describe('ClientPartyService', () => {
     };
 
     beforeEach(() => {
-      jest.spyOn(service as any, 'clearPrimaryContact').mockResolvedValue(undefined);
+      jest.spyOn(service as unknown as { clearPrimaryContact: jest.Mock }, 'clearPrimaryContact').mockResolvedValue(undefined);
     });
 
     it('should update client-party relationship successfully', async () => {
@@ -280,7 +300,7 @@ describe('ClientPartyService', () => {
         id: 'hacked_id',
         clientId: 'hacked_client',
         personId: 'hacked_person',
-      } as any;
+      };
 
       const result = await service.update('client_party_123', maliciousUpdate);
 
@@ -292,7 +312,7 @@ describe('ClientPartyService', () => {
 
   describe('delete', () => {
     beforeEach(() => {
-      jest.spyOn(service as any, 'updateClientParties').mockResolvedValue(undefined);
+      jest.spyOn(service as unknown as { updateClientParties: jest.Mock }, 'updateClientParties').mockResolvedValue(undefined);
     });
 
     it('should delete client-party relationship successfully', async () => {
@@ -413,8 +433,8 @@ describe('ClientPartyService', () => {
 
   describe('edge cases and error handling', () => {
     it('should handle file storage errors during creation', async () => {
-      jest.spyOn(service as any, 'validateClientExists').mockResolvedValue(undefined);
-      jest.spyOn(service as any, 'validatePersonExists').mockResolvedValue(undefined);
+      jest.spyOn(service as unknown as { validateClientExists: jest.Mock }, 'validateClientExists').mockResolvedValue(undefined);
+      jest.spyOn(service as unknown as { validatePersonExists: jest.Mock }, 'validatePersonExists').mockResolvedValue(undefined);
       fileStorageService.searchFiles.mockResolvedValue([]);
       referenceGeneratorService.generateSuffixLetter.mockResolvedValue('A');
       fileStorageService.writeJson.mockRejectedValue(new Error('Storage error'));
@@ -442,8 +462,8 @@ describe('ClientPartyService', () => {
         ownershipPercent: 0,
       };
 
-      jest.spyOn(service as any, 'validateClientExists').mockResolvedValue(undefined);
-      jest.spyOn(service as any, 'validatePersonExists').mockResolvedValue(undefined);
+      jest.spyOn(service as unknown as { validateClientExists: jest.Mock }, 'validateClientExists').mockResolvedValue(undefined);
+      jest.spyOn(service as unknown as { validatePersonExists: jest.Mock }, 'validatePersonExists').mockResolvedValue(undefined);
       fileStorageService.searchFiles.mockResolvedValue([]);
       referenceGeneratorService.generateSuffixLetter.mockResolvedValue('A');
       fileStorageService.writeJson.mockResolvedValue(undefined);

@@ -15,6 +15,9 @@ export class EncryptionService {
   private readonly keyLength = 32; // 256 bits
   private readonly ivLength = 16; // 128 bits
   private readonly tagLength = 16; // 128 bits
+  private cachedKey?: Buffer;
+  private warnedMissingKey = false;
+  private warnedInvalidKey = false;
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -22,18 +25,43 @@ export class EncryptionService {
    * Get encryption key from environment or generate one
    */
   private getEncryptionKey(): Buffer {
-    const keyString = this.configService.get<string>('ENCRYPTION_KEY');
-    
-    if (keyString) {
-      return Buffer.from(keyString, 'hex');
+    if (this.cachedKey) {
+      return this.cachedKey;
     }
-    
+
+    const keyString = this.configService.get<string>('ENCRYPTION_KEY');
+    if (this.isValidKeyString(keyString)) {
+      this.cachedKey = Buffer.from(keyString, 'hex');
+      return this.cachedKey;
+    }
+    if (keyString && !this.warnedInvalidKey) {
+      this.logger.warn('ENCRYPTION_KEY is present but invalid; expected 64 hex characters (32 bytes).');
+      this.warnedInvalidKey = true;
+    }
+
     // Generate a new key if none exists (for development)
     const key = crypto.randomBytes(this.keyLength);
-    this.logger.warn('No ENCRYPTION_KEY found in environment. Generated temporary key for development.');
-    this.logger.warn(`Set ENCRYPTION_KEY=${key.toString('hex')} in your environment for production.`);
-    
+    if (!this.warnedMissingKey) {
+      this.logger.warn('No ENCRYPTION_KEY found in environment. Generated temporary key for development.');
+      this.logger.warn(`Set ENCRYPTION_KEY=${key.toString('hex')} in your environment for production.`);
+      this.warnedMissingKey = true;
+    }
+    this.cachedKey = key;
     return key;
+  }
+
+  hasConfiguredKey(): boolean {
+    return this.isValidKeyString(this.configService.get<string>('ENCRYPTION_KEY'));
+  }
+
+  private isValidKeyString(keyString?: string): boolean {
+    if (!keyString) {
+      return false;
+    }
+    if (keyString.length !== this.keyLength * 2) {
+      return false;
+    }
+    return /^[0-9a-fA-F]+$/.test(keyString);
   }
 
   /**
@@ -44,15 +72,17 @@ export class EncryptionService {
       const key = this.getEncryptionKey();
       const iv = crypto.randomBytes(this.ivLength);
       
-      const cipher = crypto.createCipher('aes-256-gcm', key);
+      const cipher = crypto.createCipheriv(this.algorithm, key, iv);
       
-      let encrypted = cipher.update(plaintext, 'utf8', 'hex');
-      encrypted += cipher.final('hex');
+      const encrypted = Buffer.concat([
+        cipher.update(plaintext, 'utf8'),
+        cipher.final()
+      ]);
       
       const tag = cipher.getAuthTag();
       
       return {
-        data: encrypted,
+        data: encrypted.toString('hex'),
         iv: iv.toString('hex'),
         tag: tag.toString('hex'),
       };
@@ -70,14 +100,17 @@ export class EncryptionService {
       const key = this.getEncryptionKey();
       const iv = Buffer.from(encryptedData.iv, 'hex');
       const tag = Buffer.from(encryptedData.tag, 'hex');
+      const encrypted = Buffer.from(encryptedData.data, 'hex');
       
-      const decipher = crypto.createDecipher('aes-256-gcm', key);
+      const decipher = crypto.createDecipheriv(this.algorithm, key, iv);
       decipher.setAuthTag(tag);
       
-      let decrypted = decipher.update(encryptedData.data, 'hex', 'utf8');
-      decrypted += decipher.final('utf8');
+      const decrypted = Buffer.concat([
+        decipher.update(encrypted),
+        decipher.final()
+      ]);
       
-      return decrypted;
+      return decrypted.toString('utf8');
     } catch (error) {
       this.logger.error('Decryption failed:', error);
       throw new Error('Failed to decrypt data');

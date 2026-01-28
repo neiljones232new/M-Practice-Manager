@@ -29,6 +29,7 @@ describe('EnhancedTaxCalculationsService', () => {
 
     const mockTaxRatesService = {
       getTaxRates: jest.fn(),
+      getPersonalAllowance: jest.fn().mockReturnValue(12570),
     };
 
     const mockPersistenceService = {

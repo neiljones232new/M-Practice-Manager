@@ -235,6 +235,14 @@ export class ReportsService {
     });
   }
 
+  private unwrapClientContext(client: any) {
+    const node = client?.node ?? client ?? {};
+    const profile = client?.profile ?? {};
+    const computed = client?.computed ?? {};
+    const parties = client?.partiesDetails ?? client?.parties ?? [];
+    return { node, profile, computed, parties };
+  }
+
   /**
    * Load and compile a Handlebars template with caching.
    * Templates are loaded from the templates directory and cached for performance.
@@ -474,7 +482,8 @@ export class ReportsService {
       reportData.client = await this.clientsService.getClientWithParties(options.clientId);
       
       if (options.includeParties && reportData.client) {
-        reportData.parties = reportData.client.parties || [];
+        const { parties } = this.unwrapClientContext(reportData.client);
+        reportData.parties = parties;
       }
 
       // Get services
@@ -502,30 +511,31 @@ export class ReportsService {
       }
 
       // Get Companies House data and compliance alerts
-      if (options.includeCompaniesHouseData && reportData.client?.registeredNumber) {
+      const { node: clientNode } = this.unwrapClientContext(reportData.client);
+      if (options.includeCompaniesHouseData && clientNode?.registeredNumber) {
         try {
           reportData.companiesHouseData = await this.companiesHouseService.getCompanyDetails(
-            reportData.client.registeredNumber
+            clientNode.registeredNumber
           );
           
           reportData.officers = await this.companiesHouseService.getCompanyOfficers(
-            reportData.client.registeredNumber
+            clientNode.registeredNumber
           );
           
           const filingHistory = await this.companiesHouseService.getFilingHistory(
-            reportData.client.registeredNumber
+            clientNode.registeredNumber
           );
           reportData.filingHistory = filingHistory?.items || [];
 
           // Generate compliance alerts if requested
           if (options.includeComplianceAlerts) {
             reportData.complianceAlerts = await this.generateComplianceAlerts(
-              reportData.client,
+              clientNode,
               reportData.companiesHouseData
             );
           }
         } catch (error) {
-          this.logger.warn(`Failed to fetch Companies House data for ${reportData.client.registeredNumber}:`, error);
+          this.logger.warn(`Failed to fetch Companies House data for ${clientNode.registeredNumber}:`, error);
         }
       }
 
@@ -598,6 +608,7 @@ export class ReportsService {
   }
 
   private createReportHeader(client: any): Content {
+    const { node } = this.unwrapClientContext(client);
     return {
       columns: [
         {
@@ -613,7 +624,7 @@ export class ReportsService {
               style: 'reportTitle'
             },
             {
-              text: client?.name || 'Unknown Client',
+              text: node?.name || 'Unknown Client',
               style: 'clientName'
             }
           ]
@@ -622,15 +633,15 @@ export class ReportsService {
           width: 'auto',
           stack: [
             {
-              text: `Reference: ${client?.ref || 'N/A'}`,
+              text: `Reference: ${node?.ref || 'N/A'}`,
               style: 'headerInfo'
             },
             {
-              text: `Type: ${client?.type || 'N/A'}`,
+              text: `Type: ${node?.type || 'N/A'}`,
               style: 'headerInfo'
             },
             {
-              text: `Status: ${client?.status || 'N/A'}`,
+              text: `Status: ${node?.status || 'N/A'}`,
               style: 'headerInfo'
             }
           ]
@@ -641,58 +652,59 @@ export class ReportsService {
   }
 
   private createClientInfoSection(client: any): Content {
+    const { node } = this.unwrapClientContext(client);
     const clientInfo: TableCell[][] = [
       [
         { text: 'Client Reference', style: 'tableHeader' },
-        { text: client?.ref || 'N/A', style: 'tableCell' }
+        { text: node?.ref || 'N/A', style: 'tableCell' }
       ],
       [
         { text: 'Company Name', style: 'tableHeader' },
-        { text: client?.name || 'N/A', style: 'tableCell' }
+        { text: node?.name || 'N/A', style: 'tableCell' }
       ],
       [
         { text: 'Type', style: 'tableHeader' },
-        { text: client?.type || 'N/A', style: 'tableCell' }
+        { text: node?.type || 'N/A', style: 'tableCell' }
       ],
       [
         { text: 'Status', style: 'tableHeader' },
-        { text: client?.status || 'N/A', style: 'tableCell' }
+        { text: node?.status || 'N/A', style: 'tableCell' }
       ],
       [
         { text: 'Portfolio', style: 'tableHeader' },
-        { text: client?.portfolioCode ? `Portfolio ${client.portfolioCode}` : 'N/A', style: 'tableCell' }
+        { text: node?.portfolioCode ? `Portfolio ${node.portfolioCode}` : 'N/A', style: 'tableCell' }
       ]
     ];
 
-    if (client?.registeredNumber) {
+    if (node?.registeredNumber) {
       clientInfo.push([
         { text: 'Companies House Number', style: 'tableHeader' },
-        { text: client.registeredNumber, style: 'tableCell' }
+        { text: node.registeredNumber, style: 'tableCell' }
       ]);
     }
 
-    if (client?.mainEmail) {
+    if (node?.mainEmail) {
       clientInfo.push([
         { text: 'Email', style: 'tableHeader' },
-        { text: client.mainEmail, style: 'tableCell' }
+        { text: node.mainEmail, style: 'tableCell' }
       ]);
     }
 
-    if (client?.mainPhone) {
+    if (node?.mainPhone) {
       clientInfo.push([
         { text: 'Phone', style: 'tableHeader' },
-        { text: client.mainPhone, style: 'tableCell' }
+        { text: node.mainPhone, style: 'tableCell' }
       ]);
     }
 
-    if (client?.address) {
+    if (node?.address) {
       const addressText = [
-        client.address.line1,
-        client.address.line2,
-        client.address.city,
-        client.address.county,
-        client.address.postcode,
-        client.address.country
+        node.address.line1,
+        node.address.line2,
+        node.address.city,
+        node.address.county,
+        node.address.postcode,
+        node.address.country
       ].filter(Boolean).join(', ');
 
       clientInfo.push([
@@ -1076,7 +1088,7 @@ export class ReportsService {
    */
   private transformDataForTemplate(reportData: ClientReportData): TemplateData {
     try {
-      const client = reportData.client || {};
+      const { node: client, profile, parties } = this.unwrapClientContext(reportData.client || {});
       
       // Format address
       const address = client.address ? [
@@ -1126,13 +1138,12 @@ export class ReportsService {
       }));
 
       // Extract parties
-      const parties = (reportData.parties || [])
+      const partiesSummary = (parties || [])
         .map(party => party.person?.name || 'Unknown')
         .join(', ') || 'N/A';
 
-      // Find main contact and responsible manager from parties
-      const mainContactParty = (reportData.parties || []).find(p => p.role === 'Primary Contact');
-      const managerParty = (reportData.parties || []).find(p => p.role === 'Responsible Manager');
+      const mainContact = profile?.mainContactName || 'N/A';
+      const responsibleManager = profile?.clientManager || 'N/A';
 
       return {
         // Header data
@@ -1156,9 +1167,9 @@ export class ReportsService {
         address,
         
         // Contacts
-        mainContact: mainContactParty?.person?.name || 'N/A',
-        responsibleManager: managerParty?.person?.name || 'N/A',
-        parties,
+        mainContact,
+        responsibleManager,
+        parties: partiesSummary,
         
         // Collections
         services,
@@ -1171,9 +1182,9 @@ export class ReportsService {
         psc,
         
         // Compliance
-        amlReviewDate: this.formatDate(client.amlReviewDate),
-        engagementStatus: client.engagementLetterStatus || 'N/A',
-        renewalDate: this.formatDate(client.engagementRenewalDate)
+        amlReviewDate: this.formatDate(profile?.amlReviewDate),
+        engagementStatus: profile?.engagementLetterSigned ? 'Signed' : 'Not signed',
+        renewalDate: this.formatDate(profile?.engagementRenewalDate)
       };
     } catch (error) {
       this.logger.error('Failed to transform data for template:', error);

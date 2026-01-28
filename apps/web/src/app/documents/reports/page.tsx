@@ -5,6 +5,7 @@ import MDJLayout from '@/components/mdj-ui/MDJLayout';
 import { ExportMenu } from '@/components/mdj-ui/ExportMenu';
 import { MDJSection, MDJCard, MDJButton, MDJInput, MDJSelect, MDJTextarea } from '@/components/mdj-ui';
 import { api, API_BASE_URL } from '@/lib/api';
+import type { ClientContext } from '@/lib/types';
 
 interface ReportOptions {
   includeCompaniesHouseData: boolean;
@@ -15,7 +16,7 @@ interface ReportOptions {
 }
 
 export default function ReportsPage() {
-  const [clients, setClients] = useState<any[]>([]);
+  const [clients, setClients] = useState<ClientContext[]>([]);
   const [selectedClient, setSelectedClient] = useState<string>('');
   const [reportOptions, setReportOptions] = useState<ReportOptions>({
     includeCompaniesHouseData: true,
@@ -125,7 +126,9 @@ export default function ReportsPage() {
                 >
                   <option value="">Choose a client...</option>
                   {clients.map(client => (
-                    <option key={client.id} value={client.id}>{client.name} ({client.ref})</option>
+                    <option key={client.node.id} value={client.node.id}>
+                      {client.node.name} ({client.node.ref || '—'})
+                    </option>
                   ))}
                 </select>
               </div>

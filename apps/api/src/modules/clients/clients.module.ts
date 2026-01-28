@@ -5,6 +5,7 @@ import { PersonService } from './services/person.service';
 import { ClientPartyService } from './services/client-party.service';
 import { ReferenceGeneratorService } from './services/reference-generator.service';
 import { FileStorageModule } from '../file-storage/file-storage.module';
+import { DatabaseModule } from '../database/database.module';
 import { ServicesModule } from '../services/services.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { FilingsModule } from '../filings/filings.module';
@@ -12,6 +13,7 @@ import { FilingsModule } from '../filings/filings.module';
 @Module({
   imports: [
     FileStorageModule,
+    DatabaseModule,
     forwardRef(() => ServicesModule),
     forwardRef(() => TasksModule),
     forwardRef(() => FilingsModule),

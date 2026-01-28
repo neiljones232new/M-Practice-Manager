@@ -4,6 +4,7 @@ import { TasksService } from './tasks.service';
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { ClientsService } from '../clients/clients.service';
 import { ServicesService } from '../services/services.service';
+import { DatabaseService } from '../database/database.service';
 import { 
   Task, 
   CreateTaskDto, 
@@ -17,6 +18,7 @@ describe('TasksService', () => {
   let fileStorageService: jest.Mocked<FileStorageService>;
   let clientsService: jest.Mocked<ClientsService>;
   let servicesService: jest.Mocked<ServicesService>;
+  let databaseService: jest.Mocked<DatabaseService>;
 
   const upcomingDue = new Date(Date.now() + 20 * 24 * 60 * 60 * 1000);
 
@@ -109,6 +111,10 @@ describe('TasksService', () => {
       updateNextDueDate: jest.fn(),
     };
 
+    const mockDatabaseService = {
+      getClientByNumber: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TasksService,
@@ -124,6 +130,10 @@ describe('TasksService', () => {
           provide: ServicesService,
           useValue: mockServicesService,
         },
+        {
+          provide: DatabaseService,
+          useValue: mockDatabaseService,
+        },
       ],
     }).compile();
 
@@ -131,6 +141,7 @@ describe('TasksService', () => {
     fileStorageService = module.get(FileStorageService);
     clientsService = module.get(ClientsService);
     servicesService = module.get(ServicesService);
+    databaseService = module.get(DatabaseService);
   });
 
   it('should be defined', () => {
