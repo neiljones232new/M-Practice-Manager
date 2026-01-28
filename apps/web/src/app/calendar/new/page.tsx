@@ -13,7 +13,7 @@ import {
 } from '@/components/mdj-ui';
 
 import { api } from '@/lib/api';
-import type { Client, Task } from '@/lib/types';
+import type { ClientContext, Task } from '@/lib/types';
 
 interface CreateCalendarEventDto {
   title: string;
@@ -48,7 +48,7 @@ const EVENT_STATUSES = [
 export default function NewCalendarEventPage() {
   const router = useRouter();
 
-  const [clients, setClients] = useState<Client[]>([]);
+  const [clients, setClients] = useState<ClientContext[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [attendeesInput, setAttendeesInput] = useState('');
@@ -191,7 +191,13 @@ export default function NewCalendarEventPage() {
             <MDJSelect
               label="Client"
               value={formData.clientId}
-              options={[{ value: '', label: 'None' }, ...clients.map(c => ({ value: c.id, label: `${c.ref} - ${c.name}` }))]}
+              options={[
+                { value: '', label: 'None' },
+                ...clients.map(c => ({
+                  value: c.node.id,
+                  label: `${c.node.ref ?? '—'} - ${c.node.name}`,
+                })),
+              ]}
               onChange={(e) => updateField('clientId', e.target.value)}
             />
 

@@ -4,6 +4,8 @@ import { ClientsService } from '../clients/clients.service';
 import { ServicesService } from '../services/services.service';
 import { Service } from '../services/interfaces/service.interface';
 import { IntegrationConfigService } from '../integrations/services/integration-config.service';
+import { DatabaseService } from '../database/database.service';
+import { buildClientContext, ClientContext, evaluateServiceEligibility } from '../clients/dto/client-context.dto';
 import { 
   Task, 
   TaskFilters, 
@@ -26,6 +28,7 @@ export class TasksService {
     private clientsService: ClientsService,
     @Inject(forwardRef(() => ServicesService))
     private servicesService: ServicesService,
+    private databaseService: DatabaseService,
     @Optional() private integrationConfig?: IntegrationConfigService,
   ) {}
 
@@ -244,6 +247,16 @@ export class TasksService {
       throw new NotFoundException(`Service with ID ${serviceId} not found`);
     }
 
+    const clientContext = await this.buildClientContext(service.clientId);
+    const eligibility = evaluateServiceEligibility(service.kind, clientContext);
+    if (!eligibility.eligible) {
+      const reasonText = eligibility.reasons.join(', ') || 'Eligibility rules';
+      this.logger.warn(
+        `Skipping task generation for client ${clientContext.node.ref} (${reasonText})`
+      );
+      return [];
+    }
+
     // Find matching service template
     const template = await this.findServiceTemplate(service.kind, service.frequency);
     if (!template) {
@@ -268,7 +281,9 @@ export class TasksService {
         title: taskTemplate.title,
         description: taskTemplate.description,
         dueDate: taskDueDate,
-        assignee: taskTemplate.assignee,
+        assignee: taskTemplate.assignee
+          || clientContext.profile.clientManager
+          || clientContext.profile.partnerResponsible,
         priority: taskTemplate.priority,
         tags: [...taskTemplate.tags, 'auto-generated'],
       };
@@ -428,6 +443,19 @@ export class TasksService {
     }
 
     return filtered;
+  }
+
+  private async buildClientContext(clientId: string): Promise<ClientContext> {
+    const client = await this.clientsService.findOne(clientId);
+    if (!client) {
+      throw new NotFoundException(`Client with ID ${clientId} not found`);
+    }
+
+    const dbClient = client.registeredNumber
+      ? await this.databaseService.getClientByNumber(client.registeredNumber)
+      : null;
+
+    return buildClientContext(client, dbClient);
   }
 
   async findAllWithClientDetails(filters?: TaskFilters): Promise<any[]> {

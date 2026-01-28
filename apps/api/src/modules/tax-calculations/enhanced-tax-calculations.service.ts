@@ -68,7 +68,7 @@ export class EnhancedTaxCalculationsService {
     const scenarios = await this.generateSalaryScenarios(params, taxRates);
 
     // Find optimal scenario
-    const optimalScenario = this.findOptimalScenario(scenarios, params.considerEmployerNI);
+    const optimalScenario = this.findOptimalScenario(scenarios, params.considerEmployerNI ?? false);
 
     // Calculate savings compared to current arrangement
     const currentScenario = params.currentSalary && params.currentDividend 
@@ -1064,9 +1064,9 @@ export class EnhancedTaxCalculationsService {
     effectiveTaxRate: number;
   } {
     const grossIncome = scenario.salary + scenario.dividend + additionalIncome;
-    const totalTax = scenario.totalTax ?? ((scenario.incomeTax || 0) + (scenario.employeeNI || 0) + (scenario.dividendTax || 0));
+    const totalTax = (scenario.incomeTax || 0) + (scenario.employeeNI || 0) + (scenario.dividendTax || 0);
     const netIncome = scenario.takeHome || Math.max(0, grossIncome - totalTax);
-    const effectiveTaxRate = scenario.effectiveRate ?? (grossIncome > 0 ? totalTax / grossIncome : 0);
+    const effectiveTaxRate = grossIncome > 0 ? totalTax / grossIncome : 0;
     return {
       grossIncome,
       totalTax,

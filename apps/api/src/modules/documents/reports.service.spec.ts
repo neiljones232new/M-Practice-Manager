@@ -4,6 +4,7 @@ import { FileStorageService } from '../file-storage/file-storage.service';
 import { ClientsService } from '../clients/clients.service';
 import { ServicesService } from '../services/services.service';
 import { CompaniesHouseService } from '../companies-house/companies-house.service';
+import { TaxCalculationsService } from '../tax-calculations/tax-calculations.service';
 
 describe('ReportsService - PDF Generation and Report Creation', () => {
   let service: ReportsService;
@@ -46,6 +47,7 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
         appointedAt: new Date('2023-01-01'),
         primaryContact: false,
         suffixLetter: 'A',
+        partyRef: '1A001A',
         person: { name: 'John Director' },
       },
       {
@@ -57,9 +59,56 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
         appointedAt: new Date('2023-01-01'),
         primaryContact: false,
         suffixLetter: 'B',
+        partyRef: '1A001B',
         person: { name: 'Jane Shareholder' },
       },
     ],
+    node: {
+      id: 'client-1',
+      ref: '1A001',
+      name: 'Test Client Ltd',
+      type: 'COMPANY' as const,
+      status: 'ACTIVE' as const,
+      portfolioCode: 1,
+      registeredNumber: '12345678',
+      mainEmail: 'test@client.com',
+      mainPhone: '+44 123 456 7890',
+      parties: ['party-1', 'party-2'],
+      services: [],
+      tasks: [],
+      documents: [],
+      createdAt: new Date('2023-01-01'),
+      updatedAt: new Date('2023-01-01'),
+      address: {
+        line1: '123 Test Street',
+        line2: 'Test Area',
+        city: 'Test City',
+        county: 'Test County',
+        postcode: 'TE1 2ST',
+        country: 'United Kingdom',
+      },
+    },
+    profile: {
+      mainContactName: 'John Director',
+      partnerResponsible: 'Partner A',
+      clientManager: 'Manager A',
+      lifecycleStatus: 'ACTIVE' as const,
+      engagementLetterSigned: true,
+      clientRiskRating: 'LOW',
+      amlCompleted: true,
+    },
+    computed: {
+      isVatRegistered: false,
+      isEmployer: false,
+      isCisRegistered: false,
+      isCorporationTaxRegistered: false,
+      isCompany: true,
+      isActive: true,
+      isAmlComplete: true,
+      amlReviewDue: false,
+      taxFlags: { vat: false, paye: false, cis: false, ct: false },
+      eligibility: { status: 'active' as const, reasons: [], eligible: true },
+    },
   };
 
   const mockServices = [
@@ -197,6 +246,10 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
             getFilingHistory: jest.fn(),
           },
         },
+        {
+          provide: TaxCalculationsService,
+          useValue: {},
+        },
       ],
     }).compile();
 
@@ -225,7 +278,7 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
       expect(reportData.client).toEqual(mockClient);
       expect(reportData.services).toEqual(mockServices);
       expect(reportData.documents).toEqual(mockDocuments);
-      expect(reportData.parties).toEqual(mockClient.parties);
+      expect(reportData.parties).toEqual(mockClient.partiesDetails);
     });
 
     it('should gather Companies House data when requested', async () => {
@@ -248,7 +301,14 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
     });
 
     it('should handle missing Companies House number gracefully', async () => {
-      const clientWithoutCH = { ...mockClient, registeredNumber: undefined };
+      const clientWithoutCH = {
+        ...mockClient,
+        registeredNumber: undefined,
+        node: {
+          ...mockClient.node,
+          registeredNumber: undefined,
+        },
+      };
       const options: ReportOptions = {
         clientId: 'client-1',
         includeCompaniesHouseData: true,
@@ -379,7 +439,7 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
 
       jest.spyOn(clientsService, 'getClientWithParties').mockResolvedValue({
         ...mockClient,
-        parties: [],
+        partiesDetails: [],
       });
       jest.spyOn(servicesService, 'getServicesByClient').mockResolvedValue([]);
       jest.spyOn(fileStorageService, 'searchFiles').mockResolvedValue([]);
@@ -883,6 +943,37 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
           partiesDetails: [],
           createdAt: new Date(),
           updatedAt: new Date(),
+          node: {
+            id: 'minimal-client',
+            ref: 'MIN001',
+            name: 'Minimal Client',
+            type: 'COMPANY' as const,
+            status: 'ACTIVE' as const,
+            portfolioCode: 1,
+            parties: [],
+            services: [],
+            tasks: [],
+            documents: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          profile: {
+            lifecycleStatus: 'ACTIVE' as const,
+            engagementLetterSigned: false,
+            amlCompleted: false,
+          },
+          computed: {
+            isVatRegistered: false,
+            isEmployer: false,
+            isCisRegistered: false,
+            isCorporationTaxRegistered: false,
+            isCompany: true,
+            isActive: true,
+            isAmlComplete: false,
+            amlReviewDue: false,
+            taxFlags: { vat: false, paye: false, cis: false, ct: false },
+            eligibility: { status: 'active' as const, reasons: [], eligible: true },
+          },
         };
 
         const options: ReportOptions = {

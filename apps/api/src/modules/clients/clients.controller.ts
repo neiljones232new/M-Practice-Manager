@@ -49,7 +49,12 @@ export class ClientsController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
-  async findAllClients(@Query() filters: ClientFilters) {
+  @ApiQuery({ name: 'includeContext', required: false, type: Boolean })
+  async findAllClients(@Query() filters: ClientFilters, @Query('includeContext') includeContext?: string) {
+    const include = includeContext === 'true' || includeContext === '1';
+    if (include) {
+      return this.clientsService.findAllWithContext(filters);
+    }
     return this.clientsService.findAll(filters);
   }
 
@@ -138,7 +143,11 @@ export class ClientsController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get client by ID or reference' })
-  async findOneClient(@Param('id') id: string) {
+  async findOneClient(@Param('id') id: string, @Query('includeContext') includeContext?: string) {
+    const include = includeContext === 'true' || includeContext === '1';
+    if (include) {
+      return this.clientsService.getClientWithContext(id);
+    }
     return this.clientsService.findOne(id);
   }
 

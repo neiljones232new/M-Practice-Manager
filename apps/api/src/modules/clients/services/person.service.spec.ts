@@ -305,7 +305,7 @@ describe('PersonService', () => {
         ...updatePersonDto,
         id: 'hacked_id',
         ref: 'HACKED',
-      } as any;
+      };
 
       const result = await service.update('person_123', maliciousUpdate);
 

@@ -11,10 +11,12 @@ import { FileCleanupService } from './file-cleanup.service';
 import { PerformanceController } from './performance.controller';
 import { FileAuditController } from './file-audit.controller';
 import { DatabaseModule } from '../database/database.module';
+import { SecurityModule } from '../security/security.module';
 
 @Module({
   imports: [
     forwardRef(() => DatabaseModule),
+    forwardRef(() => SecurityModule),
   ],
   controllers: [
     PerformanceController,

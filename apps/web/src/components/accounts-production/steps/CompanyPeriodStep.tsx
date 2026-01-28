@@ -60,7 +60,7 @@ export function CompanyPeriodStep({ accountsSet, onUpdate }: CompanyPeriodStepPr
         ...prev,
         company: {
           ...prev.company,
-          directors: [...prev.company.directors, { name: '' }]
+          directors: [...(prev.company.directors || []), { name: '' }]
         }
       };
       
@@ -77,7 +77,7 @@ export function CompanyPeriodStep({ accountsSet, onUpdate }: CompanyPeriodStepPr
         ...prev,
         company: {
           ...prev.company,
-          directors: prev.company.directors.filter((_, i) => i !== index)
+          directors: (prev.company.directors || []).filter((_, i) => i !== index)
         }
       };
       
@@ -94,7 +94,7 @@ export function CompanyPeriodStep({ accountsSet, onUpdate }: CompanyPeriodStepPr
         ...prev,
         company: {
           ...prev.company,
-          directors: prev.company.directors.map((director, i) => 
+          directors: (prev.company.directors || []).map((director, i) => 
             i === index ? { ...director, name } : director
           )
         }
@@ -278,7 +278,7 @@ export function CompanyPeriodStep({ accountsSet, onUpdate }: CompanyPeriodStepPr
             </button>
           }
         >
-          {formData.company.directors.length === 0 ? (
+          {(formData.company.directors || []).length === 0 ? (
             <div style={{ 
               textAlign: 'center', 
               padding: '2rem', 
@@ -293,7 +293,7 @@ export function CompanyPeriodStep({ accountsSet, onUpdate }: CompanyPeriodStepPr
             </div>
           ) : (
             <div style={{ display: 'grid', gap: '1rem' }}>
-              {formData.company.directors.map((director, index) => (
+              {(formData.company.directors || []).map((director, index) => (
                 <div key={index} style={{ 
                   display: 'flex', 
                   gap: '1rem', 

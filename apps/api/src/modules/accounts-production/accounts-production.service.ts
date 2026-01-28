@@ -23,6 +23,7 @@ export class AccountsProductionService {
   private readonly logger = new Logger(AccountsProductionService.name);
   private readonly storagePath: string;
   private readonly accountsSetsPath: string;
+  private readonly accountsSetsHistoryPath: string;
   private readonly indexPath: string;
 
   constructor(
@@ -37,11 +38,11 @@ export class AccountsProductionService {
   ) {
     const configuredStoragePath = this.configService.get<string>('STORAGE_PATH') || './storage';
     const cwd = process.cwd();
-    const repoRoot = cwd.endsWith(path.join('apps', 'api')) ? path.resolve(cwd, '..', '..') : cwd;
     this.storagePath = path.isAbsolute(configuredStoragePath)
       ? configuredStoragePath
-      : path.resolve(repoRoot, configuredStoragePath);
+      : path.resolve(cwd, configuredStoragePath);
     this.accountsSetsPath = path.join(this.storagePath, 'accounts-sets');
+    this.accountsSetsHistoryPath = path.join(this.accountsSetsPath, 'history');
     this.indexPath = path.join(this.storagePath, 'indexes', 'accounts-sets.json');
     this.ensureDirectories();
   }
@@ -50,6 +51,9 @@ export class AccountsProductionService {
     try {
       if (!existsSync(this.accountsSetsPath)) {
         await fs.mkdir(this.accountsSetsPath, { recursive: true });
+      }
+      if (!existsSync(this.accountsSetsHistoryPath)) {
+        await fs.mkdir(this.accountsSetsHistoryPath, { recursive: true });
       }
       if (!existsSync(path.dirname(this.indexPath))) {
         await fs.mkdir(path.dirname(this.indexPath), { recursive: true });
@@ -649,6 +653,11 @@ export class AccountsProductionService {
     const filePath = path.join(this.accountsSetsPath, `accounts_set_${id}.json`);
     await fs.unlink(filePath);
 
+    const historyPath = path.join(this.accountsSetsHistoryPath, `accounts_set_${id}`);
+    if (existsSync(historyPath)) {
+      await fs.rm(historyPath, { recursive: true, force: true });
+    }
+
     // Remove from index
     await this.removeFromIndex(id);
 
@@ -689,7 +698,43 @@ export class AccountsProductionService {
 
   private async saveAccountsSet(accountsSet: AccountsSet): Promise<void> {
     const filePath = path.join(this.accountsSetsPath, `accounts_set_${accountsSet.id}.json`);
+    if (existsSync(filePath)) {
+      await this.writeAccountsSetHistory(accountsSet.id, filePath);
+    }
     await fs.writeFile(filePath, JSON.stringify(accountsSet, null, 2));
+  }
+
+  private async writeAccountsSetHistory(accountsSetId: string, filePath: string): Promise<void> {
+    try {
+      const historyDir = path.join(this.accountsSetsHistoryPath, `accounts_set_${accountsSetId}`);
+      if (!existsSync(historyDir)) {
+        await fs.mkdir(historyDir, { recursive: true });
+      }
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const historyFile = path.join(historyDir, `accounts_set_${accountsSetId}_${timestamp}.json`);
+      await fs.copyFile(filePath, historyFile);
+      await this.pruneAccountsSetHistory(historyDir, 10);
+    } catch (error) {
+      this.logger.warn(`Failed to write accounts set history for ${accountsSetId}:`, error);
+    }
+  }
+
+  private async pruneAccountsSetHistory(historyDir: string, keep: number): Promise<void> {
+    try {
+      const entries = await fs.readdir(historyDir);
+      const snapshots = entries
+        .filter((entry) => entry.endsWith('.json'))
+        .sort();
+      if (snapshots.length <= keep) {
+        return;
+      }
+      const toRemove = snapshots.slice(0, snapshots.length - keep);
+      await Promise.all(
+        toRemove.map((entry) => fs.unlink(path.join(historyDir, entry)))
+      );
+    } catch (error) {
+      this.logger.warn(`Failed to prune accounts set history in ${historyDir}:`, error);
+    }
   }
 
   private async updateIndex(accountsSet: AccountsSet): Promise<void> {

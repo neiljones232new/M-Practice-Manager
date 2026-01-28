@@ -1,5 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ClientsService } from '../clients/clients.service';
+import { DatabaseService } from '../database/database.service';
+import { buildClientContext } from '../clients/dto/client-context.dto';
 import { ServicesService } from '../services/services.service';
 import { TemplateErrorHandlerService } from './template-error-handler.service';
 import {
@@ -23,6 +25,7 @@ export class PlaceholderService {
   constructor(
     private readonly clientsService: ClientsService,
     private readonly servicesService: ServicesService,
+    private readonly databaseService: DatabaseService,
     private readonly errorHandler: TemplateErrorHandlerService,
   ) {}
 
@@ -145,46 +148,51 @@ export class PlaceholderService {
     const clientWithParties = await this.clientsService.getClientWithParties(clientId);
     const primaryContact = clientWithParties.partiesDetails?.find(p => p.primaryContact);
 
+    const dbClient = client.registeredNumber
+      ? await this.databaseService.getClientByNumber(client.registeredNumber)
+      : null;
+    const ctx = buildClientContext(client, dbClient);
+
     const data: ClientPlaceholderData = {
       // Basic info
-      clientName: client.name,
-      clientReference: client.ref,
-      clientType: client.type,
+      clientName: ctx.node.name,
+      clientReference: ctx.node.ref,
+      clientType: ctx.node.type,
       
       // Company specific
-      companyName: client.type === 'COMPANY' ? client.name : undefined,
-      companyNumber: client.registeredNumber,
-      incorporationDate: client.incorporationDate,
-      registeredOffice: this.formatAddress(client.address),
+      companyName: ctx.node.type === 'COMPANY' ? ctx.node.name : undefined,
+      companyNumber: ctx.node.registeredNumber,
+      incorporationDate: ctx.node.incorporationDate,
+      registeredOffice: this.formatAddress(ctx.node.address),
       
       // Individual specific (if applicable)
-      firstName: client.type === 'INDIVIDUAL' ? client.name.split(' ')[0] : undefined,
-      lastName: client.type === 'INDIVIDUAL' ? client.name.split(' ').slice(1).join(' ') : undefined,
+      firstName: ctx.node.type === 'INDIVIDUAL' ? ctx.node.name.split(' ')[0] : undefined,
+      lastName: ctx.node.type === 'INDIVIDUAL' ? ctx.node.name.split(' ').slice(1).join(' ') : undefined,
       
       // Contact information
-      email: client.mainEmail || primaryContact?.['email'],
-      phone: client.mainPhone || primaryContact?.['phone'],
+      email: ctx.node.mainEmail || primaryContact?.['email'],
+      phone: ctx.node.mainPhone || primaryContact?.['phone'],
       mobile: primaryContact?.['phone'],
       
       // Address
-      addressLine1: client.address?.line1,
-      addressLine2: client.address?.line2,
-      city: client.address?.city,
-      county: client.address?.county,
-      postcode: client.address?.postcode,
-      country: client.address?.country,
+      addressLine1: ctx.node.address?.line1,
+      addressLine2: ctx.node.address?.line2,
+      city: ctx.node.address?.city,
+      county: ctx.node.address?.county,
+      postcode: ctx.node.address?.postcode,
+      country: ctx.node.address?.country,
       
       // Tax information
-      utrNumber: client.utrNumber,
-      vatNumber: (client as any).vatNumber,
-      payeReference: (client as any).payeReference,
+      utrNumber: ctx.node.utrNumber,
+      vatNumber: ctx.profile.vatNumber,
+      payeReference: ctx.profile.payeReference,
       
       // Additional
-      accountingPeriodEnd: client.accountsLastMadeUpTo,
-      yearEnd: client.accountsLastMadeUpTo 
-        ? this.formatDate(client.accountsLastMadeUpTo, 'DD/MM')
+      accountingPeriodEnd: ctx.node.accountsLastMadeUpTo,
+      yearEnd: ctx.node.accountsLastMadeUpTo 
+        ? this.formatDate(ctx.node.accountsLastMadeUpTo, 'DD/MM')
         : undefined,
-      portfolio: `Portfolio ${client.portfolioCode}`,
+      portfolio: `Portfolio ${ctx.node.portfolioCode}`,
     };
 
     return data;

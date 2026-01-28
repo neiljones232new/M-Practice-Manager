@@ -20,8 +20,12 @@ export default function PortfolioDetailPage() {
   const router = useRouter();
   const codeParam = params?.code;
   const [portfolio, setPortfolio] = useState<PortfolioDetail | null>(null);
+  const [formState, setFormState] = useState<{ name: string; description: string }>({ name: '', description: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(null);
 
   useEffect(() => {
     const loadPortfolio = async () => {
@@ -31,6 +35,10 @@ export default function PortfolioDetailPage() {
         setError(null);
         const detail = await api.get<PortfolioDetail>(`/portfolios/${codeParam}`);
         setPortfolio(detail);
+        setFormState({
+          name: detail.name || '',
+          description: detail.description || '',
+        });
       } catch (err) {
         console.error('Failed to load portfolio', err);
         const message = err instanceof Error ? err.message : 'Unable to load portfolio.';
@@ -42,6 +50,34 @@ export default function PortfolioDetailPage() {
 
     loadPortfolio();
   }, [codeParam]);
+
+  const updatePortfolio = async () => {
+    if (!portfolio) return;
+    try {
+      setSaving(true);
+      setSaveMessage(null);
+      setSaveStatus(null);
+      await api.put(`/portfolios/${portfolio.code}`, {
+        name: formState.name.trim(),
+        description: formState.description.trim() || undefined,
+      });
+      const refreshed = await api.get<PortfolioDetail>(`/portfolios/${portfolio.code}`);
+      setPortfolio(refreshed);
+      setFormState({
+        name: refreshed.name || '',
+        description: refreshed.description || '',
+      });
+      setSaveMessage('Portfolio updated successfully.');
+      setSaveStatus('success');
+    } catch (err) {
+      console.error('Failed to update portfolio', err);
+      const message = err instanceof Error ? err.message : 'Unable to update portfolio.';
+      setSaveMessage(message);
+      setSaveStatus('error');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <MDJShell
@@ -112,18 +148,49 @@ export default function PortfolioDetailPage() {
 
             <div className="card-mdj">
               <div className="card-header">
-                <h3>Next Steps</h3>
+                <h3>Edit Portfolio</h3>
               </div>
               <div className="card-content space-y-3">
-                <p className="text-dim">
-                  Client assignment and advanced portfolio analytics will live here. For now you can manage clients
-                  directly from the main settings page after closing this view.
-                </p>
-                <ul className="list-disc pl-5 text-sm">
-                  <li>Use the Settings → Portfolios tab to create or merge portfolios.</li>
-                  <li>Assign clients to this portfolio during import or client creation.</li>
-                  <li>More detailed analytics will appear here once clients are linked.</li>
-                </ul>
+                <div className="form-group">
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    value={formState.name}
+                    onChange={event => setFormState(prev => ({ ...prev, name: event.target.value }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Description</label>
+                  <textarea
+                    rows={4}
+                    value={formState.description}
+                    onChange={event => setFormState(prev => ({ ...prev, description: event.target.value }))}
+                  />
+                </div>
+                {saveMessage && saveStatus === 'success' && (
+                  <div className="pill ok">{saveMessage}</div>
+                )}
+                {saveMessage && saveStatus === 'error' && (
+                  <div className="alert-warn">{saveMessage}</div>
+                )}
+                <div className="row end gap-2">
+                  <button
+                    type="button"
+                    className="btn-outline-gold"
+                    onClick={() =>
+                      setFormState({
+                        name: portfolio.name || '',
+                        description: portfolio.description || '',
+                      })
+                    }
+                    disabled={saving}
+                  >
+                    Reset
+                  </button>
+                  <button type="button" className="btn-gold" onClick={updatePortfolio} disabled={saving || !formState.name.trim()}>
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

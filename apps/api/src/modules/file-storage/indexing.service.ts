@@ -35,6 +35,7 @@ export class IndexingService {
   private readonly indexingPath: string;
   private isIndexing = false;
   private indexingQueue: Array<{ category: string; id: string; data: any; portfolioCode?: number }> = [];
+  private indexingInterval?: NodeJS.Timeout;
 
   constructor(
     private fileStorageService: FileStorageService,
@@ -66,11 +67,22 @@ export class IndexingService {
 
   private startBackgroundIndexing(): void {
     // Process indexing queue every 5 seconds
-    setInterval(async () => {
+    this.indexingInterval = setInterval(async () => {
       if (this.indexingQueue.length > 0 && !this.isIndexing) {
         await this.processIndexingQueue();
       }
     }, 5000);
+  }
+
+  /**
+   * Stop the background indexing process
+   */
+  stopBackgroundIndexing(): void {
+    if (this.indexingInterval) {
+      clearInterval(this.indexingInterval);
+      this.indexingInterval = undefined;
+      this.logger.log('Background indexing stopped');
+    }
   }
 
   private async processIndexingQueue(): Promise<void> {
@@ -112,6 +124,10 @@ export class IndexingService {
       } catch (error) {
         this.logger.error(`Failed to rebuild index for ${category}:`, error);
       }
+    }
+
+    if (categories.includes('clients')) {
+      await this.searchService.rebuildClientIndex();
     }
     
     this.logger.log('Full index rebuild completed');
@@ -322,6 +338,8 @@ export class IndexingService {
       if (this.indexingQueue.length > 0) {
         await this.processIndexingQueue();
       }
+
+      await this.searchService.rebuildClientIndex();
 
       this.logger.log('Indexing maintenance completed');
     } catch (error) {

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { apiClient, api, API_BASE_URL } from '@/lib/api';
+import type { ClientContext } from '@/lib/types';
 
 interface Document {
   id: string;
@@ -55,7 +56,7 @@ export default function DocumentDetailPage() {
     serviceId: '',
     taskId: ''
   });
-  const [clients, setClients] = useState<any[]>([]);
+  const [clients, setClients] = useState<ClientContext[]>([]);
   const [services, setServices] = useState<any[]>([]);
 
   useEffect(() => {
@@ -205,8 +206,8 @@ export default function DocumentDetailPage() {
   };
 
   const getClientName = (clientId: string) => {
-    const client = clients.find(c => c.id === clientId);
-    return client ? client.name : 'Unknown Client';
+    const client = clients.find(c => c.node.id === clientId);
+    return client ? client.node.name : 'Unknown Client';
   };
 
   const getServiceName = (serviceId: string) => {
@@ -373,7 +374,9 @@ export default function DocumentDetailPage() {
                     >
                       <option value="">No Client</option>
                       {clients.map(client => (
-                        <option key={client.id} value={client.id}>{client.name}</option>
+                        <option key={client.node.id} value={client.node.id}>
+                          {client.node.name}
+                        </option>
                       ))}
                     </select>
                   </div>

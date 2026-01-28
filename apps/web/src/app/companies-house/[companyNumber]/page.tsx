@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { api } from '@/lib/api';
+import { ReportFooter, ReportHeader } from '@/components/mdj-ui/ReportChrome';
 
 /* ===========================
    Types
@@ -242,6 +243,11 @@ export default function CompanyDetailPage() {
         { label: 'Export PDF', onClick: onPrint, variant: 'primary' },
       ]}
     >
+      <ReportHeader
+        title={company ? company.company_name : 'Company'}
+        subtitle={company ? `Companies House — ${company.company_number}` : 'Companies House'}
+      />
+
       {/* Print styles to hide shell + tidy margins */}
       <style jsx global>{`
         @media print {
@@ -462,6 +468,8 @@ export default function CompanyDetailPage() {
           </SectionCard>
         </div>
       )}
+
+      <ReportFooter />
     </MDJShell>
   );
 }

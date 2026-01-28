@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { FileStorageService } from '../../file-storage/file-storage.service';
-import { ClientParty, CreateClientPartyDto, UpdateClientPartyDto, CreatePersonDto } from '../interfaces/client.interface';
+import { ClientParty, CreateClientPartyDto, UpdateClientPartyDto, CreatePersonDto, Address } from '../interfaces/client.interface';
 import { ReferenceGeneratorService } from './reference-generator.service';
 import { PersonService } from './person.service';
 import { ClientsService } from '../clients.service';
@@ -8,6 +8,21 @@ import { ClientsService } from '../clients.service';
 @Injectable()
 export class ClientPartyService {
   private readonly logger = new Logger(ClientPartyService.name);
+  private readonly allowedRoles: ClientParty['role'][] = ['DIRECTOR', 'SHAREHOLDER', 'PARTNER', 'MEMBER', 'OWNER', 'UBO', 'SECRETARY', 'CONTACT'];
+
+  private parsePartyRole(role?: ClientParty['role'] | string): ClientParty['role'] {
+    const normalized = (role || 'CONTACT').toString().toUpperCase().trim();
+    if (this.allowedRoles.includes(normalized as ClientParty['role'])) {
+      return normalized as ClientParty['role'];
+    }
+    return 'CONTACT';
+  }
+
+  private parseOptionalDate(value?: Date | string): Date | undefined {
+    if (!value) return undefined;
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+  }
 
   constructor(
     private fileStorage: FileStorageService,
@@ -27,9 +42,10 @@ export class ClientPartyService {
    * Find a client-party by an external source mapping stored on the party (metadata.__sources)
    */
   async findByClientAndSourceId(clientId: string, source: string, sourceId: string): Promise<ClientParty | null> {
-    const parties = await this.fileStorage.searchFiles<any>('client-parties', (party) => {
+    type ClientPartyRecord = ClientParty & { metadata?: { __sources?: Record<string, string> } };
+    const parties = await this.fileStorage.searchFiles<ClientPartyRecord>('client-parties', (party) => {
       if (!party || party.clientId !== clientId) return false;
-      const md = (party as any).metadata;
+      const md = party.metadata;
       return md && md.__sources && md.__sources[source] === sourceId;
     });
     return parties[0] || null;
@@ -71,10 +87,10 @@ export class ClientPartyService {
     sourceId: string;
     payload: Partial<{
       name?: string;
-      role?: any;
+      role?: ClientParty['role'] | string;
       mainEmail?: string;
       mainPhone?: string;
-      address?: any;
+      address?: Address;
       appointedAt?: Date | string;
       ownershipPercent?: number;
       personId?: string;
@@ -91,16 +107,16 @@ export class ClientPartyService {
     if (existing) {
       // merge sensible fields and update
       const updateData: UpdateClientPartyDto = {
-        role: payload.role ?? existing.role,
+        role: payload.role ? this.parsePartyRole(payload.role) : existing.role,
         ownershipPercent: payload.ownershipPercent ?? existing.ownershipPercent,
-        appointedAt: payload.appointedAt ? new Date(payload.appointedAt as any) : existing.appointedAt,
+        appointedAt: this.parseOptionalDate(payload.appointedAt) || existing.appointedAt,
         primaryContact: payload.mainEmail || payload.mainPhone ? existing.primaryContact : existing.primaryContact,
       };
 
       const updated = await this.update(existing.id, updateData);
 
       // ensure metadata mapping exists
-      const refreshed: any = { ...(updated as any) };
+      const refreshed: ClientParty & { metadata?: { __sources?: Record<string, string> } } = { ...updated };
       refreshed.metadata = refreshed.metadata || {};
       refreshed.metadata.__sources = refreshed.metadata.__sources || {};
       refreshed.metadata.__sources[source] = sourceId;
@@ -145,22 +161,22 @@ export class ClientPartyService {
     const createClientPartyDto: CreateClientPartyDto = {
       clientId,
       personId,
-      role: (payload.role as any) || 'CONTACT',
+      role: this.parsePartyRole(payload.role),
       ownershipPercent: payload.ownershipPercent,
-      appointedAt: payload.appointedAt ? new Date(payload.appointedAt as any) : undefined,
+      appointedAt: this.parseOptionalDate(payload.appointedAt),
       primaryContact: false,
     };
 
-    const createdParty = await this.create(createClientPartyDto as CreateClientPartyDto);
+    const createdParty = await this.create(createClientPartyDto);
 
     // write metadata mapping into created party
-    const createdAny: any = { ...(createdParty as any) };
-    createdAny.metadata = createdAny.metadata || {};
-    createdAny.metadata.__sources = createdAny.metadata.__sources || {};
-    createdAny.metadata.__sources[source] = sourceId;
-    await this.fileStorage.writeJson('client-parties', createdAny.id, createdAny);
+    const createdRecord: ClientParty & { metadata?: { __sources?: Record<string, string> } } = { ...createdParty };
+    createdRecord.metadata = createdRecord.metadata || {};
+    createdRecord.metadata.__sources = createdRecord.metadata.__sources || {};
+    createdRecord.metadata.__sources[source] = sourceId;
+    await this.fileStorage.writeJson('client-parties', createdRecord.id, createdRecord);
 
-    return { party: createdAny as ClientParty, created: true };
+    return { party: createdRecord, created: true };
   }
 
   async create(createClientPartyDto: CreateClientPartyDto): Promise<ClientParty> {

@@ -1,8 +1,10 @@
 import { Inject, Injectable, forwardRef, Logger, NotFoundException } from '@nestjs/common';
 import { FileStorageService } from '../file-storage/file-storage.service';
+import { DatabaseService } from '../database/database.service';
 import { ClientsService } from '../clients/clients.service';
 import { TasksService } from '../tasks/tasks.service';
 import { ServiceComplianceIntegrationService } from './service-compliance-integration.service';
+import { buildClientContext, evaluateServiceEligibility } from '../clients/dto/client-context.dto';
 import { 
   Service, 
   ServiceFilters, 
@@ -23,6 +25,7 @@ export class ServicesService {
     private tasksService: TasksService,
     @Inject(forwardRef(() => ServiceComplianceIntegrationService))
     private serviceComplianceIntegration: ServiceComplianceIntegrationService,
+    private databaseService: DatabaseService,
   ) {}
 
   async create(createServiceDto: CreateServiceDto): Promise<Service> {
@@ -101,10 +104,26 @@ export class ServicesService {
     return this.fileStorage.readJson<Service>('services', id);
   }
 
-  async findByClient(clientId: string): Promise<Service[]> {
-    return this.fileStorage.searchFiles<Service>('services', 
+  async findByClient(clientId: string): Promise<Array<Service & { eligibility?: { status: 'active' | 'blocked' | 'warning'; reasons: string[]; eligible: boolean } }>> {
+    const services = await this.fileStorage.searchFiles<Service>(
+      'services',
       (service) => service.clientId === clientId
     );
+
+    const client = await this.clientsService.findOne(clientId);
+    if (!client) {
+      return services;
+    }
+
+    const dbClient = client.registeredNumber
+      ? await this.databaseService.getClientByNumber(client.registeredNumber)
+      : null;
+    const context = buildClientContext(client, dbClient);
+
+    return services.map((service) => ({
+      ...service,
+      eligibility: evaluateServiceEligibility(service.kind, context),
+    }));
   }
 
   // Alias for compatibility with reports service

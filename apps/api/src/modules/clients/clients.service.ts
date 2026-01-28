@@ -1,5 +1,8 @@
 import { Injectable, Logger, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { FileStorageService } from '../file-storage/file-storage.service';
+import { DatabaseService } from '../database/database.service';
+import { buildClientContext, ClientContext } from './dto/client-context.dto';
+import { Client as DbClient } from '../database/interfaces/database.interface';
 import { 
   Client, 
   ClientFilters, 
@@ -23,6 +26,8 @@ import { parseCsv, csvToRecords, escapeCsvValue, pickCsvField } from '../../comm
 @Injectable()
 export class ClientsService {
   private readonly logger = new Logger(ClientsService.name);
+  private readonly clientTypes: Client['type'][] = ['COMPANY', 'INDIVIDUAL', 'SOLE_TRADER', 'PARTNERSHIP', 'LLP'];
+  private readonly clientStatuses: Client['status'][] = ['ACTIVE', 'INACTIVE', 'ARCHIVED'];
 
   constructor(
   private fileStorage: FileStorageService,
@@ -36,7 +41,113 @@ export class ClientsService {
   private tasksService: TasksService,
   @Inject(forwardRef(() => ComplianceService))
   private complianceService: ComplianceService,
+  private databaseService: DatabaseService,
 ) {}
+
+  private parseClientType(value?: string): Client['type'] {
+    const normalized = (value || CLIENT_DEFAULTS.TYPE).toUpperCase().trim().replace(/\s+/g, '_');
+    if (this.clientTypes.includes(normalized as Client['type'])) {
+      return normalized as Client['type'];
+    }
+    return CLIENT_DEFAULTS.TYPE;
+  }
+
+  private parseClientStatus(value?: string): Client['status'] {
+    const normalized = (value || CLIENT_DEFAULTS.STATUS).toUpperCase().trim();
+    if (this.clientStatuses.includes(normalized as Client['status'])) {
+      return normalized as Client['status'];
+    }
+    return CLIENT_DEFAULTS.STATUS;
+  }
+
+  private normalizeName(value?: string): string | null {
+    const normalized = (value || '').trim().toLowerCase();
+    return normalized ? normalized : null;
+  }
+
+  private async resolveDbClientForClient(client: Client): Promise<DbClient | null> {
+    if (client.registeredNumber) {
+      const byNumber = await this.databaseService.getClientByNumber(client.registeredNumber);
+      if (byNumber) return byNumber;
+    }
+
+    const name = this.normalizeName(client.name);
+    let matches: DbClient[] = [];
+    let exact: DbClient[] = [];
+
+    if (name) {
+      matches = await this.databaseService.searchClientsByName(client.name, 5);
+      exact = matches.filter((candidate) => {
+        const companyName = this.normalizeName(candidate.companyName);
+        const tradingName = this.normalizeName(candidate.tradingName);
+        return companyName === name || tradingName === name;
+      });
+    }
+
+    let resolved: DbClient | null = null;
+    if (exact.length === 1) {
+      resolved = exact[0];
+    } else if (matches.length === 1) {
+      resolved = matches[0];
+    }
+
+    if (!resolved) {
+      const all = await this.databaseService.getClientList();
+      if (all.length === 1) {
+        const full = all[0]?.companyNumber
+          ? await this.databaseService.getClientByNumber(all[0].companyNumber)
+          : null;
+        resolved = full || all[0];
+      }
+    }
+
+    if (resolved) {
+      const needsRegisteredNumber = !client.registeredNumber && resolved.companyNumber;
+      const needsName = !client.name && resolved.companyName;
+      const needsStatus = !client.status && resolved.status;
+      const resolvedType = resolved.clientType ? String(resolved.clientType).toUpperCase() : '';
+      const normalizedType = ['COMPANY', 'INDIVIDUAL', 'SOLE_TRADER', 'PARTNERSHIP', 'LLP'].includes(resolvedType)
+        ? (resolvedType as Client['type'])
+        : undefined;
+      const needsType = !client.type && (normalizedType || resolved.companyNumber);
+
+      if (needsRegisteredNumber || needsName || needsStatus || needsType) {
+        const updated: Client = {
+          ...client,
+          registeredNumber: needsRegisteredNumber ? resolved.companyNumber : client.registeredNumber,
+          name: needsName ? resolved.companyName : client.name,
+          status: needsStatus ? (resolved.status as Client['status']) : client.status,
+          type: needsType ? (normalizedType || 'COMPANY') : client.type,
+          updatedAt: new Date(),
+        };
+        await this.fileStorage.writeJson('clients', client.ref, updated, client.portfolioCode);
+      }
+    }
+
+    return resolved;
+  }
+
+  private buildAddressFromCsv(record: Record<string, string>): Address | undefined {
+    const line1 = pickCsvField(record, 'Address Line 1', 'Line1', 'Address') || '';
+    const line2 = pickCsvField(record, 'Address Line 2', 'Line2') || undefined;
+    const city = pickCsvField(record, 'City') || '';
+    const county = pickCsvField(record, 'County') || undefined;
+    const postcode = pickCsvField(record, 'Postcode') || '';
+    const country = pickCsvField(record, 'Country') || '';
+
+    if (!line1 && !line2 && !city && !county && !postcode && !country) {
+      return undefined;
+    }
+
+    return {
+      line1,
+      line2,
+      city,
+      county,
+      postcode,
+      country,
+    };
+  }
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
     // Validate portfolio code
@@ -224,6 +335,126 @@ export class ClientsService {
     return normalized;
   }
 
+  async findAllWithContext(filters?: ClientFilters): Promise<ClientContext[]> {
+    const clients = await this.findAll(filters);
+    const dbClients = await this.databaseService.getClientList({}, [
+      'companyNumber',
+      'companyName',
+      'tradingName',
+      'mainContactName',
+      'partnerResponsible',
+      'clientManager',
+      'lifecycleStatus',
+      'engagementType',
+      'engagementLetterSigned',
+      'onboardingDate',
+      'disengagementDate',
+      'onboardingStartedAt',
+      'wentLiveAt',
+      'ceasedAt',
+      'dormantSince',
+      'accountingPeriodEnd',
+      'nextAccountsDueDate',
+      'nextCorporationTaxDueDate',
+      'statutoryYearEnd',
+      'vatRegistrationDate',
+      'vatPeriodStart',
+      'vatPeriodEnd',
+      'vatStagger',
+      'payrollPayDay',
+      'payrollPeriodEndDay',
+      'corporationTaxUtr',
+      'vatNumber',
+      'vatScheme',
+      'vatReturnFrequency',
+      'vatQuarter',
+      'payeReference',
+      'payeAccountsOfficeReference',
+      'accountsOfficeReference',
+      'cisRegistered',
+      'cisUtr',
+      'payrollRtiRequired',
+      'amlCompleted',
+      'clientRiskRating',
+      'annualFee',
+      'monthlyFee',
+      'personalUtr',
+      'selfAssessmentRequired',
+      'selfAssessmentFiled',
+      'companyType',
+      'registeredAddress',
+      'authenticationCode',
+      'employeeCount',
+      'payrollFrequency',
+      'contactPosition',
+      'telephone',
+      'mobile',
+      'email',
+      'preferredContactMethod',
+      'correspondenceAddress',
+      'feeArrangement',
+      'businessBankName',
+      'accountLastFour',
+      'directDebitInPlace',
+      'paymentIssues',
+      'notes',
+      'specialCircumstances',
+      'seasonalBusiness',
+      'dormant',
+      'doNotContact',
+      'nationalInsuranceNumber',
+      'dateOfBirth',
+      'personalAddress',
+      'personalTaxYear',
+      'selfAssessmentTaxYear',
+      'linkedCompanyNumber',
+      'directorRole',
+      'clientType',
+      'companyStatusDetail',
+      'jurisdiction',
+      'registeredOfficeFull',
+      'sicCodes',
+      'sicDescriptions',
+      'accountsOverdue',
+      'confirmationStatementOverdue',
+      'nextAccountsMadeUpTo',
+      'nextAccountsDueBy',
+      'lastAccountsMadeUpTo',
+      'nextConfirmationStatementDate',
+      'confirmationStatementDueBy',
+      'lastConfirmationStatementDate',
+      'directorCount',
+      'pscCount',
+      'currentDirectors',
+      'currentPscs',
+      'lastChRefresh',
+    ]);
+
+    const dbMap = new Map(dbClients.map((dbClient) => [dbClient.companyNumber, dbClient]));
+    const nameCounts = new Map<string, number>();
+    const nameMap = new Map<string, DbClient>();
+
+    for (const dbClient of dbClients) {
+      const nameKey = this.normalizeName(dbClient.companyName);
+      if (!nameKey) continue;
+      nameCounts.set(nameKey, (nameCounts.get(nameKey) || 0) + 1);
+      if (!nameMap.has(nameKey)) {
+        nameMap.set(nameKey, dbClient);
+      }
+    }
+
+    return clients.map((client) => {
+      let dbClient = client.registeredNumber ? dbMap.get(client.registeredNumber) || null : null;
+      if (!dbClient) {
+        const nameKey = this.normalizeName(client.name);
+        if (nameKey && nameCounts.get(nameKey) === 1) {
+          dbClient = nameMap.get(nameKey) || null;
+        }
+      }
+      return buildClientContext(client, dbClient);
+    });
+  }
+
   async findOne(id: string): Promise<Client | null> {
     // Try to find by reference first (more efficient with file storage)
     if (this.referenceGenerator.validateClientRef(id)) {
@@ -393,7 +624,7 @@ export class ClientsService {
         c.mainEmail || '',
         c.mainPhone || '',
         c.registeredNumber || '',
-        (c as any).utrNumber || '',
+        c.utrNumber || '',
         c.incorporationDate ? new Date(c.incorporationDate).toISOString().slice(0, 10) : '',
         c.accountsAccountingReferenceDay ?? '',
         c.accountsAccountingReferenceMonth ?? '',
@@ -433,22 +664,15 @@ export class ClientsService {
       try {
         const name = pickCsvField(r, 'Company Name', 'Name');
         if (!name) throw new BadRequestException('Name is required');
-        const type = (pickCsvField(r, 'Type') || CLIENT_DEFAULTS.TYPE).toUpperCase() as any;
+        const type = this.parseClientType(pickCsvField(r, 'Type'));
         const portfolioCode = parseInt(pickCsvField(r, 'Portfolio Code', 'Portfolio') || String(PORTFOLIO_CONFIG.DEFAULT_CODE), 10) || PORTFOLIO_CONFIG.DEFAULT_CODE;
-        const status = (pickCsvField(r, 'Status') || CLIENT_DEFAULTS.STATUS).toUpperCase() as any;
+        const status = this.parseClientStatus(pickCsvField(r, 'Status'));
         const registeredNumber = pickCsvField(r, 'Company Number', 'Registered Number') || undefined;
         const mainEmail = pickCsvField(r, 'Email', 'Main Email') || undefined;
         const mainPhone = pickCsvField(r, 'Phone', 'Main Phone') || undefined;
         const accountsAccountingReferenceDay = parseInt(pickCsvField(r, 'Accounting Reference Day', 'Accounts Accounting Reference Day', 'ARD Day') || '', 10);
         const accountsAccountingReferenceMonth = parseInt(pickCsvField(r, 'Accounting Reference Month', 'Accounts Accounting Reference Month', 'ARD Month') || '', 10);
-        const address = {
-          line1: pickCsvField(r, 'Address Line 1', 'Line1', 'Address') || undefined,
-          line2: pickCsvField(r, 'Address Line 2', 'Line2') || undefined,
-          city: pickCsvField(r, 'City') || undefined,
-          county: pickCsvField(r, 'County') || undefined,
-          postcode: pickCsvField(r, 'Postcode') || undefined,
-          country: pickCsvField(r, 'Country') || undefined,
-        } as any;
+        const address = this.buildAddressFromCsv(r);
 
         const dto: CreateClientDto = {
           name,
@@ -461,7 +685,7 @@ export class ClientsService {
           accountsAccountingReferenceDay: Number.isFinite(accountsAccountingReferenceDay) ? accountsAccountingReferenceDay : undefined,
           accountsAccountingReferenceMonth: Number.isFinite(accountsAccountingReferenceMonth) ? accountsAccountingReferenceMonth : undefined,
           address,
-        } as CreateClientDto;
+        };
 
         await this.create(dto);
         created++;
@@ -530,9 +754,98 @@ export class ClientsService {
       throw new NotFoundException(`Client with ID ${id} not found`);
     }
 
+    const clientUpdate: Partial<Client> = Object.fromEntries(
+      Object.entries({
+      name: updateClientDto.name,
+      type: updateClientDto.type,
+      status: updateClientDto.status,
+      mainEmail: updateClientDto.mainEmail,
+      mainPhone: updateClientDto.mainPhone,
+      registeredNumber: updateClientDto.registeredNumber,
+      utrNumber: updateClientDto.utrNumber,
+      incorporationDate: updateClientDto.incorporationDate,
+      accountsAccountingReferenceDay: updateClientDto.accountsAccountingReferenceDay,
+      accountsAccountingReferenceMonth: updateClientDto.accountsAccountingReferenceMonth,
+      accountsLastMadeUpTo: updateClientDto.accountsLastMadeUpTo,
+      accountsNextDue: updateClientDto.accountsNextDue,
+      confirmationLastMadeUpTo: updateClientDto.confirmationLastMadeUpTo,
+      confirmationNextDue: updateClientDto.confirmationNextDue,
+      address: updateClientDto.address,
+      mainContactName: updateClientDto.mainContactName,
+      partnerResponsible: updateClientDto.partnerResponsible,
+      clientManager: updateClientDto.clientManager,
+      lifecycleStatus: updateClientDto.lifecycleStatus,
+      engagementType: updateClientDto.engagementType,
+      engagementLetterSigned: updateClientDto.engagementLetterSigned,
+      onboardingDate: updateClientDto.onboardingDate,
+      disengagementDate: updateClientDto.disengagementDate,
+      onboardingStartedAt: updateClientDto.onboardingStartedAt,
+      wentLiveAt: updateClientDto.wentLiveAt,
+      ceasedAt: updateClientDto.ceasedAt,
+      dormantSince: updateClientDto.dormantSince,
+      accountingPeriodEnd: updateClientDto.accountingPeriodEnd,
+      nextAccountsDueDate: updateClientDto.nextAccountsDueDate,
+      nextCorporationTaxDueDate: updateClientDto.nextCorporationTaxDueDate,
+      statutoryYearEnd: updateClientDto.statutoryYearEnd,
+      vatRegistrationDate: updateClientDto.vatRegistrationDate,
+      vatPeriodStart: updateClientDto.vatPeriodStart,
+      vatPeriodEnd: updateClientDto.vatPeriodEnd,
+      vatStagger: updateClientDto.vatStagger,
+      payrollPayDay: updateClientDto.payrollPayDay,
+      payrollPeriodEndDay: updateClientDto.payrollPeriodEndDay,
+      corporationTaxUtr: updateClientDto.corporationTaxUtr,
+      vatNumber: updateClientDto.vatNumber,
+      vatScheme: updateClientDto.vatScheme,
+      vatReturnFrequency: updateClientDto.vatReturnFrequency,
+      vatQuarter: updateClientDto.vatQuarter,
+      payeReference: updateClientDto.payeReference,
+      payeAccountsOfficeReference: updateClientDto.payeAccountsOfficeReference,
+      accountsOfficeReference: updateClientDto.accountsOfficeReference,
+      cisRegistered: updateClientDto.cisRegistered,
+      cisUtr: updateClientDto.cisUtr,
+      payrollRtiRequired: updateClientDto.payrollRtiRequired,
+      amlCompleted: updateClientDto.amlCompleted,
+      clientRiskRating: updateClientDto.clientRiskRating,
+      annualFee: updateClientDto.annualFee,
+      monthlyFee: updateClientDto.monthlyFee,
+      personalUtr: updateClientDto.personalUtr,
+      selfAssessmentRequired: updateClientDto.selfAssessmentRequired,
+      selfAssessmentFiled: updateClientDto.selfAssessmentFiled,
+      tradingName: updateClientDto.tradingName,
+      registeredAddress: updateClientDto.registeredAddress,
+      authenticationCode: updateClientDto.authenticationCode,
+      employeeCount: updateClientDto.employeeCount,
+      payrollFrequency: updateClientDto.payrollFrequency,
+      contactPosition: updateClientDto.contactPosition,
+      telephone: updateClientDto.telephone,
+      mobile: updateClientDto.mobile,
+      email: updateClientDto.email,
+      preferredContactMethod: updateClientDto.preferredContactMethod,
+      correspondenceAddress: updateClientDto.correspondenceAddress,
+      feeArrangement: updateClientDto.feeArrangement,
+      businessBankName: updateClientDto.businessBankName,
+      accountLastFour: updateClientDto.accountLastFour,
+      directDebitInPlace: updateClientDto.directDebitInPlace,
+      paymentIssues: updateClientDto.paymentIssues,
+      notes: updateClientDto.notes,
+      specialCircumstances: updateClientDto.specialCircumstances,
+      seasonalBusiness: updateClientDto.seasonalBusiness,
+      dormant: updateClientDto.dormant,
+      doNotContact: updateClientDto.doNotContact,
+      nationalInsuranceNumber: updateClientDto.nationalInsuranceNumber,
+      dateOfBirth: updateClientDto.dateOfBirth,
+      personalAddress: updateClientDto.personalAddress,
+      personalTaxYear: updateClientDto.personalTaxYear,
+      selfAssessmentTaxYear: updateClientDto.selfAssessmentTaxYear,
+      linkedCompanyNumber: updateClientDto.linkedCompanyNumber,
+      directorRole: updateClientDto.directorRole,
+      clientType: updateClientDto.clientType,
+      }).filter(([, value]) => value !== undefined)
+    );
+
     const updatedClient: Client = {
       ...existing,
-      ...updateClientDto,
+      ...clientUpdate,
       id: existing.id, // Ensure ID cannot be changed
       ref: existing.ref, // Ensure reference cannot be changed
       portfolioCode: existing.portfolioCode, // Ensure portfolio cannot be changed
@@ -541,6 +854,100 @@ export class ClientsService {
 
     await this.fileStorage.writeJson('clients', existing.ref, updatedClient, existing.portfolioCode);
     this.logger.log(`Updated client: ${updatedClient.name} (${updatedClient.ref})`);
+
+    const dbUpdate: Partial<DbClient> = Object.fromEntries(
+      Object.entries({
+      mainContactName: updateClientDto.mainContactName,
+      partnerResponsible: updateClientDto.partnerResponsible,
+      clientManager: updateClientDto.clientManager,
+      lifecycleStatus: updateClientDto.lifecycleStatus,
+      engagementType: updateClientDto.engagementType,
+      engagementLetterSigned: updateClientDto.engagementLetterSigned,
+      onboardingDate: updateClientDto.onboardingDate,
+      disengagementDate: updateClientDto.disengagementDate,
+      onboardingStartedAt: updateClientDto.onboardingStartedAt,
+      wentLiveAt: updateClientDto.wentLiveAt,
+      ceasedAt: updateClientDto.ceasedAt,
+      dormantSince: updateClientDto.dormantSince,
+      accountingPeriodEnd: updateClientDto.accountingPeriodEnd,
+      nextAccountsDueDate: updateClientDto.nextAccountsDueDate,
+      nextCorporationTaxDueDate: updateClientDto.nextCorporationTaxDueDate,
+      statutoryYearEnd: updateClientDto.statutoryYearEnd,
+      vatRegistrationDate: updateClientDto.vatRegistrationDate,
+      vatPeriodStart: updateClientDto.vatPeriodStart,
+      vatPeriodEnd: updateClientDto.vatPeriodEnd,
+      vatStagger: updateClientDto.vatStagger,
+      payrollPayDay: updateClientDto.payrollPayDay,
+      payrollPeriodEndDay: updateClientDto.payrollPeriodEndDay,
+      corporationTaxUtr: updateClientDto.corporationTaxUtr,
+      vatNumber: updateClientDto.vatNumber,
+      vatScheme: updateClientDto.vatScheme,
+      vatReturnFrequency: updateClientDto.vatReturnFrequency,
+      vatQuarter: updateClientDto.vatQuarter,
+      payeReference: updateClientDto.payeReference,
+      payeAccountsOfficeReference: updateClientDto.payeAccountsOfficeReference,
+      accountsOfficeReference: updateClientDto.accountsOfficeReference,
+      cisRegistered: updateClientDto.cisRegistered,
+      cisUtr: updateClientDto.cisUtr,
+      payrollRtiRequired: updateClientDto.payrollRtiRequired,
+      amlCompleted: updateClientDto.amlCompleted,
+      clientRiskRating: updateClientDto.clientRiskRating,
+      annualFee: updateClientDto.annualFee,
+      monthlyFee: updateClientDto.monthlyFee,
+      personalUtr: updateClientDto.personalUtr,
+      selfAssessmentRequired: updateClientDto.selfAssessmentRequired,
+      selfAssessmentFiled: updateClientDto.selfAssessmentFiled,
+      tradingName: updateClientDto.tradingName,
+      registeredAddress: updateClientDto.registeredAddress,
+      authenticationCode: updateClientDto.authenticationCode,
+      employeeCount: updateClientDto.employeeCount,
+      payrollFrequency: updateClientDto.payrollFrequency,
+      contactPosition: updateClientDto.contactPosition,
+      telephone: updateClientDto.telephone,
+      mobile: updateClientDto.mobile,
+      email: updateClientDto.email,
+      preferredContactMethod: updateClientDto.preferredContactMethod,
+      correspondenceAddress: updateClientDto.correspondenceAddress,
+      feeArrangement: updateClientDto.feeArrangement,
+      businessBankName: updateClientDto.businessBankName,
+      accountLastFour: updateClientDto.accountLastFour,
+      directDebitInPlace: updateClientDto.directDebitInPlace,
+      paymentIssues: updateClientDto.paymentIssues,
+      notes: updateClientDto.notes,
+      specialCircumstances: updateClientDto.specialCircumstances,
+      seasonalBusiness: updateClientDto.seasonalBusiness,
+      dormant: updateClientDto.dormant,
+      doNotContact: updateClientDto.doNotContact,
+      nationalInsuranceNumber: updateClientDto.nationalInsuranceNumber,
+      dateOfBirth: updateClientDto.dateOfBirth,
+      personalAddress: updateClientDto.personalAddress,
+      personalTaxYear: updateClientDto.personalTaxYear,
+      selfAssessmentTaxYear: updateClientDto.selfAssessmentTaxYear,
+      linkedCompanyNumber: updateClientDto.linkedCompanyNumber,
+      directorRole: updateClientDto.directorRole,
+      clientType: updateClientDto.clientType,
+      }).filter(([, value]) => value !== undefined)
+    );
+
+    if (Object.keys(dbUpdate).length > 0) {
+      let dbClient = await this.resolveDbClientForClient(updatedClient);
+      if (!dbClient && (updatedClient.registeredNumber || updatedClient.id)) {
+        const companyNumber = updatedClient.registeredNumber || updatedClient.id;
+        const addResult = await this.databaseService.addClient({
+          companyNumber,
+          companyName: updatedClient.name,
+          status: updatedClient.status,
+          ...dbUpdate,
+        });
+        if (addResult.success) {
+          dbClient = await this.databaseService.getClientByNumber(companyNumber);
+        }
+      }
+
+      if (dbClient) {
+        await this.databaseService.updateClient(dbClient.companyNumber, dbUpdate);
+      }
+    }
 
     return updatedClient;
   }
@@ -720,7 +1127,7 @@ export class ClientsService {
     return client;
   }
 
-  async getClientWithParties(clientId: string): Promise<Client & { partiesDetails: ClientParty[] }> {
+  async getClientWithParties(clientId: string): Promise<ClientContext & { partiesDetails: Array<ClientParty & { partyRef: string }> }> {
     const client = await this.findOne(clientId);
     if (!client) {
       throw new NotFoundException(`Client with ID ${clientId} not found`);
@@ -728,15 +1135,29 @@ export class ClientsService {
 
     const partiesDetailsRaw = await this.clientPartyService.findByClient(client.id);
     // Attach composite party reference: client.ref + suffixLetter (e.g., 1P003A)
-    const partiesDetails = (partiesDetailsRaw as any[]).map((p) => ({
+    const partiesDetails = partiesDetailsRaw.map((p) => ({
       ...p,
       partyRef: `${client.ref}${p.suffixLetter || ''}`,
-    })) as any as ClientParty[];
+    }));
+
+    const dbClient = await this.resolveDbClientForClient(client);
+
+    const context = buildClientContext(client, dbClient);
 
     return {
-      ...client,
+      ...context,
       partiesDetails,
     };
+  }
+
+  async getClientWithContext(clientId: string): Promise<ClientContext> {
+    const client = await this.findOne(clientId);
+    if (!client) {
+      throw new NotFoundException(`Client with ID ${clientId} not found`);
+    }
+
+    const dbClient = await this.resolveDbClientForClient(client);
+    return buildClientContext(client, dbClient);
   }
 
   async getPortfolioStats(): Promise<Record<number, { count: number; active: number; inactive: number }>> {
@@ -858,7 +1279,7 @@ export class ClientsService {
       // Company information
       registeredNumber: client.registeredNumber || '',
       companyNumber: client.registeredNumber || '', // Alias
-      utrNumber: (client as any).utrNumber || '',
+      utrNumber: client.utrNumber || '',
       
       // Dates
       incorporationDate: client.incorporationDate ? formatDate(client.incorporationDate) : '',

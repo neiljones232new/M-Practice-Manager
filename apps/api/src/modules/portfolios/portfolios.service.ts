@@ -17,15 +17,19 @@ export class PortfoliosService {
   constructor(private fileStorage: FileStorageService) {}
 
   async findAll(): Promise<Portfolio[]> {
+    let portfolios: Portfolio[] = [];
+
     try {
-      const portfolios = await this.fileStorage.readJson<Portfolio[]>('config', 'portfolios');
-      return portfolios || [];
+      portfolios = await this.fileStorage.readJson<Portfolio[]>('config', 'portfolios');
     } catch (error) {
       if (error.message.includes('not found')) {
-        return this.initializeDefaultPortfolios();
+        portfolios = await this.initializeDefaultPortfolios();
+      } else {
+        throw error;
       }
-      throw error;
     }
+
+    return this.syncPortfoliosWithClients(portfolios || []);
   }
 
   async findOne(code: number): Promise<Portfolio> {
@@ -176,5 +180,71 @@ export class PortfoliosService {
     
     await this.fileStorage.writeJson('config', 'portfolios', defaultPortfolios);
     return defaultPortfolios;
+  }
+
+  private async syncPortfoliosWithClients(existing: Portfolio[]): Promise<Portfolio[]> {
+    const portfolios = [...existing];
+    const counts = new Map<number, number>();
+    const now = new Date();
+
+    const clientFiles = await this.fileStorage.listAllClientFiles();
+    for (const entry of clientFiles) {
+      counts.set(entry.portfolioCode, entry.files.length);
+    }
+
+    let changed = false;
+
+    for (const [code, clientCount] of counts.entries()) {
+      const found = portfolios.find(p => p.code === code);
+      if (!found) {
+        portfolios.push({
+          code,
+          name: `Portfolio ${code}`,
+          description: 'Imported from existing client data',
+          enabled: true,
+          clientCount,
+          createdAt: now,
+          updatedAt: now,
+        });
+        changed = true;
+        continue;
+      }
+
+      if (!found.createdAt) {
+        found.createdAt = now;
+        changed = true;
+      }
+
+      if (found.clientCount !== clientCount) {
+        found.clientCount = clientCount;
+        found.updatedAt = now;
+        changed = true;
+      }
+    }
+
+    for (const portfolio of portfolios) {
+      const currentCount = counts.get(portfolio.code) ?? 0;
+      if (portfolio.clientCount !== currentCount) {
+        portfolio.clientCount = currentCount;
+        portfolio.updatedAt = now;
+        changed = true;
+      }
+      if (portfolio.enabled === undefined) {
+        portfolio.enabled = true;
+        changed = true;
+      }
+      if (!portfolio.createdAt) {
+        portfolio.createdAt = now;
+        changed = true;
+      }
+    }
+
+    portfolios.sort((a, b) => a.code - b.code);
+
+    if (changed) {
+      await this.fileStorage.writeJson('config', 'portfolios', portfolios);
+    }
+
+    return portfolios;
   }
 }

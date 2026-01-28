@@ -91,13 +91,13 @@ export default function CompliancePage() {
       }
 
       // Load clients to enrich compliance items with client names
-      const clients = await api.getClients() as any[];
+      const clients = await api.getClients();
       console.log('Loaded clients:', clients.length);
-      console.log('Sample client IDs:', clients.slice(0, 3).map(c => ({ id: c.id, ref: c.ref, name: c.name })));
+      console.log('Sample client IDs:', clients.slice(0, 3).map(c => ({ id: c.node.id, ref: c.node.ref, name: c.node.name })));
 
       // Create client maps for both ID and ref lookups
-      const clientByIdMap = new Map(clients.map(c => [c.id, c]));
-      const clientByRefMap = new Map(clients.map(c => [c.ref, c]));
+      const clientByIdMap = new Map(clients.map(c => [c.node.id, c]));
+      const clientByRefMap = new Map(clients.map(c => [c.node.ref, c]));
 
       // Enrich items with client information - but don't fail if client not found
       items = items.map(item => {
@@ -110,7 +110,7 @@ export default function CompliancePage() {
         if (client) {
           return {
             ...item,
-            description: `${client.name} (${client.ref || client.id}) - ${item.type.replace(/_/g, ' ')}`,
+            description: `${client.node.name} (${client.node.ref || client.node.id}) - ${item.type.replace(/_/g, ' ')}`,
           };
         } else {
           console.warn('Client not found for compliance item:', item.clientId, 'Item:', item.id);

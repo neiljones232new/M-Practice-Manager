@@ -38,8 +38,9 @@ describe('IndexingService', () => {
 
     const mockSearchService = {
       search: jest.fn(),
-      updateIndex: jest.fn(),
+      updateIndex: jest.fn().mockResolvedValue(undefined),
       rebuildIndex: jest.fn(),
+      rebuildClientIndex: jest.fn(),
       optimizeIndex: jest.fn(),
       getSearchStats: jest.fn(),
       getIndexHealth: jest.fn(),
@@ -75,6 +76,11 @@ describe('IndexingService', () => {
 
     // Clear all mocks
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Stop background indexing to prevent test pollution
+    service.stopBackgroundIndexing();
   });
 
   describe('initialization', () => {
@@ -191,11 +197,12 @@ describe('IndexingService', () => {
 
       const results = await service.combinedSearch('', {
         categories: ['clients'],
+        portfolioCode: 1,
         useFullTextSearch: false,
         limit: 10
       });
 
-      expect(fileStorageService.listFiles).toHaveBeenCalledWith('clients');
+      expect(fileStorageService.listFiles).toHaveBeenCalledWith('clients', 1);
       expect(results.results).toHaveLength(2);
     });
 

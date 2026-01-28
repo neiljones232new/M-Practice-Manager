@@ -153,6 +153,8 @@ export class DatabaseService implements OnModuleInit {
       )
     `);
 
+    this.ensureClientSchema();
+
     // Tax calculations table
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS tax_calculations (
@@ -260,6 +262,31 @@ export class DatabaseService implements OnModuleInit {
     this.logger.log('Database tables created successfully');
   }
 
+  private ensureClientSchema() {
+    const columns = this.db.prepare("PRAGMA table_info('clients')").all() as Array<{ name: string }>;
+    const existing = new Set(columns.map((col) => col.name));
+
+    const desired: Array<{ name: string; type: string }> = [
+      { name: 'lifecycle_status', type: 'TEXT' },
+      { name: 'onboarding_started_at', type: 'TEXT' },
+      { name: 'went_live_at', type: 'TEXT' },
+      { name: 'ceased_at', type: 'TEXT' },
+      { name: 'dormant_since', type: 'TEXT' },
+      { name: 'statutory_year_end', type: 'TEXT' },
+      { name: 'vat_period_start', type: 'TEXT' },
+      { name: 'vat_period_end', type: 'TEXT' },
+      { name: 'vat_stagger', type: 'TEXT' },
+      { name: 'payroll_pay_day', type: 'INTEGER' },
+      { name: 'payroll_period_end_day', type: 'INTEGER' },
+    ];
+
+    for (const column of desired) {
+      if (!existing.has(column.name)) {
+        this.db.exec(`ALTER TABLE clients ADD COLUMN ${column.name} ${column.type}`);
+      }
+    }
+  }
+
   async executeQuery<T = any>(query: string, params: any[] = []): Promise<QueryResult<T>> {
     try {
       if (query.trim().toUpperCase().startsWith('SELECT')) {
@@ -346,6 +373,10 @@ export class DatabaseService implements OnModuleInit {
       return { success: false, message: `Client ${companyNumber} already exists` };
     }
 
+    if (!clientData.lifecycleStatus) {
+      clientData.lifecycleStatus = 'ACTIVE';
+    }
+
     // Transform client data to database format
     const dbData = this.transformClientToDb(clientData);
     
@@ -373,6 +404,7 @@ export class DatabaseService implements OnModuleInit {
     // Filter to only allow practice fields for safety
     const safeUpdates: any = {};
     for (const [key, value] of Object.entries(updates)) {
+      if (value === undefined) continue;
       const dbKey = this.camelToSnake(key);
       if (PRACTICE_FIELDS.includes(key)) {
         safeUpdates[dbKey] = value;

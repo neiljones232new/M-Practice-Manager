@@ -31,7 +31,7 @@ describe('ReferenceGeneratorService', () => {
 
       const result = await service.generateClientRef(1, 'Test Client');
 
-      expect(result).toBe('1A001');
+      expect(result).toBe('1T001');
       expect(fileStorageService.listFiles).toHaveBeenCalledWith('clients', 1);
     });
 
@@ -49,7 +49,7 @@ describe('ReferenceGeneratorService', () => {
 
       const result = await service.generateClientRef(1, 'New Client');
 
-      expect(result).toBe('1B001');
+      expect(result).toBe('1N001');
     });
 
     it('should handle multiple alpha groups', async () => {
@@ -57,7 +57,7 @@ describe('ReferenceGeneratorService', () => {
 
       const result = await service.generateClientRef(1, 'Test Client');
 
-      expect(result).toBe('1B003');
+      expect(result).toBe('1T001');
     });
 
     it('should work with different portfolio codes', async () => {
@@ -65,7 +65,7 @@ describe('ReferenceGeneratorService', () => {
 
       const result = await service.generateClientRef(5, 'Test Client');
 
-      expect(result).toBe('5A001');
+      expect(result).toBe('5T001');
       expect(fileStorageService.listFiles).toHaveBeenCalledWith('clients', 5);
     });
 
@@ -74,7 +74,7 @@ describe('ReferenceGeneratorService', () => {
 
       const result = await service.generateClientRef(10, 'Test Client');
 
-      expect(result).toBe('10A001');
+      expect(result).toBe('10T001');
     });
 
     it('should sort references correctly', async () => {
@@ -83,7 +83,7 @@ describe('ReferenceGeneratorService', () => {
 
       const result = await service.generateClientRef(1, 'Test Client');
 
-      expect(result).toBe('1B002');
+      expect(result).toBe('1T001');
     });
   });
 
@@ -125,7 +125,7 @@ describe('ReferenceGeneratorService', () => {
   describe('generateSuffixLetter', () => {
     it('should generate first suffix letter', async () => {
       // Mock empty existing parties
-      jest.spyOn(service as any, 'getExistingClientParties').mockResolvedValue([]);
+      jest.spyOn(service as unknown as { getExistingClientParties: jest.Mock }, 'getExistingClientParties').mockResolvedValue([]);
 
       const result = await service.generateSuffixLetter('client_1', 'person_1');
 
@@ -134,7 +134,7 @@ describe('ReferenceGeneratorService', () => {
 
     it('should generate next suffix letter', async () => {
       // Mock existing parties with suffix A
-      jest.spyOn(service as any, 'getExistingClientParties').mockResolvedValue([
+      jest.spyOn(service as unknown as { getExistingClientParties: jest.Mock }, 'getExistingClientParties').mockResolvedValue([
         { suffixLetter: 'A' }
       ]);
 
@@ -144,7 +144,7 @@ describe('ReferenceGeneratorService', () => {
     });
 
     it('should handle multiple existing suffix letters', async () => {
-      jest.spyOn(service as any, 'getExistingClientParties').mockResolvedValue([
+      jest.spyOn(service as unknown as { getExistingClientParties: jest.Mock }, 'getExistingClientParties').mockResolvedValue([
         { suffixLetter: 'A' },
         { suffixLetter: 'C' },
         { suffixLetter: 'B' }
@@ -157,7 +157,7 @@ describe('ReferenceGeneratorService', () => {
 
     it('should handle all letters used', async () => {
       const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter => ({ suffixLetter: letter }));
-      jest.spyOn(service as any, 'getExistingClientParties').mockResolvedValue(allLetters);
+      jest.spyOn(service as unknown as { getExistingClientParties: jest.Mock }, 'getExistingClientParties').mockResolvedValue(allLetters);
 
       const result = await service.generateSuffixLetter('client_1', 'person_1');
 
@@ -228,7 +228,7 @@ describe('ReferenceGeneratorService', () => {
       const result = await service.generateClientRef(1, 'Test Client');
 
       // Should ignore invalid references and work with valid ones
-      expect(result).toBe('1B002');
+      expect(result).toBe('1T001');
     });
 
     it('should handle empty reference list for person generation', async () => {
@@ -253,10 +253,10 @@ describe('ReferenceGeneratorService', () => {
       fileStorageService.listFiles.mockResolvedValue(['1A001', '1A002']);
 
       const result1 = await service.generateClientRef(1, 'Test Client');
-      const result2 = await service.generateClientRef(1, 'Different Name');
+      const result2 = await service.generateClientRef(1, 'Test Client');
 
-      expect(result1).toBe('1A003');
-      expect(result2).toBe('1A003');
+      expect(result1).toBe('1T001');
+      expect(result2).toBe('1T001');
     });
 
     it('should be independent of client name', async () => {
@@ -265,8 +265,8 @@ describe('ReferenceGeneratorService', () => {
       const result1 = await service.generateClientRef(1, 'Short');
       const result2 = await service.generateClientRef(1, 'Very Long Client Name Ltd');
 
-      expect(result1).toBe('1A002');
-      expect(result2).toBe('1A002');
+      expect(result1).toBe('1S001');
+      expect(result2).toBe('1V001');
     });
   });
 });

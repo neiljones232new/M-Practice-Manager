@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentsService } from './documents.service';
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { SearchService } from '../file-storage/search.service';
+import { ConfigService } from '@nestjs/config';
 import { DocumentCategory, CreateDocumentDto } from './interfaces/document.interface';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -56,6 +57,12 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DocumentsService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => (key === 'STORAGE_PATH' ? testStoragePath : undefined)),
+          },
+        },
         {
           provide: FileStorageService,
           useValue: {

@@ -20,6 +20,21 @@ export interface Client {
   registeredNumber?: string | null;
   portfolioCode?: number | null;
   utrNumber?: string | null;
+  vatNumber?: string | null;
+  payeReference?: string | null;
+  accountsOfficeReference?: string | null;
+  cisUtr?: string | null;
+  mtdVatEnabled?: boolean;
+  mtdItsaEnabled?: boolean;
+  eoriNumber?: string | null;
+  hmrcCtStatus?: string | null;
+  hmrcSaStatus?: string | null;
+  hmrcVatStatus?: string | null;
+  hmrcPayeStatus?: string | null;
+  hmrcCisStatus?: string | null;
+  hmrcMtdVatStatus?: string | null;
+  hmrcMtdItsaStatus?: string | null;
+  hmrcEoriStatus?: string | null;
   incorporationDate?: string | null;
   confirmationLastMadeUpTo?: string | null;
   address?: {
@@ -45,6 +60,142 @@ export interface Client {
   compCS?: 'overdue' | 'dueSoon' | 'ok' | null;
     createdAt?: string;
     updatedAt?: string;
+}
+
+export interface ClientProfileSubset {
+  mainContactName?: string;
+  partnerResponsible?: string;
+  clientManager?: string;
+  lifecycleStatus?: 'PROSPECT' | 'ONBOARDING' | 'ACTIVE' | 'DORMANT' | 'CEASED';
+  engagementType?: string;
+  engagementLetterSigned?: boolean;
+  onboardingDate?: string;
+  disengagementDate?: string;
+  onboardingStartedAt?: string;
+  wentLiveAt?: string;
+  ceasedAt?: string;
+  dormantSince?: string;
+  accountingPeriodEnd?: string;
+  nextAccountsDueDate?: string;
+  nextCorporationTaxDueDate?: string;
+  statutoryYearEnd?: string;
+  vatRegistrationDate?: string;
+  vatPeriodStart?: string;
+  vatPeriodEnd?: string;
+  vatStagger?: 'A' | 'B' | 'C' | 'NONE';
+  payrollPayDay?: number;
+  payrollPeriodEndDay?: number;
+  corporationTaxUtr?: string;
+  vatNumber?: string;
+  vatScheme?: string;
+  vatReturnFrequency?: string;
+  vatQuarter?: string;
+  payeReference?: string;
+  payeAccountsOfficeReference?: string;
+  accountsOfficeReference?: string;
+  cisRegistered?: boolean;
+  cisUtr?: string;
+  payrollRtiRequired?: boolean;
+  amlCompleted?: boolean;
+  clientRiskRating?: string;
+  annualFee?: number;
+  monthlyFee?: number;
+  personalUtr?: string;
+  selfAssessmentRequired?: boolean;
+  selfAssessmentFiled?: boolean;
+  tradingName?: string;
+  companyType?: string;
+  registeredAddress?: string;
+  authenticationCode?: string;
+  employeeCount?: number;
+  payrollFrequency?: string;
+  contactPosition?: string;
+  telephone?: string;
+  mobile?: string;
+  email?: string;
+  preferredContactMethod?: string;
+  correspondenceAddress?: string;
+  feeArrangement?: string;
+  businessBankName?: string;
+  accountLastFour?: string;
+  directDebitInPlace?: boolean;
+  paymentIssues?: string;
+  notes?: string;
+  specialCircumstances?: string;
+  seasonalBusiness?: boolean;
+  dormant?: boolean;
+  doNotContact?: boolean;
+  nationalInsuranceNumber?: string;
+  dateOfBirth?: string;
+  personalAddress?: string;
+  personalTaxYear?: string;
+  selfAssessmentTaxYear?: string;
+  linkedCompanyNumber?: string;
+  directorRole?: string;
+  clientType?: string;
+  companyStatusDetail?: string;
+  jurisdiction?: string;
+  registeredOfficeFull?: string;
+  sicCodes?: string;
+  sicDescriptions?: string;
+  accountsOverdue?: boolean;
+  confirmationStatementOverdue?: boolean;
+  nextAccountsMadeUpTo?: string;
+  nextAccountsDueBy?: string;
+  lastAccountsMadeUpTo?: string;
+  nextConfirmationStatementDate?: string;
+  confirmationStatementDueBy?: string;
+  lastConfirmationStatementDate?: string;
+  directorCount?: number;
+  pscCount?: number;
+  currentDirectors?: string;
+  currentPscs?: string;
+  lastChRefresh?: string;
+}
+
+export interface ServiceEligibility {
+  status: 'active' | 'blocked' | 'warning';
+  reasons: string[];
+  eligible: boolean;
+}
+
+export interface ClientContext {
+  node: Client;
+  profile: ClientProfileSubset;
+  computed: {
+    isVatRegistered: boolean;
+    isEmployer: boolean;
+    isCisRegistered: boolean;
+    isCorporationTaxRegistered: boolean;
+    isCompany: boolean;
+    isActive: boolean;
+    isAmlComplete: boolean;
+    amlReviewDue: boolean;
+    taxFlags: {
+      vat: boolean;
+      paye: boolean;
+      cis: boolean;
+      ct: boolean;
+    };
+    eligibility: ServiceEligibility;
+  };
+}
+
+export interface ClientParty {
+  id: string;
+  clientId: string;
+  personId?: string;
+  primaryContact?: boolean;
+  suffixLetter?: string | null;
+  ownershipPercent?: number;
+  appointedAt?: string;
+  resignedAt?: string;
+  role?: string;
+  partyRef?: string;
+}
+
+export interface ClientContextWithParties extends ClientContext {
+  partiesDetails: ClientParty[];
 }
 
 export interface Task {
@@ -77,6 +228,7 @@ export interface Service {
   description?: string;
   createdAt?: string;
   updatedAt?: string;
+  eligibility?: ServiceEligibility;
 }
 
 export interface Party {

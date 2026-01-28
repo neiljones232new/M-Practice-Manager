@@ -35,6 +35,18 @@ export interface SearchResult<T = any> {
   matchedFields: string[];
 }
 
+interface ClientIndexEntry {
+  id: string;
+  portfolioCode?: number;
+  name?: string;
+  ref?: string;
+  status?: string;
+  type?: string;
+  updatedAt?: string;
+  createdAt?: string;
+  searchText: string;
+}
+
 export interface SearchOptions {
   categories?: string[];
   portfolioCode?: number;
@@ -59,12 +71,15 @@ export class SearchService {
   private readonly logger = new Logger(SearchService.name);
   private readonly searchIndex = new Map<string, SearchIndex>();
   private readonly indexPath: string;
+  private readonly clientIndexPath: string;
+  private clientIndex: ClientIndexEntry[] = [];
 
   constructor(
     @Inject(forwardRef(() => FileStorageService))
     private fileStorageService: FileStorageService
   ) {
     this.indexPath = path.join(fileStorageService['indexPath'], 'search');
+    this.clientIndexPath = path.join(fileStorageService['indexPath'], 'clients-lite.json');
     this.initializeSearchIndex();
     
     // Set up the circular reference
@@ -82,10 +97,107 @@ export class SearchService {
       for (const category of categories) {
         await this.loadSearchIndex(category);
       }
+
+      await this.loadClientIndex();
       
       this.logger.log('Search indexes initialized');
     } catch (error) {
       this.logger.error('Failed to initialize search indexes:', error);
+    }
+  }
+
+  private async loadClientIndex(): Promise<void> {
+    try {
+      await this.ensureDirectory(path.dirname(this.clientIndexPath));
+      if (existsSync(this.clientIndexPath)) {
+        const content = await fs.readFile(this.clientIndexPath, 'utf8');
+        this.clientIndex = JSON.parse(content);
+      } else {
+        await this.rebuildClientIndex();
+      }
+    } catch (error) {
+      this.logger.warn('Failed to load client index, rebuilding:', error);
+      await this.rebuildClientIndex();
+    }
+  }
+
+  private async saveClientIndex(): Promise<void> {
+    try {
+      await fs.writeFile(this.clientIndexPath, JSON.stringify(this.clientIndex, null, 2), 'utf8');
+    } catch (error) {
+      this.logger.error('Failed to save client index:', error);
+    }
+  }
+
+  private buildClientIndexEntry(data: any, id: string, portfolioCode?: number): ClientIndexEntry {
+    const name = data?.name || data?.companyName || data?.title || '';
+    const ref = data?.ref || '';
+    const status = data?.status || '';
+    const type = data?.type || '';
+    const searchable = [
+      name,
+      ref,
+      data?.registeredNumber,
+      data?.mainEmail,
+      data?.mainPhone,
+      data?.address ? Object.values(data.address).join(' ') : '',
+      status,
+      type,
+    ].filter(Boolean).join(' ').toLowerCase();
+
+    return {
+      id,
+      portfolioCode,
+      name,
+      ref,
+      status,
+      type,
+      updatedAt: data?.updatedAt,
+      createdAt: data?.createdAt,
+      searchText: searchable,
+    };
+  }
+
+  async rebuildClientIndex(): Promise<void> {
+    try {
+      const entries: ClientIndexEntry[] = [];
+      const portfolioCodes = getValidPortfolioCodes();
+      for (const portfolioCode of portfolioCodes) {
+        const files = (await this.fileStorageService.listFiles('clients', portfolioCode)) || [];
+        for (const id of files) {
+          const data = await this.fileStorageService.readJson<any>('clients', id, portfolioCode);
+          if (data) {
+            entries.push(this.buildClientIndexEntry(data, id, portfolioCode));
+          }
+        }
+      }
+      this.clientIndex = entries;
+      await this.saveClientIndex();
+    } catch (error) {
+      this.logger.error('Failed to rebuild client index:', error);
+    }
+  }
+
+  private async updateClientIndexEntry(id: string, data: any, portfolioCode?: number): Promise<void> {
+    const updatedEntry = this.buildClientIndexEntry(data, id, portfolioCode);
+    const matchIndex = this.clientIndex.findIndex(
+      (entry) => entry.id === id && entry.portfolioCode === portfolioCode
+    );
+    if (matchIndex >= 0) {
+      this.clientIndex[matchIndex] = updatedEntry;
+    } else {
+      this.clientIndex.push(updatedEntry);
+    }
+    await this.saveClientIndex();
+  }
+
+  private async removeClientIndexEntry(id: string, portfolioCode?: number): Promise<void> {
+    const originalLength = this.clientIndex.length;
+    this.clientIndex = this.clientIndex.filter(
+      (entry) => !(entry.id === id && entry.portfolioCode === portfolioCode)
+    );
+    if (this.clientIndex.length !== originalLength) {
+      await this.saveClientIndex();
     }
   }
 
@@ -323,6 +435,10 @@ export class SearchService {
       
       this.searchIndex.set(category, index);
       await this.saveSearchIndex(category);
+
+      if (category === 'clients') {
+        await this.updateClientIndexEntry(id, data, portfolioCode);
+      }
     } catch (error) {
       this.logger.error(`Failed to update search index for ${category}/${id}:`, error);
     }
@@ -349,6 +465,10 @@ export class SearchService {
       
       this.searchIndex.set(category, index);
       await this.saveSearchIndex(category);
+
+      if (category === 'clients') {
+        await this.removeClientIndexEntry(id, portfolioCode);
+      }
     } catch (error) {
       this.logger.error(`Failed to remove from search index ${category}/${id}:`, error);
     }
@@ -367,6 +487,60 @@ export class SearchService {
     } = options;
 
     try {
+      const normalizedQuery = query.trim().toLowerCase();
+      if (categories.length === 1 && categories[0] === 'clients' && normalizedQuery && this.clientIndex.length > 0) {
+        const matches = this.clientIndex
+          .filter(entry => {
+            if (portfolioCode && entry.portfolioCode !== portfolioCode) {
+              return false;
+            }
+            return entry.searchText.includes(normalizedQuery);
+          })
+          .map(entry => {
+            let score = 1;
+            if (entry.name?.toLowerCase().startsWith(normalizedQuery)) {
+              score = 2;
+            } else if (entry.ref?.toLowerCase().startsWith(normalizedQuery)) {
+              score = 1.5;
+            }
+            return { entry, score };
+          });
+
+        matches.sort((a, b) => {
+          if (sortBy === 'name') {
+            const aName = a.entry.name || '';
+            const bName = b.entry.name || '';
+            return sortOrder === 'desc' ? bName.localeCompare(aName) : aName.localeCompare(bName);
+          }
+          return sortOrder === 'desc' ? b.score - a.score : a.score - b.score;
+        });
+
+        const total = matches.length;
+        const paginated = matches.slice(offset, offset + limit);
+        const results: SearchResult<T>[] = [];
+        for (const match of paginated) {
+          const data = await this.fileStorageService.readJson<T>('clients', match.entry.id, match.entry.portfolioCode);
+          if (data) {
+            results.push({
+              id: match.entry.id,
+              category: 'clients',
+              portfolioCode: match.entry.portfolioCode,
+              data,
+              score: match.score,
+              matchedFields: [],
+            });
+          }
+        }
+
+        return {
+          results,
+          total,
+          offset,
+          limit,
+          hasMore: offset + limit < total,
+        };
+      }
+
       const searchTerms = exactMatch ? [query.toLowerCase()] : this.extractTerms(query);
       const results = new Map<string, SearchResult<T>>();
 

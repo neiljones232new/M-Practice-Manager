@@ -25,12 +25,15 @@ export interface Client {
   vatNumber?: string;
   vatRegistrationDate?: string;
   vatScheme?: string;
+  vatStagger?: 'A' | 'B' | 'C' | 'NONE';
   payeReference?: string;
   payeAccountsOfficeReference?: string;
   authenticationCode?: string;
   accountsOfficeReference?: string;
   employeeCount?: number;
   payrollFrequency?: string;
+  payrollPayDay?: number;
+  payrollPeriodEndDay?: number;
   cisRegistered?: boolean;
   cisUtr?: string;
   mainContactName?: string;
@@ -47,14 +50,22 @@ export interface Client {
   disengagementDate?: string;
   engagementLetterSigned?: boolean;
   amlCompleted?: boolean;
+  lifecycleStatus?: 'PROSPECT' | 'ONBOARDING' | 'ACTIVE' | 'DORMANT' | 'CEASED';
+  onboardingStartedAt?: string;
+  wentLiveAt?: string;
+  ceasedAt?: string;
+  dormantSince?: string;
   feeArrangement?: string;
   monthlyFee?: number;
   annualFee?: number;
   accountingPeriodEnd?: string;
   nextAccountsDueDate?: string;
   nextCorporationTaxDueDate?: string;
+  statutoryYearEnd?: string;
   vatReturnFrequency?: string;
   vatQuarter?: string;
+  vatPeriodStart?: string;
+  vatPeriodEnd?: string;
   payrollRtiRequired?: boolean;
   businessBankName?: string;
   accountLastFour?: string;
@@ -73,6 +84,7 @@ export interface Client {
   dateOfBirth?: string;
   personalAddress?: string;
   personalTaxYear?: string;
+  selfAssessmentTaxYear?: string;
   selfAssessmentRequired?: boolean;
   selfAssessmentFiled?: boolean;
   linkedCompanyNumber?: string;
@@ -181,14 +193,17 @@ export interface PSC {
 // Practice-managed fields that should never be overwritten by CH refresh
 export const PRACTICE_FIELDS = [
   'corporationTaxUtr', 'vatNumber', 'vatRegistrationDate', 'vatScheme',
+  'vatStagger', 'vatPeriodStart', 'vatPeriodEnd',
   'payeReference', 'payeAccountsOfficeReference', 'authenticationCode',
   'accountsOfficeReference', 'employeeCount', 'payrollFrequency',
+  'payrollPayDay', 'payrollPeriodEndDay',
   'cisRegistered', 'cisUtr', 'mainContactName', 'contactPosition',
   'telephone', 'mobile', 'email', 'preferredContactMethod',
   'correspondenceAddress', 'clientManager', 'partnerResponsible',
   'engagementType', 'onboardingDate', 'disengagementDate',
+  'lifecycleStatus', 'onboardingStartedAt', 'wentLiveAt', 'ceasedAt', 'dormantSince',
   'engagementLetterSigned', 'amlCompleted', 'feeArrangement',
-  'monthlyFee', 'annualFee', 'accountingPeriodEnd',
+  'monthlyFee', 'annualFee', 'accountingPeriodEnd', 'statutoryYearEnd',
   'nextAccountsDueDate', 'nextCorporationTaxDueDate',
   'vatReturnFrequency', 'vatQuarter', 'payrollRtiRequired',
   'businessBankName', 'accountLastFour', 'directDebitInPlace',
@@ -196,9 +211,11 @@ export const PRACTICE_FIELDS = [
   'dormant', 'clientRiskRating', 'doNotContact',
   // Personal client fields
   'personalUtr', 'nationalInsuranceNumber', 'dateOfBirth',
-  'personalAddress', 'personalTaxYear', 'selfAssessmentRequired',
+  'personalAddress', 'personalTaxYear', 'selfAssessmentTaxYear', 'selfAssessmentRequired',
   'selfAssessmentFiled', 'linkedCompanyNumber', 'directorRole',
-  'clientType'
+  'clientType',
+  // Practice-managed identifiers & descriptors
+  'tradingName', 'registeredAddress'
 ];
 
 // Companies House fields that can be updated automatically
