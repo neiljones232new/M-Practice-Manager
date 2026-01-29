@@ -16,9 +16,6 @@ node_modules/
 dist/
 apps/api/dist/
 
-# Runtime storage
-storage/
-apps/api/storage/
 
 # IDE
 .vscode/
