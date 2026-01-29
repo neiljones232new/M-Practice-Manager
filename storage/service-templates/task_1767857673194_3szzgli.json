@@ -1,0 +1,47 @@
+{
+  "id": "task_1767857673194_3szzgli",
+  "serviceKind": "Management Accounts",
+  "frequency": "MONTHLY",
+  "taskTemplates": [
+    {
+      "title": "Prepare management accounts",
+      "description": "Compile monthly management accounts and KPI reports",
+      "daysBeforeDue": 10,
+      "priority": "MEDIUM",
+      "tags": [
+        "preparation",
+        "reporting"
+      ],
+      "id": "task_1767857673194_8xph3fe"
+    },
+    {
+      "title": "Analysis and commentary",
+      "description": "Prepare analysis and commentary on financial performance",
+      "daysBeforeDue": 5,
+      "priority": "MEDIUM",
+      "tags": [
+        "analysis",
+        "commentary"
+      ],
+      "id": "task_1767857673194_yitd816"
+    },
+    {
+      "title": "Client presentation",
+      "description": "Present management accounts to client",
+      "daysBeforeDue": 2,
+      "priority": "LOW",
+      "tags": [
+        "presentation",
+        "client-meeting"
+      ],
+      "id": "task_1767857673194_wkopzgf"
+    }
+  ],
+  "createdAt": "2026-01-08T07:34:33.194Z",
+  "updatedAt": "2026-01-29T20:24:41.410Z",
+  "appliesTo": [
+    "Company"
+  ],
+  "complianceImpact": false,
+  "pricingModel": "per_period"
+}

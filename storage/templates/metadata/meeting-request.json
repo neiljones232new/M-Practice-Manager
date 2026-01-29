@@ -1,0 +1,43 @@
+{
+  "id": "meeting-request",
+  "name": "Meeting Request Letter",
+  "description": "Generic meeting request template",
+  "category": "GENERAL",
+  "fileName": "meeting-request.md",
+  "filePath": "templates/files/meeting-request.md",
+  "fileFormat": "MD",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "name",
+      "required": true
+    },
+    {
+      "key": "meetingTopic",
+      "label": "Meeting Topic",
+      "type": "TEXT",
+      "source": "MANUAL",
+      "required": true
+    },
+    {
+      "key": "proposedDates",
+      "label": "Proposed Dates",
+      "type": "TEXT",
+      "source": "MANUAL",
+      "required": false
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-01-07T00:00:00.000Z",
+  "updatedAt": "2025-01-07T00:00:00.000Z",
+  "metadata": {
+    "tags": ["meeting", "request", "general"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

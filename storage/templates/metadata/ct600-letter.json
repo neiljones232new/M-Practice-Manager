@@ -1,0 +1,71 @@
+{
+  "id": "ct600-letter",
+  "name": "CT600 Submission Confirmation",
+  "description": "CT600 submission confirmation letter",
+  "category": "TAX",
+  "fileName": "ct600-letter.md",
+  "filePath": "templates/files/ct600-letter.md",
+  "fileFormat": "MD",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "name",
+      "required": true
+    },
+    {
+      "key": "yearEndDate",
+      "label": "Year End Date",
+      "type": "DATE",
+      "source": "SERVICE",
+      "sourcePath": "nextDue",
+      "required": true,
+      "format": "DD/MM/YYYY"
+    },
+    {
+      "key": "taxAmount",
+      "label": "Tax Amount",
+      "type": "CURRENCY",
+      "source": "MANUAL",
+      "required": false
+    },
+    {
+      "key": "paymentDueDate",
+      "label": "Payment Due Date",
+      "type": "DATE",
+      "source": "MANUAL",
+      "required": false,
+      "format": "DD/MM/YYYY"
+    },
+    {
+      "key": "advisorName",
+      "label": "Advisor Name",
+      "type": "TEXT",
+      "source": "USER",
+      "sourcePath": "firstName",
+      "required": false,
+      "defaultValue": "Neil Jones"
+    },
+    {
+      "key": "advisorEmail",
+      "label": "Advisor Email",
+      "type": "EMAIL",
+      "source": "USER",
+      "sourcePath": "email",
+      "required": false,
+      "defaultValue": "neil@mdjconsultants.co.uk"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-01-07T00:00:00.000Z",
+  "updatedAt": "2025-01-07T00:00:00.000Z",
+  "metadata": {
+    "tags": ["tax", "ct600", "hmrc", "corporation-tax"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767857673660_nid277v",
+  "title": "Conduct team check-in",
+  "description": "Conduct internal team check-ins or workflow meetings",
+  "category": "Internal Operations",
+  "priority": "MEDIUM",
+  "tags": [
+    "meeting",
+    "team-management"
+  ],
+  "createdAt": "2026-01-08T07:34:33.660Z",
+  "updatedAt": "2026-01-08T07:34:33.660Z"
+}

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Report - {{client.name}}</title>
+    <style>
+        :root {
+            --gold: #CBA135;
+            --dark: #111;
+            --muted: #555;
+            --border: #ddd;
+            --light-bg: #f8f9fa;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px;
+            background: white;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: var(--gold);
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .header h2 {
+            color: var(--dark);
+            font-size: 1.8rem;
+            margin: 10px 0 0 0;
+            font-weight: normal;
+        }
+        
+        .report-meta {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--gold);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h3 {
+            color: var(--gold);
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-card {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--info);
+        }
+        
+        .info-card h4 {
+            margin: 0 0 15px 0;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .info-card p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-active { background: var(--success); color: white; }
+        .status-inactive { background: var(--muted); color: white; }
+        .status-overdue { background: var(--danger); color: white; }
+        .status-due-soon { background: var(--warning); color: var(--dark); }
+        .status-compliant { background: var(--success); color: white; }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .data-table th {
+            background: var(--gold);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+        
+        .data-table tr:hover {
+            background: #e9ecef;
+        }
+        
+        .metric-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .metric-card.highlight {
+            border-color: var(--gold);
+            background: #fffbf0;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        
+        .alert-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-color: var(--warning);
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            border-color: var(--danger);
+            color: #721c24;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-color: var(--success);
+            color: #155724;
+        }
+        
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+        
+        @media print {
+            body { padding: 20px; }
+            .section { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{practice.name}}</h1>
+        <h2>Comprehensive Client Report</h2>
+    </div>
+    
+    <div class="report-meta">
+        <div>
+            <h4>Client Information</h4>
+            <p><strong>Name:</strong> {{client.name}}</p>
+            <p><strong>Reference:</strong> {{client.ref}}</p>
+            <p><strong>Type:</strong> {{client.type}}</p>
+            <p><strong>Status:</strong> <span class="status-badge status-{{lowercase client.status}}">{{client.status}}</span></p>
+        </div>
+        <div>
+            <h4>Report Details</h4>
+            <p><strong>Generated:</strong> {{formatDate today 'DD MMMM YYYY HH:mm'}}</p>
+            <p><strong>Period:</strong> {{#if reportPeriod}}{{reportPeriod}}{{else}}Current Position{{/if}}</p>
+            <p><strong>Portfolio:</strong> {{client.portfolioCode}}</p>
+            {{#if client.registeredNumber}}
+            <p><strong>Company Number:</strong> {{client.registeredNumber}}</p>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Client Overview -->
+    <div class="section">
+        <h3>Client Overview</h3>
+        <div class="info-grid">
+            <div class="info-card">
+                <h4>Contact Information</h4>
+                {{#if client.mainEmail}}<p><strong>Email:</strong> {{client.mainEmail}}</p>{{/if}}
+                {{#if client.mainPhone}}<p><strong>Phone:</strong> {{client.mainPhone}}</p>{{/if}}
+                {{#if client.address}}
+                <p><strong>Address:</strong><br>
+                {{client.address.line1}}<br>
+                {{#if client.address.line2}}{{client.address.line2}}<br>{{/if}}
+                {{client.address.city}}, {{client.address.postcode}}<br>
+                {{client.address.country}}</p>
+                {{/if}}
+            </div>
+            
+            {{#if companiesHouseData}}
+            <div class="info-card">
+                <h4>Companies House Information</h4>
+                <p><strong>Incorporation Date:</strong> {{formatDate companiesHouseData.incorporationDate 'DD/MM/YYYY'}}</p>
+                <p><strong>Company Status:</strong> {{companiesHouseData.companyStatus}}</p>
+                {{#if companiesHouseData.sicCodes}}
+                <p><strong>SIC Codes:</strong> {{join companiesHouseData.sicCodes ', '}}</p>
+                {{/if}}
+                <p><strong>Last Updated:</strong> {{formatDate companiesHouseData.lastSyncDate 'DD/MM/YYYY'}}</p>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Compliance Status -->
+    <div class="section">
+        <h3>Compliance Status</h3>
+        
+        {{#if complianceAlerts}}
+        {{#each complianceAlerts}}
+        <div class="alert-box alert-{{#if this.isOverdue}}danger{{else}}{{#if (lt this.daysUntilDue 30)}}warning{{else}}success{{/if}}{{/if}}">
+            <strong>{{this.title}}</strong><br>
+            {{this.description}}
+            {{#if this.dueDate}} - Due: {{formatDate this.dueDate 'DD/MM/YYYY'}}{{/if}}
+        </div>
+        {{/each}}
+        {{else}}
+        <div class="alert-box alert-success">
+            <strong>All Compliance Requirements Up to Date</strong><br>
+            No outstanding compliance issues identified.
+        </div>
+        {{/if}}
+
+        {{#if companiesHouseData}}
+        <div class="metric-cards">
+            <div class="metric-card {{#if companiesHouseData.accountsOverdue}}highlight{{/if}}">
+                <div class="metric-value">{{#if companiesHouseData.accountsNextDue}}{{formatDate companiesHouseData.accountsNextDue 'DD/MM/YY'}}{{else}}N/A{{/if}}</div>
+                <div class="metric-label">Accounts Due</div>
+            </div>
+            <div class="metric-card {{#if companiesHouseData.confirmationOverdue}}highlight{{/if}}">
+                <div class="metric-value">{{#if companiesHouseData.confirmationNextDue}}{{formatDate companiesHouseData.confirmationNextDue 'DD/MM/YY'}}{{else}}N/A{{/if}}</div>
+                <div class="metric-label">Confirmation Due</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{#if companiesHouseData.hasCharges}}Yes{{else}}No{{/if}}</div>
+                <div class="metric-label">Charges Registered</div>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+
+    <!-- Services & Fees -->
+    <div class="section">
+        <h3>Services & Fees</h3>
+        
+        {{#if services}}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Frequency</th>
+                    <th>Annual Fee</th>
+                    <th>Status</th>
+                    <th>Next Due</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each services}}
+                <tr>
+                    <td>{{this.kind}}</td>
+                    <td>{{this.frequency}}</td>
+                    <td>{{currency this.fee}}</td>
+                    <td><span class="status-badge status-{{lowercase this.status}}">{{this.status}}</span></td>
+                    <td>{{#if this.nextDue}}{{formatDate this.nextDue 'DD/MM/YYYY'}}{{else}}TBD{{/if}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        
+        <div class="metric-cards">
+            <div class="metric-card highlight">
+                <div class="metric-value">{{currency (calculateAnnualTotal services)}}</div>
+                <div class="metric-label">Total Annual Fees</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{length services}}</div>
+                <div class="metric-label">Active Services</div>
+            </div>
+        </div>
+        {{else}}
+        <p>No services currently configured for this client.</p>
+        {{/if}}
+    </div>
+
+    <!-- Recent Activity -->
+    {{#if recentActivity}}
+    <div class="section">
+        <h3>Recent Activity</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Activity</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each recentActivity}}
+                <tr>
+                    <td>{{formatDate this.date 'DD/MM/YYYY'}}</td>
+                    <td>{{this.description}}</td>
+                    <td><span class="status-badge status-{{lowercase this.status}}">{{this.status}}</span></td>
+                    <td>{{this.notes}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+    {{/if}}
+
+    <!-- Tax Calculations -->
+    {{#if taxCalculations}}
+    <div class="section">
+        <h3>Tax Optimization Summary</h3>
+        
+        {{#with (first taxCalculations)}}
+        <div class="info-grid">
+            <div class="info-card">
+                <h4>Latest Tax Calculation</h4>
+                <p><strong>Date:</strong> {{formatDate this.createdAt 'DD/MM/YYYY'}}</p>
+                <p><strong>Type:</strong> {{this.calculationType}}</p>
+                <p><strong>Tax Year:</strong> {{this.taxYear}}</p>
+                {{#if this.result.estimatedSavings}}
+                <p><strong>Potential Savings:</strong> {{currency this.result.estimatedSavings}}</p>
+                {{/if}}
+            </div>
+            
+            {{#if this.result.breakdown}}
+            <div class="info-card">
+                <h4>Tax Breakdown</h4>
+                <p><strong>Income Tax:</strong> {{currency this.result.breakdown.incomeTax}}</p>
+                <p><strong>National Insurance:</strong> {{currency (add this.result.breakdown.employeeNI this.result.breakdown.employerNI)}}</p>
+                <p><strong>Corporation Tax:</strong> {{currency this.result.breakdown.corporationTax}}</p>
+                <p><strong>Total Tax:</strong> {{currency this.result.breakdown.totalTax}}</p>
+            </div>
+            {{/if}}
+        </div>
+        
+        {{#if this.recommendations}}
+        <h4>Tax Recommendations</h4>
+        {{#each this.recommendations}}
+        <div class="alert-box alert-{{#if (eq this.priority 'HIGH')}}warning{{else}}{{#if (eq this.priority 'MEDIUM')}}info{{else}}success{{/if}}{{/if}}">
+            <strong>{{this.title}}</strong><br>
+            {{this.message}}
+            {{#if this.potentialSaving}} - Potential saving: {{currency this.potentialSaving}}{{/if}}
+        </div>
+        {{/each}}
+        {{/if}}
+        {{/with}}
+    </div>
+    {{/if}}
+
+    <!-- Key Performance Indicators -->
+    <div class="section">
+        <h3>Key Performance Indicators</h3>
+        <div class="metric-cards">
+            <div class="metric-card">
+                <div class="metric-value">{{#if daysSinceLastContact}}{{daysSinceLastContact}}{{else}}0{{/if}}</div>
+                <div class="metric-label">Days Since Last Contact</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{#if completedTasks}}{{completedTasks}}{{else}}0{{/if}}</div>
+                <div class="metric-label">Tasks Completed (YTD)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{#if outstandingTasks}}{{outstandingTasks}}{{else}}0{{/if}}</div>
+                <div class="metric-label">Outstanding Tasks</div>
+            </div>
+            <div class="metric-card {{#if (gt riskScore 5)}}highlight{{/if}}">
+                <div class="metric-value">{{#if riskScore}}{{riskScore}}/10{{else}}Low{{/if}}</div>
+                <div class="metric-label">Risk Score</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="section">
+        <h3>Recommendations & Next Steps</h3>
+        
+        {{#if recommendations}}
+        {{#each recommendations}}
+        <div class="alert-box alert-{{#if (eq this.priority 'HIGH')}}warning{{else}}info{{/if}}">
+            <strong>{{this.title}}</strong><br>
+            {{this.description}}
+            {{#if this.deadline}} - Target: {{formatDate this.deadline 'DD/MM/YYYY'}}{{/if}}
+        </div>
+        {{/each}}
+        {{else}}
+        <div class="alert-box alert-success">
+            <strong>Client in Good Standing</strong><br>
+            No immediate actions required. Continue with regular service delivery.
+        </div>
+        {{/if}}
+    </div>
+
+    <div class="footer">
+        <p><strong>{{practice.name}}</strong> | {{practice.tagline}}<br>
+        Report generated on {{formatDate today 'DD MMMM YYYY'}} | Confidential Client Information<br>
+        For queries about this report, please contact your account manager.</p>
+    </div>
+</body>
+</html>

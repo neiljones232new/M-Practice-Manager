@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1762906232508_pfhf1gy",
+  "title": "Arrange client meeting",
+  "description": "Arrange client meetings (in-person or virtual)",
+  "category": "Client Communication",
+  "priority": "MEDIUM",
+  "tags": [
+    "meeting",
+    "client-contact"
+  ],
+  "createdAt": "2025-11-12T00:10:32.508Z",
+  "updatedAt": "2025-11-12T00:10:32.508Z"
+}

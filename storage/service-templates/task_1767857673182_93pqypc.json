@@ -1,0 +1,59 @@
+{
+  "id": "task_1767857673182_93pqypc",
+  "serviceKind": "Self Assessment Tax Return",
+  "frequency": "ANNUAL",
+  "taskTemplates": [
+    {
+      "title": "Request client information",
+      "description": "Contact client for income, expenses, and other tax information",
+      "daysBeforeDue": 60,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "client-contact"
+      ],
+      "id": "task_1767857673182_a74d6nw"
+    },
+    {
+      "title": "Prepare self assessment return",
+      "description": "Complete SA100 tax return based on client information",
+      "daysBeforeDue": 21,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "sa100"
+      ],
+      "id": "task_1767857673182_6gmpo7v"
+    },
+    {
+      "title": "Client review and approval",
+      "description": "Send draft return to client for review",
+      "daysBeforeDue": 14,
+      "priority": "MEDIUM",
+      "tags": [
+        "client-review"
+      ],
+      "id": "task_1767857673182_dbswzla"
+    },
+    {
+      "title": "Submit self assessment return",
+      "description": "File approved return with HMRC",
+      "daysBeforeDue": 3,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "hmrc"
+      ],
+      "id": "task_1767857673182_3jruuq2"
+    }
+  ],
+  "createdAt": "2026-01-08T07:34:33.182Z",
+  "updatedAt": "2026-01-29T20:24:41.275Z",
+  "appliesTo": [
+    "Individual",
+    "Sole Trader",
+    "Director"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period"
+}

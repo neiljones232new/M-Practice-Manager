@@ -1,0 +1,36 @@
+{
+  "id": "task_1769577711322_a5tr96p",
+  "serviceKind": "CIS Registration",
+  "frequency": "ONE_OFF",
+  "appliesTo": [
+    "Company",
+    "Individual"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "one_off",
+  "taskTemplates": [
+    {
+      "title": "Collect subcontractor details",
+      "description": "Prepare information for CIS registration.",
+      "daysBeforeDue": 3,
+      "priority": "HIGH",
+      "tags": [
+        "setup",
+        "cis"
+      ],
+      "id": "task_1769577711322_h6x4ssq"
+    },
+    {
+      "title": "Register for CIS",
+      "description": "Submit CIS registration with HMRC.",
+      "daysBeforeDue": 0,
+      "priority": "URGENT",
+      "tags": [
+        "filing"
+      ],
+      "id": "task_1769577711322_dbd6l66"
+    }
+  ],
+  "createdAt": "2026-01-28T05:21:51.322Z",
+  "updatedAt": "2026-01-29T20:24:41.511Z"
+}

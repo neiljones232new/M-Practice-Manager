@@ -1,0 +1,85 @@
+{
+  "id": "client-welcome",
+  "name": "Client Welcome Letter",
+  "description": "Welcome letter for new clients (database-driven layout)",
+  "category": "GENERAL",
+  "fileName": "client-welcome.html",
+  "filePath": "templates/files/client-welcome.html",
+  "fileFormat": "HTML",
+
+  "placeholders": [
+    {
+      "key": "client.name",
+      "label": "Client Name",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "node.name",
+      "required": true
+    },
+    {
+      "key": "client.ref",
+      "label": "Client Reference",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "node.ref",
+      "required": false
+    },
+
+    {
+      "key": "profile.tradingName",
+      "label": "Trading Name",
+      "type": "TEXT",
+      "source": "PROFILE",
+      "sourcePath": "profile.tradingName",
+      "required": false
+    },
+
+    {
+      "key": "practice.name",
+      "label": "Practice Name",
+      "type": "TEXT",
+      "source": "PRACTICE",
+      "sourcePath": "practice.practiceName",
+      "required": true
+    },
+    {
+      "key": "practice.email",
+      "label": "Practice Email",
+      "type": "EMAIL",
+      "source": "PRACTICE",
+      "sourcePath": "practice.practiceEmail",
+      "required": true
+    },
+    {
+      "key": "practice.phone",
+      "label": "Practice Phone",
+      "type": "PHONE",
+      "source": "PRACTICE",
+      "sourcePath": "practice.practicePhone",
+      "required": false
+    },
+
+    {
+      "key": "advisor.name",
+      "label": "Advisor Name",
+      "type": "TEXT",
+      "source": "USER",
+      "sourcePath": "firstName",
+      "required": false
+    }
+  ],
+
+  "layout": {
+    "engine": "html",
+    "css": ["mdjnew.ui.css", "client-display.css"],
+    "sections": [
+      "header",
+      "clientSummary",
+      "welcomeText",
+      "practiceFooter"
+    ]
+  },
+
+  "version": 2,
+  "isActive": true
+}

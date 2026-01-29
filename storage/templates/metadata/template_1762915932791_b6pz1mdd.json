@@ -1,0 +1,107 @@
+{
+  "id": "template_1762915932791_b6pz1mdd",
+  "name": "CT600 Cover Letter",
+  "description": "Cover letter for CT600 Corporation Tax Return submissions to HMRC",
+  "category": "TAX",
+  "fileName": "CT600_Cover_Letter.md",
+  "filePath": "templates/files/CT600_Cover_Letter.md",
+  "fileFormat": "MD",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.name"
+    },
+    {
+      "key": "companyName",
+      "label": "Company Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.companyName"
+    },
+    {
+      "key": "companyNumber",
+      "label": "Company Number",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.companyNumber"
+    },
+    {
+      "key": "periodEnd",
+      "label": "Period End",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "CLIENT",
+      "sourcePath": "client.accountingPeriodEnd"
+    },
+    {
+      "key": "profitBeforeTax",
+      "label": "Profit Before Tax",
+      "type": "CURRENCY",
+      "required": true,
+      "format": "£0,0.00",
+      "source": "MANUAL"
+    },
+    {
+      "key": "taxDue",
+      "label": "Tax Due / Refund",
+      "type": "CURRENCY",
+      "required": true,
+      "format": "£0,0.00",
+      "source": "MANUAL"
+    },
+    {
+      "key": "lossCarriedForward",
+      "label": "Loss Carried Forward",
+      "type": "CURRENCY",
+      "required": false,
+      "format": "£0,0.00",
+      "source": "MANUAL"
+    },
+    {
+      "key": "companiesHouseConfirmation",
+      "label": "Companies House Confirmation",
+      "type": "TEXT",
+      "required": false,
+      "source": "MANUAL"
+    },
+    {
+      "key": "hmrcReference",
+      "label": "HMRC Reference",
+      "type": "TEXT",
+      "required": false,
+      "source": "CLIENT",
+      "sourcePath": "client.utrNumber"
+    },
+    {
+      "key": "currentDate",
+      "label": "Current Date",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "SYSTEM",
+      "sourcePath": "system.currentDate"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:52:12.791Z",
+  "updatedAt": "2025-11-12T02:52:12.791Z",
+  "metadata": {
+    "tags": [
+      "tax",
+      "ct600",
+      "hmrc",
+      "corporation-tax"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

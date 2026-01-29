@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1762906232613_egwakt0",
+  "title": "Order office supplies",
+  "description": "Order office supplies and manage subscriptions (software, licenses, etc.)",
+  "category": "Practice Administration",
+  "priority": "LOW",
+  "tags": [
+    "supplies",
+    "procurement"
+  ],
+  "createdAt": "2025-11-12T00:10:32.613Z",
+  "updatedAt": "2025-11-12T00:10:32.613Z"
+}

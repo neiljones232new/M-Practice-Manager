@@ -1,0 +1,20 @@
+{
+  "id": "template_1732573200003_mdj004",
+  "name": "Service Proposal Letter",
+  "description": "Professional proposal for additional services with benefits, pricing, and implementation plan",
+  "category": "CLIENT",
+  "fileName": "service-proposal.md",
+  "filePath": "templates/files/service-proposal.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-25T21:00:00.000Z",
+  "updatedAt": "2025-11-25T21:00:00.000Z",
+  "metadata": {
+    "tags": ["service", "proposal", "upsell", "pricing", "handlebars", "mdj-branded"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

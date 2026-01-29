@@ -247,28 +247,23 @@ export class AuthService {
 
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
     try {
-      // Verify refresh token
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       });
 
-      // Find user session
-      const session = await this.findUserSession(refreshToken);
-      if (!session || session.expiresAt < new Date()) {
+      const session = await this.readUserSession(payload.sub);
+      if (!session || session.expiresAt < new Date() || session.refreshToken !== refreshToken) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
-      // Find user
       const user = await this.fileStorageService.readJson<User>('users', payload.sub);
       if (!user || !user.isActive) {
         throw new UnauthorizedException('User not found or inactive');
       }
 
-      // Update session last used
       session.lastUsedAt = new Date();
-      await this.fileStorageService.writeJson('user-sessions', session.id, session);
+      await this.fileStorageService.writeJson('user-sessions', payload.sub, session);
 
-      // Generate new auth response
       return this.generateAuthResponse(user, session.rememberMe);
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
@@ -277,13 +272,18 @@ export class AuthService {
 
   async logout(userId: string, refreshToken?: string): Promise<{ message: string }> {
     if (refreshToken) {
-      // Find and invalidate specific session
-      const session = await this.findUserSession(refreshToken);
-      if (session && session.userId === userId) {
-        await this.fileStorageService.deleteJson('user-sessions', session.id);
+      try {
+        const payload = this.jwtService.verify(refreshToken, {
+          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        });
+
+        if (payload.sub === userId) {
+          await this.fileStorageService.deleteJson('user-sessions', userId);
+        }
+      } catch {
+        // Ignore invalid refresh token
       }
     } else {
-      // Invalidate all user sessions
       await this.invalidateAllUserSessions(userId);
     }
 
@@ -372,7 +372,7 @@ export class AuthService {
       lastUsedAt: new Date(),
     };
 
-    await this.fileStorageService.writeJson('user-sessions', sessionId, session);
+    await this.fileStorageService.writeJson('user-sessions', user.id, session);
 
     const { passwordHash, ...userWithoutPassword } = user;
 
@@ -411,29 +411,18 @@ export class AuthService {
     }
   }
 
-  private async findUserSession(refreshToken: string): Promise<UserSession | null> {
+  private async readUserSession(userId: string): Promise<UserSession | null> {
     try {
-      const sessions = await this.fileStorageService.searchFiles<UserSession>(
-        'user-sessions',
-        (session) => session.refreshToken === refreshToken
-      );
-      return sessions.length > 0 ? sessions[0] : null;
+      return await this.fileStorageService.readJson<UserSession>('user-sessions', userId);
     } catch (error) {
-      this.logger.error(`Error finding user session:`, error);
+      this.logger.error(`Error reading session for ${userId}:`, error);
       return null;
     }
   }
 
   private async invalidateAllUserSessions(userId: string): Promise<void> {
     try {
-      const sessions = await this.fileStorageService.searchFiles<UserSession>(
-        'user-sessions',
-        (session) => session.userId === userId
-      );
-
-      for (const session of sessions) {
-        await this.fileStorageService.deleteJson('user-sessions', session.id);
-      }
+      await this.fileStorageService.deleteJson('user-sessions', userId);
     } catch (error) {
       this.logger.error(`Error invalidating user sessions for ${userId}:`, error);
     }

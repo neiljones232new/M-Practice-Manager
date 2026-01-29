@@ -1,0 +1,46 @@
+[
+  {
+    "id": "default-client-pack",
+    "name": "Default Client Pack",
+    "category": "client_pack",
+    "content": "\n<!DOCTYPE html>\n<html>\n<head>\n  <title>Client Pack - {{client.companyName}}</title>\n  <style>\n    body { font-family: Arial, sans-serif; margin: 20px; }\n    .header { background: #2563eb; color: white; padding: 20px; text-align: center; }\n    .section { margin: 20px 0; }\n    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }\n    .info-item { padding: 10px; background: #f9fafb; border-radius: 4px; }\n    .label { font-weight: bold; color: #6b7280; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h1>Client Pack</h1>\n    <p>{{client.companyName}}</p>\n  </div>\n  \n  <div class=\"section\">\n    <h2>Company Information</h2>\n    <div class=\"info-grid\">\n      <div class=\"info-item\">\n        <div class=\"label\">Company Name</div>\n        <div>{{client.companyName}}</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"label\">Company Number</div>\n        <div>{{client.companyNumber}}</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"label\">Status</div>\n        <div>{{client.status}}</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"label\">Client Manager</div>\n        <div>{{client.clientManager}}</div>\n      </div>\n    </div>\n  </div>\n</body>\n</html>\n    ",
+    "placeholders": [
+      "client.companyName",
+      "client.companyNumber",
+      "client.status",
+      "calculations"
+    ],
+    "version": 1,
+    "createdAt": "2026-01-08T06:10:57.839Z",
+    "updatedAt": "2026-01-08T06:10:57.839Z"
+  },
+  {
+    "id": "default-tax-strategy",
+    "name": "Default Tax Strategy Report",
+    "category": "tax_strategy",
+    "content": "\n<!DOCTYPE html>\n<html>\n<head>\n  <title>Tax Strategy - {{client.companyName}}</title>\n  <style>\n    body { font-family: Arial, sans-serif; margin: 20px; }\n    .header { background: #2563eb; color: white; padding: 20px; text-align: center; }\n    .section { margin: 20px 0; }\n    table { width: 100%; border-collapse: collapse; }\n    th, td { padding: 10px; border: 1px solid #e5e7eb; text-align: left; }\n    th { background: #f3f4f6; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h1>Tax Strategy Report</h1>\n    <p>{{client.companyName}}</p>\n  </div>\n  \n  <div class=\"section\">\n    <h2>Tax Calculations</h2>\n    <p>This report contains detailed tax strategy analysis for {{client.companyName}}.</p>\n  </div>\n</body>\n</html>\n    ",
+    "placeholders": [
+      "client.companyName",
+      "calculations",
+      "scenarios",
+      "recommendations"
+    ],
+    "version": 1,
+    "createdAt": "2026-01-08T06:10:57.839Z",
+    "updatedAt": "2026-01-08T06:10:57.839Z"
+  },
+  {
+    "id": "default-company-profile",
+    "name": "Default Company Profile",
+    "category": "company_profile",
+    "content": "\n<!DOCTYPE html>\n<html>\n<head>\n  <title>Company Profile - {{client.companyName}}</title>\n  <style>\n    body { font-family: Arial, sans-serif; margin: 20px; }\n    .header { background: #2563eb; color: white; padding: 20px; text-align: center; }\n    .section { margin: 20px 0; }\n    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }\n    .info-item { padding: 10px; background: #f9fafb; border-radius: 4px; }\n    .label { font-weight: bold; color: #6b7280; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h1>Company Profile</h1>\n    <p>{{client.companyName}}</p>\n  </div>\n  \n  <div class=\"section\">\n    <h2>Company Details</h2>\n    <div class=\"info-grid\">\n      <div class=\"info-item\">\n        <div class=\"label\">Company Name</div>\n        <div>{{client.companyName}}</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"label\">Company Number</div>\n        <div>{{client.companyNumber}}</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"label\">Status</div>\n        <div>{{client.status}}</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"label\">Registered Address</div>\n        <div>{{client.registeredAddress}}</div>\n      </div>\n    </div>\n  </div>\n</body>\n</html>\n    ",
+    "placeholders": [
+      "client.companyName",
+      "client.companyNumber",
+      "client.registeredAddress"
+    ],
+    "version": 1,
+    "createdAt": "2026-01-08T06:10:57.839Z",
+    "updatedAt": "2026-01-08T06:10:57.839Z"
+  }
+]

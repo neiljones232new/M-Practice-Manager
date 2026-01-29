@@ -1,0 +1,16 @@
+{
+  "id": "6afd545c-5cc7-43fe-a941-a9e569c01cc1",
+  "email": "neil@mdjteam.co.uk",
+  "firstName": "Neil",
+  "lastName": "Jones",
+  "passwordHash": "$2a$12$7/.CyygnHszChvoguz5qEuyetFcRNKqhjEFbRXxynWoRsE4YQWFYa",
+  "role": "STAFF",
+  "portfolios": [
+    1
+  ],
+  "isActive": true,
+  "emailVerified": false,
+  "createdAt": "2026-01-26T17:37:47.048Z",
+  "updatedAt": "2026-01-29T22:02:49.907Z",
+  "lastLoginAt": "2026-01-29T22:02:49.907Z"
+}

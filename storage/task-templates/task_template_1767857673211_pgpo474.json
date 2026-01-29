@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1767857673211_pgpo474",
+  "title": "Follow up on client query",
+  "description": "Follow up on client queries or pending approvals",
+  "category": "Client Communication",
+  "priority": "MEDIUM",
+  "tags": [
+    "follow-up",
+    "query",
+    "client-contact"
+  ],
+  "createdAt": "2026-01-08T07:34:33.211Z",
+  "updatedAt": "2026-01-08T07:34:33.211Z"
+}

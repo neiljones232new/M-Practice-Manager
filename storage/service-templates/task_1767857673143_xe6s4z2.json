@@ -1,0 +1,58 @@
+{
+  "id": "task_1767857673143_xe6s4z2",
+  "serviceKind": "VAT Returns (Quarterly)",
+  "frequency": "QUARTERLY",
+  "taskTemplates": [
+    {
+      "title": "Collect VAT records",
+      "description": "Gather sales and purchase records for VAT return preparation",
+      "daysBeforeDue": 21,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "records"
+      ],
+      "id": "task_1767857673143_r4quvlz"
+    },
+    {
+      "title": "Prepare VAT return",
+      "description": "Calculate VAT liability and prepare return",
+      "daysBeforeDue": 14,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "calculation"
+      ],
+      "id": "task_1767857673143_a9h3y9g"
+    },
+    {
+      "title": "Client review",
+      "description": "Send VAT return to client for review and approval",
+      "daysBeforeDue": 7,
+      "priority": "MEDIUM",
+      "tags": [
+        "client-review"
+      ],
+      "id": "task_1767857673143_vgz6rv0"
+    },
+    {
+      "title": "Submit VAT return",
+      "description": "Submit approved VAT return to HMRC",
+      "daysBeforeDue": 2,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "hmrc"
+      ],
+      "id": "task_1767857673143_iy9m3po"
+    }
+  ],
+  "createdAt": "2026-01-08T07:34:33.143Z",
+  "updatedAt": "2026-01-29T20:24:41.290Z",
+  "appliesTo": [
+    "Company",
+    "Individual"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period"
+}

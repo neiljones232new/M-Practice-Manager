@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1762906232663_475gtuv",
+  "title": "Confirm document receipt",
+  "description": "Confirm receipt of client information or signed documents",
+  "category": "Email & Correspondence",
+  "priority": "MEDIUM",
+  "tags": [
+    "email",
+    "confirmation"
+  ],
+  "createdAt": "2025-11-12T00:10:32.663Z",
+  "updatedAt": "2025-11-12T00:10:32.663Z"
+}

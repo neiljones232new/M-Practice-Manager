@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767857673398_mlg2ies",
+  "title": "Record timesheets",
+  "description": "Record staff timesheets and review chargeable hours",
+  "category": "Practice Administration",
+  "priority": "MEDIUM",
+  "tags": [
+    "timesheets",
+    "billing"
+  ],
+  "createdAt": "2026-01-08T07:34:33.398Z",
+  "updatedAt": "2026-01-08T07:34:33.398Z"
+}

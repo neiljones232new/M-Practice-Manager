@@ -1,0 +1,10 @@
+{
+  "id": "489090e8-6422-483b-ae5a-a9a9aeb43788",
+  "userId": "6afd545c-5cc7-43fe-a941-a9e569c01cc1",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YWZkNTQ1Yy01Y2M3LTQzZmUtYTk0MS1hOWU1NjljMDFjYzEiLCJlbWFpbCI6Im5laWxAbWRqdGVhbS5jby51ayIsInJvbGUiOiJTVEFGRiIsInBvcnRmb2xpb3MiOlsxXSwiaWF0IjoxNzY5NzI0MTU5LCJleHAiOjE3Njk3MjUwNTl9.anDTRWzs54VfsQzOARY3adNdLGrdCA_HBf0hZ1AJeyk",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YWZkNTQ1Yy01Y2M3LTQzZmUtYTk0MS1hOWU1NjljMDFjYzEiLCJlbWFpbCI6Im5laWxAbWRqdGVhbS5jby51ayIsInJvbGUiOiJTVEFGRiIsInBvcnRmb2xpb3MiOlsxXSwiaWF0IjoxNzY5NzI0MTU5LCJleHAiOjE3NzAzMjg5NTl9.xchfDz7Zn7Mos9-IxT17xb48jzyLbst5ZEfZuGE9ZOo",
+  "expiresAt": "2026-02-05T22:02:39.239Z",
+  "rememberMe": false,
+  "createdAt": "2026-01-29T22:02:39.239Z",
+  "lastUsedAt": "2026-01-29T22:02:39.239Z"
+}

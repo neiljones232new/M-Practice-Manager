@@ -90,8 +90,8 @@ async function bootstrap() {
   logger.log(`🚀 M Practice Manager API is running on: http://localhost:${port}/${apiPrefix}`);
   logger.log(`📚 API Documentation available at: http://localhost:${port}/${apiPrefix}/docs`);
   logger.log(`🏢 Companies House integration: ${configService.get('COMPANIES_HOUSE_API_KEY') ? 'Enabled' : 'Disabled'}`);
-  logger.log(`💾 Storage path: ${configService.get('STORAGE_PATH', '../../storage')}`);
-  logger.log(`🗄️ Database path: ${configService.get('DATABASE_URL', 'sqlite:./mdj-data/database/main.db')}`);
+  logger.log(`💾 Storage path: ${configService.get('STORAGE_PATH', './storage')}`);
+  logger.log(`🗄️ Database path: ${configService.get('DATABASE_URL', 'sqlite:./storage/practice-manager.db')}`);
 }
 
 bootstrap().catch((error) => {

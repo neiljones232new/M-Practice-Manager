@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1767857673628_7rvh675",
+  "title": "Review WIP report",
+  "description": "Review WIP and billable time reports weekly",
+  "category": "Internal Operations",
+  "priority": "MEDIUM",
+  "tags": [
+    "reporting",
+    "wip",
+    "billing"
+  ],
+  "createdAt": "2026-01-08T07:34:33.628Z",
+  "updatedAt": "2026-01-08T07:34:33.628Z"
+}

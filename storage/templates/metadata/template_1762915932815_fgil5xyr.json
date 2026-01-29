@@ -1,0 +1,88 @@
+{
+  "id": "template_1762915932815_fgil5xyr",
+  "name": "R&D Amendment Report",
+  "description": "Report for R&D tax credit amendments and submissions",
+  "category": "TAX",
+  "fileName": "R&D_Amendment_Report.md",
+  "filePath": "templates/files/R&D_Amendment_Report.md",
+  "fileFormat": "MD",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.name"
+    },
+    {
+      "key": "companyName",
+      "label": "Company Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.companyName"
+    },
+    {
+      "key": "companyNumber",
+      "label": "Company Number",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.companyNumber"
+    },
+    {
+      "key": "accountingPeriod",
+      "label": "Accounting Period",
+      "type": "TEXT",
+      "required": true,
+      "source": "MANUAL"
+    },
+    {
+      "key": "rdExpenditure",
+      "label": "R&D Expenditure",
+      "type": "CURRENCY",
+      "required": true,
+      "format": "£0,0.00",
+      "source": "MANUAL"
+    },
+    {
+      "key": "taxCreditClaimed",
+      "label": "Tax Credit Claimed",
+      "type": "CURRENCY",
+      "required": true,
+      "format": "£0,0.00",
+      "source": "MANUAL"
+    },
+    {
+      "key": "projectDescription",
+      "label": "Project Description",
+      "type": "TEXT",
+      "required": true,
+      "source": "MANUAL"
+    },
+    {
+      "key": "currentDate",
+      "label": "Current Date",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "SYSTEM",
+      "sourcePath": "system.currentDate"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:52:12.815Z",
+  "updatedAt": "2025-11-12T02:52:12.815Z",
+  "metadata": {
+    "tags": [
+      "r&d",
+      "tax-credit",
+      "amendment"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "task_template_1762907675196_zozkw12",
+  "title": "Test Standalone Template",
+  "description": "Testing coexistence",
+  "category": "Internal Operations",
+  "priority": "LOW",
+  "tags": [
+    "test"
+  ],
+  "createdAt": "2025-11-12T00:34:35.196Z",
+  "updatedAt": "2025-11-12T00:34:35.196Z"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1762906232626_4g8fk74",
+  "title": "Perform data backup",
+  "description": "Perform regular data backups of client and internal files",
+  "category": "Practice Administration",
+  "priority": "HIGH",
+  "tags": [
+    "backup",
+    "it",
+    "security"
+  ],
+  "createdAt": "2025-11-12T00:10:32.626Z",
+  "updatedAt": "2025-11-12T00:10:32.626Z"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "template_1762914341977_46e85038",
+  "name": "HMRC Chaser Letter (Markdown)",
+  "description": "Follow-up letter to chase HMRC for responses or outstanding matters (Markdown format)",
+  "category": "HMRC",
+  "fileName": "HMRC_Chaser_Letter.md",
+  "filePath": "templates/files/HMRC_Chaser_Letter.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:25:41.977Z",
+  "updatedAt": "2025-11-12T02:25:41.977Z",
+  "metadata": {
+    "tags": [
+      "hmrc",
+      "chaser",
+      "follow-up"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

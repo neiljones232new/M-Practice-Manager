@@ -1,0 +1,20 @@
+{
+  "id": "template_1732573200002_mdj003",
+  "name": "Deadline Reminder Letter",
+  "description": "Urgent deadline alerts with required documents, penalties, and action steps",
+  "category": "COMPLIANCE",
+  "fileName": "deadline-reminder.md",
+  "filePath": "templates/files/deadline-reminder.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-25T21:00:00.000Z",
+  "updatedAt": "2025-11-25T21:00:00.000Z",
+  "metadata": {
+    "tags": ["deadline", "reminder", "compliance", "urgent", "handlebars", "mdj-branded"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

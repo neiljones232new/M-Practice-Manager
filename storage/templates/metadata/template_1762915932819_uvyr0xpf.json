@@ -1,0 +1,74 @@
+{
+  "id": "template_1762915932819_uvyr0xpf",
+  "name": "Task Tracker (DOCX)",
+  "description": "Document for tracking client tasks and deliverables (Word format)",
+  "category": "GENERAL",
+  "fileName": "Task_Tracker.docx",
+  "filePath": "templates/files/Task_Tracker.docx",
+  "fileFormat": "DOCX",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.name"
+    },
+    {
+      "key": "companyName",
+      "label": "Company Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.companyName"
+    },
+    {
+      "key": "serviceName",
+      "label": "Service Name",
+      "type": "TEXT",
+      "required": false,
+      "source": "SERVICE",
+      "sourcePath": "service.serviceName"
+    },
+    {
+      "key": "taskList",
+      "label": "Task List",
+      "type": "LIST",
+      "required": true,
+      "source": "MANUAL"
+    },
+    {
+      "key": "dueDate",
+      "label": "Due Date",
+      "type": "DATE",
+      "required": false,
+      "format": "DD/MM/YYYY",
+      "source": "SERVICE",
+      "sourcePath": "service.dueDate"
+    },
+    {
+      "key": "currentDate",
+      "label": "Current Date",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "SYSTEM",
+      "sourcePath": "system.currentDate"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:52:12.819Z",
+  "updatedAt": "2025-11-12T02:52:12.819Z",
+  "metadata": {
+    "tags": [
+      "task",
+      "tracker",
+      "deliverables"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

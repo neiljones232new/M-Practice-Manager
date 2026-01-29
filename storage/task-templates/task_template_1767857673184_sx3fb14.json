@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1767857673184_sx3fb14",
+  "title": "Send deadline reminder",
+  "description": "Send reminders for upcoming filing deadlines (VAT, payroll, year-end, etc.)",
+  "category": "Client Communication",
+  "priority": "HIGH",
+  "tags": [
+    "reminder",
+    "deadline",
+    "email"
+  ],
+  "createdAt": "2026-01-08T07:34:33.184Z",
+  "updatedAt": "2026-01-08T07:34:33.184Z"
+}

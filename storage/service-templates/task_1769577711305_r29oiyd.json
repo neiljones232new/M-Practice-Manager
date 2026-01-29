@@ -1,0 +1,34 @@
+{
+  "id": "task_1769577711305_r29oiyd",
+  "serviceKind": "Company Formation",
+  "frequency": "ONE_OFF",
+  "appliesTo": [
+    "Company"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "one_off",
+  "taskTemplates": [
+    {
+      "title": "Gather incorporation details",
+      "description": "Collect info needed for company registration.",
+      "daysBeforeDue": 5,
+      "priority": "HIGH",
+      "tags": [
+        "setup"
+      ],
+      "id": "task_1769577711305_g70q5mo"
+    },
+    {
+      "title": "Register company",
+      "description": "Submit incorporation documents to Companies House.",
+      "daysBeforeDue": 0,
+      "priority": "URGENT",
+      "tags": [
+        "filing"
+      ],
+      "id": "task_1769577711305_9fpu5uw"
+    }
+  ],
+  "createdAt": "2026-01-28T05:21:51.305Z",
+  "updatedAt": "2026-01-29T20:24:41.498Z"
+}

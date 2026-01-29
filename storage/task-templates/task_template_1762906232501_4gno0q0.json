@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1762906232501_4gno0q0",
+  "title": "Chase missing records",
+  "description": "Chase clients for missing bookkeeping records or documentation",
+  "category": "Client Communication",
+  "priority": "HIGH",
+  "tags": [
+    "chase",
+    "records",
+    "client-contact"
+  ],
+  "createdAt": "2025-11-12T00:10:32.501Z",
+  "updatedAt": "2025-11-12T00:10:32.501Z"
+}

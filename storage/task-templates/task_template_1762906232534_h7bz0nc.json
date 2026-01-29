@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1762906232534_h7bz0nc",
+  "title": "Chase overdue payment",
+  "description": "Chase overdue payments (email and phone follow-up)",
+  "category": "Billing & Credit Control",
+  "priority": "URGENT",
+  "tags": [
+    "billing",
+    "chase",
+    "overdue"
+  ],
+  "createdAt": "2025-11-12T00:10:32.534Z",
+  "updatedAt": "2025-11-12T00:10:32.534Z"
+}

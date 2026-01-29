@@ -1,0 +1,59 @@
+{
+  "id": "task_1767857673057_dc46k8w",
+  "serviceKind": "Annual Accounts",
+  "frequency": "ANNUAL",
+  "taskTemplates": [
+    {
+      "title": "Request client records",
+      "description": "Contact client to request annual accounting records and supporting documents",
+      "daysBeforeDue": 60,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "client-contact"
+      ],
+      "id": "task_1767857673058_p1fly99"
+    },
+    {
+      "title": "Review and prepare accounts",
+      "description": "Review client records and prepare annual accounts",
+      "daysBeforeDue": 30,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "accounts"
+      ],
+      "id": "task_1767857673058_7w962i4"
+    },
+    {
+      "title": "Client review and approval",
+      "description": "Send draft accounts to client for review and approval",
+      "daysBeforeDue": 14,
+      "priority": "MEDIUM",
+      "tags": [
+        "client-review",
+        "approval"
+      ],
+      "id": "task_1767857673058_5jyntrh"
+    },
+    {
+      "title": "File annual accounts",
+      "description": "File approved annual accounts with Companies House",
+      "daysBeforeDue": 3,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "companies-house"
+      ],
+      "id": "task_1767857673058_lli5el6"
+    }
+  ],
+  "createdAt": "2026-01-08T07:34:33.057Z",
+  "updatedAt": "2026-01-29T20:24:41.051Z",
+  "appliesTo": [
+    "Company",
+    "LLP"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period"
+}

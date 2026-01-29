@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1762906232494_0pcgbjv",
+  "title": "Make follow-up call",
+  "description": "Make follow-up calls to clients regarding outstanding information",
+  "category": "Client Communication",
+  "priority": "HIGH",
+  "tags": [
+    "phone",
+    "follow-up",
+    "client-contact"
+  ],
+  "createdAt": "2025-11-12T00:10:32.495Z",
+  "updatedAt": "2025-11-12T00:10:32.495Z"
+}

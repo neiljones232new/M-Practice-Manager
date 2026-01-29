@@ -1,0 +1,73 @@
+{
+  "id": "template_1762915932802_sy5l0kqe",
+  "name": "HMRC Chaser Letter (DOCX)",
+  "description": "Follow-up letter to chase HMRC for responses or outstanding matters (Word format)",
+  "category": "HMRC",
+  "fileName": "HMRC_Chaser_Letter.docx",
+  "filePath": "templates/files/HMRC_Chaser_Letter.docx",
+  "fileFormat": "DOCX",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.name"
+    },
+    {
+      "key": "companyName",
+      "label": "Company Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.companyName"
+    },
+    {
+      "key": "previousSubmissionDate",
+      "label": "Previous Submission Date",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "MANUAL"
+    },
+    {
+      "key": "hmrcReference",
+      "label": "HMRC Reference",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.utrNumber"
+    },
+    {
+      "key": "matterDescription",
+      "label": "Matter Description",
+      "type": "TEXT",
+      "required": true,
+      "source": "MANUAL"
+    },
+    {
+      "key": "currentDate",
+      "label": "Current Date",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "SYSTEM",
+      "sourcePath": "system.currentDate"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:52:12.802Z",
+  "updatedAt": "2025-11-12T02:52:12.803Z",
+  "metadata": {
+    "tags": [
+      "hmrc",
+      "chaser",
+      "follow-up"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "template_1762914341997_efbc9358",
+  "name": "Task Tracker (Markdown)",
+  "description": "Document for tracking client tasks and deliverables (Markdown format)",
+  "category": "GENERAL",
+  "fileName": "Task_Tracker.md",
+  "filePath": "templates/files/Task_Tracker.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:25:41.997Z",
+  "updatedAt": "2025-11-12T02:25:41.997Z",
+  "metadata": {
+    "tags": [
+      "task",
+      "tracker",
+      "deliverables"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

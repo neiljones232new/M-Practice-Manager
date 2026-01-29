@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767915884928_wn6puz9",
+  "title": "Prepare debtor ageing report",
+  "description": "Prepare monthly debtor ageing reports",
+  "category": "Billing & Credit Control",
+  "priority": "MEDIUM",
+  "tags": [
+    "billing",
+    "reporting"
+  ],
+  "createdAt": "2026-01-08T23:44:44.928Z",
+  "updatedAt": "2026-01-08T23:44:44.928Z"
+}

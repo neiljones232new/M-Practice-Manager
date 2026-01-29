@@ -1,0 +1,24 @@
+{
+  "id": "template_1762914341992_cac34736",
+  "name": "R&D Amendment Report (Markdown)",
+  "description": "Report for R&D tax credit amendments and submissions (Markdown format)",
+  "category": "TAX",
+  "fileName": "R&D_Amendment_Report.md",
+  "filePath": "templates/files/R&D_Amendment_Report.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:25:41.992Z",
+  "updatedAt": "2025-11-12T02:25:41.992Z",
+  "metadata": {
+    "tags": [
+      "r&d",
+      "tax-credit",
+      "amendment"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

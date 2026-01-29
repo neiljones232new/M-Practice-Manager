@@ -1,0 +1,46 @@
+{
+  "id": "task_1769577711347_6gia7ju",
+  "serviceKind": "HMRC Enquiry / Investigation Support",
+  "frequency": "ONE_OFF",
+  "appliesTo": [
+    "Company",
+    "Individual"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_service",
+  "taskTemplates": [
+    {
+      "title": "Review enquiry scope",
+      "description": "Assess HMRC request and identify response strategy.",
+      "daysBeforeDue": 2,
+      "priority": "HIGH",
+      "tags": [
+        "hmrc",
+        "review"
+      ],
+      "id": "task_1769577711347_plirmpv"
+    },
+    {
+      "title": "Collate supporting documents",
+      "description": "Gather records for response to HMRC.",
+      "daysBeforeDue": 1,
+      "priority": "URGENT",
+      "tags": [
+        "documentation"
+      ],
+      "id": "task_1769577711347_s2zhgie"
+    },
+    {
+      "title": "Submit response",
+      "description": "Reply to HMRC with compiled documentation.",
+      "daysBeforeDue": 0,
+      "priority": "URGENT",
+      "tags": [
+        "filing"
+      ],
+      "id": "task_1769577711347_twgg7st"
+    }
+  ],
+  "createdAt": "2026-01-28T05:21:51.347Z",
+  "updatedAt": "2026-01-29T20:24:41.524Z"
+}

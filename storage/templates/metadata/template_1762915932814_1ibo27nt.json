@@ -1,0 +1,79 @@
+{
+  "id": "template_1762915932814_1ibo27nt",
+  "name": "Complaint Escalation Letter (DOCX)",
+  "description": "Letter for escalating complaints to HMRC or other authorities (Word format)",
+  "category": "GENERAL",
+  "fileName": "Complaint_Escalation_Letter.docx",
+  "filePath": "templates/files/Complaint_Escalation_Letter.docx",
+  "fileFormat": "DOCX",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.name"
+    },
+    {
+      "key": "companyName",
+      "label": "Company Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.companyName"
+    },
+    {
+      "key": "complaintReference",
+      "label": "Complaint Reference",
+      "type": "TEXT",
+      "required": true,
+      "source": "MANUAL"
+    },
+    {
+      "key": "originalComplaintDate",
+      "label": "Original Complaint Date",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "MANUAL"
+    },
+    {
+      "key": "complaintSummary",
+      "label": "Complaint Summary",
+      "type": "TEXT",
+      "required": true,
+      "source": "MANUAL"
+    },
+    {
+      "key": "escalationReason",
+      "label": "Escalation Reason",
+      "type": "TEXT",
+      "required": true,
+      "source": "MANUAL"
+    },
+    {
+      "key": "currentDate",
+      "label": "Current Date",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "SYSTEM",
+      "sourcePath": "system.currentDate"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:52:12.814Z",
+  "updatedAt": "2025-11-12T02:52:12.814Z",
+  "metadata": {
+    "tags": [
+      "complaint",
+      "escalation",
+      "hmrc"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

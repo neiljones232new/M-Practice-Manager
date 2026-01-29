@@ -1,0 +1,24 @@
+{
+  "id": "template_1762914341980_84c2fb4e",
+  "name": "VAT Return Summary (Markdown)",
+  "description": "Summary letter for VAT return submissions (Markdown format)",
+  "category": "VAT",
+  "fileName": "VAT_Return_Summary.md",
+  "filePath": "templates/files/VAT_Return_Summary.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:25:41.980Z",
+  "updatedAt": "2025-11-12T02:25:41.980Z",
+  "metadata": {
+    "tags": [
+      "vat",
+      "return",
+      "summary"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

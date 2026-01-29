@@ -1,0 +1,45 @@
+{
+  "id": "task_1769577711271_pt80ywd",
+  "serviceKind": "Company Secretarial",
+  "frequency": "ANNUAL",
+  "appliesTo": [
+    "Company"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period",
+  "taskTemplates": [
+    {
+      "title": "Prepare confirmation statement",
+      "description": "Draft annual confirmation statement for company.",
+      "daysBeforeDue": 30,
+      "priority": "HIGH",
+      "tags": [
+        "companies-house",
+        "preparation"
+      ],
+      "id": "task_1769577711271_eadx04k"
+    },
+    {
+      "title": "Client approval of confirmation",
+      "description": "Send confirmation statement to client for approval.",
+      "daysBeforeDue": 14,
+      "priority": "MEDIUM",
+      "tags": [
+        "client-review"
+      ],
+      "id": "task_1769577711271_i39pn6t"
+    },
+    {
+      "title": "File confirmation statement",
+      "description": "Submit CS01 form to Companies House.",
+      "daysBeforeDue": 5,
+      "priority": "URGENT",
+      "tags": [
+        "filing"
+      ],
+      "id": "task_1769577711271_ye1l3iz"
+    }
+  ],
+  "createdAt": "2026-01-28T05:21:51.271Z",
+  "updatedAt": "2026-01-29T20:24:41.415Z"
+}

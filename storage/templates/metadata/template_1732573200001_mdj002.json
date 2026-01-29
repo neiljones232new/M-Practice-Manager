@@ -1,0 +1,20 @@
+{
+  "id": "template_1732573200001_mdj002",
+  "name": "Annual Review Letter",
+  "description": "Year-end service summary with fees, compliance achievements, and recommendations",
+  "category": "CLIENT",
+  "fileName": "annual-review-letter.md",
+  "filePath": "templates/files/annual-review-letter.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-25T21:00:00.000Z",
+  "updatedAt": "2025-11-25T21:00:00.000Z",
+  "metadata": {
+    "tags": ["client", "annual-review", "fees", "handlebars", "mdj-branded"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

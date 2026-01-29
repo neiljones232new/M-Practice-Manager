@@ -1,0 +1,57 @@
+{
+  "6afd545c": {
+    "users": {
+      "6afd545c-5cc7-43fe-a941-a9e569c01cc1": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-29T22:02:49.908Z"
+      }
+    }
+  },
+  "5cc7": {
+    "users": {
+      "6afd545c-5cc7-43fe-a941-a9e569c01cc1": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-29T22:02:49.908Z"
+      }
+    }
+  },
+  "43fe": {
+    "users": {
+      "6afd545c-5cc7-43fe-a941-a9e569c01cc1": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-29T22:02:49.908Z"
+      }
+    }
+  },
+  "a941": {
+    "users": {
+      "6afd545c-5cc7-43fe-a941-a9e569c01cc1": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-29T22:02:49.908Z"
+      }
+    }
+  },
+  "a9e569c01cc1": {
+    "users": {
+      "6afd545c-5cc7-43fe-a941-a9e569c01cc1": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-29T22:02:49.908Z"
+      }
+    }
+  }
+}

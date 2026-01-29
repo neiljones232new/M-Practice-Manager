@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767857673385_0xyfr6t",
+  "title": "Update job status",
+  "description": "Update client job status on internal workflow tracker",
+  "category": "Practice Administration",
+  "priority": "MEDIUM",
+  "tags": [
+    "workflow",
+    "tracking"
+  ],
+  "createdAt": "2026-01-08T07:34:33.385Z",
+  "updatedAt": "2026-01-08T07:34:33.385Z"
+}

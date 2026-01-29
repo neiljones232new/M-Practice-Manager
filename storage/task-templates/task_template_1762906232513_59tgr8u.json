@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1762906232513_59tgr8u",
+  "title": "Send engagement letter",
+  "description": "Send onboarding or engagement letters to new clients",
+  "category": "Client Communication",
+  "priority": "HIGH",
+  "tags": [
+    "onboarding",
+    "engagement",
+    "email"
+  ],
+  "createdAt": "2025-11-12T00:10:32.513Z",
+  "updatedAt": "2025-11-12T00:10:32.513Z"
+}

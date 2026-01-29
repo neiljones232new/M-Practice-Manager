@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1767857673611_oc23xve",
+  "title": "Schedule periodic review",
+  "description": "Schedule periodic client reviews (e.g., quarterly or annually)",
+  "category": "Client Job Workflow",
+  "priority": "LOW",
+  "tags": [
+    "workflow",
+    "review",
+    "planning"
+  ],
+  "createdAt": "2026-01-08T07:34:33.611Z",
+  "updatedAt": "2026-01-08T07:34:33.611Z"
+}

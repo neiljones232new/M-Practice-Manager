@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767857673373_yxweeas",
+  "title": "File signed documents",
+  "description": "File signed documents (letters, accounts, tax returns, etc.)",
+  "category": "Practice Administration",
+  "priority": "MEDIUM",
+  "tags": [
+    "filing",
+    "documents"
+  ],
+  "createdAt": "2026-01-08T07:34:33.373Z",
+  "updatedAt": "2026-01-08T07:34:33.373Z"
+}

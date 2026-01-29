@@ -1,0 +1,24 @@
+{
+  "id": "template_1762914341983_1002acd9",
+  "name": "Complaint Escalation Letter (Markdown)",
+  "description": "Letter for escalating complaints to HMRC or other authorities (Markdown format)",
+  "category": "GENERAL",
+  "fileName": "Complaint_Escalation_Letter.md",
+  "filePath": "templates/files/Complaint_Escalation_Letter.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:25:41.983Z",
+  "updatedAt": "2025-11-12T02:25:41.983Z",
+  "metadata": {
+    "tags": [
+      "complaint",
+      "escalation",
+      "hmrc"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

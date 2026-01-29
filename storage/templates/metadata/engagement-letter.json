@@ -1,0 +1,29 @@
+{
+  "id": "engagement-letter",
+  "name": "Engagement Letter",
+  "description": "Standard engagement letter for new clients",
+  "category": "ENGAGEMENT",
+  "fileName": "engagement-letter.md",
+  "filePath": "templates/files/engagement-letter.md",
+  "fileFormat": "MD",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "name",
+      "required": true
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-01-07T00:00:00.000Z",
+  "updatedAt": "2025-01-07T00:00:00.000Z",
+  "metadata": {
+    "tags": ["engagement", "onboarding", "new-client"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

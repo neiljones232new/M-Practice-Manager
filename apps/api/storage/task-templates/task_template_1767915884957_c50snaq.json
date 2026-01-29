@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767915884957_c50snaq",
+  "title": "Close completed job",
+  "description": "Close completed jobs and record completion notes",
+  "category": "Client Job Workflow",
+  "priority": "MEDIUM",
+  "tags": [
+    "workflow",
+    "completion"
+  ],
+  "createdAt": "2026-01-08T23:44:44.957Z",
+  "updatedAt": "2026-01-08T23:44:44.957Z"
+}

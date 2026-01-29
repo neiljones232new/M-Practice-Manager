@@ -1,0 +1,44 @@
+{
+  "id": "84cc826cdea9b4b3266455fcf5c7807f",
+  "practiceName": "MDJ Consultants Ltd",
+  "practiceEmail": "info@mdjteam.co.uk",
+  "practicePhone": "07713697615",
+  "defaultPortfolioCode": 1,
+  "portfolios": [
+    {
+      "code": 1,
+      "name": "Main Portfolio",
+      "description": "Default portfolio",
+      "enabled": true,
+      "clientCount": 0
+    }
+  ],
+  "systemSettings": {
+    "backupRetentionDays": 30,
+    "autoBackupEnabled": true,
+    "auditLogRetentionDays": 365,
+    "defaultServiceFrequency": "ANNUAL",
+    "taskGenerationWindowDays": 60
+  },
+  "createdAt": "2025-11-06T01:02:43.387Z",
+  "updatedAt": "2026-01-09T14:38:26.822Z",
+  "tradingName": "MDJ Consultants Ltd",
+  "legalForm": "LIMITED",
+  "companyNumber": "15110513",
+  "vatNumber": "463385670",
+  "practiceAddress": "Canal View\n8b Slate Lane\nAudenshaw\nManchester\nM34 5GW",
+  "practiceWebsite": "https://www.mdjteam.co.uk",
+  "primaryContact": {
+    "name": "Pete Gibbons",
+    "role": "Managing Director",
+    "email": "neil@mdjteam.co.uk",
+    "phone": "07713697615"
+  },
+  "defaultCurrency": "GBP",
+  "invoiceTerms": 1,
+  "vatScheme": "CASH",
+  "companiesHouseSync": true,
+  "reminderCadence": "IN_APP",
+  "timezone": "Europe/London",
+  "language": "en-GB"
+}

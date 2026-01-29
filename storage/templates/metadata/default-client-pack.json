@@ -1,0 +1,54 @@
+{
+  "id": "default-client-pack",
+  "name": "Client Pack Report",
+  "description": "Comprehensive client information pack with company details",
+  "category": "REPORTS",
+  "fileName": "default-client-pack.html",
+  "filePath": "templates/files/default-client-pack.html",
+  "fileFormat": "HTML",
+  "placeholders": [
+    {
+      "key": "client.companyName",
+      "label": "Company Name",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "name",
+      "required": true
+    },
+    {
+      "key": "client.companyNumber",
+      "label": "Company Number",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "registeredNumber",
+      "required": false
+    },
+    {
+      "key": "client.status",
+      "label": "Client Status",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "status",
+      "required": false
+    },
+    {
+      "key": "client.clientManager",
+      "label": "Client Manager",
+      "type": "TEXT",
+      "source": "USER",
+      "sourcePath": "firstName",
+      "required": false,
+      "defaultValue": "Neil Jones"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-01-07T00:00:00.000Z",
+  "updatedAt": "2025-01-07T00:00:00.000Z",
+  "metadata": {
+    "tags": ["client", "pack", "report", "company", "html"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

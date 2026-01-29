@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Schedule - {{client.name}}</title>
+    <style>
+        :root {
+            --gold: #CBA135;
+            --dark: #111;
+            --muted: #555;
+            --border: #ddd;
+            --light-bg: #f8f9fa;
+            --success: #28a745;
+            --warning: #ffc107;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px;
+            background: white;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: var(--gold);
+            font-size: 2.2rem;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .header h2 {
+            color: var(--dark);
+            font-size: 1.5rem;
+            margin: 10px 0 0 0;
+            font-weight: normal;
+        }
+        
+        .client-info {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--gold);
+        }
+        
+        .fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .fee-table th {
+            background: var(--gold);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .fee-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .fee-table tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+        
+        .fee-table tr:hover {
+            background: #e9ecef;
+        }
+        
+        .service-category {
+            font-weight: bold;
+            color: var(--gold);
+            background: #fff3cd !important;
+        }
+        
+        .price {
+            text-align: right;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .price-range {
+            text-align: right;
+            font-weight: bold;
+            color: var(--warning);
+        }
+        
+        .notes-section {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border-left: 4px solid var(--gold);
+        }
+        
+        .notes-section h4 {
+            margin: 0 0 15px 0;
+            color: var(--dark);
+        }
+        
+        .payment-terms {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border: 2px solid var(--gold);
+        }
+        
+        .payment-terms h4 {
+            margin: 0 0 15px 0;
+            color: var(--gold);
+        }
+        
+        .total-section {
+            background: var(--gold);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .total-section h3 {
+            margin: 0 0 10px 0;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+        
+        @media print {
+            body { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{practice.name}}</h1>
+        <h2>Professional Services Fee Schedule</h2>
+    </div>
+    
+    <div class="client-info">
+        <h3>{{client.name}}</h3>
+        {{#if client.registeredNumber}}
+        <p><strong>Company Number:</strong> {{client.registeredNumber}}</p>
+        {{/if}}
+        <p><strong>Client Reference:</strong> {{client.ref}}</p>
+        <p><strong>Fee Schedule Date:</strong> {{formatDate today 'DD MMMM YYYY'}}</p>
+        <p><strong>Valid Until:</strong> {{formatDate (add today 1 'year') 'DD MMMM YYYY'}} (subject to annual review)</p>
+    </div>
+    
+    <table class="fee-table">
+        <thead>
+            <tr>
+                <th>Service Description</th>
+                <th>Frequency</th>
+                <th>Fee (£)</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each serviceCategories}}
+            <tr class="service-category">
+                <td colspan="4"><strong>{{this.name}}</strong></td>
+            </tr>
+            {{#each this.services}}
+            <tr>
+                <td>{{this.description}}</td>
+                <td>{{this.frequency}}</td>
+                <td class="{{#if this.isRange}}price-range{{else}}price{{/if}}">
+                    {{#if this.isRange}}
+                    £{{this.minFee}} - £{{this.maxFee}}
+                    {{else}}
+                    {{currency this.fee}}
+                    {{/if}}
+                </td>
+                <td>{{this.notes}}</td>
+            </tr>
+            {{/each}}
+            {{/each}}
+            
+            {{#unless serviceCategories}}
+            <tr class="service-category">
+                <td colspan="4"><strong>STATUTORY COMPLIANCE SERVICES</strong></td>
+            </tr>
+            {{#each services}}
+            <tr>
+                <td>{{this.kind}}</td>
+                <td>{{this.frequency}}</td>
+                <td class="price">{{currency this.fee}}</td>
+                <td>{{this.description}}</td>
+            </tr>
+            {{/each}}
+            {{#unless services}}
+            <tr>
+                <td>Annual Accounts Preparation</td>
+                <td>Annual</td>
+                <td class="price">£450</td>
+                <td>Companies House filing included</td>
+            </tr>
+            <tr>
+                <td>Annual Confirmation Statement</td>
+                <td>Annual</td>
+                <td class="price">£75</td>
+                <td>Companies House filing included</td>
+            </tr>
+            {{/unless}}
+            
+            <tr class="service-category">
+                <td colspan="4"><strong>ADVISORY SERVICES</strong></td>
+            </tr>
+            <tr>
+                <td>General Business Advisory</td>
+                <td>Hourly</td>
+                <td class="price">£150</td>
+                <td>Strategic guidance</td>
+            </tr>
+            <tr>
+                <td>Compliance Review</td>
+                <td>Quarterly</td>
+                <td class="price">£250</td>
+                <td>Comprehensive assessment</td>
+            </tr>
+            {{/unless}}
+        </tbody>
+    </table>
+    
+    <div class="total-section">
+        <h3>{{#if totalAnnualFee}}Estimated Annual Fee{{else}}Annual Service Package{{/if}}</h3>
+        <p><strong>{{#if totalAnnualFee}}{{currency totalAnnualFee}}{{else}}£500 - £750{{/if}}</strong></p>
+        <p>{{#if packageDescription}}{{packageDescription}}{{else}}Includes: Annual Accounts, Confirmation Statement, Basic Advisory Support{{/if}}</p>
+    </div>
+    
+    <div class="payment-terms">
+        <h4>Payment Terms & Conditions</h4>
+        <ul>
+            <li><strong>Payment Terms:</strong> 30 days from invoice date</li>
+            <li><strong>Late Payment:</strong> Interest charged at 8% above Bank of England base rate</li>
+            <li><strong>Advance Payment:</strong> 5% discount for annual fees paid in advance</li>
+            <li><strong>Payment Methods:</strong> Bank transfer, cheque, or direct debit</li>
+            <li><strong>Currency:</strong> All fees quoted in GBP and exclude VAT (if applicable)</li>
+        </ul>
+    </div>
+    
+    <div class="notes-section">
+        <h4>Important Notes</h4>
+        <ul>
+            <li>All fees are subject to annual review and may be adjusted with 30 days notice</li>
+            <li>Additional charges may apply for complex transactions or urgent requests</li>
+            <li>Travel expenses charged at cost for client meetings outside our local area</li>
+            <li>Disbursements (filing fees, courier costs, etc.) charged at cost</li>
+            <li>Estimates provided for project-based work before commencement</li>
+            <li>All work subject to our standard terms of engagement</li>
+            {{#if client.specialNotes}}
+            <li><strong>Client Specific:</strong> {{client.specialNotes}}</li>
+            {{/if}}
+        </ul>
+    </div>
+    
+    <div class="footer">
+        <p><strong>{{practice.name}}</strong> | {{practice.tagline}}<br>
+        {{#if practice.registrationNumber}}Company Registration: {{practice.registrationNumber}} | {{/if}}Fee Schedule Generated: {{formatDate today 'DD MMMM YYYY'}}<br>
+        For queries about fees or services, please contact us directly.</p>
+    </div>
+</body>
+</html>

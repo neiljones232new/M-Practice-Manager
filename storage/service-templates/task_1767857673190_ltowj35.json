@@ -1,0 +1,47 @@
+{
+  "id": "task_1767857673190_ltowj35",
+  "serviceKind": "Bookkeeping",
+  "frequency": "MONTHLY",
+  "taskTemplates": [
+    {
+      "title": "Collect monthly records",
+      "description": "Gather invoices, receipts, and bank statements",
+      "daysBeforeDue": 15,
+      "priority": "MEDIUM",
+      "tags": [
+        "preparation",
+        "records"
+      ],
+      "id": "task_1767857673190_t4rwce5"
+    },
+    {
+      "title": "Update bookkeeping records",
+      "description": "Enter transactions and reconcile accounts",
+      "daysBeforeDue": 7,
+      "priority": "MEDIUM",
+      "tags": [
+        "processing",
+        "reconciliation"
+      ],
+      "id": "task_1767857673190_0gzxbbm"
+    },
+    {
+      "title": "Prepare monthly reports",
+      "description": "Generate profit & loss and balance sheet reports",
+      "daysBeforeDue": 3,
+      "priority": "LOW",
+      "tags": [
+        "reporting"
+      ],
+      "id": "task_1767857673190_4a1ciwg"
+    }
+  ],
+  "createdAt": "2026-01-08T07:34:33.190Z",
+  "updatedAt": "2026-01-29T20:24:41.404Z",
+  "appliesTo": [
+    "Company",
+    "Individual"
+  ],
+  "complianceImpact": false,
+  "pricingModel": "per_period"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1762906232651_tvu98st",
+  "title": "Send bulk reminders",
+  "description": "Send bulk reminders (VAT, PAYE, CT600 deadlines, etc.)",
+  "category": "Email & Correspondence",
+  "priority": "HIGH",
+  "tags": [
+    "email",
+    "reminder",
+    "bulk"
+  ],
+  "createdAt": "2025-11-12T00:10:32.651Z",
+  "updatedAt": "2025-11-12T00:10:32.651Z"
+}

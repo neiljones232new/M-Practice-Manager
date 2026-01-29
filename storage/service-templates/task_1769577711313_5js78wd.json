@@ -1,0 +1,37 @@
+{
+  "id": "task_1769577711313_5js78wd",
+  "serviceKind": "VAT Registration / Deregistration",
+  "frequency": "ONE_OFF",
+  "appliesTo": [
+    "Company",
+    "Individual"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "one_off",
+  "taskTemplates": [
+    {
+      "title": "Collect VAT registration data",
+      "description": "Gather info for VAT (de)registration.",
+      "daysBeforeDue": 5,
+      "priority": "HIGH",
+      "tags": [
+        "setup",
+        "vat"
+      ],
+      "id": "task_1769577711313_ef2fjda"
+    },
+    {
+      "title": "Submit (de)registration to HMRC",
+      "description": "Register or deregister business for VAT.",
+      "daysBeforeDue": 0,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "hmrc"
+      ],
+      "id": "task_1769577711313_q6zn6wy"
+    }
+  ],
+  "createdAt": "2026-01-28T05:21:51.313Z",
+  "updatedAt": "2026-01-29T20:24:41.505Z"
+}

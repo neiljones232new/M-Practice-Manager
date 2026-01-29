@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engagement Letter - {{client.name}}</title>
+    <style>
+        :root {
+            --gold: #CBA135;
+            --dark: #111;
+            --muted: #555;
+            --border: #ddd;
+        }
+        
+        body {
+            font-family: 'Times New Roman', serif;
+            color: var(--dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px;
+            background: white;
+        }
+        
+        .letterhead {
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .letterhead h1 {
+            color: var(--gold);
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .letterhead p {
+            color: var(--muted);
+            font-size: 1.1rem;
+            margin: 10px 0 0 0;
+        }
+        
+        .letter-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .date {
+            text-align: right;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .recipient {
+            margin-bottom: 30px;
+        }
+        
+        .recipient h3 {
+            color: var(--dark);
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+        }
+        
+        .address {
+            color: var(--muted);
+            line-height: 1.4;
+        }
+        
+        .subject {
+            font-weight: bold;
+            margin: 30px 0;
+            text-decoration: underline;
+            font-size: 1.1rem;
+        }
+        
+        .content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        
+        .services-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-left: 4px solid var(--gold);
+            margin: 20px 0;
+        }
+        
+        .services-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .services-list li {
+            margin-bottom: 8px;
+        }
+        
+        .signature-section {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        
+        .signature-block {
+            text-align: center;
+        }
+        
+        .signature-line {
+            border-bottom: 1px solid var(--dark);
+            margin-bottom: 10px;
+            height: 60px;
+        }
+        
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+        
+        @media print {
+            body { padding: 20px; }
+            .letterhead { page-break-after: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="letterhead">
+        <h1>{{practice.name}}</h1>
+        <p>{{practice.tagline}}</p>
+        {{#if practice.registrationNumber}}
+        <p>Company Registration: {{practice.registrationNumber}}</p>
+        {{/if}}
+    </div>
+    
+    <div class="letter-content">
+        <div class="date">
+            {{formatDate today 'DD MMMM YYYY'}}
+        </div>
+        
+        <div class="recipient">
+            <h3>{{client.name}}</h3>
+            <div class="address">
+                {{#if client.registeredNumber}}
+                Company Number: {{client.registeredNumber}}<br>
+                {{/if}}
+                {{#if client.address}}
+                {{client.address.line1}}<br>
+                {{#if client.address.line2}}{{client.address.line2}}<br>{{/if}}
+                {{client.address.city}}, {{client.address.postcode}}<br>
+                {{client.address.country}}
+                {{/if}}
+            </div>
+        </div>
+        
+        <div class="subject">
+            Subject: Letter of Engagement for Professional Services
+        </div>
+        
+        <div class="content">
+            <p>Dear {{#if client.type 'COMPANY'}}Directors{{else}}{{client.name}}{{/if}},</p>
+            
+            <p>We are pleased to confirm our understanding of the terms of our engagement and the nature and limitations of the services we will provide.</p>
+            
+            <p><strong>Scope of Services:</strong></p>
+            <div class="services-list">
+                <ul>
+                    {{#each services}}
+                    <li>{{this.description}}</li>
+                    {{/each}}
+                    {{#unless services}}
+                    <li>Preparation and filing of annual accounts</li>
+                    <li>Preparation and filing of annual confirmation statement</li>
+                    <li>Maintenance of statutory registers</li>
+                    <li>General business advisory services</li>
+                    <li>Compliance monitoring and reporting</li>
+                    {{/unless}}
+                </ul>
+            </div>
+            
+            <p><strong>Your Responsibilities:</strong></p>
+            <p>You are responsible for providing us with complete and accurate information required for the services outlined above. This includes maintaining proper accounting records and providing access to all relevant documentation.</p>
+            
+            <p><strong>Our Responsibilities:</strong></p>
+            <p>We will perform the services outlined above with professional care and skill. We will comply with all relevant professional standards and regulations applicable to our profession.</p>
+            
+            <p><strong>Fees and Payment Terms:</strong></p>
+            <p>Our fees will be charged in accordance with our standard fee schedule{{#if totalAnnualFee}}, with an estimated annual fee of {{currency totalAnnualFee}}{{/if}}. Payment terms are 30 days from invoice date.</p>
+            
+            <p><strong>Limitation of Liability:</strong></p>
+            <p>Our liability for any loss, damage or costs arising from our services shall be limited to the amount of fees paid for the specific service giving rise to the claim.</p>
+            
+            <p><strong>Data Protection:</strong></p>
+            <p>We will process your personal data in accordance with the General Data Protection Regulation (GDPR) and our privacy policy, which is available on request.</p>
+            
+            <p><strong>Termination:</strong></p>
+            <p>Either party may terminate this engagement by giving 30 days written notice. Upon termination, you will remain liable for all fees incurred up to the date of termination.</p>
+            
+            <p>Please confirm your acceptance of these terms by signing and returning one copy of this letter.</p>
+            
+            <p>We look forward to working with you.</p>
+            
+            <p>Yours faithfully,</p>
+        </div>
+        
+        <div class="signature-section">
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <p><strong>{{practice.name}}</strong><br>
+                {{practice.signatoryTitle}}</p>
+            </div>
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <p><strong>{{client.name}}</strong><br>
+                {{#if client.type 'COMPANY'}}Director{{else}}Client{{/if}}</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>{{practice.name}} | {{practice.tagline}}<br>
+            This engagement letter is governed by English law and subject to the jurisdiction of English courts.</p>
+        </div>
+    </div>
+</body>
+</html>

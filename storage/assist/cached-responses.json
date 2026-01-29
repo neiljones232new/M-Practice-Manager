@@ -1,0 +1,111 @@
+{
+  "responses": [
+    {
+      "key": "5a81a06c260b2a007e2859c738d91dbb",
+      "query": "[ollama]",
+      "response": "It looks like you're testing me! Is there something specific you'd like to talk about or ask? I'm here to help.",
+      "context": {
+        "pageContext": {
+          "path": "/services",
+          "section": "services",
+          "search": ""
+        },
+        "includeServices": true
+      },
+      "timestamp": "2026-01-25T18:06:00.187Z",
+      "expiresAt": "2026-01-26T18:06:00.187Z"
+    },
+    {
+      "key": "1cca6b1aa59a29302afc091f3df8b643",
+      "query": "[ollama]",
+      "response": "I have a list of various services that I can offer. Here are some of them:\n\n1. **Answering questions**: I can provide information on a wide range of topics, from science and history to entertainment and culture.\n2. **Language translation**: I can translate text from one language to another, including popular languages such as Spanish, French, German, Chinese, and many more.\n3. **Text summarization**: I can summarize long pieces of text into shorter, more digestible versions, highlighting the main points and key information.\n4. **Conversation practice**: If you're learning a new language or want to improve your conversational skills, I can engage in conversation with you and help you practice.\n5. **Content generation**: I can generate text on a given topic or subject, including articles, stories, and more.\n6. **Language learning assistance**: I can assist with language learning by providing grammar explanations, vocabulary building exercises, and more.\n7. **Trivia and games**: We can play trivia games, word games, or other interactive games to keep things fun and engaging.\n\nIs there something specific you'd like me to help with? Or would you like me to review any of these services in more detail?",
+      "context": {
+        "pageContext": {
+          "path": "/services",
+          "section": "services",
+          "search": ""
+        },
+        "includeServices": true
+      },
+      "timestamp": "2026-01-25T18:06:39.836Z",
+      "expiresAt": "2026-01-26T18:06:39.836Z"
+    },
+    {
+      "key": "7dc8fe94c39c9d8cbed2bb015c7fd43a",
+      "query": "[ollama]",
+      "response": "**Summary**\nYou have accessed the dashboard in offline mode, indicating that there are no urgent tasks or deadlines to address.\n\n**Recommendations**\n\n1. **Check for pending notifications**: Although you're in offline mode, review any stored notifications or alerts regarding client communications, deadline reminders, or system updates.\n2. **Review upcoming deadlines**: Once connected to the internet, access the calendar or task list to identify approaching deadlines and prioritize tasks accordingly.\n3. **Update client information**: In offline mode, ensure all client data is up-to-date, including contact details and relevant documents.\n\n**Next Steps**\n\n1. Connect to the internet to access full features and notifications.\n2. Review your schedule for any upcoming appointments or meetings with clients.\n3. Allocate time to update client records and review deadlines.\n\n**Important Considerations**\nOffline mode might not provide a comprehensive view of tasks, deadlines, or notifications. Be prepared to catch up on any missed updates upon reconnecting to the internet.",
+      "context": {
+        "pageContext": {
+          "path": "/dashboard",
+          "section": "dashboard",
+          "search": ""
+        }
+      },
+      "timestamp": "2026-01-25T20:58:30.276Z",
+      "expiresAt": "2026-01-26T20:58:30.276Z"
+    },
+    {
+      "key": "023169fc004337f47780a5667b4a70c3",
+      "query": "[ollama]",
+      "response": "It looks like you just tested the system. Is there anything else I can help with?",
+      "context": {
+        "pageContext": {
+          "path": "/clients",
+          "section": "clients",
+          "search": ""
+        },
+        "includeClients": true
+      },
+      "timestamp": "2026-01-25T22:13:06.797Z",
+      "expiresAt": "2026-01-26T22:13:06.797Z"
+    },
+    {
+      "key": "8ee13a9aa1d3cb615fad26102ba1b263",
+      "query": "[ollama]",
+      "response": "What would you like me to summarise?",
+      "context": {
+        "pageContext": {
+          "path": "/clients",
+          "section": "clients",
+          "search": ""
+        },
+        "includeClients": true
+      },
+      "timestamp": "2026-01-25T23:48:26.337Z",
+      "expiresAt": "2026-01-26T23:48:26.337Z"
+    },
+    {
+      "key": "7ca78cecd397d01a206512f8da4ebe58",
+      "query": "[ollama]",
+      "response": "I'll wait for your client list to be shared with me. Please provide the details, and I'll summarize it for you. Is it a text or a file?",
+      "context": {
+        "pageContext": {
+          "path": "/clients",
+          "section": "clients",
+          "search": ""
+        },
+        "includeClients": true,
+        "includeServices": true
+      },
+      "timestamp": "2026-01-25T23:48:38.698Z",
+      "expiresAt": "2026-01-26T23:48:38.698Z"
+    },
+    {
+      "key": "c7d5e44cddd16a3f8166289536e4f3d7",
+      "query": "[ollama]",
+      "response": "Client 1A001 refers to a specific category in the United States Munitions List (USML) and the Commerce Control List (CCL), which are maintained by the U.S. Department of State's Directorate of Defense Trade Controls (DDTC) and the Bureau of Industry and Security (BIS) respectively.\n\nWithout more context, it is difficult to provide a detailed summary. However, I can give you an overview:\n\n1A001 pertains to \"Nuclear-related items\" but specifically includes categories related to nuclear material control equipment, nuclear materials handling equipment, certain types of radiation detectors, and some categories under \"other\".\n\nThese are highly controlled items due to their potential dual-use applications in both peaceful research and development as well as military contexts. The regulations surrounding these exports are stringent due to the risk of proliferation of nuclear weapons.\n\nFor more detailed information, please specify which particular aspect or classification within 1A001 you're interested in (e.g., specific item numbers, category descriptions).",
+      "context": {
+        "clientRef": "client_1764872753575_pgoa24wei",
+        "pageContext": {
+          "path": "/clients/client_1764872753575_pgoa24wei",
+          "section": "clients",
+          "search": ""
+        },
+        "includeClients": true,
+        "includeServices": true
+      },
+      "timestamp": "2026-01-25T23:49:15.296Z",
+      "expiresAt": "2026-01-26T23:49:15.296Z"
+    }
+  ]
+}

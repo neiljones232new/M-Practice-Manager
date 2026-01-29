@@ -1,0 +1,45 @@
+{
+  "id": "default-company-profile",
+  "name": "Company Profile Report",
+  "description": "Detailed company profile with registration and address information",
+  "category": "REPORTS",
+  "fileName": "default-company-profile.html",
+  "filePath": "templates/files/default-company-profile.html",
+  "fileFormat": "HTML",
+  "placeholders": [
+    {
+      "key": "client.companyName",
+      "label": "Company Name",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "name",
+      "required": true
+    },
+    {
+      "key": "client.companyNumber",
+      "label": "Company Number",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "registeredNumber",
+      "required": false
+    },
+    {
+      "key": "client.registeredAddress",
+      "label": "Registered Address",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "address",
+      "required": false
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-01-07T00:00:00.000Z",
+  "updatedAt": "2025-01-07T00:00:00.000Z",
+  "metadata": {
+    "tags": ["company", "profile", "report", "registration", "html"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

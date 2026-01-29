@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1762906232488_huzmh1f",
+  "title": "Respond to client email",
+  "description": "Respond to client emails promptly",
+  "category": "Client Communication",
+  "priority": "MEDIUM",
+  "tags": [
+    "email",
+    "client-contact"
+  ],
+  "createdAt": "2025-11-12T00:10:32.488Z",
+  "updatedAt": "2025-11-12T00:10:32.488Z"
+}

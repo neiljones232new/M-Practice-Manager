@@ -1,0 +1,143 @@
+{
+  "id": "template_1764086247641_fqpphclgg",
+  "name": "Welcome Letter",
+  "description": "Welcome letter for new clients to introduce your firm and services",
+  "category": "ENGAGEMENT",
+  "fileName": "Welcome_Letter.docx",
+  "filePath": "templates/files/Welcome_Letter.docx",
+  "fileFormat": "DOCX",
+  "placeholders": [
+    {
+      "key": "date",
+      "label": "Date",
+      "type": "date",
+      "required": true
+    },
+    {
+      "key": "client_name",
+      "label": "Client Name",
+      "type": "text",
+      "required": true,
+      "source": "client",
+      "sourcePath": "name"
+    },
+    {
+      "key": "client_address",
+      "label": "Client Address",
+      "type": "text",
+      "required": true,
+      "source": "client",
+      "sourcePath": "address"
+    },
+    {
+      "key": "firm_name",
+      "label": "Firm Name",
+      "type": "text",
+      "required": true,
+      "defaultValue": "MDJ Consultants"
+    },
+    {
+      "key": "firm_description",
+      "label": "Firm Description",
+      "type": "textarea",
+      "required": true,
+      "defaultValue": "We are a professional accounting firm specializing in tax, compliance, and business advisory services."
+    },
+    {
+      "key": "contact_name",
+      "label": "Contact Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "contact_title",
+      "label": "Contact Title",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "contact_email",
+      "label": "Contact Email",
+      "type": "email",
+      "required": true
+    },
+    {
+      "key": "contact_phone",
+      "label": "Contact Phone",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "required_item_1",
+      "label": "Required Item 1",
+      "type": "text",
+      "required": false,
+      "defaultValue": "Recent financial statements"
+    },
+    {
+      "key": "required_item_2",
+      "label": "Required Item 2",
+      "type": "text",
+      "required": false,
+      "defaultValue": "Previous tax returns"
+    },
+    {
+      "key": "required_item_3",
+      "label": "Required Item 3",
+      "type": "text",
+      "required": false,
+      "defaultValue": "Company registration documents"
+    },
+    {
+      "key": "next_steps",
+      "label": "Next Steps",
+      "type": "textarea",
+      "required": true
+    },
+    {
+      "key": "firm_email",
+      "label": "Firm Email",
+      "type": "email",
+      "required": true
+    },
+    {
+      "key": "firm_phone",
+      "label": "Firm Phone",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "firm_website",
+      "label": "Firm Website",
+      "type": "text",
+      "required": false
+    },
+    {
+      "key": "signatory_name",
+      "label": "Signatory Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "signatory_title",
+      "label": "Signatory Title",
+      "type": "text",
+      "required": true
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-25T15:57:27.641Z",
+  "updatedAt": "2025-11-25T15:57:27.641Z",
+  "metadata": {
+    "tags": [
+      "welcome",
+      "onboarding",
+      "introduction",
+      "engagement"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

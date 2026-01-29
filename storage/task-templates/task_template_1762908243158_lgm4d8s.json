@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1762908243158_lgm4d8s",
+  "title": "Custom Test Template",
+  "description": "This is a custom template for testing",
+  "category": "Practice Administration",
+  "priority": "MEDIUM",
+  "tags": [
+    "test",
+    "custom"
+  ],
+  "createdAt": "2025-11-12T00:44:03.158Z",
+  "updatedAt": "2025-11-12T00:44:03.158Z"
+}

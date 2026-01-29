@@ -1,0 +1,14 @@
+{
+  "id": "task_template_1762906232549_gn0y533",
+  "title": "Record payment received",
+  "description": "Record payments received and reconcile client accounts",
+  "category": "Billing & Credit Control",
+  "priority": "HIGH",
+  "tags": [
+    "billing",
+    "payment",
+    "reconciliation"
+  ],
+  "createdAt": "2025-11-12T00:10:32.549Z",
+  "updatedAt": "2025-11-12T00:10:32.549Z"
+}

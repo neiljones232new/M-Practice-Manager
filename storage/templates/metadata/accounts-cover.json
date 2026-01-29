@@ -1,0 +1,38 @@
+{
+  "id": "accounts-cover",
+  "name": "Accounts Cover Letter",
+  "description": "Cover letter accompanying company accounts and CT600",
+  "category": "TAX",
+  "fileName": "accounts-cover.md",
+  "filePath": "templates/files/accounts-cover.md",
+  "fileFormat": "MD",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "name",
+      "required": true
+    },
+    {
+      "key": "yearEndDate",
+      "label": "Year End Date",
+      "type": "DATE",
+      "source": "SERVICE",
+      "sourcePath": "nextDue",
+      "required": true,
+      "format": "DD/MM/YYYY"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-01-07T00:00:00.000Z",
+  "updatedAt": "2025-01-07T00:00:00.000Z",
+  "metadata": {
+    "tags": ["accounts", "ct600", "cover-letter", "tax"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "template_1732573200000_mdj001",
+  "name": "Client Onboarding Welcome Letter",
+  "description": "Professional welcome letter for new clients with service overview and next steps",
+  "category": "CLIENT",
+  "fileName": "client-onboarding-welcome.md",
+  "filePath": "templates/files/client-onboarding-welcome.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-25T21:00:00.000Z",
+  "updatedAt": "2025-11-25T21:00:00.000Z",
+  "metadata": {
+    "tags": ["client", "onboarding", "welcome", "handlebars", "mdj-branded"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

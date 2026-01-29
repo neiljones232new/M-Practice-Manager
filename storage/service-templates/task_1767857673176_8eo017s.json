@@ -1,0 +1,48 @@
+{
+  "id": "task_1767857673176_8eo017s",
+  "serviceKind": "Payroll Services",
+  "frequency": "MONTHLY",
+  "taskTemplates": [
+    {
+      "title": "Collect payroll data",
+      "description": "Gather employee hours, overtime, and other payroll information",
+      "daysBeforeDue": 10,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "data-collection"
+      ],
+      "id": "task_1767857673176_dr8rfmy"
+    },
+    {
+      "title": "Process payroll",
+      "description": "Calculate wages, deductions, and prepare payslips",
+      "daysBeforeDue": 5,
+      "priority": "HIGH",
+      "tags": [
+        "processing",
+        "calculation"
+      ],
+      "id": "task_1767857673176_ip1ks4o"
+    },
+    {
+      "title": "Submit RTI to HMRC",
+      "description": "Submit Real Time Information to HMRC",
+      "daysBeforeDue": 2,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "hmrc",
+        "rti"
+      ],
+      "id": "task_1767857673176_scfn16n"
+    }
+  ],
+  "createdAt": "2026-01-08T07:34:33.176Z",
+  "updatedAt": "2026-01-29T20:24:41.398Z",
+  "appliesTo": [
+    "Company"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period"
+}

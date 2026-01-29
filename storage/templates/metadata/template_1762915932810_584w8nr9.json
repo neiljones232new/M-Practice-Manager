@@ -1,0 +1,100 @@
+{
+  "id": "template_1762915932810_584w8nr9",
+  "name": "VAT Return Summary",
+  "description": "Summary letter for VAT return submissions",
+  "category": "VAT",
+  "fileName": "VAT_Return_Summary.md",
+  "filePath": "templates/files/VAT_Return_Summary.md",
+  "fileFormat": "MD",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.name"
+    },
+    {
+      "key": "companyName",
+      "label": "Company Name",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.companyName"
+    },
+    {
+      "key": "vatNumber",
+      "label": "VAT Number",
+      "type": "TEXT",
+      "required": true,
+      "source": "CLIENT",
+      "sourcePath": "client.vatNumber"
+    },
+    {
+      "key": "periodStart",
+      "label": "Period Start",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "SERVICE",
+      "sourcePath": "service.startDate"
+    },
+    {
+      "key": "periodEnd",
+      "label": "Period End",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "SERVICE",
+      "sourcePath": "service.endDate"
+    },
+    {
+      "key": "vatDue",
+      "label": "VAT Due",
+      "type": "CURRENCY",
+      "required": true,
+      "format": "£0,0.00",
+      "source": "MANUAL"
+    },
+    {
+      "key": "vatReclaimed",
+      "label": "VAT Reclaimed",
+      "type": "CURRENCY",
+      "required": true,
+      "format": "£0,0.00",
+      "source": "MANUAL"
+    },
+    {
+      "key": "netVat",
+      "label": "Net VAT",
+      "type": "CURRENCY",
+      "required": true,
+      "format": "£0,0.00",
+      "source": "MANUAL"
+    },
+    {
+      "key": "currentDate",
+      "label": "Current Date",
+      "type": "DATE",
+      "required": true,
+      "format": "DD/MM/YYYY",
+      "source": "SYSTEM",
+      "sourcePath": "system.currentDate"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:52:12.810Z",
+  "updatedAt": "2025-11-12T02:52:12.810Z",
+  "metadata": {
+    "tags": [
+      "vat",
+      "return",
+      "summary"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

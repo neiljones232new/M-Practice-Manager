@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767857673534_4whww94",
+  "title": "Update job progress",
+  "description": "Update job progress (e.g., records received, draft prepared, filed)",
+  "category": "Client Job Workflow",
+  "priority": "MEDIUM",
+  "tags": [
+    "workflow",
+    "tracking"
+  ],
+  "createdAt": "2026-01-08T07:34:33.534Z",
+  "updatedAt": "2026-01-08T07:34:33.534Z"
+}

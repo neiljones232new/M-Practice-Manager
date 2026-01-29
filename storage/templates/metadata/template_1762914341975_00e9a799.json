@@ -1,0 +1,25 @@
+{
+  "id": "template_1762914341975_00e9a799",
+  "name": "CT600 Cover Letter (Markdown)",
+  "description": "Cover letter for CT600 Corporation Tax Return submissions to HMRC (Markdown format)",
+  "category": "TAX",
+  "fileName": "CT600_Cover_Letter.md",
+  "filePath": "templates/files/CT600_Cover_Letter.md",
+  "fileFormat": "MD",
+  "placeholders": [],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-12T02:25:41.975Z",
+  "updatedAt": "2025-11-12T02:25:41.975Z",
+  "metadata": {
+    "tags": [
+      "tax",
+      "ct600",
+      "hmrc",
+      "corporation-tax"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

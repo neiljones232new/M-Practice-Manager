@@ -1,0 +1,61 @@
+{
+  "id": "professional-engagement-letter",
+  "name": "Professional Engagement Letter",
+  "description": "Comprehensive engagement letter template with Handlebars support for client onboarding",
+  "category": "ENGAGEMENT",
+  "subcategory": "LETTERS",
+  "fileType": "HTML",
+  "fileName": "professional-engagement-letter.html",
+  "filePath": "templates/files/professional-engagement-letter.html",
+  "version": "1.0.0",
+  "isActive": true,
+  "requiredFields": [
+    "client.name",
+    "client.type",
+    "practice.name",
+    "practice.tagline"
+  ],
+  "optionalFields": [
+    "client.registeredNumber",
+    "client.address",
+    "services",
+    "totalAnnualFee",
+    "practice.registrationNumber",
+    "practice.signatoryTitle"
+  ],
+  "tags": ["engagement", "letter", "onboarding", "professional", "handlebars"],
+  "outputFormats": ["HTML", "PDF"],
+  "createdAt": "2026-01-06T17:45:00.000Z",
+  "updatedAt": "2026-01-06T17:45:00.000Z",
+  "createdBy": "system",
+  "isSystemTemplate": true,
+  "templateEngine": "handlebars",
+  "previewData": {
+    "client": {
+      "name": "Example Ltd",
+      "type": "COMPANY",
+      "registeredNumber": "12345678",
+      "address": {
+        "line1": "123 Business Street",
+        "city": "London",
+        "postcode": "SW1A 1AA",
+        "country": "United Kingdom"
+      }
+    },
+    "practice": {
+      "name": "M Practice Manager",
+      "tagline": "Professional Business Advisory Services",
+      "registrationNumber": "15110513",
+      "signatoryTitle": "Director"
+    },
+    "services": [
+      {
+        "description": "Annual accounts preparation and filing"
+      },
+      {
+        "description": "Annual confirmation statement"
+      }
+    ],
+    "totalAnnualFee": 750
+  }
+}

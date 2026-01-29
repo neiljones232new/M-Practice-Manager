@@ -1,0 +1,83 @@
+{
+  "id": "comprehensive-client-report",
+  "name": "Comprehensive Client Report",
+  "description": "Detailed client report with compliance status, services, tax calculations, and KPIs",
+  "category": "REPORTS",
+  "subcategory": "CLIENT_REPORTS",
+  "fileType": "HTML",
+  "fileName": "comprehensive-client-report.html",
+  "filePath": "templates/files/comprehensive-client-report.html",
+  "version": "1.0.0",
+  "isActive": true,
+  "requiredFields": [
+    "client.name",
+    "client.ref",
+    "client.type",
+    "client.status",
+    "practice.name"
+  ],
+  "optionalFields": [
+    "client.registeredNumber",
+    "client.mainEmail",
+    "client.mainPhone",
+    "client.address",
+    "companiesHouseData",
+    "complianceAlerts",
+    "services",
+    "recentActivity",
+    "taxCalculations",
+    "recommendations",
+    "reportPeriod"
+  ],
+  "tags": ["report", "client", "comprehensive", "compliance", "kpi", "handlebars"],
+  "outputFormats": ["HTML", "PDF"],
+  "createdAt": "2026-01-06T17:45:00.000Z",
+  "updatedAt": "2026-01-06T17:45:00.000Z",
+  "createdBy": "system",
+  "isSystemTemplate": true,
+  "templateEngine": "handlebars",
+  "previewData": {
+    "client": {
+      "name": "Example Ltd",
+      "ref": "P1-001",
+      "type": "COMPANY",
+      "status": "ACTIVE",
+      "registeredNumber": "12345678",
+      "portfolioCode": 1,
+      "mainEmail": "info@example.com",
+      "address": {
+        "line1": "123 Business Street",
+        "city": "London",
+        "postcode": "SW1A 1AA",
+        "country": "United Kingdom"
+      }
+    },
+    "practice": {
+      "name": "M Practice Manager",
+      "tagline": "Professional Business Advisory Services"
+    },
+    "companiesHouseData": {
+      "incorporationDate": "2020-01-15T00:00:00.000Z",
+      "companyStatus": "active",
+      "sicCodes": ["62020", "70229"],
+      "accountsNextDue": "2026-04-30T00:00:00.000Z",
+      "confirmationNextDue": "2026-01-15T00:00:00.000Z",
+      "hasCharges": false,
+      "lastSyncDate": "2026-01-06T00:00:00.000Z"
+    },
+    "services": [
+      {
+        "kind": "Annual Accounts",
+        "frequency": "Annual",
+        "fee": 450,
+        "status": "ACTIVE"
+      },
+      {
+        "kind": "Confirmation Statement",
+        "frequency": "Annual",
+        "fee": 75,
+        "status": "ACTIVE"
+      }
+    ]
+  }
+}

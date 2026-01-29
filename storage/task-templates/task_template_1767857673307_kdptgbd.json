@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1767857673307_kdptgbd",
+  "title": "Issue invoice",
+  "description": "Issue invoices for completed work",
+  "category": "Billing & Credit Control",
+  "priority": "HIGH",
+  "tags": [
+    "billing",
+    "invoice"
+  ],
+  "createdAt": "2026-01-08T07:34:33.307Z",
+  "updatedAt": "2026-01-08T07:34:33.307Z"
+}

@@ -1,0 +1,51 @@
+{
+  "id": "default-tax-strategy",
+  "name": "Tax Strategy Report",
+  "description": "Comprehensive tax strategy analysis and recommendations",
+  "category": "TAX",
+  "fileName": "default-tax-strategy.html",
+  "filePath": "templates/files/default-tax-strategy.html",
+  "fileFormat": "HTML",
+  "placeholders": [
+    {
+      "key": "client.companyName",
+      "label": "Company Name",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "name",
+      "required": true
+    },
+    {
+      "key": "calculations",
+      "label": "Tax Calculations",
+      "type": "TEXT",
+      "source": "MANUAL",
+      "required": false
+    },
+    {
+      "key": "scenarios",
+      "label": "Tax Scenarios",
+      "type": "TEXT",
+      "source": "MANUAL",
+      "required": false
+    },
+    {
+      "key": "recommendations",
+      "label": "Tax Recommendations",
+      "type": "TEXT",
+      "source": "MANUAL",
+      "required": false
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-01-07T00:00:00.000Z",
+  "updatedAt": "2025-01-07T00:00:00.000Z",
+  "metadata": {
+    "tags": ["tax", "strategy", "report", "analysis", "html"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}
+   

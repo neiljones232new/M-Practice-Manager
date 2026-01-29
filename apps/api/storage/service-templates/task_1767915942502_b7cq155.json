@@ -1,0 +1,42 @@
+{
+  "id": "task_1767915942502_b7cq155",
+  "serviceKind": "VAT Returns",
+  "frequency": "MONTHLY",
+  "taskTemplates": [
+    {
+      "title": "Collect monthly VAT records",
+      "description": "Gather monthly sales and purchase records",
+      "daysBeforeDue": 14,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "records"
+      ],
+      "id": "task_1767915942502_ht0vcwx"
+    },
+    {
+      "title": "Prepare monthly VAT return",
+      "description": "Calculate monthly VAT liability and prepare return",
+      "daysBeforeDue": 7,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "calculation"
+      ],
+      "id": "task_1767915942502_br719ux"
+    },
+    {
+      "title": "Submit monthly VAT return",
+      "description": "Submit VAT return to HMRC",
+      "daysBeforeDue": 2,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "hmrc"
+      ],
+      "id": "task_1767915942502_p9ri5gt"
+    }
+  ],
+  "createdAt": "2026-01-08T23:45:42.502Z",
+  "updatedAt": "2026-01-08T23:45:42.502Z"
+}

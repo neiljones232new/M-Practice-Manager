@@ -1,0 +1,81 @@
+{
+  "id": "template_1764086247641_8dbaw0hkk",
+  "name": "Letter of Engagement",
+  "description": "Professional engagement letter for new client onboarding and service agreements",
+  "category": "ENGAGEMENT",
+  "fileName": "Letter_of_Engagement.docx",
+  "filePath": "templates/files/Letter_of_Engagement.docx",
+  "fileFormat": "DOCX",
+  "placeholders": [
+    {
+      "key": "date",
+      "label": "Date",
+      "type": "date",
+      "required": true
+    },
+    {
+      "key": "client_name",
+      "label": "Client Name",
+      "type": "text",
+      "required": true,
+      "source": "client",
+      "sourcePath": "name"
+    },
+    {
+      "key": "client_address",
+      "label": "Client Address",
+      "type": "text",
+      "required": true,
+      "source": "client",
+      "sourcePath": "address"
+    },
+    {
+      "key": "services_list",
+      "label": "Services List",
+      "type": "textarea",
+      "required": true
+    },
+    {
+      "key": "fee_structure",
+      "label": "Fee Structure",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "payment_terms",
+      "label": "Payment Terms",
+      "type": "text",
+      "required": true,
+      "defaultValue": "Payment due within 30 days of invoice"
+    },
+    {
+      "key": "notice_period",
+      "label": "Notice Period",
+      "type": "text",
+      "required": true,
+      "defaultValue": "30 days"
+    },
+    {
+      "key": "firm_name",
+      "label": "Firm Name",
+      "type": "text",
+      "required": true,
+      "defaultValue": "MDJ Consultants"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-11-25T15:57:27.641Z",
+  "updatedAt": "2025-11-25T15:57:27.641Z",
+  "metadata": {
+    "tags": [
+      "engagement",
+      "onboarding",
+      "contract",
+      "terms"
+    ],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

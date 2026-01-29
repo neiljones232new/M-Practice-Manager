@@ -1,0 +1,13 @@
+{
+  "id": "task_template_1762906232776_epttmxv",
+  "title": "Review client satisfaction",
+  "description": "Review client satisfaction and gather feedback",
+  "category": "Internal Operations",
+  "priority": "LOW",
+  "tags": [
+    "feedback",
+    "quality"
+  ],
+  "createdAt": "2025-11-12T00:10:32.776Z",
+  "updatedAt": "2025-11-12T00:10:32.776Z"
+}

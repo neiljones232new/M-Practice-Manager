@@ -1,0 +1,43 @@
+[
+  {
+    "id": "0eb06ba6512852702e07a4326c43fb97",
+    "name": "OpenAI GPT",
+    "type": "OPENAI",
+    "enabled": false,
+    "baseUrl": "https://api.openai.com/v1",
+    "settings": {
+      "model": "gpt-4"
+    },
+    "status": "DISCONNECTED",
+    "createdAt": "2026-01-25T21:43:17.292Z",
+    "updatedAt": "2026-01-25T21:43:17.292Z"
+  },
+  {
+    "id": "c8dbc6ee5b3b595b522c20030ed44db1",
+    "name": "Companies House",
+    "type": "COMPANIES_HOUSE",
+    "enabled": true,
+    "baseUrl": "https://api.company-information.service.gov.uk",
+    "settings": {
+      "rateLimit": 600,
+      "env": "production",
+      "perMinute": 600
+    },
+    "status": "CONNECTED",
+    "createdAt": "2026-01-25T21:43:17.292Z",
+    "updatedAt": "2026-01-29T22:34:41.043Z",
+    "lastTested": "2026-01-29T22:34:41.043Z",
+    "apiKey": "6989d5d3-d95b-4642-9be4-1c81ed9e5221"
+  },
+  {
+    "id": "2a72966d8f89bd536d03916f1623bbfe",
+    "name": "GOV.UK Notify",
+    "type": "GOV_NOTIFY",
+    "enabled": false,
+    "baseUrl": "https://api.notifications.service.gov.uk",
+    "settings": {},
+    "status": "DISCONNECTED",
+    "createdAt": "2026-01-25T21:43:17.292Z",
+    "updatedAt": "2026-01-25T21:43:17.292Z"
+  }
+]

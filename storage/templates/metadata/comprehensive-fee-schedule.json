@@ -1,0 +1,47 @@
+{
+  "id": "comprehensive-fee-schedule",
+  "name": "Comprehensive Fee Schedule",
+  "description": "Professional fee schedule template with service categories and payment terms",
+  "category": "COMMERCIAL",
+  "subcategory": "FEE_SCHEDULES",
+  "fileType": "HTML",
+  "fileName": "comprehensive-fee-schedule.html",
+  "filePath": "templates/files/comprehensive-fee-schedule.html",
+  "version": "1.0.0",
+  "isActive": true,
+  "requiredFields": [
+    "client.name",
+    "client.ref",
+    "practice.name"
+  ],
+  "optionalFields": [
+    "client.registeredNumber",
+    "services",
+    "serviceCategories",
+    "totalAnnualFee",
+    "packageDescription",
+    "client.specialNotes",
+    "practice.registrationNumber"
+  ],
+  "tags": ["fee", "schedule", "pricing", "commercial", "handlebars"],
+  "outputFormats": ["HTML", "PDF"],
+  "createdAt": "2026-01-06T17:45:00.000Z",
+  "updatedAt": "2026-01-06T17:45:00.000Z",
+  "createdBy": "system",
+  "isSystemTemplate": true,
+  "templateEngine": "handlebars",
+  "previewData": {
+    "client": {
+      "name": "Example Ltd",
+      "ref": "P1-001",
+      "registeredNumber": "12345678"
+    },
+    "practice": {
+      "name": "M Practice Manager",
+      "tagline": "Professional Business Advisory Services",
+      "registrationNumber": "15110513"
+    },
+    "totalAnnualFee": 1250,
+    "packageDescription": "Comprehensive compliance and advisory package"
+  }
+}

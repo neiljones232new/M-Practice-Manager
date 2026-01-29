@@ -1,0 +1,54 @@
+{
+  "id": "vat-reminder",
+  "name": "VAT Return Reminder",
+  "description": "Reminder to client about upcoming VAT return deadline",
+  "category": "VAT",
+  "fileName": "vat-reminder.md",
+  "filePath": "templates/files/vat-reminder.md",
+  "fileFormat": "MD",
+  "placeholders": [
+    {
+      "key": "clientName",
+      "label": "Client Name",
+      "type": "TEXT",
+      "source": "CLIENT",
+      "sourcePath": "name",
+      "required": true
+    },
+    {
+      "key": "periodEnd",
+      "label": "Period End Date",
+      "type": "DATE",
+      "source": "SERVICE",
+      "sourcePath": "nextDue",
+      "required": true,
+      "format": "DD/MM/YYYY"
+    },
+    {
+      "key": "submissionDueDate",
+      "label": "Submission Due Date",
+      "type": "DATE",
+      "source": "MANUAL",
+      "required": true,
+      "format": "DD/MM/YYYY"
+    },
+    {
+      "key": "recordsDueDate",
+      "label": "Records Due Date",
+      "type": "DATE",
+      "source": "MANUAL",
+      "required": false,
+      "format": "DD/MM/YYYY"
+    }
+  ],
+  "version": 1,
+  "isActive": true,
+  "createdBy": "system",
+  "createdAt": "2025-01-07T00:00:00.000Z",
+  "updatedAt": "2025-01-07T00:00:00.000Z",
+  "metadata": {
+    "tags": ["vat", "reminder", "deadline"],
+    "author": "MDJ Consultants",
+    "usageCount": 0
+  }
+}

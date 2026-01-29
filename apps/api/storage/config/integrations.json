@@ -1,0 +1,39 @@
+[
+  {
+    "id": "78f749edd09e5cf9c6852767af672219",
+    "name": "OpenAI GPT",
+    "type": "OPENAI",
+    "enabled": false,
+    "baseUrl": "https://api.openai.com/v1",
+    "settings": {
+      "model": "gpt-4"
+    },
+    "status": "DISCONNECTED",
+    "createdAt": "2026-01-08T23:56:05.439Z",
+    "updatedAt": "2026-01-08T23:56:05.439Z"
+  },
+  {
+    "id": "8b9abb290bf9fc92c769a4d9b0ea6f7d",
+    "name": "Companies House",
+    "type": "COMPANIES_HOUSE",
+    "enabled": false,
+    "baseUrl": "https://api.company-information.service.gov.uk",
+    "settings": {
+      "rateLimit": 600
+    },
+    "status": "DISCONNECTED",
+    "createdAt": "2026-01-08T23:56:05.439Z",
+    "updatedAt": "2026-01-08T23:56:05.439Z"
+  },
+  {
+    "id": "9af2cc4e633ab138357c8ba2cbeb5d55",
+    "name": "GOV.UK Notify",
+    "type": "GOV_NOTIFY",
+    "enabled": false,
+    "baseUrl": "https://api.notifications.service.gov.uk",
+    "settings": {},
+    "status": "DISCONNECTED",
+    "createdAt": "2026-01-08T23:56:05.439Z",
+    "updatedAt": "2026-01-08T23:56:05.439Z"
+  }
+]
