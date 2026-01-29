@@ -32,13 +32,13 @@ export default function SelectClientPage() {
         setLoading(true);
         setError(null);
         
-        const clientsData = await api.get<Client[]>('/clients', {
-          params: { status: 'ACTIVE', limit: '1000' }
-        });
+        const clientsData = await api.getClients({ status: 'ACTIVE', limit: '1000' });
+        const items = Array.isArray(clientsData) ? clientsData : [];
+        const nodes = items.map((c: any) => c.node ?? c);
         
         if (mounted) {
-          setClients(clientsData || []);
-          setFilteredClients(clientsData || []);
+          setClients(nodes);
+          setFilteredClients(nodes);
         }
       } catch (err: any) {
         if (mounted) {

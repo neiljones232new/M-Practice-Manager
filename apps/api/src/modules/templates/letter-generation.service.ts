@@ -89,10 +89,7 @@ export class LetterGenerationService {
       }
 
       // Step 6: Build values object with formatted values
-      const values: Record<string, any> = {};
-      for (const [key, resolved] of Object.entries(resolutionResult.placeholders)) {
-        values[key] = resolved.formattedValue;
-      }
+      const values = this.buildTemplateValues(resolutionResult.placeholders);
 
       // Step 7: Populate template with values
       const populatedContent = this.documentGeneratorService.populateTemplate(
@@ -205,10 +202,7 @@ export class LetterGenerationService {
 
       // Step 4: Build values object with formatted values
       // For preview, we'll show placeholders even if they're missing
-      const values: Record<string, any> = {};
-      for (const [key, resolved] of Object.entries(resolutionResult.placeholders)) {
-        values[key] = resolved.formattedValue || `[${key}]`;
-      }
+      const values = this.buildTemplateValues(resolutionResult.placeholders, true);
 
       // Step 5: Populate template with values
       const populatedContent = this.documentGeneratorService.populateTemplate(
@@ -923,6 +917,45 @@ export class LetterGenerationService {
    * Sanitize filename to remove invalid characters
    * @private
    */
+  private buildTemplateValues(placeholders: Record<string, any>, showMissing = false): Record<string, any> {
+    const values: Record<string, any> = {};
+
+    for (const [key, resolved] of Object.entries(placeholders)) {
+      const formatted = resolved?.formattedValue ?? '';
+      const value = showMissing && (formatted === '' || formatted === null || formatted === undefined)
+        ? `[${key}]`
+        : formatted;
+      values[key] = value;
+
+      if (key.includes('.')) {
+        this.assignNestedValue(values, key, value);
+      }
+    }
+
+    return values;
+  }
+
+  private assignNestedValue(target: Record<string, any>, path: string, value: any): void {
+    const parts = path.split('.');
+    let current: Record<string, any> = target;
+
+    for (let i = 0; i < parts.length; i += 1) {
+      const part = parts[i];
+      if (!part) continue;
+
+      if (i === parts.length - 1) {
+        current[part] = value;
+        return;
+      }
+
+      if (typeof current[part] !== 'object' || current[part] === null || Array.isArray(current[part])) {
+        current[part] = {};
+      }
+
+      current = current[part];
+    }
+  }
+
   private sanitizeFilename(filename: string): string {
     return filename
       .replace(/[^a-zA-Z0-9\s\-_]/g, '') // Remove invalid characters

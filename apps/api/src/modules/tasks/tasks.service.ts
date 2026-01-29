@@ -178,6 +178,9 @@ export class TasksService {
       id,
       serviceKind: createDto.serviceKind,
       frequency: createDto.frequency,
+      appliesTo: createDto.appliesTo || [],
+      complianceImpact: createDto.complianceImpact ?? false,
+      pricingModel: createDto.pricingModel || 'per_period',
       taskTemplates,
       createdAt: now,
       updatedAt: now,
@@ -258,7 +261,15 @@ export class TasksService {
     }
 
     // Find matching service template
-    const template = await this.findServiceTemplate(service.kind, service.frequency);
+    let template = await this.findServiceTemplate(service.kind, service.frequency);
+    if (!template) {
+      const aliases = this.getServiceKindAliases(service.kind, service.frequency);
+      for (const alias of aliases) {
+        if (alias === service.kind) continue;
+        template = await this.findServiceTemplate(alias, service.frequency);
+        if (template) break;
+      }
+    }
     if (!template) {
       this.logger.warn(`No service template found for ${service.kind} (${service.frequency})`);
       return [];
@@ -294,6 +305,42 @@ export class TasksService {
 
     this.logger.log(`Generated ${generatedTasks.length} tasks from service ${service.kind} (${service.id})`);
     return generatedTasks;
+  }
+
+  private getServiceKindAliases(serviceKind: string, frequency: string): string[] {
+    const normalized = String(serviceKind || '').trim();
+    const candidates = new Set<string>();
+    if (normalized) {
+      candidates.add(normalized);
+    }
+
+    if (normalized === 'VAT Returns') {
+      if (frequency === 'MONTHLY') candidates.add('VAT Returns (Monthly)');
+      if (frequency === 'QUARTERLY') candidates.add('VAT Returns (Quarterly)');
+    }
+    if (normalized.startsWith('VAT Returns (')) {
+      candidates.add('VAT Returns');
+    }
+    if (normalized === 'Corporation Tax') {
+      candidates.add('Corporation Tax Return');
+    }
+    if (normalized === 'Corporation Tax Return') {
+      candidates.add('Corporation Tax');
+    }
+    if (normalized === 'Self Assessment') {
+      candidates.add('Self Assessment Tax Return');
+    }
+    if (normalized === 'Self Assessment Tax Return') {
+      candidates.add('Self Assessment');
+    }
+    if (normalized === 'Payroll') {
+      candidates.add('Payroll Services');
+    }
+    if (normalized === 'Payroll Services') {
+      candidates.add('Payroll');
+    }
+
+    return Array.from(candidates);
   }
 
   async generateTasksForAllServices(): Promise<{ serviceId: string; tasksGenerated: number }[]> {

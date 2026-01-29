@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 export async function POST(req: NextRequest) {
   const configured = process.env.NEXT_PUBLIC_MDJ_SHUTDOWN_SECRET || process.env.MDJ_SHUTDOWN_SECRET;
   const header = req.headers.get('x-mdj-shutdown');

@@ -133,8 +133,9 @@ export default function EditCalendarEventPage() {
 
   const fetchClients = async () => {
     try {
-      const data = await api.get('/clients');
-      setClients(data as any);
+      const data = await api.getClients();
+      const items = Array.isArray(data) ? data : [];
+      setClients(items.map((c: any) => c.node ?? c) as any);
     } catch (err) {
       console.error('Failed to fetch clients:', err);
     }

@@ -84,8 +84,9 @@ export default function NewTaskPage() {
 
   const fetchClients = async () => {
     try {
-      const data = await api.get<Client[]>('/clients');
-      setClients(Array.isArray(data) ? data : []);
+      const data = await api.getClients();
+      const items = Array.isArray(data) ? data : [];
+      setClients(items.map((c: any) => c.node ?? c));
     } catch (err) {
       console.error('Failed to fetch clients:', err);
     }

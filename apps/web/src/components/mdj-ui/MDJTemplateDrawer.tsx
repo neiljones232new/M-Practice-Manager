@@ -1075,8 +1075,8 @@ export const MDJTemplateDrawer: React.FC<MDJTemplateDrawerProps> = ({
         style={{
           position: 'fixed',
           inset: 0,
-          background: isOpen ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
-          backdropFilter: isOpen ? 'blur(2px)' : 'none',
+          background: isOpen ? 'rgba(15, 23, 42, 0.45)' : 'transparent',
+          backdropFilter: isOpen ? 'blur(4px)' : 'none',
           zIndex: 998,
           pointerEvents: isOpen ? 'auto' : 'none',
           transition: 'background 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out',
@@ -1119,8 +1119,8 @@ export const MDJTemplateDrawer: React.FC<MDJTemplateDrawerProps> = ({
               }),
           display: 'flex',
           flexDirection: 'column',
-          background: 'var(--bg-page)',
-          boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
+          background: 'linear-gradient(180deg, var(--surface) 0%, var(--surface-subtle) 100%)',
+          boxShadow: '0 18px 40px rgba(15, 23, 42, 0.18), 0 0 0 1px var(--border-subtle)',
           zIndex: 999,
           opacity: 0,
           transition: 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out',
@@ -1135,9 +1135,9 @@ export const MDJTemplateDrawer: React.FC<MDJTemplateDrawerProps> = ({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: screenSize === 'mobile' ? '1.25rem 1rem' : '1.5rem 1.75rem',
-            borderBottom: '2px solid var(--border)',
-            background: 'linear-gradient(to bottom, var(--surface-muted), var(--bg-page))',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+            borderBottom: '1px solid var(--border-subtle)',
+            background: 'linear-gradient(180deg, var(--surface) 0%, var(--surface-muted) 100%)',
+            boxShadow: '0 6px 16px rgba(15, 23, 42, 0.08)',
           }}
         >
           <div style={{ flex: 1 }}>
@@ -1216,6 +1216,7 @@ export const MDJTemplateDrawer: React.FC<MDJTemplateDrawerProps> = ({
             flex: 1,
             overflow: 'auto',
             padding: screenSize === 'mobile' ? '1rem' : '1.5rem',
+            background: 'transparent',
             // Enable momentum scrolling on iOS
             WebkitOverflowScrolling: 'touch',
           }}

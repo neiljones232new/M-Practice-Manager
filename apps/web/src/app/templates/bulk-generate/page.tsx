@@ -150,10 +150,11 @@ export default function BulkGenerateLettersPage() {
     const loadClients = async () => {
       try {
         setLoading(true);
-        const data = await api.get('/clients');
-        const activeClients = (Array.isArray(data) ? data : []).filter(
-          (c: any) => c.status === 'ACTIVE'
-        );
+        const data = await api.getClients();
+        const items = Array.isArray(data) ? data : [];
+        const activeClients = items
+          .map((c: any) => c.node ?? c)
+          .filter((c: any) => c.status === 'ACTIVE');
         setClients(activeClients);
       } catch (e: any) {
         console.error('Failed to load clients', e);

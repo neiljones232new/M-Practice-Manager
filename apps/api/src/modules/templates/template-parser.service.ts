@@ -29,11 +29,11 @@ export class TemplateParserService {
   constructor(private readonly errorHandler: TemplateErrorHandlerService) {}
 
   // Regex patterns for different placeholder types
-  private readonly SIMPLE_PLACEHOLDER_REGEX = /\{\{([a-zA-Z0-9_]+)\}\}/g;
-  private readonly FORMATTED_PLACEHOLDER_REGEX = /\{\{([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):([^}]+)\}\}/g;
-  private readonly CONDITIONAL_START_REGEX = /\{\{if:([a-zA-Z0-9_]+)\}\}/g;
+  private readonly SIMPLE_PLACEHOLDER_REGEX = /\{\{([a-zA-Z0-9_.]+)\}\}/g;
+  private readonly FORMATTED_PLACEHOLDER_REGEX = /\{\{([a-zA-Z0-9_.]+):([a-zA-Z0-9_]+):([^}]+)\}\}/g;
+  private readonly CONDITIONAL_START_REGEX = /\{\{if:([a-zA-Z0-9_.]+)\}\}/g;
   private readonly CONDITIONAL_END_REGEX = /\{\{endif\}\}/g;
-  private readonly LIST_START_REGEX = /\{\{list:([a-zA-Z0-9_]+)\}\}/g;
+  private readonly LIST_START_REGEX = /\{\{list:([a-zA-Z0-9_.]+)\}\}/g;
   private readonly LIST_END_REGEX = /\{\{endlist\}\}/g;
   private readonly ALL_PLACEHOLDERS_REGEX = /\{\{[^}]+\}\}/g;
 
@@ -168,11 +168,11 @@ export class TemplateParserService {
             });
           }
 
-          // Validate placeholder key format (alphanumeric and underscore only)
-          if (placeholder.key && !/^[a-zA-Z0-9_]+$/.test(placeholder.key)) {
+          // Validate placeholder key format (alphanumeric, underscore, dot)
+          if (placeholder.key && !/^[a-zA-Z0-9_.]+$/.test(placeholder.key)) {
             errors.push({
               field: `placeholders[${index}].key`,
-              message: 'Placeholder key must contain only letters, numbers, and underscores',
+              message: 'Placeholder key must contain only letters, numbers, underscores, and dots',
               code: 'INVALID_FORMAT',
             });
           }
@@ -445,29 +445,34 @@ export class TemplateParserService {
    */
   private inferSourceFromKey(key: string): PlaceholderSource {
     const lowerKey = key.toLowerCase();
+    const rootKey = lowerKey.split('.')[0];
 
     // Client-related keys
-    if (lowerKey.startsWith('client') || lowerKey.startsWith('company') || 
+    if (rootKey === 'client' || rootKey === 'company' || rootKey === 'profile' ||
+        lowerKey.startsWith('client') || lowerKey.startsWith('company') || 
         lowerKey.includes('utr') || lowerKey.includes('vat') ||
         lowerKey.includes('incorporation')) {
-      return PlaceholderSource.CLIENT;
+      return rootKey === 'profile' ? PlaceholderSource.PROFILE : PlaceholderSource.CLIENT;
     }
 
     // Service-related keys
-    if (lowerKey.startsWith('service') || lowerKey.includes('engagement') ||
+    if (rootKey === 'service' || lowerKey.startsWith('service') || lowerKey.includes('engagement') ||
         lowerKey.includes('fee') || lowerKey.includes('due')) {
       return PlaceholderSource.SERVICE;
     }
 
     // User-related keys
-    if (lowerKey.startsWith('user') || lowerKey.includes('preparedby') ||
+    if (rootKey === 'user' || rootKey === 'advisor' || lowerKey.startsWith('user') || lowerKey.includes('preparedby') ||
         lowerKey.includes('accountant')) {
       return PlaceholderSource.USER;
     }
 
     // System-related keys
-    if (lowerKey.startsWith('current') || lowerKey.startsWith('today') ||
-        lowerKey.startsWith('practice')) {
+    if (rootKey === 'practice' || lowerKey.startsWith('practice')) {
+      return PlaceholderSource.PRACTICE;
+    }
+
+    if (rootKey === 'system' || lowerKey.startsWith('current') || lowerKey.startsWith('today')) {
       return PlaceholderSource.SYSTEM;
     }
 
@@ -483,6 +488,10 @@ export class TemplateParserService {
       return undefined;
     }
 
+    if (key.includes('.')) {
+      return key;
+    }
+
     const lowerKey = key.toLowerCase();
 
     // Remove source prefix if present
@@ -493,8 +502,12 @@ export class TemplateParserService {
       cleanKey = key.substring(7);
     } else if (lowerKey.startsWith('user')) {
       cleanKey = key.substring(4);
+    } else if (lowerKey.startsWith('practice')) {
+      cleanKey = key.substring(8);
     } else if (lowerKey.startsWith('company')) {
       cleanKey = key.substring(7);
+    } else if (lowerKey.startsWith('system')) {
+      cleanKey = key.substring(6);
     }
 
     // Convert to lowercase first letter
@@ -505,13 +518,16 @@ export class TemplateParserService {
     // Build source path
     switch (source) {
       case PlaceholderSource.CLIENT:
+      case PlaceholderSource.PROFILE:
         return `client.${cleanKey || key}`;
       case PlaceholderSource.SERVICE:
         return `service.${cleanKey || key}`;
       case PlaceholderSource.USER:
         return `user.${cleanKey || key}`;
       case PlaceholderSource.SYSTEM:
-        return `system.${cleanKey || key}`;
+        return cleanKey || key;
+      case PlaceholderSource.PRACTICE:
+        return `practice.${cleanKey || key}`;
       default:
         return undefined;
     }

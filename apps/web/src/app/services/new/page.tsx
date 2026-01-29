@@ -75,10 +75,9 @@ export default function NewServicePage() {
 
   const fetchClients = async () => {
     try {
-      const data = await api.get('/clients', {
-        params: { status: 'ACTIVE', limit: '1000' },
-      });
-      setClients(data);
+      const data = await api.getClients({ status: 'ACTIVE', limit: '1000' });
+      const items = Array.isArray(data) ? data : [];
+      setClients(items.map((c: any) => c.node ?? c));
     } catch (err) {
       console.error('Failed to fetch clients:', err);
     }

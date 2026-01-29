@@ -33,12 +33,13 @@ export default function AccountsProductionPage() {
         
         // Get all clients and accounts sets in parallel
         const [clientsData, accountsSetsData] = await Promise.all([
-          api.get<Client[]>('/clients', { params: { status: 'ACTIVE', limit: '1000' } }),
+          api.getClients({ status: 'ACTIVE', limit: '1000' }),
           api.get<AccountsSet[]>('/accounts-sets')
         ]);
         
         if (mounted) {
-          setClients(clientsData || []);
+          const items = Array.isArray(clientsData) ? clientsData : [];
+          setClients(items.map((c: any) => c.node ?? c));
           setAccountsSets(accountsSetsData || []);
         }
       } catch (err: any) {

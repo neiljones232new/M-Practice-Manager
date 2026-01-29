@@ -3,6 +3,7 @@ import { ClientsService } from '../clients/clients.service';
 import { DatabaseService } from '../database/database.service';
 import { buildClientContext } from '../clients/dto/client-context.dto';
 import { ServicesService } from '../services/services.service';
+import { IntegrationConfigService } from '../integrations/services/integration-config.service';
 import { TemplateErrorHandlerService } from './template-error-handler.service';
 import {
   TemplatePlaceholder,
@@ -26,6 +27,7 @@ export class PlaceholderService {
     private readonly clientsService: ClientsService,
     private readonly servicesService: ServicesService,
     private readonly databaseService: DatabaseService,
+    private readonly integrationConfigService: IntegrationConfigService,
     private readonly errorHandler: TemplateErrorHandlerService,
   ) {}
 
@@ -44,7 +46,7 @@ export class PlaceholderService {
     // Fetch data sources
     let clientData: ClientPlaceholderData | null = null;
     let serviceData: ServicePlaceholderData | null = null;
-    const systemData = this.getSystemData(context.userId);
+    const systemData = await this.getSystemData(context.userId);
 
     try {
       clientData = await this.getClientData(context.clientId);
@@ -153,43 +155,105 @@ export class PlaceholderService {
       : null;
     const ctx = buildClientContext(client, dbClient);
 
+    const addressText = this.formatAddress(ctx.node.address);
+    const nodeAny = ctx.node as any;
+    const amlStatus =
+      ctx.profile.amlCompleted === true || ctx.profile.amlCompleted === 1
+        ? 'Complete'
+        : ctx.profile.amlCompleted === false || ctx.profile.amlCompleted === 0
+        ? 'Incomplete'
+        : null;
+    const aml = {
+      completed: ctx.profile.amlCompleted,
+      status: amlStatus,
+      risk: ctx.profile.clientRiskRating,
+    };
+    const hmrc = {
+      ct: ctx.computed?.taxFlags?.ct,
+      sa: ctx.profile.selfAssessmentRequired,
+      vat: ctx.computed?.taxFlags?.vat,
+      paye: ctx.computed?.taxFlags?.paye,
+      cis: ctx.computed?.taxFlags?.cis,
+      ctStatus: nodeAny?.hmrcCtStatus,
+      saStatus: nodeAny?.hmrcSaStatus,
+      vatStatus: nodeAny?.hmrcVatStatus,
+      payeStatus: nodeAny?.hmrcPayeStatus,
+      cisStatus: nodeAny?.hmrcCisStatus,
+      mtdVatStatus: nodeAny?.hmrcMtdVatStatus,
+      mtdItsaStatus: nodeAny?.hmrcMtdItsaStatus,
+      eoriStatus: nodeAny?.hmrcEoriStatus,
+      mtdVatEnabled: nodeAny?.mtdVatEnabled,
+      mtdItsaEnabled: nodeAny?.mtdItsaEnabled,
+      vatNumber: ctx.profile.vatNumber ?? ctx.node.vatNumber,
+      payeReference: ctx.profile.payeReference ?? ctx.node.payeReference,
+      cisUtr: ctx.profile.cisUtr,
+      authenticationCode: ctx.profile.authenticationCode,
+      payeAccountsOfficeReference: ctx.profile.payeAccountsOfficeReference,
+      accountsOfficeReference: ctx.profile.accountsOfficeReference,
+    };
+    const clientView = {
+      ...ctx.node,
+      ...ctx.profile,
+      companyName: ctx.node.name,
+      companyNumber: ctx.node.registeredNumber,
+      registeredOffice: addressText,
+      registeredAddress: ctx.profile.registeredAddress || addressText,
+      address: addressText,
+      addressFields: ctx.node.address,
+      profile: ctx.profile,
+      computed: ctx.computed,
+      primaryContact,
+      aml,
+      hmrc,
+    };
+
     const data: ClientPlaceholderData = {
+      client: clientView,
+      node: ctx.node,
+      profile: ctx.profile,
+      computed: ctx.computed,
+      primaryContact,
+
       // Basic info
       clientName: ctx.node.name,
       clientReference: ctx.node.ref,
       clientType: ctx.node.type,
-      
-      // Company specific
-      companyName: ctx.node.type === 'COMPANY' ? ctx.node.name : undefined,
+      name: ctx.node.name,
+      registeredNumber: ctx.node.registeredNumber,
+      companyName: ctx.node.name,
       companyNumber: ctx.node.registeredNumber,
+      registeredOffice: addressText,
+      registeredAddress: ctx.profile.registeredAddress || addressText,
+
+      // Company specific
       incorporationDate: ctx.node.incorporationDate,
-      registeredOffice: this.formatAddress(ctx.node.address),
-      
+
       // Individual specific (if applicable)
       firstName: ctx.node.type === 'INDIVIDUAL' ? ctx.node.name.split(' ')[0] : undefined,
       lastName: ctx.node.type === 'INDIVIDUAL' ? ctx.node.name.split(' ').slice(1).join(' ') : undefined,
-      
+
       // Contact information
-      email: ctx.node.mainEmail || primaryContact?.['email'],
-      phone: ctx.node.mainPhone || primaryContact?.['phone'],
-      mobile: primaryContact?.['phone'],
-      
+      email: ctx.node.mainEmail || ctx.profile.email || primaryContact?.['email'],
+      phone: ctx.node.mainPhone || ctx.profile.telephone || primaryContact?.['phone'],
+      mobile: ctx.profile.mobile || primaryContact?.['phone'],
+
       // Address
+      address: addressText,
       addressLine1: ctx.node.address?.line1,
       addressLine2: ctx.node.address?.line2,
       city: ctx.node.address?.city,
       county: ctx.node.address?.county,
       postcode: ctx.node.address?.postcode,
       country: ctx.node.address?.country,
-      
+
       // Tax information
       utrNumber: ctx.node.utrNumber,
-      vatNumber: ctx.profile.vatNumber,
-      payeReference: ctx.profile.payeReference,
-      
+      vatNumber: ctx.profile.vatNumber ?? ctx.node.vatNumber,
+      payeReference: ctx.profile.payeReference ?? ctx.node.payeReference,
+
       // Additional
       accountingPeriodEnd: ctx.node.accountsLastMadeUpTo,
-      yearEnd: ctx.node.accountsLastMadeUpTo 
+      yearEnd: ctx.node.accountsLastMadeUpTo
         ? this.formatDate(ctx.node.accountsLastMadeUpTo, 'DD/MM')
         : undefined,
       portfolio: `Portfolio ${ctx.node.portfolioCode}`,
@@ -245,23 +309,54 @@ export class PlaceholderService {
    * Get system data for placeholder resolution
    * Requirements: 2.2
    */
-  private getSystemData(userId: string): SystemPlaceholderData {
+  private async getSystemData(userId: string): Promise<SystemPlaceholderData> {
     const now = new Date();
     const monthNames = [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
+    const practiceSettings = await this.integrationConfigService
+      .getPracticeSettings()
+      .catch(() => null);
+
+    const practice = {
+      name: practiceSettings?.practiceName,
+      address: practiceSettings?.practiceAddress,
+      phone: practiceSettings?.practicePhone,
+      email: practiceSettings?.practiceEmail,
+      website: practiceSettings?.practiceWebsite,
+      practiceName: practiceSettings?.practiceName,
+      practiceAddress: practiceSettings?.practiceAddress,
+      practicePhone: practiceSettings?.practicePhone,
+      practiceEmail: practiceSettings?.practiceEmail,
+      practiceWebsite: practiceSettings?.practiceWebsite,
+    };
+
+    const userName = userId || 'Advisor';
+
     return {
       currentDate: now,
       currentYear: now.getFullYear(),
       currentMonth: monthNames[now.getMonth()],
-      userName: userId, // In a real system, fetch user details
+      userName,
       userEmail: undefined,
-      practiceName: 'MDJ Consultants',
-      practiceAddress: undefined,
-      practicePhone: undefined,
-      practiceEmail: undefined,
+      user: {
+        id: userId,
+        name: userName,
+        email: undefined,
+      },
+      advisor: {
+        id: userId,
+        name: userName,
+        email: undefined,
+      },
+      practiceName: practice.practiceName,
+      practiceAddress: practice.practiceAddress,
+      practicePhone: practice.practicePhone,
+      practiceEmail: practice.practiceEmail,
+      practiceWebsite: practice.practiceWebsite,
+      practice,
     };
   }
 
@@ -276,12 +371,14 @@ export class PlaceholderService {
   ): { value: any; source: PlaceholderSource } {
     // If source is explicitly defined, use it
     if (placeholder.source) {
-      switch (placeholder.source) {
+      const sourceKey = String(placeholder.source).toUpperCase();
+      switch (sourceKey) {
         case PlaceholderSource.CLIENT:
+        case PlaceholderSource.PROFILE:
           if (clientData && placeholder.sourcePath) {
             return {
               value: this.getNestedValue(clientData, placeholder.sourcePath),
-              source: PlaceholderSource.CLIENT,
+              source: sourceKey === PlaceholderSource.PROFILE ? PlaceholderSource.PROFILE : PlaceholderSource.CLIENT,
             };
           }
           break;
@@ -294,10 +391,19 @@ export class PlaceholderService {
           }
           break;
         case PlaceholderSource.SYSTEM:
+        case PlaceholderSource.PRACTICE:
           if (placeholder.sourcePath) {
             return {
               value: this.getNestedValue(systemData, placeholder.sourcePath),
-              source: PlaceholderSource.SYSTEM,
+              source: sourceKey === PlaceholderSource.PRACTICE ? PlaceholderSource.PRACTICE : PlaceholderSource.SYSTEM,
+            };
+          }
+          break;
+        case PlaceholderSource.USER:
+          if (placeholder.sourcePath) {
+            return {
+              value: this.getNestedValue(systemData, placeholder.sourcePath),
+              source: PlaceholderSource.USER,
             };
           }
           break;
