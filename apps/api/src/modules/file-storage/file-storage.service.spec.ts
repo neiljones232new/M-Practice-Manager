@@ -70,7 +70,8 @@ describe('FileStorageService - File Operations Unit Tests', () => {
       id: 'test-client-1', 
       name: 'Test Client', 
       status: 'active',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      portfolioCode: 1,
     };
     const category = 'clients';
     const id = 'test-client-1';
@@ -79,7 +80,7 @@ describe('FileStorageService - File Operations Unit Tests', () => {
       await service.writeJson(category, id, testData);
 
       // Verify the file was created
-      const filePath = path.join(testStoragePath, category, `${id}.json`);
+      const filePath = path.join(testStoragePath, category, id, 'client.json');
       expect(existsSync(filePath)).toBe(true);
 
       // Verify the content is encrypted at rest
@@ -108,7 +109,7 @@ describe('FileStorageService - File Operations Unit Tests', () => {
       await service.writeJson(category, id, testData, portfolioCode);
 
       // Verify file is in correct portfolio directory
-      const filePath = path.join(testStoragePath, category, `portfolio-${portfolioCode}`, `${id}.json`);
+      const filePath = path.join(testStoragePath, category, id, 'client.json');
       expect(existsSync(filePath)).toBe(true);
 
       // Verify we can read it back
