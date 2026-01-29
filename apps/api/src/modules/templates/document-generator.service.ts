@@ -189,7 +189,7 @@ export class DocumentGeneratorService {
    */
   private extractConditionalBlocks(content: string): ConditionalBlock[] {
     const blocks: ConditionalBlock[] = [];
-    const ifRegex = /\{\{if:([a-zA-Z0-9_]+)\}\}/g;
+    const ifRegex = /\{\{if:([a-zA-Z0-9_.]+)\}\}/g;
     const endifRegex = /\{\{endif\}\}/g;
 
     let match: RegExpExecArray | null;
@@ -302,7 +302,7 @@ export class DocumentGeneratorService {
    */
   private extractListBlocks(content: string): ListBlock[] {
     const blocks: ListBlock[] = [];
-    const listRegex = /\{\{list:([a-zA-Z0-9_]+)\}\}/g;
+    const listRegex = /\{\{list:([a-zA-Z0-9_.]+)\}\}/g;
     const endlistRegex = /\{\{endlist\}\}/g;
 
     let match: RegExpExecArray | null;

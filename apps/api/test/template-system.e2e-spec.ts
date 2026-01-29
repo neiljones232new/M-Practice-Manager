@@ -71,7 +71,7 @@ describe('Template System Integration (e2e)', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      const validFrequencies = ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY'];
+      const validFrequencies = ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY', 'ONE_OFF'];
       
       response.body.forEach(template => {
         expect(validFrequencies).toContain(template.frequency);

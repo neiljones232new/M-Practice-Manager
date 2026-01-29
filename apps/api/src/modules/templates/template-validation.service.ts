@@ -235,8 +235,8 @@ export class TemplateValidationService {
       keys.add(placeholder.key);
 
       // Validate key format (alphanumeric and underscores only)
-      if (!/^[a-zA-Z0-9_]+$/.test(placeholder.key)) {
-        errors.push(`Invalid placeholder key: ${placeholder.key}. Must contain only letters, numbers, and underscores`);
+      if (!/^[a-zA-Z0-9_.]+$/.test(placeholder.key)) {
+        errors.push(`Invalid placeholder key: ${placeholder.key}. Must contain only letters, numbers, underscores, and dots`);
       }
 
       // Validate label

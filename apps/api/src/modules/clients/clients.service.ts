@@ -748,6 +748,82 @@ export class ClientsService {
     return { total: out.length, valid, rows: out };
   }
 
+  private buildDbUpdate(updateClientDto: UpdateClientDto): Partial<DbClient> {
+    return Object.fromEntries(
+      Object.entries({
+        mainContactName: updateClientDto.mainContactName,
+        partnerResponsible: updateClientDto.partnerResponsible,
+        clientManager: updateClientDto.clientManager,
+        lifecycleStatus: updateClientDto.lifecycleStatus,
+        engagementType: updateClientDto.engagementType,
+        engagementLetterSigned: updateClientDto.engagementLetterSigned,
+        onboardingDate: updateClientDto.onboardingDate,
+        disengagementDate: updateClientDto.disengagementDate,
+        onboardingStartedAt: updateClientDto.onboardingStartedAt,
+        wentLiveAt: updateClientDto.wentLiveAt,
+        ceasedAt: updateClientDto.ceasedAt,
+        dormantSince: updateClientDto.dormantSince,
+        accountingPeriodEnd: updateClientDto.accountingPeriodEnd,
+        nextAccountsDueDate: updateClientDto.nextAccountsDueDate,
+        nextCorporationTaxDueDate: updateClientDto.nextCorporationTaxDueDate,
+        statutoryYearEnd: updateClientDto.statutoryYearEnd,
+        vatRegistrationDate: updateClientDto.vatRegistrationDate,
+        vatPeriodStart: updateClientDto.vatPeriodStart,
+        vatPeriodEnd: updateClientDto.vatPeriodEnd,
+        vatStagger: updateClientDto.vatStagger,
+        payrollPayDay: updateClientDto.payrollPayDay,
+        payrollPeriodEndDay: updateClientDto.payrollPeriodEndDay,
+        corporationTaxUtr: updateClientDto.corporationTaxUtr,
+        vatNumber: updateClientDto.vatNumber,
+        vatScheme: updateClientDto.vatScheme,
+        vatReturnFrequency: updateClientDto.vatReturnFrequency,
+        vatQuarter: updateClientDto.vatQuarter,
+        payeReference: updateClientDto.payeReference,
+        payeAccountsOfficeReference: updateClientDto.payeAccountsOfficeReference,
+        accountsOfficeReference: updateClientDto.accountsOfficeReference,
+        cisRegistered: updateClientDto.cisRegistered,
+        cisUtr: updateClientDto.cisUtr,
+        payrollRtiRequired: updateClientDto.payrollRtiRequired,
+        amlCompleted: updateClientDto.amlCompleted,
+        clientRiskRating: updateClientDto.clientRiskRating,
+        annualFee: updateClientDto.annualFee,
+        monthlyFee: updateClientDto.monthlyFee,
+        personalUtr: updateClientDto.personalUtr,
+        selfAssessmentRequired: updateClientDto.selfAssessmentRequired,
+        selfAssessmentFiled: updateClientDto.selfAssessmentFiled,
+        tradingName: updateClientDto.tradingName,
+        registeredAddress: updateClientDto.registeredAddress,
+        authenticationCode: updateClientDto.authenticationCode,
+        employeeCount: updateClientDto.employeeCount,
+        payrollFrequency: updateClientDto.payrollFrequency,
+        contactPosition: updateClientDto.contactPosition,
+        telephone: updateClientDto.telephone,
+        mobile: updateClientDto.mobile,
+        email: updateClientDto.email,
+        preferredContactMethod: updateClientDto.preferredContactMethod,
+        correspondenceAddress: updateClientDto.correspondenceAddress,
+        feeArrangement: updateClientDto.feeArrangement,
+        businessBankName: updateClientDto.businessBankName,
+        accountLastFour: updateClientDto.accountLastFour,
+        directDebitInPlace: updateClientDto.directDebitInPlace,
+        paymentIssues: updateClientDto.paymentIssues,
+        notes: updateClientDto.notes,
+        specialCircumstances: updateClientDto.specialCircumstances,
+        seasonalBusiness: updateClientDto.seasonalBusiness,
+        dormant: updateClientDto.dormant,
+        doNotContact: updateClientDto.doNotContact,
+        nationalInsuranceNumber: updateClientDto.nationalInsuranceNumber,
+        dateOfBirth: updateClientDto.dateOfBirth,
+        personalAddress: updateClientDto.personalAddress,
+        personalTaxYear: updateClientDto.personalTaxYear,
+        selfAssessmentTaxYear: updateClientDto.selfAssessmentTaxYear,
+        linkedCompanyNumber: updateClientDto.linkedCompanyNumber,
+        directorRole: updateClientDto.directorRole,
+        clientType: updateClientDto.clientType,
+      }).filter(([, value]) => value !== undefined)
+    );
+  }
+
   async update(id: string, updateClientDto: UpdateClientDto): Promise<Client> {
     const existing = await this.findOne(id);
     if (!existing) {
@@ -855,79 +931,7 @@ export class ClientsService {
     await this.fileStorage.writeJson('clients', existing.ref, updatedClient, existing.portfolioCode);
     this.logger.log(`Updated client: ${updatedClient.name} (${updatedClient.ref})`);
 
-    const dbUpdate: Partial<DbClient> = Object.fromEntries(
-      Object.entries({
-      mainContactName: updateClientDto.mainContactName,
-      partnerResponsible: updateClientDto.partnerResponsible,
-      clientManager: updateClientDto.clientManager,
-      lifecycleStatus: updateClientDto.lifecycleStatus,
-      engagementType: updateClientDto.engagementType,
-      engagementLetterSigned: updateClientDto.engagementLetterSigned,
-      onboardingDate: updateClientDto.onboardingDate,
-      disengagementDate: updateClientDto.disengagementDate,
-      onboardingStartedAt: updateClientDto.onboardingStartedAt,
-      wentLiveAt: updateClientDto.wentLiveAt,
-      ceasedAt: updateClientDto.ceasedAt,
-      dormantSince: updateClientDto.dormantSince,
-      accountingPeriodEnd: updateClientDto.accountingPeriodEnd,
-      nextAccountsDueDate: updateClientDto.nextAccountsDueDate,
-      nextCorporationTaxDueDate: updateClientDto.nextCorporationTaxDueDate,
-      statutoryYearEnd: updateClientDto.statutoryYearEnd,
-      vatRegistrationDate: updateClientDto.vatRegistrationDate,
-      vatPeriodStart: updateClientDto.vatPeriodStart,
-      vatPeriodEnd: updateClientDto.vatPeriodEnd,
-      vatStagger: updateClientDto.vatStagger,
-      payrollPayDay: updateClientDto.payrollPayDay,
-      payrollPeriodEndDay: updateClientDto.payrollPeriodEndDay,
-      corporationTaxUtr: updateClientDto.corporationTaxUtr,
-      vatNumber: updateClientDto.vatNumber,
-      vatScheme: updateClientDto.vatScheme,
-      vatReturnFrequency: updateClientDto.vatReturnFrequency,
-      vatQuarter: updateClientDto.vatQuarter,
-      payeReference: updateClientDto.payeReference,
-      payeAccountsOfficeReference: updateClientDto.payeAccountsOfficeReference,
-      accountsOfficeReference: updateClientDto.accountsOfficeReference,
-      cisRegistered: updateClientDto.cisRegistered,
-      cisUtr: updateClientDto.cisUtr,
-      payrollRtiRequired: updateClientDto.payrollRtiRequired,
-      amlCompleted: updateClientDto.amlCompleted,
-      clientRiskRating: updateClientDto.clientRiskRating,
-      annualFee: updateClientDto.annualFee,
-      monthlyFee: updateClientDto.monthlyFee,
-      personalUtr: updateClientDto.personalUtr,
-      selfAssessmentRequired: updateClientDto.selfAssessmentRequired,
-      selfAssessmentFiled: updateClientDto.selfAssessmentFiled,
-      tradingName: updateClientDto.tradingName,
-      registeredAddress: updateClientDto.registeredAddress,
-      authenticationCode: updateClientDto.authenticationCode,
-      employeeCount: updateClientDto.employeeCount,
-      payrollFrequency: updateClientDto.payrollFrequency,
-      contactPosition: updateClientDto.contactPosition,
-      telephone: updateClientDto.telephone,
-      mobile: updateClientDto.mobile,
-      email: updateClientDto.email,
-      preferredContactMethod: updateClientDto.preferredContactMethod,
-      correspondenceAddress: updateClientDto.correspondenceAddress,
-      feeArrangement: updateClientDto.feeArrangement,
-      businessBankName: updateClientDto.businessBankName,
-      accountLastFour: updateClientDto.accountLastFour,
-      directDebitInPlace: updateClientDto.directDebitInPlace,
-      paymentIssues: updateClientDto.paymentIssues,
-      notes: updateClientDto.notes,
-      specialCircumstances: updateClientDto.specialCircumstances,
-      seasonalBusiness: updateClientDto.seasonalBusiness,
-      dormant: updateClientDto.dormant,
-      doNotContact: updateClientDto.doNotContact,
-      nationalInsuranceNumber: updateClientDto.nationalInsuranceNumber,
-      dateOfBirth: updateClientDto.dateOfBirth,
-      personalAddress: updateClientDto.personalAddress,
-      personalTaxYear: updateClientDto.personalTaxYear,
-      selfAssessmentTaxYear: updateClientDto.selfAssessmentTaxYear,
-      linkedCompanyNumber: updateClientDto.linkedCompanyNumber,
-      directorRole: updateClientDto.directorRole,
-      clientType: updateClientDto.clientType,
-      }).filter(([, value]) => value !== undefined)
-    );
+    const dbUpdate = this.buildDbUpdate(updateClientDto);
 
     if (Object.keys(dbUpdate).length > 0) {
       let dbClient = await this.resolveDbClientForClient(updatedClient);
@@ -950,6 +954,40 @@ export class ClientsService {
     }
 
     return updatedClient;
+  }
+
+  async updateProfile(
+    id: string,
+    updateClientDto: UpdateClientDto
+  ): Promise<ClientContext & { partiesDetails: Array<ClientParty & { partyRef: string }> }> {
+    const existing = await this.findOne(id);
+    if (!existing) {
+      throw new NotFoundException(`Client with ID ${id} not found`);
+    }
+
+    const dbUpdate = this.buildDbUpdate(updateClientDto);
+
+    if (Object.keys(dbUpdate).length > 0) {
+      let dbClient = await this.resolveDbClientForClient(existing);
+      if (!dbClient && (existing.registeredNumber || existing.id)) {
+        const companyNumber = existing.registeredNumber || existing.id;
+        const addResult = await this.databaseService.addClient({
+          companyNumber,
+          companyName: existing.name,
+          status: existing.status,
+          ...dbUpdate,
+        });
+        if (addResult.success) {
+          dbClient = await this.databaseService.getClientByNumber(companyNumber);
+        }
+      }
+
+      if (dbClient) {
+        await this.databaseService.updateClient(dbClient.companyNumber, dbUpdate);
+      }
+    }
+
+    return this.getClientWithParties(existing.id);
   }
 
   /**

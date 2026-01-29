@@ -51,10 +51,12 @@ export enum PlaceholderType {
 
 export enum PlaceholderSource {
   CLIENT = 'CLIENT',
+  PROFILE = 'PROFILE',
   SERVICE = 'SERVICE',
   USER = 'USER',
   MANUAL = 'MANUAL',
-  SYSTEM = 'SYSTEM'
+  SYSTEM = 'SYSTEM',
+  PRACTICE = 'PRACTICE'
 }
 
 export interface PlaceholderValidation {

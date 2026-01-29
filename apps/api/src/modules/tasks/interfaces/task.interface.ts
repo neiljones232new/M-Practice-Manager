@@ -49,10 +49,17 @@ export interface UpdateTaskDto {
   tags?: string[];
 }
 
+export type ServiceFrequency = 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF';
+export type ServicePricingModel = 'per_period' | 'per_service' | 'one_off';
+export type ServiceAppliesTo = 'Company' | 'Individual' | 'Sole Trader' | 'Partnership' | 'LLP' | 'Director';
+
 export interface ServiceTemplate {
   id: string;
   serviceKind: string;
-  frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+  frequency: ServiceFrequency;
+  appliesTo?: ServiceAppliesTo[];
+  complianceImpact?: boolean;
+  pricingModel?: ServicePricingModel;
   taskTemplates: TaskTemplate[];
   createdAt: Date;
   updatedAt: Date;
@@ -70,13 +77,19 @@ export interface TaskTemplate {
 
 export interface CreateServiceTemplateDto {
   serviceKind: string;
-  frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+  frequency: ServiceFrequency;
+  appliesTo?: ServiceAppliesTo[];
+  complianceImpact?: boolean;
+  pricingModel?: ServicePricingModel;
   taskTemplates: Omit<TaskTemplate, 'id'>[];
 }
 
 export interface UpdateServiceTemplateDto {
   serviceKind?: string;
-  frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+  frequency?: ServiceFrequency;
+  appliesTo?: ServiceAppliesTo[];
+  complianceImpact?: boolean;
+  pricingModel?: ServicePricingModel;
   taskTemplates?: Omit<TaskTemplate, 'id'>[];
 }
 

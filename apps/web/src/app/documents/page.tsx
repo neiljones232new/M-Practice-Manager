@@ -89,7 +89,7 @@ export default function DocumentsPage() {
 
         const [docRes, cliRes, stRes] = await Promise.all([
           api.get('/documents'),
-          api.get('/clients'),
+          api.getClients(),
           api.get('/documents/stats').catch(() => null),
         ]);
 
@@ -98,6 +98,7 @@ export default function DocumentsPage() {
         setDocs(Array.isArray(docRes) ? docRes : (((docRes as any)?.data) ?? []));
         setClients(
           (Array.isArray(cliRes) ? cliRes : [])
+            .map((c: any) => c.node ?? c)
             .map((c: any) => ({ id: c.id, name: c.name }))
         );
         const statsVal = (stRes as any)?.data ?? stRes ?? null;

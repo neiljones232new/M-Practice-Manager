@@ -17,6 +17,7 @@ import { DocumentsModule } from '../documents/documents.module';
 import { AuthModule } from '../auth/auth.module';
 import { AuditModule } from '../audit/audit.module';
 import { DatabaseModule } from '../database/database.module';
+import { IntegrationsModule } from '../integrations/integrations.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { DatabaseModule } from '../database/database.module';
     AuthModule,
     AuditModule,
     DatabaseModule,
+    IntegrationsModule,
   ],
   controllers: [TemplatesController, LettersController],
   providers: [

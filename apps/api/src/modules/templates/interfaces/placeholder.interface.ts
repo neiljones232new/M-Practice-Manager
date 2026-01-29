@@ -72,10 +72,32 @@ export interface SystemPlaceholderData {
   currentMonth: string;
   userName: string;
   userEmail?: string;
+  user?: {
+    id?: string;
+    name?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+  };
+  advisor?: {
+    id?: string;
+    name?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+  };
   practiceName?: string;
   practiceAddress?: string;
   practicePhone?: string;
   practiceEmail?: string;
+  practiceWebsite?: string;
+  practice?: {
+    practiceName?: string;
+    practiceAddress?: string;
+    practicePhone?: string;
+    practiceEmail?: string;
+    practiceWebsite?: string;
+  };
   
   [key: string]: any;
 }

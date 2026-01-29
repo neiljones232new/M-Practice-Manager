@@ -217,7 +217,6 @@ export default function ClientDetailsPage() {
   const [lettersDownloading, setLettersDownloading] = useState<Record<string, boolean>>({});
   const [tabMessage, setTabMessage] = useState<{ text: string; error?: boolean } | null>(null);
   const [chError, setChError] = useState<string | null>(null);
-  const [actionsOpen, setActionsOpen] = useState(false);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [docCategory, setDocCategory] = useState<string>('OTHER');
   const [docDescription, setDocDescription] = useState<string>('');
@@ -233,7 +232,6 @@ export default function ClientDetailsPage() {
   const [showFormerOfficers, setShowFormerOfficers] = useState(false);
   const [showFormerPscs, setShowFormerPscs] = useState(false);
 
-  const [tab, setTab] = useState<'profile' | 'services' | 'accounts' | 'tax' | 'tasks' | 'compliance' | 'documents' | 'letters' | 'ch' | 'people'>('profile');
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
@@ -243,6 +241,15 @@ export default function ClientDetailsPage() {
   const profile = clientContext?.profile;
   const computed = clientContext?.computed;
   const partiesDetails = useMemo(() => clientContext?.partiesDetails ?? [], [clientContext?.partiesDetails]);
+  const isCompanyClient = client?.type === 'COMPANY' || client?.type === 'LLP';
+  const showCompaniesHouse = isCompanyClient;
+  type TabKey = 'profile' | 'services' | 'accounts' | 'tax' | 'tasks' | 'compliance' | 'documents' | 'letters' | 'people' | 'ch';
+  const tabParam = searchParams?.get('tab') as TabKey | null;
+  const tab = useMemo<TabKey>(() => {
+    const candidate = tabParam ?? 'profile';
+    if (candidate === 'ch' && !showCompaniesHouse) return 'profile';
+    return candidate;
+  }, [tabParam, showCompaniesHouse]);
 
 
   useEffect(() => {
@@ -827,8 +834,6 @@ export default function ClientDetailsPage() {
   };
 
 
-  const isCompanyClient = client?.type === 'COMPANY' || client?.type === 'LLP';
-  const showCompaniesHouse = isCompanyClient;
   const overviewMeta = isCompanyClient
     ? (client?.registeredNumber ? `Company No. ${client.registeredNumber}` : 'No company number')
     : (client?.utrNumber ? `UTR ${client.utrNumber}` : 'No UTR');
@@ -930,6 +935,125 @@ export default function ClientDetailsPage() {
     });
     return map;
   }, [services]);
+  const formatBool = (value?: boolean | number | null) => {
+    if (value === true || value === 1) return 'Yes';
+    if (value === false || value === 0) return 'No';
+    return '—';
+  };
+  const formatDateValue = (value?: string | null) => (value ? new Date(value).toLocaleDateString('en-GB') : '—');
+  const formatEnabled = (value?: boolean | number | null) => {
+    if (value === true || value === 1) return 'Enabled';
+    if (value === false || value === 0) return 'Not enabled';
+    return '—';
+  };
+  const maskAuthCode = (value?: string | null) => {
+    if (!value) return '—';
+    const trimmed = value.trim();
+    if (!trimmed) return '—';
+    const last4 = trimmed.slice(-4);
+    return `****${last4}`;
+  };
+  const formatBoolApplies = (value: boolean | number | undefined, applies: boolean) => (applies ? formatBool(value) : '—');
+  const activeServices = useMemo(
+    () => services.filter((service) => (service?.status || 'ACTIVE') === 'ACTIVE'),
+    [services]
+  );
+  const serviceAnnualValue = (service: Service) => {
+    if (typeof service.annualized === 'number') return service.annualized;
+    if (typeof service.fee !== 'number') return 0;
+    switch (service.frequency) {
+      case 'MONTHLY':
+        return service.fee * 12;
+      case 'QUARTERLY':
+        return service.fee * 4;
+      case 'WEEKLY':
+        return service.fee * 52;
+      case 'ANNUAL':
+      default:
+        return service.fee;
+    }
+  };
+  const serviceMonthlyValue = (service: Service) => {
+    if (typeof service.fee !== 'number') return 0;
+    switch (service.frequency) {
+      case 'ANNUAL':
+        return service.fee / 12;
+      case 'QUARTERLY':
+        return service.fee / 3;
+      case 'WEEKLY':
+        return (service.fee * 52) / 12;
+      case 'MONTHLY':
+      default:
+        return service.fee;
+    }
+  };
+  const serviceTotals = useMemo(() => {
+    return activeServices.reduce(
+      (acc, service) => {
+        acc.annual += serviceAnnualValue(service);
+        acc.monthly += serviceMonthlyValue(service);
+        return acc;
+      },
+      { annual: 0, monthly: 0 }
+    );
+  }, [activeServices]);
+  const amlOperationalItems = useMemo(() => {
+    return [
+      {
+        label: 'AML Status',
+        value:
+          profile?.amlCompleted === true || profile?.amlCompleted === 1
+            ? 'Complete'
+            : profile?.amlCompleted === false || profile?.amlCompleted === 0
+            ? 'Incomplete'
+            : '—',
+      },
+      { label: 'AML Review Due', value: formatBool(computed?.amlReviewDue) },
+      { label: 'Risk Rating', value: profile?.clientRiskRating || '—' },
+      { label: 'Lifecycle Status', value: profile?.lifecycleStatus || '—' },
+      {
+        label: 'Engagement Letter',
+        value:
+          profile?.engagementLetterSigned === true || profile?.engagementLetterSigned === 1
+            ? 'Signed'
+            : profile?.engagementLetterSigned === false || profile?.engagementLetterSigned === 0
+            ? 'Not signed'
+            : '—',
+      },
+      { label: 'Engagement Type', value: profile?.engagementType || '—' },
+      { label: 'Onboarding Date', value: formatDateValue(profile?.onboardingDate) },
+      { label: 'VAT Scheme', value: profile?.vatScheme || '—' },
+      { label: 'VAT Return Frequency', value: profile?.vatReturnFrequency || '—' },
+      { label: 'Payroll RTI Required', value: formatBool(profile?.payrollRtiRequired) },
+      { label: 'Seasonal Business', value: formatBool(profile?.seasonalBusiness) },
+      { label: 'Dormant', value: formatBool(profile?.dormant) },
+      { label: 'Do Not Contact', value: formatBool(profile?.doNotContact) },
+    ];
+  }, [profile, computed]);
+  const hmrcAuthorisations = useMemo(() => {
+    const saAuth =
+      profile?.selfAssessmentRequired !== undefined
+        ? profile?.selfAssessmentRequired
+        : profile?.personalUtr
+        ? true
+        : undefined;
+    return [
+      { label: 'Corporation Tax', value: formatBoolApplies(computed?.taxFlags?.ct, isCompanyClient) },
+      { label: 'Self Assessment', value: formatBoolApplies(saAuth, !isCompanyClient) },
+      { label: 'VAT', value: formatBool(computed?.taxFlags?.vat) },
+      { label: 'PAYE', value: formatBool(computed?.taxFlags?.paye) },
+      { label: 'CIS', value: formatBool(computed?.taxFlags?.cis) },
+    ];
+  }, [computed?.taxFlags, isCompanyClient, profile?.selfAssessmentRequired, profile?.personalUtr]);
+  const hmrcAgentRegistrations = useMemo(() => {
+    return [
+      { label: 'MTD VAT', value: formatEnabled(client?.mtdVatEnabled) },
+      { label: 'MTD ITSA', value: isCompanyClient ? '—' : formatEnabled(client?.mtdItsaEnabled) },
+      { label: 'Authentication Code', value: maskAuthCode(profile?.authenticationCode) },
+      { label: 'PAYE Accounts Office Ref', value: profile?.payeAccountsOfficeReference || '—' },
+      { label: 'Accounts Office Ref', value: profile?.accountsOfficeReference || '—' },
+    ];
+  }, [client?.mtdVatEnabled, client?.mtdItsaEnabled, isCompanyClient, profile?.authenticationCode, profile?.payeAccountsOfficeReference, profile?.accountsOfficeReference]);
   const upcomingCompliance = useMemo(() => {
     return [...complianceObligations].sort((a: any, b: any) => {
       const aDate = a?.dueDate ? new Date(a.dueDate).getTime() : Number.POSITIVE_INFINITY;
@@ -1003,62 +1127,6 @@ export default function ClientDetailsPage() {
       pageSubtitle="Client overview, services, tasks, compliance, and documents"
       showBack backHref="/clients" backLabel="Back to Clients"
       breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Clients', href: '/clients' }, { label: client.name }]}
-      actions={[
-        <div key="actions-menu" style={{ position: 'relative' }}>
-          <button
-            type="button"
-            className="btn-outline-primary"
-            onClick={() => setActionsOpen((prev) => !prev)}
-            aria-haspopup="menu"
-            aria-expanded={actionsOpen}
-          >
-            Actions ▾
-          </button>
-          {actionsOpen && (
-            <div
-              role="menu"
-              style={{
-                position: 'absolute',
-                right: 0,
-                top: 'calc(100% + 8px)',
-                minWidth: 200,
-                background: 'var(--surface)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 10,
-                padding: '0.5rem',
-                boxShadow: '0 10px 30px rgba(15, 23, 42, 0.12)',
-                zIndex: 20,
-              }}
-            >
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Operational</div>
-              <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); router.push(`/clients/${client.id}/report`); }} style={{ width: '100%', justifyContent: 'flex-start' }}>
-                Export Report
-              </button>
-              <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); handleGenerateTasks(); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }} disabled={generatingTasks || services.length === 0}>
-                {generatingTasks ? 'Generating…' : 'Generate from template'}
-              </button>
-              <button className="btn-primary btn-sm" onClick={() => { setActionsOpen(false); router.push(`/tasks/new?clientId=${client.id}`); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
-                Add Task
-              </button>
-              <div style={{ height: 1, background: 'var(--border-subtle)', margin: '0.5rem 0' }} />
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Client Management</div>
-              <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); router.push(`/clients/${client.id}/edit`); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
-                Edit Client
-              </button>
-              <div style={{ height: 1, background: 'var(--border-subtle)', margin: '0.5rem 0' }} />
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Data & Reporting</div>
-              <button className="btn-outline-primary btn-sm" onClick={() => { setActionsOpen(false); downloadClientCsv(); }} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
-                Export CSV
-              </button>
-              <div style={{ height: 1, background: 'var(--border-subtle)', margin: '0.5rem 0' }} />
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Danger Zone</div>
-              <button className="btn-danger btn-sm" onClick={() => { setActionsOpen(false); handleDeleteClient(); }} disabled={deleting} style={{ width: '100%', justifyContent: 'flex-start', marginTop: 6 }}>
-                {deleting ? 'Deleting…' : 'Delete Client'}
-              </button>
-            </div>
-          )}
-        </div>,
-      ]}
     >
       {syncMessage && (
         <div className="card-mdj" style={{ marginBottom: '1rem', padding: '.75rem 1rem' }}>
@@ -1072,6 +1140,29 @@ export default function ClientDetailsPage() {
       )}
 
       <div className="mdj-page">
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <button className="btn-outline-primary btn-sm" onClick={() => router.push(`/clients/${client.id}/edit`)}>
+              Edit Client
+            </button>
+            <button
+              className="btn-outline-primary btn-sm"
+              onClick={handleGenerateTasks}
+              disabled={generatingTasks || services.length === 0}
+            >
+              {generatingTasks ? 'Generating…' : 'Generate Tasks'}
+            </button>
+            <button className="btn-outline-primary btn-sm" onClick={downloadClientCsv}>
+              Export CSV
+            </button>
+            <button className="btn-outline-primary btn-sm" onClick={() => router.push(`/clients/${client.id}/report`)}>
+              Export Report
+            </button>
+          </div>
+          <button className="btn-danger btn-sm" onClick={handleDeleteClient} disabled={deleting}>
+            {deleting ? 'Deleting…' : 'Delete Client'}
+          </button>
+        </div>
         {/* Tabs */}
         <nav className="mdj-tabs card-mdj" style={{ padding: 0, overflow: 'hidden', marginBottom: '1rem', position: 'sticky', top: '0.5rem', zIndex: 10 }}>
           <div style={{ display: 'flex', gap: '0', borderBottom: '1px solid var(--border-subtle)', padding: 0, background: 'var(--surface-table-header)', flexWrap: 'wrap' }}>
@@ -1105,7 +1196,11 @@ export default function ClientDetailsPage() {
                 <button
                   key={key}
                   className={`tab ${active ? 'active' : ''}`}
-                  onClick={() => setTab(key)}
+                  onClick={() => {
+                    const params = new URLSearchParams(searchParams?.toString());
+                    params.set('tab', key);
+                    router.push(`?${params.toString()}`);
+                  }}
                   style={{
                     padding: '12px 16px',
                     border: 'none',
@@ -1185,14 +1280,12 @@ export default function ClientDetailsPage() {
                       : (profile?.personalUtr || client.utrNumber || '—')}
                   </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    {isCompanyClient ? 'Company No.' : 'UTR'}
+                {isCompanyClient && (
+                  <div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Company No.</div>
+                    <div style={{ fontWeight: 600 }}>{client.registeredNumber || '—'}</div>
                   </div>
-                  <div style={{ fontWeight: 600 }}>
-                    {isCompanyClient ? (client.registeredNumber || '—') : (profile?.personalUtr || client.utrNumber || '—')}
-                  </div>
-                </div>
+                )}
                 <div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Year End (ARD)</div>
                   <div style={{ fontWeight: 600 }}>
@@ -1282,9 +1375,6 @@ export default function ClientDetailsPage() {
                     { label: 'Correspondence Address', value: profile?.correspondenceAddress || '—', wide: true },
                     { label: 'Payroll Frequency', value: profile?.payrollFrequency || '—' },
                     { label: 'Employees', value: typeof profile?.employeeCount === 'number' ? profile.employeeCount : '—' },
-                    { label: 'Fee Arrangement', value: profile?.feeArrangement || '—' },
-                    { label: 'Annual Fee', value: typeof profile?.annualFee === 'number' ? formatCurrency(profile.annualFee) : '—' },
-                    { label: 'Monthly Fee', value: typeof profile?.monthlyFee === 'number' ? formatCurrency(profile.monthlyFee) : '—' },
                     {
                       label: 'Business Bank',
                       value:
@@ -1292,7 +1382,13 @@ export default function ClientDetailsPage() {
                           ? `${profile?.businessBankName || ''}${profile?.businessBankName && profile?.accountLastFour ? ' · ' : ''}${profile?.accountLastFour ? `****${profile.accountLastFour}` : ''}`
                           : '—',
                     },
-                    { label: 'Direct Debit', value: profile?.directDebitInPlace ? 'Yes' : 'No' },
+                    {
+                      label: 'Direct Debit',
+                      value:
+                        typeof profile?.directDebitInPlace === 'boolean'
+                          ? (profile.directDebitInPlace ? 'Yes' : 'No')
+                          : '—',
+                    },
                   ].map((item) => (
                     <div
                       key={item.label}
@@ -1357,6 +1453,89 @@ export default function ClientDetailsPage() {
                   ))}
                 </div>
               </div>
+
+              <div className="card-mdj" style={{ padding: '1rem' }}>
+                <div className="card-header">
+                  <h3 className="mdj-h2">AML &amp; Operational Settings</h3>
+                  <span className="mdj-sub">Database-backed · Compliance context</span>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '0.75rem',
+                    marginTop: '0.75rem',
+                  }}
+                >
+                  {amlOperationalItems.map((item) => (
+                    <div
+                      key={item.label}
+                      style={{
+                        flex: '1 1 calc(50% - 0.75rem)',
+                        minWidth: 220,
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: 10,
+                        padding: '0.6rem 0.75rem',
+                        background: 'var(--surface-subtle)',
+                      }}
+                    >
+                      <div className="label">{item.label}</div>
+                      <div className="text-strong">{item.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="card-mdj" style={{ padding: '1rem' }}>
+                <div className="card-header">
+                  <h3 className="mdj-h2">HMRC Agent Status</h3>
+                  <span className="mdj-sub">Facts only</span>
+                </div>
+                <div style={{ marginTop: '0.75rem', display: 'grid', gap: '0.75rem' }}>
+                  <div>
+                    <div className="label" style={{ fontWeight: 600 }}>Authorisations</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.5rem' }}>
+                      {hmrcAuthorisations.map((item) => (
+                        <div
+                          key={`hmrc-auth-${item.label}`}
+                          style={{
+                            flex: '1 1 calc(50% - 0.75rem)',
+                            minWidth: 220,
+                            border: '1px solid var(--border-subtle)',
+                            borderRadius: 10,
+                            padding: '0.6rem 0.75rem',
+                            background: 'var(--surface-subtle)',
+                          }}
+                        >
+                          <div className="label">{item.label}</div>
+                          <div className="text-strong">{item.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="label" style={{ fontWeight: 600 }}>Registrations</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.5rem' }}>
+                      {hmrcAgentRegistrations.map((item) => (
+                        <div
+                          key={`hmrc-reg-${item.label}`}
+                          style={{
+                            flex: '1 1 calc(50% - 0.75rem)',
+                            minWidth: 220,
+                            border: '1px solid var(--border-subtle)',
+                            borderRadius: 10,
+                            padding: '0.6rem 0.75rem',
+                            background: 'var(--surface-subtle)',
+                          }}
+                        >
+                          <div className="label">{item.label}</div>
+                          <div className="text-strong">{item.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1375,26 +1554,29 @@ export default function ClientDetailsPage() {
               )}
             </div>
 
-            {/* Accounts Production Section */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>Accounts Production</h4>
-                <button 
-                  className="btn-primary btn-sm" 
-                  onClick={() => router.push(`/accounts-production/new?clientId=${client.id}`)}
-                  style={{ padding: '4px 8px', fontSize: '0.75rem' }}
-                >
-                  New Accounts Set
-                </button>
-              </div>
-              <div style={{ 
-                padding: '0.75rem', 
-                background: 'var(--surface-subtle)', 
-                borderRadius: '6px',
-                fontSize: '0.875rem',
-                color: 'var(--text-muted)'
-              }}>
-                No accounts sets yet. Create your first accounts production set to get started.
+            <div className="card-mdj" style={{ padding: '0.75rem', marginBottom: '1rem', background: 'var(--surface-subtle)' }}>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>Services Summary</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+                <div>
+                  <div className="label">Active services</div>
+                  <div className="text-strong">{activeServices.length}</div>
+                </div>
+                <div>
+                  <div className="label">Monthly total</div>
+                  <div className="text-strong">
+                    {serviceTotals.monthly > 0 ? formatCurrency(serviceTotals.monthly) : '—'}
+                  </div>
+                </div>
+                <div>
+                  <div className="label">Annual total</div>
+                  <div className="text-strong">
+                    {serviceTotals.annual > 0 ? formatCurrency(serviceTotals.annual) : '—'}
+                  </div>
+                </div>
+                <div>
+                  <div className="label">Billing model</div>
+                  <div className="text-strong">Per service</div>
+                </div>
               </div>
             </div>
 

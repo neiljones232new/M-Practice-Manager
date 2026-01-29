@@ -116,8 +116,9 @@ export default function NewTaxCalculationPage() {
     const fetchClients = async () => {
       try {
         setLoadingClients(true);
-        const data = await api.get('/clients');
-        setClients(Array.isArray(data) ? data : []);
+        const data = await api.getClients();
+        const items = Array.isArray(data) ? data : [];
+        setClients(items.map((c: any) => c.node ?? c));
       } catch (e) {
         console.error('Failed to load clients', e);
         setClients([]);

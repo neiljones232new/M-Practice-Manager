@@ -170,6 +170,12 @@ export class ClientsController {
     return this.clientsService.update(id, updateClientDto);
   }
 
+  @Put(':id/profile')
+  @ApiOperation({ summary: 'Update client profile' })
+  async updateClientProfile(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
+    return this.clientsService.updateProfile(id, updateClientDto);
+  }
+
   @Put(':id/ref')
   @ApiOperation({ summary: 'Update client reference (ref)' })
   async updateClientRef(@Param('id') id: string, @Body() body: { ref: string }) {

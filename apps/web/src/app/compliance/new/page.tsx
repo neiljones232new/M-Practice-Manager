@@ -57,8 +57,9 @@ export default function NewComplianceItemPage() {
 
   const loadClients = async () => {
     try {
-      const response = await api.get('/clients') as any;
-      setClients(response.data || response);
+      const response = await api.getClients();
+      const items = Array.isArray(response) ? response : [];
+      setClients(items.map((c: any) => c.node ?? c));
     } catch (err) {
       console.error('Error loading clients:', err);
       setError('Failed to load clients');
