@@ -189,6 +189,9 @@ export class FileStorageService {
       await this.acquireLock(lockKey);
       
       const filePath = this.getFilePath(category, id, portfolioCode);
+      if (category === 'clients') {
+        await this.ensureDirectory(path.dirname(filePath));
+      }
       
       // Create backup if file exists
       if (existsSync(filePath)) {
@@ -261,10 +264,12 @@ export class FileStorageService {
   }
 
   async readJson<T>(category: string, id: string, portfolioCode?: number): Promise<T | null> {
-    const filePath = this.getFilePath(category, id, portfolioCode);
+    const filePath = category === 'clients'
+      ? this.resolveClientReadPath(id, portfolioCode)
+      : this.getFilePath(category, id, portfolioCode);
     
     try {
-      if (!existsSync(filePath)) {
+      if (!filePath || !existsSync(filePath)) {
         return null;
       }
 
@@ -272,6 +277,12 @@ export class FileStorageService {
       const parsed = JSON.parse(content) as unknown;
       const jsonContent = this.decryptIfNeeded(parsed);
       const data = JSON.parse(jsonContent) as T;
+      if (category === 'clients' && portfolioCode) {
+        const dataPortfolio = this.resolveClientPortfolioCode(data as any, id);
+        if (dataPortfolio === null || dataPortfolio !== portfolioCode) {
+          return null;
+        }
+      }
       
       // Temporarily disable data integrity check for debugging
       // await this.verifyDataIntegrity(category, id, content);
@@ -289,13 +300,20 @@ export class FileStorageService {
     try {
       await this.acquireLock(lockKey);
       
-      const filePath = this.getFilePath(category, id, portfolioCode);
+      const filePaths = category === 'clients'
+        ? this.getClientDeletePaths(id)
+        : [this.getFilePath(category, id, portfolioCode)];
+      let deleted = false;
       
-      if (existsSync(filePath)) {
+      for (const filePath of filePaths) {
+        if (!existsSync(filePath)) continue;
         // Create backup before deletion
         await this.createBackup(category, id, portfolioCode);
         await fs.unlink(filePath);
-        
+        deleted = true;
+      }
+      
+      if (deleted) {
         // Remove from index
         await this.removeFromIndex(category, id);
         
@@ -315,23 +333,63 @@ export class FileStorageService {
   }
 
   async listFiles(category: string, portfolioCode?: number): Promise<string[]> {
-    let categoryPath: string;
-    
-    if (category === 'clients' && portfolioCode) {
-      categoryPath = path.join(this.storagePath, category, `portfolio-${portfolioCode}`);
-    } else {
-      categoryPath = path.join(this.storagePath, category);
-    }
+    const categoryPath = path.join(this.storagePath, category);
     
     try {
       if (!existsSync(categoryPath)) {
         return [];
       }
 
-      const files = await fs.readdir(categoryPath);
-      return files
-        .filter(file => file.endsWith('.json') && !file.includes('index.json'))
-        .map(file => file.replace('.json', ''));
+      if (category !== 'clients') {
+        const files = await fs.readdir(categoryPath);
+        return files
+          .filter(file => file.endsWith('.json') && !file.includes('index.json'))
+          .map(file => file.replace('.json', ''));
+      }
+
+      const refs = new Set<string>();
+      const entries = await fs.readdir(categoryPath, { withFileTypes: true });
+
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          if (entry.name.startsWith('portfolio-')) continue;
+          const clientFile = path.join(categoryPath, entry.name, 'client.json');
+          if (existsSync(clientFile)) {
+            refs.add(entry.name);
+          }
+          continue;
+        }
+
+        if (entry.isFile() && entry.name.endsWith('.json') && !entry.name.includes('index.json')) {
+          refs.add(entry.name.replace('.json', ''));
+        }
+      }
+
+      const portfolioCodes = portfolioCode ? [portfolioCode] : Array.from({ length: 10 }, (_, i) => i + 1);
+      for (const code of portfolioCodes) {
+        const legacyPath = path.join(categoryPath, `portfolio-${code}`);
+        if (!existsSync(legacyPath)) continue;
+        const legacyFiles = await fs.readdir(legacyPath);
+        legacyFiles
+          .filter(file => file.endsWith('.json') && !file.includes('index.json'))
+          .forEach(file => refs.add(file.replace('.json', '')));
+      }
+
+      const allRefs = Array.from(refs);
+      if (!portfolioCode) {
+        return allRefs;
+      }
+
+      const filtered: string[] = [];
+      for (const ref of allRefs) {
+        const data = await this.readJson<any>('clients', ref);
+        const dataPortfolio = this.resolveClientPortfolioCode(data, ref);
+        if (data && dataPortfolio !== null && dataPortfolio === portfolioCode) {
+          filtered.push(ref);
+        }
+      }
+
+      return filtered;
     } catch (error) {
       this.logger.error(`Failed to list files in ${category}:`, error);
       throw error;
@@ -339,16 +397,31 @@ export class FileStorageService {
   }
 
   async listAllClientFiles(): Promise<{ portfolioCode: number; files: string[] }[]> {
-    const result: { portfolioCode: number; files: string[] }[] = [];
-    
     try {
-      for (let i = 1; i <= 10; i++) {
-        const files = await this.listFiles('clients', i);
-        if (files.length > 0) {
-          result.push({ portfolioCode: i, files });
+      const refs = await this.listFiles('clients');
+      const grouped = new Map<number, string[]>();
+
+      for (const ref of refs) {
+        try {
+          const data = await this.readJson<any>('clients', ref);
+          if (!data) {
+            continue;
+          }
+          const portfolioCode = this.resolveClientPortfolioCode(data, ref);
+          if (portfolioCode === null) {
+            continue;
+          }
+          const current = grouped.get(portfolioCode) || [];
+          current.push(ref);
+          grouped.set(portfolioCode, current);
+        } catch (error) {
+          this.logger.warn(`Failed to read clients/${ref}.json during portfolio scan:`, error);
         }
       }
-      return result;
+
+      return Array.from(grouped.entries())
+        .sort(([a], [b]) => a - b)
+        .map(([portfolioCode, files]) => ({ portfolioCode, files }));
     } catch (error) {
       this.logger.error('Failed to list all client files:', error);
       throw error;
@@ -358,22 +431,7 @@ export class FileStorageService {
   async searchFiles<T>(category: string, predicate: (data: T) => boolean, portfolioCode?: number): Promise<T[]> {
     const results: T[] = [];
 
-    if (category === 'clients' && !portfolioCode) {
-      // Search across all portfolios
-      for (let i = 1; i <= 10; i++) {
-        const ids = await this.listFiles(category, i);
-        for (const id of ids) {
-          try {
-            const data = await this.readJson<T>(category, id, i);
-            if (data && predicate(data)) {
-              results.push(data);
-            }
-          } catch (error) {
-            this.logger.warn(`Failed to read ${category}/${id}.json during search:`, error);
-          }
-        }
-      }
-    } else {
+    if (category === 'clients') {
       const ids = await this.listFiles(category, portfolioCode);
       for (const id of ids) {
         try {
@@ -384,6 +442,19 @@ export class FileStorageService {
         } catch (error) {
           this.logger.warn(`Failed to read ${category}/${id}.json during search:`, error);
         }
+      }
+      return results;
+    }
+
+    const ids = await this.listFiles(category, portfolioCode);
+    for (const id of ids) {
+      try {
+        const data = await this.readJson<T>(category, id, portfolioCode);
+        if (data && predicate(data)) {
+          results.push(data);
+        }
+      } catch (error) {
+        this.logger.warn(`Failed to read ${category}/${id}.json during search:`, error);
       }
     }
 
@@ -495,10 +566,81 @@ export class FileStorageService {
   }
 
   private getFilePath(category: string, id: string, portfolioCode?: number): string {
-    if (category === 'clients' && portfolioCode) {
-      return path.join(this.storagePath, category, `portfolio-${portfolioCode}`, `${id}.json`);
+    if (category === 'clients') {
+      return this.getClientFilePath(id);
     }
     return path.join(this.storagePath, category, `${id}.json`);
+  }
+
+  private getClientDirectory(clientRef: string): string {
+    return path.join(this.storagePath, 'clients', clientRef);
+  }
+
+  private getClientFilePath(clientRef: string): string {
+    return path.join(this.getClientDirectory(clientRef), 'client.json');
+  }
+
+  private getLegacyClientFilePath(clientRef: string, portfolioCode?: number): string {
+    if (portfolioCode) {
+      return path.join(this.storagePath, 'clients', `portfolio-${portfolioCode}`, `${clientRef}.json`);
+    }
+    return path.join(this.storagePath, 'clients', `${clientRef}.json`);
+  }
+
+  private resolveClientPortfolioCode(data: any, fallbackRef?: string): number | null {
+    const direct = Number(data?.portfolioCode);
+    if (Number.isFinite(direct)) {
+      return direct;
+    }
+
+    const ref = String(data?.ref || fallbackRef || '');
+    const match = ref.match(/^(\d+)/);
+    if (!match) {
+      return null;
+    }
+    const parsed = Number(match[1]);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private resolveClientReadPath(clientRef: string, portfolioCode?: number): string | null {
+    const primaryPath = this.getClientFilePath(clientRef);
+    if (existsSync(primaryPath)) {
+      return primaryPath;
+    }
+
+    if (portfolioCode) {
+      const legacyPortfolioPath = this.getLegacyClientFilePath(clientRef, portfolioCode);
+      if (existsSync(legacyPortfolioPath)) {
+        return legacyPortfolioPath;
+      }
+    }
+
+    const legacyRootPath = this.getLegacyClientFilePath(clientRef);
+    if (existsSync(legacyRootPath)) {
+      return legacyRootPath;
+    }
+
+    if (!portfolioCode) {
+      for (let i = 1; i <= 10; i++) {
+        const legacyPath = this.getLegacyClientFilePath(clientRef, i);
+        if (existsSync(legacyPath)) {
+          return legacyPath;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private getClientDeletePaths(clientRef: string): string[] {
+    const paths = new Set<string>();
+    paths.add(this.getClientFilePath(clientRef));
+    paths.add(this.getLegacyClientFilePath(clientRef));
+    for (let i = 1; i <= 10; i++) {
+      paths.add(this.getLegacyClientFilePath(clientRef, i));
+    }
+
+    return Array.from(paths);
   }
 
   private async acquireLock(lockKey: string): Promise<void> {
