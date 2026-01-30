@@ -12,9 +12,13 @@ export class ReferenceGeneratorService {
    * Alpha is derived from the first alphabetic character of the client name.
    * Examples: 3H001 (for "123 Homes" in portfolio 3), 2N001 ("Nova Coin" in portfolio 2).
    */
-  async generateClientRef(portfolioCode: number, name: string): Promise<string> {
-    // Determine alpha from first significant A-Z in the name
-    const alphaIndex = this.getAlphaFromName(name);
+  async generateClientRef(
+    portfolioCode: number,
+    name: string,
+    opts?: { clientType?: 'COMPANY' | 'INDIVIDUAL' | 'SOLE_TRADER' | 'PARTNERSHIP' | 'LLP' }
+  ): Promise<string> {
+    const clientType = opts?.clientType;
+    const alphaIndex = this.getAlphaForClient(name, clientType);
 
     // Get existing clients in the portfolio to determine next reference for this alpha group
     const existingClients = await this.fileStorage.listFiles('clients', portfolioCode);
@@ -37,30 +41,33 @@ export class ReferenceGeneratorService {
    * Example: P001, P002, P003, etc.
    */
   async generatePersonRef(): Promise<string> {
-    const existingPeople = await this.fileStorage.listFiles('people');
-    
-    // Extract numeric indices from existing person references
-    const existingIndices = existingPeople
-      .map(id => this.extractPersonRefFromId(id))
-      .filter(ref => ref && ref.startsWith('P'))
-      .map(ref => parseInt(ref.substring(1)))
-      .filter(num => !isNaN(num))
-      .sort((a, b) => a - b);
+    throw new Error('generatePersonRef is deprecated. Use generateConnectedPersonRef(clientRef).');
+  }
 
-    // Find next available index
-    let nextIndex = 1;
-    for (const index of existingIndices) {
-      if (index === nextIndex) {
-        nextIndex++;
-      } else {
-        break;
+  async generateConnectedPersonRef(clientRef: string): Promise<string> {
+    if (!this.validateClientRef(clientRef)) {
+      throw new Error(`Invalid clientRef: ${clientRef}`);
+    }
+
+    const existing = await this.fileStorage.listFiles('people');
+    const used = new Set(
+      (existing || [])
+        .map((id) => String(id || ''))
+        .filter((id) => id.startsWith(`${clientRef}`))
+        .map((id) => id.slice(clientRef.length))
+        .filter((suffix) => /^[A-Z]+$/.test(suffix))
+    );
+
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (let i = 0; i < alphabet.length; i++) {
+      const letter = alphabet[i];
+      if (!used.has(letter)) {
+        return `${clientRef}${letter}`;
       }
     }
 
-    const ref = `P${nextIndex.toString().padStart(3, '0')}`;
-    
-    this.logger.debug(`Generated person reference: ${ref}`);
-    return ref;
+    // If all letters are used, start with AA, AB, etc.
+    return `${clientRef}AA`;
   }
 
   /**
@@ -91,11 +98,6 @@ export class ReferenceGeneratorService {
   private extractRefFromId(id: string): string | null {
     // Assuming the file ID contains or is the reference
     // This might need adjustment based on actual file naming convention
-    return id;
-  }
-
-  private extractPersonRefFromId(id: string): string | null {
-    // Assuming the file ID contains or is the reference
     return id;
   }
 
@@ -138,6 +140,32 @@ export class ReferenceGeneratorService {
     return this.getAlphaFromName(name);
   }
 
+  private getAlphaForClient(
+    name: string,
+    clientType?: 'COMPANY' | 'INDIVIDUAL' | 'SOLE_TRADER' | 'PARTNERSHIP' | 'LLP'
+  ): string {
+    if (!name) return 'X';
+    if (clientType === 'INDIVIDUAL' || clientType === 'SOLE_TRADER') {
+      return this.getAlphaFromSurname(name);
+    }
+    return this.getAlphaFromName(name);
+  }
+
+  private getAlphaFromSurname(name: string): string {
+    const upper = String(name).toUpperCase().trim();
+    const tokens = upper.split(/[^A-Z0-9]+/).filter(Boolean);
+    const stop = new Set(['THE', 'A', 'AN', 'MR', 'MRS', 'MS', 'DR', 'MISS']);
+
+    for (let i = tokens.length - 1; i >= 0; i--) {
+      const t = tokens[i];
+      if (stop.has(t)) continue;
+      const m = t.match(/[A-Z]/);
+      if (m) return m[0];
+    }
+
+    return this.getAlphaFromName(name);
+  }
+
   private async getExistingClientParties(clientId: string, personId: string): Promise<any[]> {
     // This is a placeholder - in a full implementation, this would query
     // the client-party relationship data to find existing suffix letters
@@ -159,9 +187,9 @@ export class ReferenceGeneratorService {
    * Validate if a person reference follows the correct format
    */
   validatePersonRef(ref: string): boolean {
-    // Format: P{NumericIndex}
-    // Example: P001, P123, P999
-    const personRefPattern = /^P\d{3}$/;
+    // Format: {ClientRef}{Suffix}
+    // Example: 1M001A, 10Z999B, 1T001AA
+    const personRefPattern = /^\d+[A-Z]\d{3}[A-Z]+$/;
     return personRefPattern.test(ref);
   }
 

@@ -12,13 +12,12 @@ export class PersonService {
     private referenceGenerator: ReferenceGeneratorService
   ) {}
 
-  async create(createPersonDto: CreatePersonDto): Promise<Person> {
-    const id = this.generateId();
-    const ref = await this.referenceGenerator.generatePersonRef();
+  async create(clientRef: string, createPersonDto: CreatePersonDto): Promise<Person> {
+    const ref = await this.referenceGenerator.generateConnectedPersonRef(clientRef);
     const now = new Date();
 
     const person: Person = {
-      id,
+      id: ref,
       ref,
       firstName: createPersonDto.firstName,
       lastName: createPersonDto.lastName,
@@ -32,7 +31,7 @@ export class PersonService {
       updatedAt: now,
     };
 
-    await this.fileStorage.writeJson('people', ref, person);
+    await this.fileStorage.writeJson('people', ref, person, undefined, clientRef);
     this.logger.log(`Created person: ${person.fullName} (${person.ref})`);
 
     return person;
@@ -120,9 +119,5 @@ export class PersonService {
     // This would typically query client-party relationships
     // For now, return empty array - will be implemented when client-party relationships are added
     return [];
-  }
-
-  private generateId(): string {
-    return `person_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }

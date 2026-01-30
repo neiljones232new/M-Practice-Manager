@@ -1,0 +1,13 @@
+{
+  "id": "C1769785434495v0qn9hf6x",
+  "clientId": "client_1769780622231_6ohji2j7f",
+  "type": "CONFIRMATION_STATEMENT",
+  "description": "Confirmation Statement Filing",
+  "dueDate": "2026-04-27T00:00:00.000Z",
+  "status": "PENDING",
+  "source": "COMPANIES_HOUSE",
+  "reference": "14801592",
+  "period": "2025-04-13",
+  "createdAt": "2026-01-30T15:03:54.495Z",
+  "updatedAt": "2026-01-30T15:03:54.495Z"
+}

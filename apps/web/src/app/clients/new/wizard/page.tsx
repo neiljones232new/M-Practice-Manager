@@ -221,15 +221,15 @@ export default function AddClientWizardPage() {
 
       {/* 1. Basic Information */}
       {step === 1 && (
-        <div className="card-mdj">
+        <div className="card-mdj" style={{ padding: '1rem' }}>
           <h3>Basic Information</h3>
           <hr className="mdj-gold-divider" />
           <div className="kv">
             <div className="k">Client Name *</div>
-            <div className="v"><input className="input-mdj" value={client.name} onChange={(e)=>setClient({ ...client, name: e.target.value })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-name" name="name" value={client.name} onChange={(e)=>setClient({ ...client, name: e.target.value })} /></div>
             <div className="k">Client Type *</div>
             <div className="v">
-              <select className="input-mdj" value={client.type} onChange={(e)=>setClient({ ...client, type: e.target.value as ClientType })}>
+              <select className="input-mdj" id="new-client-type" name="type" value={client.type} onChange={(e)=>setClient({ ...client, type: e.target.value as ClientType })}>
                 <option value="COMPANY">Company</option>
                 <option value="INDIVIDUAL">Individual</option>
                 <option value="SOLE_TRADER">Sole Trader</option>
@@ -239,21 +239,21 @@ export default function AddClientWizardPage() {
             </div>
             <div className="k">Portfolio *</div>
             <div className="v">
-              <select className="input-mdj" value={String(client.portfolioCode)} onChange={(e)=>setClient({ ...client, portfolioCode: parseInt(e.target.value) })}>
+              <select className="input-mdj" id="new-client-portfolioCode" name="portfolioCode" value={String(client.portfolioCode)} onChange={(e)=>setClient({ ...client, portfolioCode: parseInt(e.target.value) })}>
                 {portfolios.length === 0 && <option value={client.portfolioCode}>#{client.portfolioCode}</option>}
                 {portfolios.map(p => <option key={p.code} value={p.code}>#{p.code} — {p.name}</option>)}
               </select>
             </div>
             <div className="k">Status</div>
             <div className="v">
-              <select className="input-mdj" value={client.status || 'ACTIVE'} onChange={(e)=>setClient({ ...client, status: e.target.value as ClientStatus })}>
+              <select className="input-mdj" id="new-client-status" name="status" value={client.status || 'ACTIVE'} onChange={(e)=>setClient({ ...client, status: e.target.value as ClientStatus })}>
                 <option value="ACTIVE">Active</option>
                 <option value="INACTIVE">Inactive</option>
                 <option value="ARCHIVED">Archived</option>
               </select>
             </div>
             <div className="k">Registered Number</div>
-            <div className="v"><input className="input-mdj" value={client.registeredNumber || ''} onChange={(e)=>setClient({ ...client, registeredNumber: e.target.value })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-registeredNumber" name="registeredNumber" value={client.registeredNumber || ''} onChange={(e)=>setClient({ ...client, registeredNumber: e.target.value })} /></div>
           </div>
         </div>
       )}
@@ -265,9 +265,9 @@ export default function AddClientWizardPage() {
           <hr className="mdj-gold-divider" />
           <div className="kv">
             <div className="k">Email</div>
-            <div className="v"><input className="input-mdj" value={client.mainEmail || ''} onChange={(e)=>setClient({ ...client, mainEmail: e.target.value })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-mainEmail" name="mainEmail" value={client.mainEmail || ''} onChange={(e)=>setClient({ ...client, mainEmail: e.target.value })} /></div>
             <div className="k">Phone</div>
-            <div className="v"><input className="input-mdj" value={client.mainPhone || ''} onChange={(e)=>setClient({ ...client, mainPhone: e.target.value })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-mainPhone" name="mainPhone" value={client.mainPhone || ''} onChange={(e)=>setClient({ ...client, mainPhone: e.target.value })} /></div>
           </div>
         </div>
       )}
@@ -279,18 +279,18 @@ export default function AddClientWizardPage() {
           <hr className="mdj-gold-divider" />
           <div className="kv">
             <div className="k">Line 1</div>
-            <div className="v"><input className="input-mdj" value={client.address?.line1 || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), line1: e.target.value } })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-address-line1" name="address.line1" value={client.address?.line1 || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), line1: e.target.value } })} /></div>
             <div className="k">Line 2</div>
-            <div className="v"><input className="input-mdj" value={client.address?.line2 || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), line2: e.target.value } })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-address-line2" name="address.line2" value={client.address?.line2 || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), line2: e.target.value } })} /></div>
             <div className="k">City</div>
-            <div className="v"><input className="input-mdj" value={client.address?.city || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), city: e.target.value } })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-address-city" name="address.city" value={client.address?.city || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), city: e.target.value } })} /></div>
             <div className="k">County</div>
-            <div className="v"><input className="input-mdj" value={client.address?.county || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), county: e.target.value } })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-address-county" name="address.county" value={client.address?.county || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), county: e.target.value } })} /></div>
             <div className="k">Postcode</div>
-            <div className="v"><input className="input-mdj" value={client.address?.postcode || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), postcode: e.target.value } })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-address-postcode" name="address.postcode" value={client.address?.postcode || ''} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), postcode: e.target.value } })} /></div>
             <div className="k">Country</div>
             <div className="v">
-              <select className="input-mdj" value={client.address?.country || 'United Kingdom'} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), country: e.target.value } })}>
+              <select className="input-mdj" id="new-client-address-country" name="address.country" value={client.address?.country || 'United Kingdom'} onChange={(e)=>setClient({ ...client, address: { ...(client.address||{}), country: e.target.value } })}>
                 <option>United Kingdom</option>
                 <option>Ireland</option>
                 <option>United States</option>
@@ -309,26 +309,30 @@ export default function AddClientWizardPage() {
           <hr className="mdj-gold-divider" />
           <div className="kv">
             <div className="k">UTR Number</div>
-            <div className="v"><input className="input-mdj" value={client.utrNumber || ''} onChange={(e)=>setClient({ ...client, utrNumber: e.target.value })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-utrNumber" name="utrNumber" value={client.utrNumber || ''} onChange={(e)=>setClient({ ...client, utrNumber: e.target.value })} /></div>
             <div className="k">Accounts Last Made Up To</div>
-            <div className="v"><input className="input-mdj" type="date" value={client.accountsLastMadeUpTo || ''} onChange={(e)=>setClient({ ...client, accountsLastMadeUpTo: e.target.value })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-accountsLastMadeUpTo" name="accountsLastMadeUpTo" type="date" value={client.accountsLastMadeUpTo || ''} onChange={(e)=>setClient({ ...client, accountsLastMadeUpTo: e.target.value })} /></div>
             <div className="k">Accounts Next Due</div>
-            <div className="v"><input className="input-mdj" type="date" value={client.accountsNextDue || ''} onChange={(e)=>setClient({ ...client, accountsNextDue: e.target.value })} /></div>
+            <div className="v"><input className="input-mdj" id="new-client-accountsNextDue" name="accountsNextDue" type="date" value={client.accountsNextDue || ''} onChange={(e)=>setClient({ ...client, accountsNextDue: e.target.value })} /></div>
             <div className="k">Accounting Reference Day</div>
             <div className="v">
               <input
                 className="input-mdj"
+                id="new-client-accountsAccountingReferenceDay"
+                name="accountsAccountingReferenceDay"
                 type="number"
                 min={1}
                 max={31}
                 value={client.accountsAccountingReferenceDay || ''}
-                onChange={(e)=>setClient({ ...client, accountsAccountingReferenceDay: Number(e.target.value) || undefined })}
+                onChange={(e)=>setClient({ ...client, accountsAccountingReferenceDay: e.target.value === '' ? undefined : Number(e.target.value) })}
               />
             </div>
             <div className="k">Accounting Reference Month</div>
             <div className="v">
               <input
                 className="input-mdj"
+                id="new-client-accountsAccountingReferenceMonth"
+                name="accountsAccountingReferenceMonth"
                 type="number"
                 min={1}
                 max={12}

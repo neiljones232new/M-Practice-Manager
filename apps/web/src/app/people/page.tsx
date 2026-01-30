@@ -7,7 +7,7 @@ import MDJShell from '@/components/mdj-ui/MDJShell';
 import { api } from '@/lib/api';
 
 // M UI atoms/molecules (keep using these where available)
-import { MDJButton, MDJCard, MDJTable, MDJSection, MDJInput } from '@/components/mdj-ui';
+import { MDJButton, MDJCard, MDJSection, MDJInput } from '@/components/mdj-ui';
 
 interface IntegrationConfig {
   id: string;
@@ -36,24 +36,14 @@ interface PracticeSettings {
   }>;
 }
 
-interface Person {
-  id: string;
+interface Staff {
   ref: string;
   firstName: string;
   lastName: string;
   fullName: string;
+  role: 'PARTNER_DIRECTOR' | 'MANAGER' | 'SENIOR_STAFF' | 'STAFF' | 'TRAINEE';
   email?: string;
   phone?: string;
-  dateOfBirth?: string;
-  nationality?: string;
-  address?: {
-    line1?: string;
-    line2?: string;
-    city?: string;
-    county?: string;
-    postcode?: string;
-    country?: string;
-  };
   createdAt: string;
   updatedAt: string;
 }
@@ -62,14 +52,14 @@ export default function PeoplePage() {
   const router = useRouter();
   const [integrations, setIntegrations] = useState<IntegrationConfig[]>([]);
   const [practiceSettings, setPracticeSettings] = useState<PracticeSettings | null>(null);
-  const [people, setPeople] = useState<Person[]>([]);
+  const [people, setPeople] = useState<Staff[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState<string>('');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState<boolean>(false);
-  const [editingPerson, setEditingPerson] = useState<Person | null>(null);
-  const [editForm, setEditForm] = useState<Partial<Person>>({});
+  const [editingPerson, setEditingPerson] = useState<Staff | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Staff>>({});
 
   useEffect(() => {
     async function loadData() {
@@ -79,7 +69,7 @@ export default function PeoplePage() {
         const [settingsData, integrationsData, peopleData] = await Promise.all([
           Promise.resolve(null), // practice-settings endpoint doesn't exist yet
           api.get('/integrations').catch(() => []),
-          api.get('/clients/people/all').catch(() => []),
+          api.get('/staff').catch(() => []),
         ]);
 
         // Fallbacks so the screen still renders in demo/offline
@@ -91,9 +81,7 @@ export default function PeoplePage() {
           };
         setPracticeSettings(ps as PracticeSettings);
         setIntegrations(Array.isArray(integrationsData) ? integrationsData : []);
-        setPeople(
-          (Array.isArray(peopleData) ? peopleData : []) as Person[]
-        );
+        setPeople((Array.isArray(peopleData) ? peopleData : []) as Staff[]);
       } catch (err) {
         console.error(err);
         setError('Failed to load data');
@@ -117,7 +105,7 @@ export default function PeoplePage() {
 
   if (loading) {
     return (
-      <MDJShell pageTitle="People" pageSubtitle="Manage contacts and team members">
+      <MDJShell pageTitle="Practice Staff" pageSubtitle="Manage your internal team and responsibilities">
         <div className="mdj-center p-10">
           <div className="mdj-spinner mb-3" aria-label="Loading" />
           <p className="mdj-text-dim">Loading…</p>
@@ -128,7 +116,7 @@ export default function PeoplePage() {
 
   if (error) {
     return (
-      <MDJShell pageTitle="People" pageSubtitle="Manage contacts and team members">
+      <MDJShell pageTitle="Practice Staff" pageSubtitle="Manage your internal team and responsibilities">
         <div className="mdj-center p-10">
           <p className="mdj-text-danger">{error}</p>
         </div>
@@ -137,7 +125,7 @@ export default function PeoplePage() {
   }
 
   return (
-    <MDJShell pageTitle="People" pageSubtitle="Manage contacts and team members">
+    <MDJShell pageTitle="Practice Staff" pageSubtitle="Manage your internal team and responsibilities">
       {/* Top Summary */}
       <MDJSection className="gap-4 grid md:grid-cols-3">
         <MDJCard>
@@ -154,11 +142,11 @@ export default function PeoplePage() {
         </MDJCard>
       </MDJSection>
 
-      {/* People toolbar */}
+      {/* Staff toolbar */}
       <div className="mdj-toolbar mdj-card mb-4">
         <div className="mdj-toolbar-left">
           <MDJInput
-            placeholder="Search people…"
+            placeholder="Search staff…"
             value={query}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
           />
@@ -167,16 +155,16 @@ export default function PeoplePage() {
               variant="outline"
               disabled={deleting}
               onClick={async () => {
-                if (!confirm(`Delete ${selected.size} selected people? This cannot be undone.`)) return;
+                if (!confirm(`Delete ${selected.size} selected staff member(s)? This cannot be undone.`)) return;
                 setDeleting(true);
                 try {
                   await Promise.all(
-                    Array.from(selected).map(id => api.delete(`/clients/people/${id}`))
+                    Array.from(selected).map((ref) => api.delete(`/staff/${ref}`))
                   );
-                  setPeople(people.filter(p => !selected.has(p.id)));
+                  setPeople(people.filter((p) => !selected.has(p.ref)));
                   setSelected(new Set());
                 } catch (err: any) {
-                  alert(err?.message || 'Failed to delete some people');
+                  alert(err?.message || 'Failed to delete some staff');
                 } finally {
                   setDeleting(false);
                 }
@@ -191,12 +179,12 @@ export default function PeoplePage() {
             variant="primary"
             onClick={() => router.push('/people/new')}
           >
-            Add Person
+            Add Staff
           </MDJButton>
         </div>
       </div>
 
-      {/* People Table */}
+      {/* Staff Table */}
       <MDJCard>
         <table className="mdj-table">
           <thead>
@@ -204,10 +192,10 @@ export default function PeoplePage() {
               <th className="w-1">
                 <input
                   type="checkbox"
-                  checked={filtered.length > 0 && filtered.every(p => selected.has(p.id))}
+                  checked={filtered.length > 0 && filtered.every((p) => selected.has(p.ref))}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setSelected(new Set(filtered.map(p => p.id)));
+                      setSelected(new Set(filtered.map((p) => p.ref)));
                     } else {
                       setSelected(new Set());
                     }
@@ -216,6 +204,7 @@ export default function PeoplePage() {
               </th>
               <th>Ref</th>
               <th>Name</th>
+              <th>Role</th>
               <th>Email</th>
               <th>Phone</th>
               <th className="w-1">Actions</th>
@@ -224,26 +213,26 @@ export default function PeoplePage() {
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6}>
+                <td colSpan={7}>
                   <div className="mdj-empty">
-                    <div className="mdj-empty-title">No people found</div>
+                    <div className="mdj-empty-title">No staff found</div>
                     <div className="mdj-empty-subtitle">Try a different search term.</div>
                   </div>
                 </td>
               </tr>
             )}
             {filtered.map(person => (
-              <tr key={person.id}>
+              <tr key={person.ref}>
                 <td>
                   <input
                     type="checkbox"
-                    checked={selected.has(person.id)}
+                    checked={selected.has(person.ref)}
                     onChange={(e) => {
                       const newSelected = new Set(selected);
                       if (e.target.checked) {
-                        newSelected.add(person.id);
+                        newSelected.add(person.ref);
                       } else {
-                        newSelected.delete(person.id);
+                        newSelected.delete(person.ref);
                       }
                       setSelected(newSelected);
                     }}
@@ -251,6 +240,7 @@ export default function PeoplePage() {
                 </td>
                 <td><span className="mdj-ref">{person.ref}</span></td>
                 <td>{person.fullName}</td>
+                <td>{person.role || '—'}</td>
                 <td>{person.email || '—'}</td>
                 <td>{person.phone || '—'}</td>
                 <td>
@@ -271,15 +261,15 @@ export default function PeoplePage() {
                       onClick={async () => {
                         if (!confirm(`Delete ${person.fullName}? This cannot be undone.`)) return;
                         try {
-                          await api.delete(`/clients/people/${person.id}`);
-                          setPeople(people.filter(p => p.id !== person.id));
+                          await api.delete(`/staff/${person.ref}`);
+                          setPeople(people.filter((p) => p.ref !== person.ref));
                           setSelected(prev => {
                             const newSet = new Set(prev);
-                            newSet.delete(person.id);
+                            newSet.delete(person.ref);
                             return newSet;
                           });
                         } catch (err: any) {
-                          alert(err?.message || 'Failed to delete person');
+                          alert(err?.message || 'Failed to delete staff member');
                         }
                       }}
                     >
@@ -298,8 +288,8 @@ export default function PeoplePage() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
           <div className="mdj-card" style={{ maxWidth: '600px', width: '90%', maxHeight: '90vh', overflow: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
             <div style={{ borderBottom: '1px solid var(--border-light)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
-              <h2 style={{ margin: 0, color: 'var(--gold)', fontSize: '1.5rem' }}>Edit Person</h2>
-              <p style={{ margin: '0.5rem 0 0', color: 'var(--text-dim)', fontSize: '0.875rem' }}>Update person information</p>
+              <h2 style={{ margin: 0, color: 'var(--gold)', fontSize: '1.5rem' }}>Edit Staff</h2>
+              <p style={{ margin: '0.5rem 0 0', color: 'var(--text-dim)', fontSize: '0.875rem' }}>Update staff information</p>
             </div>
             
             <div style={{ display: 'grid', gap: '1.25rem' }}>
@@ -370,13 +360,13 @@ export default function PeoplePage() {
                       return;
                     }
                     try {
-                      await api.put(`/clients/people/${editingPerson.id}`, {
+                      await api.put(`/staff/${editingPerson.ref}`, {
                         firstName: editForm.firstName,
                         lastName: editForm.lastName,
                         email: editForm.email,
                         phone: editForm.phone,
                       });
-                      setPeople(people.map(p => p.id === editingPerson.id ? {
+                      setPeople(people.map((p) => p.ref === editingPerson.ref ? {
                         ...p,
                         firstName: editForm.firstName!,
                         lastName: editForm.lastName!,
@@ -387,7 +377,7 @@ export default function PeoplePage() {
                       setEditingPerson(null);
                       setEditForm({});
                     } catch (err: any) {
-                      alert(err?.message || 'Failed to update person');
+                      alert(err?.message || 'Failed to update staff member');
                     }
                   }}
                 >

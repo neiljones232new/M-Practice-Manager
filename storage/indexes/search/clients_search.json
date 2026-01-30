@@ -1,4 +1,16 @@
 {
+  "14801592": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "registeredNumber"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
   "15110513": {
     "clients": {
       "1:1M001": {
@@ -6,19 +18,20 @@
           "registeredNumber"
         ],
         "score": 3,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
   },
-  "client_1769735421342_qd47w1ona": {
+  "1m001": {
     "clients": {
       "1:1M001": {
         "fields": [
-          "id"
+          "id",
+          "ref"
         ],
-        "score": 6,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "score": 13.5,
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -30,7 +43,7 @@
           "name"
         ],
         "score": 9,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -42,7 +55,7 @@
           "name"
         ],
         "score": 4.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -54,8 +67,16 @@
           "name"
         ],
         "score": 4.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
+      },
+      "3:3O001": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
       }
     }
   },
@@ -66,8 +87,16 @@
           "status"
         ],
         "score": 3,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
+      },
+      "3:3O001": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
       }
     }
   },
@@ -78,20 +107,16 @@
           "type"
         ],
         "score": 3,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
-      }
-    }
-  },
-  "1m001": {
-    "clients": {
-      "1:1M001": {
+      },
+      "3:3O001": {
         "fields": [
-          "ref"
+          "type"
         ],
-        "score": 7.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
-        "portfolioCode": 1
+        "score": 3,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
       }
     }
   },
@@ -102,7 +127,7 @@
           "mainPhone"
         ],
         "score": 3,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -114,7 +139,7 @@
           "address"
         ],
         "score": 3,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -126,7 +151,7 @@
           "address"
         ],
         "score": 1.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -138,7 +163,7 @@
           "address"
         ],
         "score": 1.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -150,7 +175,7 @@
           "address"
         ],
         "score": 1.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -162,7 +187,7 @@
           "address"
         ],
         "score": 1.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -174,7 +199,7 @@
           "address"
         ],
         "score": 1.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -186,7 +211,7 @@
           "address"
         ],
         "score": 1.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -198,7 +223,7 @@
           "address"
         ],
         "score": 1.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
       }
     }
@@ -210,8 +235,184 @@
           "address"
         ],
         "score": 1.5,
-        "lastUpdated": "2026-01-30T02:01:43.539Z",
+        "lastUpdated": "2026-01-30T06:38:50.257Z",
         "portfolioCode": 1
+      },
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "client_1769780622231_6ohji2j7f": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "one": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "name"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "leisure": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "group": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "3o001": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "ref"
+        ],
+        "score": 7.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "15th": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "18th": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "floors": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "albion": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "street": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "pinnacle": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "leeds": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "ls1": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
+      }
+    }
+  },
+  "5aa": {
+    "clients": {
+      "3:3O001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T15:04:37.142Z",
+        "portfolioCode": 3
       }
     }
   }

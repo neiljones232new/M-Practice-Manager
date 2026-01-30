@@ -316,7 +316,7 @@ export default function ClientsPage() {
         const highRisk = Boolean(risk && String(risk).toLowerCase().includes('high'));
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Link className="mdj-link" href={`/clients/${c.node.id}`} title="View client">
+            <Link className="mdj-link" href={`/clients/${c.node.ref}`} title="View client">
               {c.node.name}
             </Link>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>

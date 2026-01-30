@@ -157,6 +157,12 @@ export class ClientsController {
     return this.clientsService.getClientWithParties(id);
   }
 
+  @Post(':id/enroll-director')
+  @ApiOperation({ summary: 'Enroll a Companies House director as an INDIVIDUAL client with suffixed ref (e.g., 1M001A)' })
+  async enrollDirectorAsClient(@Param('id') id: string, @Body() body: { name: string }) {
+    return this.clientsService.enrollDirectorAsClient(id, { name: body?.name });
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create new client' })
   @ApiResponse({ status: 201, description: 'Client created successfully' })
@@ -228,8 +234,8 @@ export class ClientsController {
   @Post('people')
   @ApiOperation({ summary: 'Create new person' })
   @ApiResponse({ status: 201, description: 'Person created successfully' })
-  async createPerson(@Body() createPersonDto: CreatePersonDto) {
-    return this.personService.create(createPersonDto);
+  async createPerson(@Body() body: CreatePersonDto & { clientRef: string }) {
+    return this.personService.create(body.clientRef, body);
   }
 
   @Put('people/:id')

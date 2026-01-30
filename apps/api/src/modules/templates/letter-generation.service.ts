@@ -140,7 +140,7 @@ export class LetterGenerationService {
           primaryDoc.buffer,
           template,
           client.name,
-          dto.clientId,
+          client.ref,
           dto.serviceId,
           primaryDoc.format,
           userId,
@@ -152,7 +152,7 @@ export class LetterGenerationService {
       const generatedLetter = await this.createGeneratedLetterRecord(
         template,
         client.name,
-        dto.clientId,
+        client.ref,
         serviceName,
         dto.serviceId,
         documentId,
@@ -353,8 +353,13 @@ export class LetterGenerationService {
         () => true,
       );
 
+      const resolvedClient = filters.clientId ? await this.clientsService.findOne(filters.clientId) : null;
+      const acceptableClientIds = filters.clientId
+        ? new Set([filters.clientId, resolvedClient?.id, resolvedClient?.ref].filter(Boolean).map(String))
+        : null;
+
       // Apply filters
-      return this.applyLetterFilters(allLetters, filters);
+      return this.applyLetterFilters(allLetters, filters, acceptableClientIds);
     } catch (error) {
       this.logger.error(`Failed to get generated letters: ${error.message}`, error.stack);
       throw error;
@@ -659,11 +664,12 @@ export class LetterGenerationService {
    * Apply filters to a list of generated letters
    * @private
    */
-  private applyLetterFilters(letters: GeneratedLetter[], filters: LetterFilters): GeneratedLetter[] {
+  private applyLetterFilters(letters: GeneratedLetter[], filters: LetterFilters, acceptableClientIds: Set<string> | null): GeneratedLetter[] {
     return letters.filter(letter => {
       // Filter by client ID
-      if (filters.clientId && letter.clientId !== filters.clientId) {
-        return false;
+      if (filters.clientId) {
+        if (!acceptableClientIds) return false;
+        if (!acceptableClientIds.has(String(letter.clientId))) return false;
       }
 
       // Filter by service ID

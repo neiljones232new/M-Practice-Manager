@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { FileStorageService } from '../file-storage/file-storage.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { IntegrationConfigService } from '../integrations/services/integration-config.service';
 import { ClientsService } from '../clients/clients.service';
 import { PersonService } from '../clients/services/person.service';
@@ -34,6 +35,7 @@ export class CompaniesHouseService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly fileStorageService: FileStorageService,
+    private readonly prisma: PrismaService,
     private readonly integrationConfigService: IntegrationConfigService,
     private readonly clientsService: ClientsService,
     private readonly personService: PersonService,
@@ -44,6 +46,48 @@ export class CompaniesHouseService {
   ) {
     // Try to get API key from environment first, then from integration config
     this.apiKey = this.configService.get<string>('COMPANIES_HOUSE_API_KEY');
+  }
+
+  private normalizeOfficerKey(officer: any): string {
+    const appt = (officer as any)?.links?.officer?.appointments;
+    const appointed = String((officer as any)?.appointed_on || '').trim();
+    const name = String((officer as any)?.name || '').trim().toLowerCase();
+    if (appt) return String(appt);
+    return `${name}::${appointed}`;
+  }
+
+  private mergeOfficerSnapshots(existingRaw: any, latestRaw: any): any[] {
+    const toArray = (value: any): any[] => {
+      if (!value) return [];
+      if (Array.isArray(value)) return value;
+      if (Array.isArray(value?.items)) return value.items;
+      return [];
+    };
+
+    const existing = toArray(existingRaw);
+    const latest = toArray(latestRaw);
+
+    const latestKeys = new Set(latest.map((o) => this.normalizeOfficerKey(o)));
+    const merged = new Map<string, any>();
+
+    for (const o of existing) {
+      const key = this.normalizeOfficerKey(o);
+      merged.set(key, { ...o });
+    }
+
+    for (const o of latest) {
+      const key = this.normalizeOfficerKey(o);
+      merged.set(key, { ...merged.get(key), ...o, __terminated: false });
+    }
+
+    // Mark as terminated when officer is no longer in the latest current list
+    for (const [key, o] of merged.entries()) {
+      const resigned = Boolean((o as any)?.resigned_on);
+      const terminated = resigned || !latestKeys.has(key);
+      merged.set(key, { ...o, __terminated: terminated });
+    }
+
+    return Array.from(merged.values());
   }
 
   private async getAuthHeaders() {
@@ -296,9 +340,18 @@ export class CompaniesHouseService {
         throw new BadRequestException('Client does not have a registered company number');
       }
 
-      // Get latest company details
-      const companyDetails = await this.getCompanyDetails(client.registeredNumber);
-      
+      const companyNumber = client.registeredNumber;
+
+      // Fetch raw CH data snapshot (officers/filings/pscs/charges).
+      // IMPORTANT: This is an append-only style snapshot for UI display and audit.
+      const [companyDetails, officers, filingHistory, pscs, charges] = await Promise.all([
+        this.getCompanyDetails(companyNumber),
+        this.getCompanyOfficers(companyNumber).catch(() => []),
+        this.getFilingHistory(companyNumber).catch(() => ({ items: [] } as any)),
+        this.getPersonsWithSignificantControl(companyNumber).catch(() => ({ items: [] } as any)),
+        this.getCharges(companyNumber).catch(() => ({ items: [] } as any)),
+      ]);
+
       // Update client with latest data (status/address/incorporation)
       await this.clientsService.update(clientRef, {
         name: companyDetails.company_name,
@@ -321,6 +374,39 @@ export class CompaniesHouseService {
 
       // Update compliance items
       await this.updateComplianceItemsFromCompanyData(client.id, companyDetails);
+
+      // Persist snapshot to Postgres (CompaniesHouseData) for Standard B
+      try {
+        const existing = await (this.prisma as any).companiesHouseData.findFirst({ where: { companyNumber } });
+        const mergedOfficers = this.mergeOfficerSnapshots(existing?.officers, officers);
+
+        await (this.prisma as any).companiesHouseData.upsert({
+          where: { companyNumber },
+          create: {
+            clientId: client.id,
+            clientRef: client.ref,
+            companyNumber,
+            companyDetails: companyDetails as any,
+            officers: mergedOfficers as any,
+            filingHistory: filingHistory as any,
+            charges: charges as any,
+            pscs: pscs as any,
+            lastFetched: new Date(),
+          },
+          update: {
+            clientId: client.id,
+            clientRef: client.ref,
+            companyDetails: companyDetails as any,
+            officers: mergedOfficers as any,
+            filingHistory: filingHistory as any,
+            charges: charges as any,
+            pscs: pscs as any,
+            lastFetched: new Date(),
+          },
+        });
+      } catch (e: any) {
+        this.logger.warn(`Failed to persist CompaniesHouseData snapshot for ${companyNumber}: ${e?.message || e}`);
+      }
 
       this.logger.log(`Successfully synced company data for client ${clientRef}`);
     } catch (error) {

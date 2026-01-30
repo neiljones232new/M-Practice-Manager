@@ -2,6 +2,7 @@ import { Injectable, Logger, NotFoundException, BadRequestException } from '@nes
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { SearchService } from '../file-storage/search.service';
 import { ConfigService } from '@nestjs/config';
+import { ClientsService } from '../clients/clients.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { existsSync } from 'fs';
@@ -41,7 +42,8 @@ export class DocumentsService {
   constructor(
     private configService: ConfigService,
     private fileStorageService: FileStorageService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private clientsService: ClientsService
   ) {
     const storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
     this.documentsPath = path.join(storagePath, 'documents', 'files');
@@ -105,13 +107,18 @@ export class DocumentsService {
       const allTags = [...new Set([...(createDocumentDto.tags || []), ...autoTags])];
 
       // Create document record
+      const resolvedClient = createDocumentDto.clientId
+        ? await this.clientsService.findOne(createDocumentDto.clientId)
+        : null;
+      const normalizedClientId = resolvedClient?.ref || createDocumentDto.clientId;
+
       const document: Document = {
         id: crypto.randomUUID(),
         filename: uniqueFilename,
         originalName: createDocumentDto.originalName,
         mimeType: createDocumentDto.mimeType,
         size: fileBuffer.length,
-        clientId: createDocumentDto.clientId,
+        clientId: normalizedClientId,
         serviceId: createDocumentDto.serviceId,
         taskId: createDocumentDto.taskId,
         category: createDocumentDto.category,
@@ -163,6 +170,11 @@ export class DocumentsService {
       useIndex: true
     };
 
+    const resolvedClient = filters.clientId ? await this.clientsService.findOne(filters.clientId) : null;
+    const acceptableClientIds = filters.clientId
+      ? new Set([filters.clientId, resolvedClient?.id, resolvedClient?.ref].filter(Boolean).map(String))
+      : null;
+
     if (filters.search) {
       const searchResults = await this.searchService.search(filters.search, {
         categories: ['documents/metadata'],
@@ -170,7 +182,7 @@ export class DocumentsService {
       });
       
       let documents = searchResults.results.map(r => r.data as Document);
-      return this.applyFilters(documents, filters);
+      return this.applyFilters(documents, filters, acceptableClientIds);
     }
 
     // Get all documents and apply filters
@@ -179,7 +191,7 @@ export class DocumentsService {
       () => true
     );
 
-    return this.applyFilters(allDocuments, filters);
+    return this.applyFilters(allDocuments, filters, acceptableClientIds);
   }
 
   async updateDocument(id: string, updateDto: UpdateDocumentDto): Promise<Document> {
@@ -235,6 +247,11 @@ export class DocumentsService {
       offset: 0
     });
 
+    const resolvedClient = filters.clientId ? await this.clientsService.findOne(filters.clientId) : null;
+    const acceptableClientIds = filters.clientId
+      ? new Set([filters.clientId, resolvedClient?.id, resolvedClient?.ref].filter(Boolean).map(String))
+      : null;
+
     const documents = searchResults.results.map(result => ({
       document: result.data as Document,
       relevanceScore: result.score,
@@ -243,7 +260,7 @@ export class DocumentsService {
 
     // Apply additional filters
     const filteredDocuments = documents.filter(({ document }) => 
-      this.matchesFilters(document, filters)
+      this.matchesFilters(document, filters, acceptableClientIds)
     );
 
     return filteredDocuments;
@@ -477,12 +494,16 @@ export class DocumentsService {
     return tags;
   }
 
-  private applyFilters(documents: Document[], filters: DocumentFilters): Document[] {
-    return documents.filter(doc => this.matchesFilters(doc, filters));
+  private applyFilters(documents: Document[], filters: DocumentFilters, acceptableClientIds: Set<string> | null): Document[] {
+    return documents.filter(doc => this.matchesFilters(doc, filters, acceptableClientIds));
   }
 
-  private matchesFilters(document: Document, filters: DocumentFilters): boolean {
-    if (filters.clientId && document.clientId !== filters.clientId) return false;
+  private matchesFilters(document: Document, filters: DocumentFilters, acceptableClientIds: Set<string> | null): boolean {
+    if (filters.clientId) {
+      if (!document.clientId) return false;
+      if (!acceptableClientIds) return false;
+      if (!acceptableClientIds.has(String(document.clientId))) return false;
+    }
     if (filters.serviceId && document.serviceId !== filters.serviceId) return false;
     if (filters.taskId && document.taskId !== filters.taskId) return false;
     if (filters.category && document.category !== filters.category) return false;

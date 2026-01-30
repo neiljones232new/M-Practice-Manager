@@ -1,8 +1,8 @@
 {
   "integrations": {
-    "lastModified": "2026-01-30T02:01:06.750Z",
-    "size": 1186,
-    "checksum": "a71da15e135545607b271f6af4dc434b5cb0e0604d178036ccbe291b29185820"
+    "lastModified": "2026-01-30T15:27:34.518Z",
+    "size": 1256,
+    "checksum": "74bc47a57eba88a18db51c103cf780778453fef62875fd92c5bd961abb1b8b2d"
   },
   "branding-logo": {
     "lastModified": "2026-01-09T00:09:36.075Z",
@@ -10,13 +10,13 @@
     "checksum": "4c89e7d6162f53529f80744f148550a3813bda955dde4b664838e353a85970e2"
   },
   "practice-settings": {
-    "lastModified": "2026-01-09T14:38:26.824Z",
-    "size": 1242,
-    "checksum": "253364365b3b869ac30d06d85f9881168a46543da42139d418aab8447aee26ec"
+    "lastModified": "2026-01-30T06:20:02.175Z",
+    "size": 1240,
+    "checksum": "bfbab2d33a94a41883bd0e61bbdf1b9e109c565af159e66c51995b988ef11738"
   },
   "portfolios": {
-    "lastModified": "2026-01-30T01:11:57.420Z",
-    "size": 205,
-    "checksum": "d6d4b52544d695b7e288b022cdcdd5e9d748c90982b883e7564cb76376099ef5"
+    "lastModified": "2026-01-30T13:46:41.548Z",
+    "size": 647,
+    "checksum": "da1ba28231cb1badba00af35d407c9f397f1ceab0cbf178b19aca3885b0dca50"
   }
 }

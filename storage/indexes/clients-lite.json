@@ -6,8 +6,19 @@
     "ref": "1M001",
     "status": "ACTIVE",
     "type": "COMPANY",
-    "updatedAt": "2026-01-30T02:01:43.536Z",
+    "updatedAt": "2026-01-30T06:38:50.254Z",
     "createdAt": "2026-01-30T01:10:21.343Z",
-    "searchText": "mdj consultants ltd 1m001 15110513 07713697615 canal view 8b slate lane audenshaw manchester m34 5gw england active company"
+    "searchText": "mdj consultants ltd 1m001 15110513 07713697615 canal view 8b slate lane audenshaw manchester  m34 5gw england active company"
+  },
+  {
+    "id": "3O001",
+    "portfolioCode": 3,
+    "name": "ONE LEISURE GROUP LTD",
+    "ref": "3O001",
+    "status": "ACTIVE",
+    "type": "COMPANY",
+    "updatedAt": "2026-01-30T15:04:37.137Z",
+    "createdAt": "2026-01-30T13:43:42.232Z",
+    "searchText": "one leisure group ltd 3o001 14801592 15th - 18th floors 67 albion street the pinnacle leeds ls1 5aa england active company"
   }
 ]

@@ -23,11 +23,12 @@
       "env": "production",
       "perMinute": 600
     },
-    "status": "CONNECTED",
+    "status": "ERROR",
     "createdAt": "2026-01-25T21:43:17.292Z",
-    "updatedAt": "2026-01-30T02:01:06.749Z",
-    "lastTested": "2026-01-30T02:01:06.749Z",
-    "apiKey": "6989d5d3-d95b-4642-9be4-1c81ed9e5221"
+    "updatedAt": "2026-01-30T15:27:34.516Z",
+    "lastTested": "2026-01-30T15:27:34.516Z",
+    "apiKey": "[ENCRYPTED]",
+    "lastError": "HTTP 400: {\"error\":\"Invalid Authorization header\",\"type\":\"ch:service\"}"
   },
   {
     "id": "2a72966d8f89bd536d03916f1623bbfe",
