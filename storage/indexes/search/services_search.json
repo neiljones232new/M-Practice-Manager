@@ -1,4 +1,33 @@
 {
+  "100": {
+    "services": {
+      "service_1769799017721_knkhlynjs": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.721Z"
+      },
+      "service_1769799017734_s8g91b8eg": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.735Z"
+      }
+    }
+  },
+  "250": {
+    "services": {
+      "service_1769790593489_o241lu2s9": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T16:29:53.490Z"
+      }
+    }
+  },
   "350": {
     "services": {
       "service_1769780622343_8ifhk9foa": {
@@ -7,6 +36,52 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T13:43:42.344Z"
+      },
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      },
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      },
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      },
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      },
+      "service_1769799017727_3bqqty73j": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.728Z"
+      }
+    }
+  },
+  "500": {
+    "services": {
+      "service_1769795128126_jky6bbtwu": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T17:45:28.129Z"
       }
     }
   },
@@ -18,6 +93,17 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T01:44:40.193Z"
+      }
+    }
+  },
+  "2000": {
+    "services": {
+      "service_1769799017713_iq0ar2xlw": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.714Z"
       }
     }
   },
@@ -43,6 +129,76 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T13:43:42.344Z"
+      },
+      "service_1769790593489_o241lu2s9": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T16:29:53.490Z"
+      },
+      "service_1769795128126_jky6bbtwu": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T17:45:28.129Z"
+      },
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      },
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      },
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      },
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      },
+      "service_1769799017713_iq0ar2xlw": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.714Z"
+      },
+      "service_1769799017721_knkhlynjs": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.721Z"
+      },
+      "service_1769799017727_3bqqty73j": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.728Z"
+      },
+      "service_1769799017734_s8g91b8eg": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.735Z"
       }
     }
   },
@@ -69,6 +225,71 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T13:43:42.344Z"
+      },
+      "service_1769790593489_o241lu2s9": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T16:29:53.490Z"
+      },
+      "service_1769795128126_jky6bbtwu": {
+        "fields": [
+          "type",
+          "frequency"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T17:45:28.129Z"
+      },
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      },
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      },
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      },
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      },
+      "service_1769799017713_iq0ar2xlw": {
+        "fields": [
+          "type",
+          "frequency"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T18:50:17.714Z"
+      },
+      "service_1769799017721_knkhlynjs": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.721Z"
+      },
+      "service_1769799017727_3bqqty73j": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.728Z"
       }
     }
   },
@@ -109,6 +330,13 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T01:10:21.426Z"
+      },
+      "service_1769799017721_knkhlynjs": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.721Z"
       }
     }
   },
@@ -120,6 +348,13 @@
         ],
         "score": 1.5,
         "lastUpdated": "2026-01-30T01:10:21.426Z"
+      },
+      "service_1769799017721_knkhlynjs": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T18:50:17.721Z"
       }
     }
   },
@@ -142,6 +377,20 @@
         ],
         "score": 1.5,
         "lastUpdated": "2026-01-30T01:44:40.193Z"
+      },
+      "service_1769795128126_jky6bbtwu": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T17:45:28.129Z"
+      },
+      "service_1769799017713_iq0ar2xlw": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T18:50:17.714Z"
       }
     }
   },
@@ -164,6 +413,20 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T13:43:42.344Z"
+      },
+      "service_1769790593489_o241lu2s9": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T16:29:53.490Z"
+      },
+      "service_1769799017727_3bqqty73j": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.728Z"
       }
     }
   },
@@ -175,6 +438,48 @@
         ],
         "score": 1.5,
         "lastUpdated": "2026-01-30T13:43:42.344Z"
+      },
+      "service_1769790593489_o241lu2s9": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T16:29:53.490Z"
+      },
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      },
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      },
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      },
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      },
+      "service_1769799017727_3bqqty73j": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T18:50:17.728Z"
       }
     }
   },
@@ -186,6 +491,48 @@
         ],
         "score": 1.5,
         "lastUpdated": "2026-01-30T13:43:42.344Z"
+      },
+      "service_1769790593489_o241lu2s9": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T16:29:53.490Z"
+      },
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      },
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      },
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      },
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      },
+      "service_1769799017727_3bqqty73j": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T18:50:17.728Z"
       }
     }
   },
@@ -197,6 +544,328 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T13:43:42.344Z"
+      }
+    }
+  },
+  "service_1769790593489_o241lu2s9": {
+    "services": {
+      "service_1769790593489_o241lu2s9": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T16:29:53.490Z"
+      }
+    }
+  },
+  "1m001": {
+    "services": {
+      "service_1769790593489_o241lu2s9": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T16:29:53.490Z"
+      },
+      "service_1769795128126_jky6bbtwu": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T17:45:28.129Z"
+      }
+    }
+  },
+  "service_1769795128126_jky6bbtwu": {
+    "services": {
+      "service_1769795128126_jky6bbtwu": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T17:45:28.129Z"
+      }
+    }
+  },
+  "service_1769799017648_ghiz801cj": {
+    "services": {
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      }
+    }
+  },
+  "personal": {
+    "services": {
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      },
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      },
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      },
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      }
+    }
+  },
+  "self": {
+    "services": {
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      },
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      },
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      },
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      }
+    }
+  },
+  "assessment": {
+    "services": {
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      },
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      },
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      },
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      }
+    }
+  },
+  "4p001a": {
+    "services": {
+      "service_1769799017648_ghiz801cj": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.650Z"
+      }
+    }
+  },
+  "service_1769799017667_k56izx4fn": {
+    "services": {
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      }
+    }
+  },
+  "4p001b": {
+    "services": {
+      "service_1769799017667_k56izx4fn": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.669Z"
+      }
+    }
+  },
+  "service_1769799017678_n9ejqeteb": {
+    "services": {
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      }
+    }
+  },
+  "4p001c": {
+    "services": {
+      "service_1769799017678_n9ejqeteb": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.680Z"
+      }
+    }
+  },
+  "service_1769799017688_bwk4ropld": {
+    "services": {
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      }
+    }
+  },
+  "4p001d": {
+    "services": {
+      "service_1769799017688_bwk4ropld": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.690Z"
+      }
+    }
+  },
+  "service_1769799017713_iq0ar2xlw": {
+    "services": {
+      "service_1769799017713_iq0ar2xlw": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T18:50:17.714Z"
+      }
+    }
+  },
+  "4p001": {
+    "services": {
+      "service_1769799017713_iq0ar2xlw": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.714Z"
+      },
+      "service_1769799017721_knkhlynjs": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.721Z"
+      },
+      "service_1769799017727_3bqqty73j": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.728Z"
+      },
+      "service_1769799017734_s8g91b8eg": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.735Z"
+      }
+    }
+  },
+  "service_1769799017721_knkhlynjs": {
+    "services": {
+      "service_1769799017721_knkhlynjs": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T18:50:17.721Z"
+      }
+    }
+  },
+  "service_1769799017727_3bqqty73j": {
+    "services": {
+      "service_1769799017727_3bqqty73j": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T18:50:17.728Z"
+      }
+    }
+  },
+  "service_1769799017734_s8g91b8eg": {
+    "services": {
+      "service_1769799017734_s8g91b8eg": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T18:50:17.735Z"
+      }
+    }
+  },
+  "payroll": {
+    "services": {
+      "service_1769799017734_s8g91b8eg": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.735Z"
+      }
+    }
+  },
+  "monthly": {
+    "services": {
+      "service_1769799017734_s8g91b8eg": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T18:50:17.735Z"
       }
     }
   }

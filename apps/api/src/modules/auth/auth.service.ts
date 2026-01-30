@@ -248,7 +248,7 @@ export class AuthService {
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
     try {
       const payload = this.jwtService.verify(refreshToken, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET', 'mdj-practice-manager-refresh-secret'),
       });
 
       const session = await this.readUserSession(payload.sub);
@@ -274,7 +274,7 @@ export class AuthService {
     if (refreshToken) {
       try {
         const payload = this.jwtService.verify(refreshToken, {
-          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+          secret: this.configService.get<string>('JWT_REFRESH_SECRET', 'mdj-practice-manager-refresh-secret'),
         });
 
         if (payload.sub === userId) {
@@ -316,12 +316,12 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_SECRET'),
+      secret: this.configService.get<string>('JWT_SECRET', 'mdj-practice-manager-secret'),
       expiresIn: '1h', // Demo tokens expire in 1 hour
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET', 'mdj-practice-manager-refresh-secret'),
       expiresIn: '1h', // Demo refresh also expires in 1 hour
     });
 
@@ -347,12 +347,12 @@ export class AuthService {
 
     // Generate tokens
     const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_SECRET'),
+      secret: this.configService.get<string>('JWT_SECRET', 'mdj-practice-manager-secret'),
       expiresIn: this.configService.get<string>('JWT_EXPIRES_IN', '15m'),
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET', 'mdj-practice-manager-refresh-secret'),
       expiresIn: rememberMe ? '30d' : '7d',
     });
 

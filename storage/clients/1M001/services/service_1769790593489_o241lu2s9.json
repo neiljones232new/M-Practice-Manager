@@ -1,0 +1,11 @@
+{
+  "id": "service_1769790593489_o241lu2s9",
+  "clientId": "1M001",
+  "kind": "Corporation Tax Return",
+  "frequency": "ANNUAL",
+  "fee": 250,
+  "annualized": 250,
+  "status": "ACTIVE",
+  "createdAt": "2026-01-30T16:29:53.489Z",
+  "updatedAt": "2026-01-30T16:29:53.489Z"
+}

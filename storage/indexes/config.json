@@ -1,8 +1,8 @@
 {
   "integrations": {
-    "lastModified": "2026-01-30T15:27:34.518Z",
+    "lastModified": "2026-01-30T20:59:48.203Z",
     "size": 1256,
-    "checksum": "74bc47a57eba88a18db51c103cf780778453fef62875fd92c5bd961abb1b8b2d"
+    "checksum": "ca687ef04746de363e9b53e7a5b787a8eb341555aa7d7a78f0d4c84a5057fae6"
   },
   "branding-logo": {
     "lastModified": "2026-01-09T00:09:36.075Z",
@@ -15,8 +15,8 @@
     "checksum": "bfbab2d33a94a41883bd0e61bbdf1b9e109c565af159e66c51995b988ef11738"
   },
   "portfolios": {
-    "lastModified": "2026-01-30T13:46:41.548Z",
-    "size": 647,
-    "checksum": "da1ba28231cb1badba00af35d407c9f397f1ceab0cbf178b19aca3885b0dca50"
+    "lastModified": "2026-01-30T20:56:22.481Z",
+    "size": 864,
+    "checksum": "11370ce1bc55e0668d663f5000bee9e736dd76a997a733de1c96daa58ba05b62"
   }
 }

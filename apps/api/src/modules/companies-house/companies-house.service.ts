@@ -31,6 +31,10 @@ export class CompaniesHouseService {
   private readonly baseUrl = 'https://api.company-information.service.gov.uk';
   private readonly apiKey: string;
 
+  private get isDbEnabled(): boolean {
+    return !!process.env.DATABASE_URL;
+  }
+
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
@@ -377,33 +381,35 @@ export class CompaniesHouseService {
 
       // Persist snapshot to Postgres (CompaniesHouseData) for Standard B
       try {
-        const existing = await (this.prisma as any).companiesHouseData.findFirst({ where: { companyNumber } });
-        const mergedOfficers = this.mergeOfficerSnapshots(existing?.officers, officers);
+        if (this.isDbEnabled) {
+          const existing = await (this.prisma as any).companiesHouseData.findFirst({ where: { companyNumber } });
+          const mergedOfficers = this.mergeOfficerSnapshots(existing?.officers, officers);
 
-        await (this.prisma as any).companiesHouseData.upsert({
-          where: { companyNumber },
-          create: {
-            clientId: client.id,
-            clientRef: client.ref,
-            companyNumber,
-            companyDetails: companyDetails as any,
-            officers: mergedOfficers as any,
-            filingHistory: filingHistory as any,
-            charges: charges as any,
-            pscs: pscs as any,
-            lastFetched: new Date(),
-          },
-          update: {
-            clientId: client.id,
-            clientRef: client.ref,
-            companyDetails: companyDetails as any,
-            officers: mergedOfficers as any,
-            filingHistory: filingHistory as any,
-            charges: charges as any,
-            pscs: pscs as any,
-            lastFetched: new Date(),
-          },
-        });
+          await (this.prisma as any).companiesHouseData.upsert({
+            where: { companyNumber },
+            create: {
+              clientId: client.id,
+              clientRef: client.ref,
+              companyNumber,
+              companyDetails: companyDetails as any,
+              officers: mergedOfficers as any,
+              filingHistory: filingHistory as any,
+              charges: charges as any,
+              pscs: pscs as any,
+              lastFetched: new Date(),
+            },
+            update: {
+              clientId: client.id,
+              clientRef: client.ref,
+              companyDetails: companyDetails as any,
+              officers: mergedOfficers as any,
+              filingHistory: filingHistory as any,
+              charges: charges as any,
+              pscs: pscs as any,
+              lastFetched: new Date(),
+            },
+          });
+        }
       } catch (e: any) {
         this.logger.warn(`Failed to persist CompaniesHouseData snapshot for ${companyNumber}: ${e?.message || e}`);
       }

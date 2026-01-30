@@ -1,0 +1,17 @@
+{
+  "id": "task_1769805099065_bp261il",
+  "clientId": "1M001",
+  "serviceId": "service_1769790593489_o241lu2s9",
+  "title": "Prepare CT600 return",
+  "description": "Complete corporation tax return form CT600",
+  "assignee": null,
+  "status": "OPEN",
+  "priority": "HIGH",
+  "tags": [
+    "preparation",
+    "ct600",
+    "auto-generated"
+  ],
+  "createdAt": "2026-01-30T20:31:39.065Z",
+  "updatedAt": "2026-01-30T20:31:39.065Z"
+}

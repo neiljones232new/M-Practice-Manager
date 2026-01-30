@@ -10,6 +10,13 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
+  const cwd = process.cwd();
+  const repoRoot = cwd.endsWith(path.join('apps', 'api')) ? path.resolve(cwd, '..', '..') : cwd;
+  const defaultStoragePath = path.resolve(repoRoot, 'storage');
+  if (!process.env.STORAGE_PATH || String(process.env.STORAGE_PATH).trim() === '') {
+    process.env.STORAGE_PATH = defaultStoragePath;
+  }
+
   const envCandidates = [
     path.resolve(process.cwd(), '.env.prod'),
     path.resolve(process.cwd(), '.env.local'),

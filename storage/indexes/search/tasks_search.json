@@ -1,1 +1,1023 @@
-{}
+{
+  "task_1769805099056_5w89xbo": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      }
+    }
+  },
+  "prepare": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "name"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "name"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      }
+    }
+  },
+  "corporation": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      }
+    }
+  },
+  "tax": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      },
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      }
+    }
+  },
+  "computation": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "name",
+          "tags"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      }
+    }
+  },
+  "calculate": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      }
+    }
+  },
+  "liability": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      }
+    }
+  },
+  "based": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      }
+    }
+  },
+  "annual": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      },
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "accounts": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      },
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      },
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "open": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      },
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      },
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      },
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      },
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "1m001": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      },
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      },
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      },
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      },
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "high": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      }
+    }
+  },
+  "preparation": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      }
+    }
+  },
+  "auto": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      },
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      },
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      },
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      },
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "generated": {
+    "tasks": {
+      "task_1769805099056_5w89xbo": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.059Z"
+      },
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      },
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      },
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      },
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      },
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "task_1769805099061_oq362dz": {
+    "tasks": {
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      }
+    }
+  },
+  "review": {
+    "tasks": {
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 13.5,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 13.5,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      },
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      }
+    }
+  },
+  "planning": {
+    "tasks": {
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 11.25,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      }
+    }
+  },
+  "opportunities": {
+    "tasks": {
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      }
+    }
+  },
+  "potential": {
+    "tasks": {
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      }
+    }
+  },
+  "strategies": {
+    "tasks": {
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      }
+    }
+  },
+  "reliefs": {
+    "tasks": {
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      }
+    }
+  },
+  "medium": {
+    "tasks": {
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      },
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      }
+    }
+  },
+  "optimization": {
+    "tasks": {
+      "task_1769805099061_oq362dz": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.063Z"
+      }
+    }
+  },
+  "task_1769805099065_bp261il": {
+    "tasks": {
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      }
+    }
+  },
+  "ct600": {
+    "tasks": {
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      }
+    }
+  },
+  "return": {
+    "tasks": {
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      },
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      }
+    }
+  },
+  "complete": {
+    "tasks": {
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      }
+    }
+  },
+  "form": {
+    "tasks": {
+      "task_1769805099065_bp261il": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:31:39.067Z"
+      }
+    }
+  },
+  "task_1769805099068_978vc94": {
+    "tasks": {
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      }
+    }
+  },
+  "submit": {
+    "tasks": {
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "name"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      }
+    }
+  },
+  "file": {
+    "tasks": {
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      },
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 13.5,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "hmrc": {
+    "tasks": {
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "description",
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      }
+    }
+  },
+  "urgent": {
+    "tasks": {
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      },
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "filing": {
+    "tasks": {
+      "task_1769805099068_978vc94": {
+        "fields": [
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:31:39.069Z"
+      },
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "task_1769805187716_jr77az8": {
+    "tasks": {
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      }
+    }
+  },
+  "request": {
+    "tasks": {
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 11.25,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      }
+    }
+  },
+  "client": {
+    "tasks": {
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      },
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 15.75,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      }
+    }
+  },
+  "records": {
+    "tasks": {
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      },
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      }
+    }
+  },
+  "contact": {
+    "tasks": {
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "description",
+          "tags"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      }
+    }
+  },
+  "accounting": {
+    "tasks": {
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      }
+    }
+  },
+  "supporting": {
+    "tasks": {
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      }
+    }
+  },
+  "documents": {
+    "tasks": {
+      "task_1769805187716_jr77az8": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.718Z"
+      }
+    }
+  },
+  "task_1769805187719_y5534cc": {
+    "tasks": {
+      "task_1769805187719_y5534cc": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T20:33:07.721Z"
+      }
+    }
+  },
+  "task_1769805187723_6qn04w3": {
+    "tasks": {
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T20:33:07.725Z"
+      }
+    }
+  },
+  "approval": {
+    "tasks": {
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      }
+    }
+  },
+  "send": {
+    "tasks": {
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      }
+    }
+  },
+  "draft": {
+    "tasks": {
+      "task_1769805187723_6qn04w3": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.726Z"
+      }
+    }
+  },
+  "task_1769805187727_o9skc5i": {
+    "tasks": {
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "approved": {
+    "tasks": {
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "companies": {
+    "tasks": {
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "description",
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  },
+  "house": {
+    "tasks": {
+      "task_1769805187727_o9skc5i": {
+        "fields": [
+          "description",
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T20:33:07.729Z"
+      }
+    }
+  }
+}

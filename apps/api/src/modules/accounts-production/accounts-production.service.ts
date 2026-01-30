@@ -328,9 +328,14 @@ export class AccountsProductionService {
     try {
       const indexData = await fs.readFile(this.indexPath, 'utf8');
       const index = JSON.parse(indexData) as Array<{ id: string; clientId: string; createdAt: string }>;
+
+      const resolvedClient = await this.clientsService.findOne(clientId);
+      const acceptableClientIds = new Set(
+        [clientId, resolvedClient?.id, resolvedClient?.ref].filter(Boolean).map(String),
+      );
       
       const clientAccountsSets = index
-        .filter(item => item.clientId === clientId)
+        .filter(item => item.clientId && acceptableClientIds.has(String(item.clientId)))
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
       const accountsSets = await Promise.all(

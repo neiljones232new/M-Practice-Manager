@@ -1,0 +1,11 @@
+{
+  "id": "service_1769799017734_s8g91b8eg",
+  "clientId": "4P001",
+  "kind": "Payroll",
+  "frequency": "MONTHLY",
+  "fee": 100,
+  "annualized": 1200,
+  "status": "ACTIVE",
+  "createdAt": "2026-01-30T18:50:17.734Z",
+  "updatedAt": "2026-01-30T18:50:17.734Z"
+}

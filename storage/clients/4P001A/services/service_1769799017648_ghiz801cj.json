@@ -1,0 +1,12 @@
+{
+  "id": "service_1769799017648_ghiz801cj",
+  "clientId": "4P001A",
+  "kind": "Self Assessment",
+  "frequency": "ANNUAL",
+  "fee": 350,
+  "annualized": 350,
+  "status": "ACTIVE",
+  "description": "Personal Tax Return",
+  "createdAt": "2026-01-30T18:50:17.648Z",
+  "updatedAt": "2026-01-30T18:50:17.648Z"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "task_1769805099068_978vc94",
+  "clientId": "1M001",
+  "serviceId": "service_1769790593489_o241lu2s9",
+  "title": "Submit corporation tax return",
+  "description": "File CT600 return with HMRC",
+  "assignee": null,
+  "status": "OPEN",
+  "priority": "URGENT",
+  "tags": [
+    "filing",
+    "hmrc",
+    "auto-generated"
+  ],
+  "createdAt": "2026-01-30T20:31:39.068Z",
+  "updatedAt": "2026-01-30T20:31:39.068Z"
+}

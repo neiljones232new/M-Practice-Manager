@@ -303,7 +303,7 @@ export default function ServicesPage() {
                     <td>
                       <div style={{ display:'grid', gap: '2px' }}>
                         <span className="mdj-ref">{s.clientRef}</span>
-                        <Link className="mdj-link" href={`/clients/${s.clientId}`}>
+                        <Link className="mdj-link" href={`/clients/${s.clientRef || s.clientId}`}>
                           {s.clientName}
                         </Link>
                       </div>
@@ -332,7 +332,7 @@ export default function ServicesPage() {
                       <Link href={`/services/${s.id}`} className="btn-outline-gold btn-xs" style={{ marginRight: '0.5rem' }}>
                         View
                       </Link>
-                      <Link href={`/clients/${s.clientId}`} className="btn-outline-gold btn-xs">
+                      <Link href={`/clients/${s.clientRef || s.clientId}`} className="btn-outline-gold btn-xs">
                         Client
                       </Link>
                     </td>
