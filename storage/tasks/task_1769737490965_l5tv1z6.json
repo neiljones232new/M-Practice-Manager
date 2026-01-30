@@ -1,0 +1,17 @@
+{
+  "id": "task_1769737490965_l5tv1z6",
+  "clientId": "client_1769735421342_qd47w1ona",
+  "serviceId": "service_1769737480190_cq16ll9gs",
+  "title": "Request client records",
+  "description": "Contact client to request annual accounting records and supporting documents",
+  "dueDate": "2025-12-30T00:00:00.000Z",
+  "status": "OPEN",
+  "priority": "HIGH",
+  "tags": [
+    "preparation",
+    "client-contact",
+    "auto-generated"
+  ],
+  "createdAt": "2026-01-30T01:44:50.965Z",
+  "updatedAt": "2026-01-30T01:44:50.965Z"
+}

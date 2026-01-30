@@ -120,7 +120,8 @@ export class ClientPartyService {
       refreshed.metadata = refreshed.metadata || {};
       refreshed.metadata.__sources = refreshed.metadata.__sources || {};
       refreshed.metadata.__sources[source] = sourceId;
-      await this.fileStorage.writeJson('client-parties', refreshed.id, refreshed);
+      const clientRef = await this.resolveClientRef(refreshed.clientId);
+      await this.fileStorage.writeJson('client-parties', refreshed.id, refreshed, undefined, clientRef);
 
       return { party: refreshed as ClientParty, created: false };
     }
@@ -174,7 +175,8 @@ export class ClientPartyService {
     createdRecord.metadata = createdRecord.metadata || {};
     createdRecord.metadata.__sources = createdRecord.metadata.__sources || {};
     createdRecord.metadata.__sources[source] = sourceId;
-    await this.fileStorage.writeJson('client-parties', createdRecord.id, createdRecord);
+      const clientRef = await this.resolveClientRef(createdRecord.clientId);
+      await this.fileStorage.writeJson('client-parties', createdRecord.id, createdRecord, undefined, clientRef);
 
     return { party: createdRecord, created: true };
   }
@@ -215,7 +217,8 @@ export class ClientPartyService {
     };
 
     // Store the client-party relationship
-    await this.fileStorage.writeJson('client-parties', id, clientParty);
+    const clientRef = await this.resolveClientRef(clientParty.clientId);
+    await this.fileStorage.writeJson('client-parties', id, clientParty, undefined, clientRef);
     
     // Update client's parties array
     await this.updateClientParties(createClientPartyDto.clientId, id, 'add');
@@ -280,7 +283,8 @@ export class ClientPartyService {
       personId: existing.personId, // Ensure person ID cannot be changed
     };
 
-    await this.fileStorage.writeJson('client-parties', id, updatedClientParty);
+      const clientRef = await this.resolveClientRef(updatedClientParty.clientId);
+      await this.fileStorage.writeJson('client-parties', id, updatedClientParty, undefined, clientRef);
     this.logger.log(`Updated client-party relationship: ${id}`);
 
     return updatedClientParty;
@@ -313,7 +317,8 @@ export class ClientPartyService {
       resignedAt: resignationDate || new Date(),
     };
 
-    await this.fileStorage.writeJson('client-parties', id, updatedClientParty);
+    const clientRef = await this.resolveClientRef(existing.clientId);
+    await this.fileStorage.writeJson('client-parties', id, updatedClientParty, undefined, clientRef);
     this.logger.log(`Resigned client-party relationship: ${id}`);
 
     return updatedClientParty;
@@ -361,7 +366,8 @@ export class ClientPartyService {
 
     for (const contact of existingPrimaryContacts) {
       const updated = { ...contact, primaryContact: false };
-      await this.fileStorage.writeJson('client-parties', contact.id, updated);
+      const clientRef = await this.resolveClientRef(contact.clientId);
+      await this.fileStorage.writeJson('client-parties', contact.id, updated, undefined, clientRef);
     }
   }
 
@@ -382,5 +388,10 @@ export class ClientPartyService {
 
   private generateId(): string {
     return `client_party_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  private async resolveClientRef(clientId: string): Promise<string> {
+    const client = await this.clientsService.findOne(clientId);
+    return client?.ref || clientId;
   }
 }

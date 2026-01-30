@@ -1,0 +1,14 @@
+{
+  "id": "client_party_1769735421393_e5kjtwx3c",
+  "clientId": "client_1769735421342_qd47w1ona",
+  "personId": "person_1769735421391_2anjozdgh",
+  "role": "DIRECTOR",
+  "appointedAt": "2023-09-01T00:00:00.000Z",
+  "primaryContact": false,
+  "suffixLetter": "A",
+  "metadata": {
+    "__sources": {
+      "CH_OFFICER": "/officers/ACFos3U6JBVh1TgaF_FRlWDmrCg/appointments"
+    }
+  }
+}

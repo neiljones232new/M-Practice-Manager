@@ -42,6 +42,8 @@ export class FileStorageService {
   private readonly encryptAtRest: boolean;
   private readonly activeLocks = new Set<string>();
   private readonly pendingTransactions = new Map<string, FileStorageTransaction>();
+  private readonly clientScopedMap = new Map<string, string>();
+  private readonly clientScopedCategories = new Set(['services', 'client-parties', 'compliance']);
 
   private searchService: any; // Will be injected later to avoid circular dependency
 
@@ -93,11 +95,11 @@ export class FileStorageService {
         await this.ensureDirectory(path.join(this.storagePath, category));
         
         // Create portfolio subdirectories for clients
-        if (category === 'clients') {
-          for (let i = 1; i <= 10; i++) {
-            await this.ensureDirectory(path.join(this.storagePath, category, `portfolio-${i}`));
-          }
+      if (category === 'clients') {
+        for (let i = 1; i <= 10; i++) {
+          await this.ensureDirectory(path.join(this.storagePath, category, `portfolio-${i}`));
         }
+      }
         
         // Create specialized subdirectories
         if (category === 'calendar') {
@@ -118,6 +120,8 @@ export class FileStorageService {
 
       // Initialize index files
       await this.initializeIndexes();
+
+      await this.buildClientScopedMap();
       
       this.logger.log(`File storage initialized at: ${this.storagePath}`);
     } catch (error) {
@@ -129,6 +133,76 @@ export class FileStorageService {
   private async ensureDirectory(dirPath: string) {
     if (!existsSync(dirPath)) {
       await fs.mkdir(dirPath, { recursive: true });
+    }
+  }
+
+  private isClientScopedCategory(category: string): boolean {
+    return this.clientScopedCategories.has(category);
+  }
+
+  private getClientScopedDirectory(clientRef: string, category: string): string {
+    return path.join(this.storagePath, 'clients', clientRef, category);
+  }
+
+  private getClientScopedFilePathFromRef(clientRef: string, category: string, id: string): string {
+    return path.join(this.getClientScopedDirectory(clientRef, category), `${id}.json`);
+  }
+
+  private async locateClientScopedFile(category: string, id: string): Promise<{ clientRef: string; filePath: string } | null> {
+    if (!existsSync(path.join(this.storagePath, 'clients'))) {
+      return null;
+    }
+
+    const entries = await fs.readdir(path.join(this.storagePath, 'clients'), { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) {
+        continue;
+      }
+      const candidate = path.join(this.getClientScopedDirectory(entry.name, category), `${id}.json`);
+      if (existsSync(candidate)) {
+        return { clientRef: entry.name, filePath: candidate };
+      }
+    }
+
+    return null;
+  }
+
+  private async getClientScopedFilePath(category: string, id: string): Promise<string | null> {
+    const cachedRef = this.clientScopedMap.get(id);
+    if (cachedRef) {
+      return this.getClientScopedFilePathFromRef(cachedRef, category, id);
+    }
+
+    const located = await this.locateClientScopedFile(category, id);
+    if (located) {
+      this.clientScopedMap.set(id, located.clientRef);
+      return located.filePath;
+    }
+
+    return null;
+  }
+
+  private async buildClientScopedMap() {
+    const clientsDir = path.join(this.storagePath, 'clients');
+    if (!existsSync(clientsDir)) {
+      return;
+    }
+
+    const entries = await fs.readdir(clientsDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const clientRef = entry.name;
+      const clientPath = path.join(clientsDir, clientRef);
+      for (const category of this.clientScopedCategories) {
+        const categoryDir = path.join(clientPath, category);
+        if (!existsSync(categoryDir)) continue;
+        const files = await fs.readdir(categoryDir);
+        for (const file of files) {
+          if (!file.endsWith('.json')) continue;
+          const resourceId = file.replace(/\\.json$/, '');
+          this.clientScopedMap.set(resourceId, clientRef);
+        }
+      }
     }
   }
 
@@ -182,15 +256,24 @@ export class FileStorageService {
       && typeof payload.tag === 'string';
   }
 
-  async writeJson<T>(category: string, id: string, data: T, portfolioCode?: number): Promise<void> {
+  async writeJson<T>(category: string, id: string, data: T, portfolioCode?: number, clientRef?: string): Promise<void> {
     const lockKey = `${category}/${id}`;
     
     try {
       await this.acquireLock(lockKey);
-      
-      const filePath = this.getFilePath(category, id, portfolioCode);
-      if (category === 'clients') {
-        await this.ensureDirectory(path.dirname(filePath));
+      let filePath: string;
+      if (this.isClientScopedCategory(category)) {
+        if (!clientRef) {
+          throw new Error(`Missing clientRef for scoped category ${category}`);
+        }
+        await this.ensureDirectory(this.getClientScopedDirectory(clientRef, category));
+        filePath = this.getClientScopedFilePathFromRef(clientRef, category, id);
+        this.clientScopedMap.set(id, clientRef);
+      } else {
+        filePath = this.getFilePath(category, id, portfolioCode);
+        if (category === 'clients') {
+          await this.ensureDirectory(path.dirname(filePath));
+        }
       }
       
       // Create backup if file exists
@@ -264,9 +347,14 @@ export class FileStorageService {
   }
 
   async readJson<T>(category: string, id: string, portfolioCode?: number): Promise<T | null> {
-    const filePath = category === 'clients'
-      ? this.resolveClientReadPath(id, portfolioCode)
-      : this.getFilePath(category, id, portfolioCode);
+    let filePath: string | null;
+    if (category === 'clients') {
+      filePath = this.resolveClientReadPath(id, portfolioCode);
+    } else if (this.isClientScopedCategory(category)) {
+      filePath = await this.getClientScopedFilePath(category, id);
+    } else {
+      filePath = this.getFilePath(category, id, portfolioCode);
+    }
     
     try {
       if (!filePath || !existsSync(filePath)) {
@@ -300,9 +388,17 @@ export class FileStorageService {
     try {
       await this.acquireLock(lockKey);
       
-      const filePaths = category === 'clients'
-        ? this.getClientDeletePaths(id)
-        : [this.getFilePath(category, id, portfolioCode)];
+    let filePaths: string[] = [];
+    if (category === 'clients') {
+      filePaths = this.getClientDeletePaths(id);
+    } else if (this.isClientScopedCategory(category)) {
+      const scopedPath = await this.getClientScopedFilePath(category, id);
+      if (scopedPath) {
+        filePaths = [scopedPath];
+      }
+    } else {
+      filePaths = [this.getFilePath(category, id, portfolioCode)];
+    }
       let deleted = false;
       
       for (const filePath of filePaths) {
@@ -311,6 +407,9 @@ export class FileStorageService {
         await this.createBackup(category, id, portfolioCode);
         await fs.unlink(filePath);
         deleted = true;
+        if (this.isClientScopedCategory(category)) {
+          this.clientScopedMap.delete(id);
+        }
       }
       
       if (deleted) {
@@ -333,6 +432,12 @@ export class FileStorageService {
   }
 
   async listFiles(category: string, portfolioCode?: number): Promise<string[]> {
+    if (this.isClientScopedCategory(category)) {
+      if (this.clientScopedMap.size === 0) {
+        await this.buildClientScopedMap();
+      }
+      return Array.from(this.clientScopedMap.keys());
+    }
     const categoryPath = path.join(this.storagePath, category);
     
     try {

@@ -1,0 +1,126 @@
+{
+  "filing": {
+    "compliance": {
+      "C17697354214072ym0gv3no": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:13:27.323Z"
+      },
+      "C1769735421409p4huvsbfa": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:13:27.329Z"
+      }
+    }
+  },
+  "pending": {
+    "compliance": {
+      "C17697354214072ym0gv3no": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:13:27.323Z"
+      },
+      "C1769735421409p4huvsbfa": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:13:27.329Z"
+      }
+    }
+  },
+  "c17697354214072ym0gv3no": {
+    "compliance": {
+      "C17697354214072ym0gv3no": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:13:27.323Z"
+      }
+    }
+  },
+  "annual": {
+    "compliance": {
+      "C17697354214072ym0gv3no": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:13:27.323Z"
+      }
+    }
+  },
+  "accounts": {
+    "compliance": {
+      "C17697354214072ym0gv3no": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:13:27.323Z"
+      }
+    }
+  },
+  "annual_accounts": {
+    "compliance": {
+      "C17697354214072ym0gv3no": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:13:27.323Z"
+      }
+    }
+  },
+  "c1769735421409p4huvsbfa": {
+    "compliance": {
+      "C1769735421409p4huvsbfa": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:13:27.329Z"
+      }
+    }
+  },
+  "confirmation": {
+    "compliance": {
+      "C1769735421409p4huvsbfa": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:13:27.329Z"
+      }
+    }
+  },
+  "statement": {
+    "compliance": {
+      "C1769735421409p4huvsbfa": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:13:27.329Z"
+      }
+    }
+  },
+  "confirmation_statement": {
+    "compliance": {
+      "C1769735421409p4huvsbfa": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:13:27.329Z"
+      }
+    }
+  }
+}

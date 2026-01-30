@@ -1,0 +1,17 @@
+{
+  "id": "task_1769737490968_5rkjzor",
+  "clientId": "client_1769735421342_qd47w1ona",
+  "serviceId": "service_1769737480190_cq16ll9gs",
+  "title": "Review and prepare accounts",
+  "description": "Review client records and prepare annual accounts",
+  "dueDate": "2026-01-29T00:00:00.000Z",
+  "status": "OPEN",
+  "priority": "HIGH",
+  "tags": [
+    "preparation",
+    "accounts",
+    "auto-generated"
+  ],
+  "createdAt": "2026-01-30T01:44:50.968Z",
+  "updatedAt": "2026-01-30T01:44:50.968Z"
+}

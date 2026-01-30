@@ -1002,9 +1002,9 @@ export default function ClientDetailsPage() {
       {
         label: 'AML Status',
         value:
-          profile?.amlCompleted === true || profile?.amlCompleted === 1
+          profile?.amlCompleted === true
             ? 'Complete'
-            : profile?.amlCompleted === false || profile?.amlCompleted === 0
+            : profile?.amlCompleted === false
             ? 'Incomplete'
             : '—',
       },
@@ -1014,9 +1014,9 @@ export default function ClientDetailsPage() {
       {
         label: 'Engagement Letter',
         value:
-          profile?.engagementLetterSigned === true || profile?.engagementLetterSigned === 1
+          profile?.engagementLetterSigned === true
             ? 'Signed'
-            : profile?.engagementLetterSigned === false || profile?.engagementLetterSigned === 0
+            : profile?.engagementLetterSigned === false
             ? 'Not signed'
             : '—',
       },

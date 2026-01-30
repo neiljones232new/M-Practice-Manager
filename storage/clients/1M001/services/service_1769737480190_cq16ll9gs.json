@@ -1,0 +1,13 @@
+{
+  "id": "service_1769737480190_cq16ll9gs",
+  "clientId": "client_1769735421342_qd47w1ona",
+  "kind": "Annual Accounts",
+  "frequency": "ANNUAL",
+  "fee": 1000,
+  "annualized": 1000,
+  "status": "ACTIVE",
+  "nextDue": "2026-02-28T00:00:00.000Z",
+  "description": "",
+  "createdAt": "2026-01-30T01:44:40.190Z",
+  "updatedAt": "2026-01-30T01:44:40.190Z"
+}

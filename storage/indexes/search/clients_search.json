@@ -1,0 +1,218 @@
+{
+  "15110513": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "registeredNumber"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "client_1769735421342_qd47w1ona": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "mdj": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "name"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "consultants": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "ltd": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "active": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "company": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "1m001": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "ref"
+        ],
+        "score": 7.5,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "07713697615": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "mainPhone"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "canal": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "address"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "view": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "slate": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "lane": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "audenshaw": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "manchester": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "m34": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T01:46:50.300Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "5gw": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T01:46:50.301Z",
+        "portfolioCode": 1
+      }
+    }
+  },
+  "england": {
+    "clients": {
+      "1:1M001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-30T01:46:50.301Z",
+        "portfolioCode": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "client_party_1769735421385_l6zbfg6ap": {
+    "client-parties": {
+      "client_party_1769735421385_l6zbfg6ap": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:10:21.390Z"
+      }
+    }
+  },
+  "client_party_1769735421399_doko2v4nw": {
+    "client-parties": {
+      "client_party_1769735421399_doko2v4nw": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:10:21.402Z"
+      }
+    }
+  },
+  "client_party_1769735421393_e5kjtwx3c": {
+    "client-parties": {
+      "client_party_1769735421393_e5kjtwx3c": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:10:21.406Z"
+      }
+    }
+  }
+}

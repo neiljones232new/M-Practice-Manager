@@ -53,7 +53,7 @@ export class ServicesService {
       updatedAt: now,
     };
 
-    await this.fileStorage.writeJson('services', id, service);
+    await this.fileStorage.writeJson('services', id, service, undefined, client.ref);
     
     // Add service ID to client's services array
     if (!client.services.includes(id)) {
@@ -175,7 +175,9 @@ export class ServicesService {
       updatedAt: new Date(),
     };
 
-    await this.fileStorage.writeJson('services', id, updatedService);
+    const client = await this.clientsService.findOne(existing.clientId);
+    const clientRef = client?.ref || existing.clientId;
+    await this.fileStorage.writeJson('services', id, updatedService, undefined, clientRef);
     this.logger.log(`Updated service: ${updatedService.kind} (${updatedService.id})`);
 
     // Sync compliance item dates if nextDue changed (Requirements: 7.4, 7.5)

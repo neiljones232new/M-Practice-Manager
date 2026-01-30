@@ -382,7 +382,7 @@ describe('FileStorageService - File Operations Unit Tests', () => {
     it('should create snapshots successfully', async () => {
       // Write some test data first
       await service.writeJson('clients', 'snapshot-test', { name: 'Snapshot Test' });
-      await service.writeJson('services', 'service-test', { name: 'Service Test' });
+      await service.writeJson('services', 'service-test', { name: 'Service Test' }, undefined, 'TEST_CLIENT');
 
       const snapshotPath = await service.createSnapshot();
       

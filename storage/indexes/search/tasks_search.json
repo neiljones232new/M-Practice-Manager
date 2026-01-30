@@ -1,0 +1,517 @@
+{
+  "task_1769737490965_l5tv1z6": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      }
+    }
+  },
+  "request": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 11.25,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      }
+    }
+  },
+  "client": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      },
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      },
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 15.75,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      }
+    }
+  },
+  "records": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      },
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      }
+    }
+  },
+  "contact": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "description",
+          "tags"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      }
+    }
+  },
+  "annual": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      },
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      },
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "accounting": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      }
+    }
+  },
+  "supporting": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      }
+    }
+  },
+  "documents": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      }
+    }
+  },
+  "open": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      },
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      },
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      },
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "client_1769735421342_qd47w1ona": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      },
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      },
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      },
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "high": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      },
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      }
+    }
+  },
+  "preparation": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      },
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      }
+    }
+  },
+  "auto": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      },
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      },
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      },
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "generated": {
+    "tasks": {
+      "task_1769737490965_l5tv1z6": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.967Z"
+      },
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      },
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      },
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "tags"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "task_1769737490968_5rkjzor": {
+    "tasks": {
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      }
+    }
+  },
+  "review": {
+    "tasks": {
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 13.5,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      },
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      }
+    }
+  },
+  "prepare": {
+    "tasks": {
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      }
+    }
+  },
+  "accounts": {
+    "tasks": {
+      "task_1769737490968_5rkjzor": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T01:44:50.970Z"
+      },
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      },
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 6.75,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "task_1769737490972_pa8948r": {
+    "tasks": {
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      }
+    }
+  },
+  "approval": {
+    "tasks": {
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "name",
+          "description",
+          "tags"
+        ],
+        "score": 9,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      }
+    }
+  },
+  "send": {
+    "tasks": {
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      }
+    }
+  },
+  "draft": {
+    "tasks": {
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      }
+    }
+  },
+  "medium": {
+    "tasks": {
+      "task_1769737490972_pa8948r": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.974Z"
+      }
+    }
+  },
+  "task_1769737490975_dxklcv2": {
+    "tasks": {
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "file": {
+    "tasks": {
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "name",
+          "description"
+        ],
+        "score": 13.5,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "approved": {
+    "tasks": {
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "companies": {
+    "tasks": {
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "description",
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "house": {
+    "tasks": {
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "description",
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "urgent": {
+    "tasks": {
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "priority"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  },
+  "filing": {
+    "tasks": {
+      "task_1769737490975_dxklcv2": {
+        "fields": [
+          "tags"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-30T01:44:50.977Z"
+      }
+    }
+  }
+}

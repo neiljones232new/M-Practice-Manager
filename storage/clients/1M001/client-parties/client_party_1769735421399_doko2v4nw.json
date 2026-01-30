@@ -1,0 +1,14 @@
+{
+  "id": "client_party_1769735421399_doko2v4nw",
+  "clientId": "client_1769735421342_qd47w1ona",
+  "personId": "person_1769735421398_d06fzcyj4",
+  "role": "SECRETARY",
+  "appointedAt": "2024-03-10T00:00:00.000Z",
+  "primaryContact": false,
+  "suffixLetter": "A",
+  "metadata": {
+    "__sources": {
+      "CH_OFFICER": "/officers/QHuVIQAv9RRw49X8IGr5Ci03hqw/appointments"
+    }
+  }
+}

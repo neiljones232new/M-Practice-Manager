@@ -27,7 +27,8 @@ export class ComplianceService {
       updatedAt: new Date(),
     };
 
-    await this.fileStorageService.writeJson('compliance', id, complianceItem);
+    const clientRef = await this.resolveClientRef(createDto.clientId);
+    await this.fileStorageService.writeJson('compliance', id, complianceItem, undefined, clientRef);
     this.logger.log(`Created compliance item ${id} for client ${createDto.clientId}`);
     return complianceItem;
   }
@@ -49,7 +50,8 @@ export class ComplianceService {
       updatedAt: new Date(),
     };
 
-    await this.fileStorageService.writeJson('compliance', id, updatedItem);
+    const clientRef = await this.resolveClientRef(updatedItem.clientId);
+    await this.fileStorageService.writeJson('compliance', id, updatedItem, undefined, clientRef);
     this.logger.log(`Updated compliance item ${id}`);
     return updatedItem;
   }
@@ -68,13 +70,10 @@ export class ComplianceService {
       const files = await this.fileStorageService.listFiles('compliance');
       const complianceItems: ComplianceItem[] = [];
 
-      for (const file of files) {
-        if (file.endsWith('.json')) {
-          const id = file.replace('.json', '');
-          const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
-          if (item && item.clientId === clientId) {
-            complianceItems.push(item);
-          }
+      for (const id of files) {
+        const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
+        if (item && item.clientId === clientId) {
+          complianceItems.push(item);
         }
       }
 
@@ -108,23 +107,20 @@ export class ComplianceService {
       let successCount = 0;
       let errorCount = 0;
 
-      for (const file of filesToProcess) {
-        if (file.endsWith('.json')) {
-          const id = file.replace('.json', '');
-          try {
-            const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
-            if (item) {
-              complianceItems.push(item);
-              successCount++;
-            } else {
-              this.logger.warn(`Compliance item ${id} returned null`);
-              errorCount++;
-            }
-          } catch (error) {
-            this.logger.warn(`Failed to read compliance item ${id}: ${error.message}`);
+      for (const id of filesToProcess) {
+        try {
+          const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
+          if (item) {
+            complianceItems.push(item);
+            successCount++;
+          } else {
+            this.logger.warn(`Compliance item ${id} returned null`);
             errorCount++;
-            // Continue processing other files instead of failing completely
           }
+        } catch (error) {
+          this.logger.warn(`Failed to read compliance item ${id}: ${error.message}`);
+          errorCount++;
+          // Continue processing other files instead of failing completely
         }
       }
 
@@ -197,13 +193,10 @@ export class ComplianceService {
       const files = await this.fileStorageService.listFiles('compliance');
       const complianceItems: ComplianceItem[] = [];
 
-      for (const file of files) {
-        if (file.endsWith('.json')) {
-          const id = file.replace('.json', '');
-          const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
-          if (item && item.serviceId === serviceId) {
-            complianceItems.push(item);
-          }
+      for (const id of files) {
+        const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
+        if (item && item.serviceId === serviceId) {
+          complianceItems.push(item);
         }
       }
 
@@ -270,13 +263,10 @@ export class ComplianceService {
       const files = await this.fileStorageService.listFiles('compliance');
       const complianceItems: ComplianceItem[] = [];
 
-      for (const file of files) {
-        if (file.endsWith('.json')) {
-          const id = file.replace('.json', '');
-          const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
-          if (item && item.type === type) {
-            complianceItems.push(item);
-          }
+      for (const id of files) {
+        const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
+        if (item && item.type === type) {
+          complianceItems.push(item);
         }
       }
 
@@ -297,13 +287,10 @@ export class ComplianceService {
       const files = await this.fileStorageService.listFiles('compliance');
       const complianceItems: ComplianceItem[] = [];
 
-      for (const file of files) {
-        if (file.endsWith('.json')) {
-          const id = file.replace('.json', '');
-          const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
-          if (item && item.source === source) {
-            complianceItems.push(item);
-          }
+      for (const id of files) {
+        const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
+        if (item && item.source === source) {
+          complianceItems.push(item);
         }
       }
 
@@ -964,19 +951,16 @@ export class ComplianceService {
       
       this.logger.debug(`Checking ${filesToCheck.length} compliance files for existing items (limited from ${files.length} total)`);
 
-      for (const file of filesToCheck) {
-        if (file.endsWith('.json')) {
-          const id = file.replace('.json', '');
-          const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
-          if (
-            item &&
-            item.clientId === clientId &&
-            item.serviceId === serviceId &&
-            item.type === type &&
-            item.status !== 'FILED' // Don't consider filed items as existing
-          ) {
-            items.push(item);
-          }
+      for (const id of filesToCheck) {
+        const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
+        if (
+          item &&
+          item.clientId === clientId &&
+          item.serviceId === serviceId &&
+          item.type === type &&
+          item.status !== 'FILED' // Don't consider filed items as existing
+        ) {
+          items.push(item);
         }
       }
 
@@ -1045,7 +1029,7 @@ export class ComplianceService {
     try {
       // Get all compliance items
       const files = await this.fileStorageService.listFiles('compliance');
-      totalItems = files.filter(f => f.endsWith('.json')).length;
+      totalItems = files.length;
 
       this.logger.log(`Checking ${totalItems} compliance items for invalid client IDs`);
 
@@ -1056,17 +1040,14 @@ export class ComplianceService {
       for (let portfolio = 1; portfolio <= 10; portfolio++) {
         try {
           const clientFiles = await this.fileStorageService.listFiles('clients', portfolio);
-          for (const clientFile of clientFiles) {
-            if (clientFile.endsWith('.json')) {
-              try {
-                const clientId = clientFile.replace('.json', '');
-                const client = await this.fileStorageService.readJson<Client>('clients', clientId, portfolio);
-                if (client?.id) {
-                  validClientIds.add(client.id);
-                }
-              } catch (error) {
-                this.logger.warn(`Failed to read client ${clientFile} from portfolio ${portfolio}: ${error.message}`);
+          for (const clientRef of clientFiles) {
+            try {
+              const client = await this.fileStorageService.readJson<Client>('clients', clientRef, portfolio);
+              if (client?.id) {
+                validClientIds.add(client.id);
               }
+            } catch (error) {
+              this.logger.warn(`Failed to read client ${clientRef} from portfolio ${portfolio}: ${error.message}`);
             }
           }
         } catch (error) {
@@ -1077,27 +1058,24 @@ export class ComplianceService {
       this.logger.log(`Found ${validClientIds.size} valid client IDs across all portfolios`);
 
       // Check each compliance item
-      for (const file of files) {
-        if (file.endsWith('.json')) {
-          const id = file.replace('.json', '');
-          try {
-            const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
-            if (item) {
-              if (!validClientIds.has(item.clientId)) {
-                invalidItems++;
-                this.logger.log(`Removing compliance item ${id} with invalid client ID: ${item.clientId}`);
-                
-                try {
-                  await this.fileStorageService.deleteJson('compliance', id);
-                  removedItems++;
-                } catch (deleteError) {
-                  errors.push(`Failed to delete ${id}: ${deleteError.message}`);
-                }
+      for (const id of files) {
+        try {
+          const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
+          if (item) {
+            if (!validClientIds.has(item.clientId)) {
+              invalidItems++;
+              this.logger.log(`Removing compliance item ${id} with invalid client ID: ${item.clientId}`);
+
+              try {
+                await this.fileStorageService.deleteJson('compliance', id);
+                removedItems++;
+              } catch (deleteError) {
+                errors.push(`Failed to delete ${id}: ${deleteError.message}`);
               }
             }
-          } catch (error) {
-            errors.push(`Failed to read compliance item ${id}: ${error.message}`);
           }
+        } catch (readError) {
+          errors.push(`Failed to read compliance item ${id}: ${readError.message}`);
         }
       }
 
@@ -1120,5 +1098,10 @@ export class ComplianceService {
         errors
       };
     }
+  }
+
+  private async resolveClientRef(clientId: string): Promise<string> {
+    const client = await this.clientsService.findOne(clientId);
+    return client?.ref || clientId;
   }
 }

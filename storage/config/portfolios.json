@@ -4,8 +4,8 @@
     "name": "Main",
     "description": "Main",
     "enabled": true,
-    "clientCount": 0,
+    "clientCount": 1,
     "createdAt": "2026-01-27T00:38:18.076Z",
-    "updatedAt": "2026-01-29T21:53:40.890Z"
+    "updatedAt": "2026-01-30T01:11:57.418Z"
   }
 ]
