@@ -157,12 +157,15 @@ export class PlaceholderService {
 
     const addressText = this.formatAddress(ctx.node.address);
     const nodeAny = ctx.node as any;
-    const amlStatus =
-      ctx.profile.amlCompleted === true || ctx.profile.amlCompleted === 1
-        ? 'Complete'
-        : ctx.profile.amlCompleted === false || ctx.profile.amlCompleted === 0
-        ? 'Incomplete'
+    const amlFlag =
+      typeof ctx.profile.amlCompleted === 'number'
+        ? ctx.profile.amlCompleted
+        : ctx.profile.amlCompleted === true
+        ? 1
+        : ctx.profile.amlCompleted === false
+        ? 0
         : null;
+    const amlStatus = amlFlag === 1 ? 'Complete' : amlFlag === 0 ? 'Incomplete' : null;
     const aml = {
       completed: ctx.profile.amlCompleted,
       status: amlStatus,

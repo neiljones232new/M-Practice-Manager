@@ -218,7 +218,7 @@ export default function EditClientPage() {
           addressPostcode: node?.address?.postcode || '',
           addressCountry: node?.address?.country || '',
 
-          mainContactName: pickValue(profile.mainContactName, node?.mainContactName),
+          mainContactName: pickValue(profile.mainContactName, node?.mainContact),
           contactPosition: pickValue(profile.contactPosition, (node as any)?.contactPosition),
           mainEmail: pickValue(node?.mainEmail, (profile as any)?.email),
           mainPhone: pickValue(node?.mainPhone, (profile as any)?.telephone),
