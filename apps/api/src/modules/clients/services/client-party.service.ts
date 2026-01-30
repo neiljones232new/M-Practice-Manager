@@ -154,7 +154,8 @@ export class ClientPartyService {
         address: payload.address,
       };
 
-      const createdPerson = await this.personService.create(createPersonDto);
+      const resolvedClientRef = await this.resolveClientRef(clientId);
+      const createdPerson = await this.personService.create(resolvedClientRef, createPersonDto);
       personId = createdPerson.id;
     }
 

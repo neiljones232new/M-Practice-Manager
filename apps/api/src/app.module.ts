@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import * as fs from 'fs';
+import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -24,6 +25,7 @@ import { TemplatesModule } from './modules/templates/templates.module';
 import { TaxCalculationsModule } from './modules/tax-calculations/tax-calculations.module';
 import { AccountsProductionModule } from './modules/accounts-production/accounts-production.module';
 import { DatabaseModule } from './modules/database/database.module';
+import { StaffModule } from './modules/staff/staff.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { InternalController } from './modules/internal/internal.controller';
@@ -36,7 +38,16 @@ import { InternalController } from './modules/internal/internal.controller';
       envFilePath:
         process.env.NODE_ENV === 'production'
           ? (fs.existsSync('.env.prod') ? '.env.prod' : fs.existsSync('env.prod') ? 'env.prod' : '.env')
-          : ['.env.local', '.env'],
+          : [
+              '.env.prod',
+              '.env.local',
+              // When running the API from apps/api, also consider repo-root env files.
+              path.resolve(process.cwd(), '../.env.prod'),
+              path.resolve(process.cwd(), '../.env.local'),
+              // When running from apps/api, repo root is typically two levels up.
+              path.resolve(process.cwd(), '../../.env.prod'),
+              path.resolve(process.cwd(), '../../.env.local'),
+            ],
       cache: true,
     }),
 
@@ -75,6 +86,7 @@ import { InternalController } from './modules/internal/internal.controller';
     TemplatesModule,
     TaxCalculationsModule,
     AccountsProductionModule,
+    StaffModule,
   ],
   controllers: [AppController, InternalController],
   providers: [AppService],

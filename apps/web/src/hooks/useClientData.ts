@@ -118,7 +118,7 @@ export function useClientData(): UseClientDataReturn {
   }, [clients, toClientData]);
 
   /**
-   * Fetch client by ID (UUID)
+   * Fetch client by reference (Standard B)
    * Checks cache first before making API call
    * 
    * Requirement 2.1: Fetch client details for events with client IDs

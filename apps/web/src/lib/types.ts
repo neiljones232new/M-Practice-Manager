@@ -196,6 +196,11 @@ export interface ClientParty {
 
 export interface ClientContextWithParties extends ClientContext {
   partiesDetails: ClientParty[];
+  companiesHouse?: {
+    companyNumber?: string;
+    officers?: any[];
+    lastFetched?: string;
+  };
 }
 
 export interface Task {

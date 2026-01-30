@@ -191,7 +191,7 @@ export default function ClientDetailsPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
-  const clientId = params?.id as string;
+  const clientRef = params?.id as string;
 
   const [clientContext, setClientContext] = useState<ClientContextWithParties | null>(null);
   const [services, setServices] = useState<Service[]>([]);
@@ -266,26 +266,57 @@ export default function ClientDetailsPage() {
   }, []);
 
   useEffect(() => {
-    if (!clientId) return;
+    if (!clientRef) return;
     let on = true;
     (async () => {
       try {
         setLoading(true);
         setErr(null);
-        const c = await api.get<ClientContextWithParties>(`/clients/${clientId}/with-parties`, { params: { t: refreshTick } }).catch((e) => {
+        const c = await api.get<ClientContextWithParties>(`/clients/${clientRef}/with-parties`, { params: { t: refreshTick } }).catch((e) => {
           throw new Error((e as Error)?.message || 'Failed to load client');
         });
 
-        const effectiveId = c?.node?.id || clientId;
-        const [s, t, d, comp, ltrs, aSets, tCalcs] = await Promise.all([
-          api.get(`/services/client/${effectiveId}`).catch(() => []) as Promise<Service[]>,
-          api.get(`/tasks/client/${effectiveId}`).catch(() => []) as Promise<Task[]>,
-          api.get(`/documents/client/${effectiveId}`).catch(() => []) as Promise<any>,
-          api.get(`/compliance?clientId=${effectiveId}`).catch(() => []) as Promise<Compliance[]>,
-          api.get(`/letters/client/${effectiveId}`).catch(() => []) as Promise<GeneratedLetter[]>,
-          api.get(`/accounts-sets/client/${effectiveId}`).catch(() => []) as Promise<AccountsSet[]>,
-          api.get(`/tax-calculations/client/${effectiveId}`).catch(() => []) as Promise<TaxCalculation[]>,
+        const effectiveRef = c?.node?.ref || clientRef;
+        const results = await Promise.allSettled([
+          api.get(`/services/client/${effectiveRef}`) as Promise<Service[]>,
+          api.get(`/tasks/client/${effectiveRef}`) as Promise<Task[]>,
+          api.get(`/documents/client/${effectiveRef}`) as Promise<any>,
+          api.get(`/compliance?clientId=${effectiveRef}`) as Promise<Compliance[]>,
+          api.get(`/letters/client/${effectiveRef}`) as Promise<GeneratedLetter[]>,
+          api.get(`/accounts-sets/client/${effectiveRef}`) as Promise<AccountsSet[]>,
+          api.get(`/tax-calculations/client/${effectiveRef}`) as Promise<TaxCalculation[]>,
         ]);
+
+        const endpoints = [
+          `/services/client/${effectiveRef}`,
+          `/tasks/client/${effectiveRef}`,
+          `/documents/client/${effectiveRef}`,
+          `/compliance?clientId=${effectiveRef}`,
+          `/letters/client/${effectiveRef}`,
+          `/accounts-sets/client/${effectiveRef}`,
+          `/tax-calculations/client/${effectiveRef}`,
+        ];
+
+        const failures = results
+          .map((r, idx) => ({ r, idx }))
+          .filter(({ r }) => r.status === 'rejected') as Array<{ r: PromiseRejectedResult; idx: number }>;
+
+        if (failures.length > 0) {
+          const msg = failures
+            .map(({ r, idx }) => `${endpoints[idx]}: ${(r.reason as any)?.message || String(r.reason)}`)
+            .join(' | ');
+          if (on) setTabMessage({ text: msg, error: true });
+        } else {
+          if (on) setTabMessage(null);
+        }
+
+        const s = results[0].status === 'fulfilled' ? results[0].value : [];
+        const t = results[1].status === 'fulfilled' ? results[1].value : [];
+        const d = results[2].status === 'fulfilled' ? results[2].value : [];
+        const comp = results[3].status === 'fulfilled' ? results[3].value : [];
+        const ltrs = results[4].status === 'fulfilled' ? results[4].value : [];
+        const aSets = results[5].status === 'fulfilled' ? results[5].value : [];
+        const tCalcs = results[6].status === 'fulfilled' ? results[6].value : [];
 
         if (on) {
           setClientContext(c);
@@ -309,7 +340,7 @@ export default function ClientDetailsPage() {
     return () => {
       on = false;
     };
-  }, [clientId, refreshTick]);
+  }, [clientRef, refreshTick]);
 
   useEffect(() => {
     const updated = searchParams?.get('updated');
@@ -326,7 +357,7 @@ export default function ClientDetailsPage() {
         if (ev?.data?.topic === 'clients:changed') {
           setRefreshTick((t) => t + 1);
         }
-        if (ev?.data?.topic === 'client:updated' && ev?.data?.clientId === clientId) {
+        if (ev?.data?.topic === 'client:updated' && ev?.data?.clientId === clientRef) {
           setRefreshTick((t) => t + 1);
         }
       };
@@ -336,7 +367,7 @@ export default function ClientDetailsPage() {
     return () => {
       try { bc?.close(); } catch {}
     };
-  }, [clientId]);
+  }, [clientRef]);
 
   const refreshDocuments = async (targetId: string) => {
     const res = await api.get(`/documents/client/${targetId}`).catch(() => null);
@@ -352,6 +383,11 @@ export default function ClientDetailsPage() {
   // Load CH data when CH tab opens
   useEffect(() => {
     const num = client?.registeredNumber;
+    if (tab === 'people') {
+      const stored = (clientContext as any)?.companiesHouse?.officers;
+      setChOfficers(Array.isArray(stored) ? stored : []);
+      return;
+    }
     if (tab !== 'ch' || !num) return;
     let on = true;
     (async () => {
@@ -389,7 +425,7 @@ export default function ClientDetailsPage() {
       }
     })();
     return () => { on = false; };
-  }, [tab, client?.registeredNumber]);
+  }, [tab, client?.registeredNumber, clientContext]);
 
   const getTaskBadge = (status: Task['status']) => {
     const key = String(status || '').toUpperCase();
@@ -409,7 +445,7 @@ export default function ClientDetailsPage() {
   };
 
   const handleDeleteClient = async () => {
-    const targetId = client?.id || clientId;
+    const targetId = client?.ref || clientRef;
     if (!targetId) return;
     const ok = window.confirm('Delete this client? This cannot be undone.');
     if (!ok) return;
@@ -462,7 +498,7 @@ export default function ClientDetailsPage() {
   };
 
   const handleUploadDocument = async () => {
-    if (!client?.id) return;
+    if (!client?.ref && !clientRef) return;
     if (!docFile) {
       setDocUploadMsg('Select a file to upload.');
       return;
@@ -470,9 +506,10 @@ export default function ClientDetailsPage() {
     setDocUploading(true);
     setDocUploadMsg(null);
     try {
+      const targetRef = client?.ref || clientRef;
       const formData = new FormData();
       formData.append('file', docFile);
-      formData.append('clientId', client.id);
+      formData.append('clientId', targetRef);
       formData.append('category', docCategory);
       if (docDescription) formData.append('description', docDescription);
 
@@ -490,7 +527,7 @@ export default function ClientDetailsPage() {
 
       setDocFile(null);
       setDocDescription('');
-      await refreshDocuments(client.id);
+      await refreshDocuments(targetRef);
       setDocUploadMsg('Document uploaded.');
     } catch (e: any) {
       setDocUploadMsg(e?.message || 'Failed to upload document.');
@@ -639,6 +676,10 @@ export default function ClientDetailsPage() {
   }, [chFilings]);
   const currentOfficers = useMemo(() => chOfficers.filter((o: any) => !o.resigned_on), [chOfficers]);
   const formerOfficers = useMemo(() => chOfficers.filter((o: any) => o.resigned_on), [chOfficers]);
+  const currentDirectors = useMemo(
+    () => currentOfficers.filter((o: any) => String(o?.officer_role || '').toLowerCase().includes('director')),
+    [currentOfficers]
+  );
   const currentPscs = useMemo(() => chPscs.filter((p: any) => !p.ceased_on), [chPscs]);
   const formerPscs = useMemo(() => chPscs.filter((p: any) => p.ceased_on), [chPscs]);
   const displayedFilings = useMemo(
@@ -793,7 +834,7 @@ export default function ClientDetailsPage() {
     try {
       const res = await api.post<{ message?: string }>(`/companies-house/sync/${client.ref}`);
       setSyncMessage({ text: res?.message || 'Synchronized with Companies House', error: false });
-      const refreshed = await api.get<ClientContextWithParties>(`/clients/${clientId}/with-parties`).catch(() => null);
+      const refreshed = await api.get<ClientContextWithParties>(`/clients/${client.ref}/with-parties`).catch(() => null);
       if (refreshed) {
         setClientContext(refreshed);
         try { new BroadcastChannel('mdj').postMessage({ topic: 'clients:changed' }); } catch {}
@@ -811,7 +852,7 @@ export default function ClientDetailsPage() {
     setGeneratingTasks(true);
     try {
       const res = (await api.post<{ serviceId: string; tasksGenerated: number }[]>(
-        `/tasks/generate/client/${client.id}`
+        `/tasks/generate/client/${client.ref}`
       )) || [];
 
       const rows = Array.isArray(res) ? res : [];
@@ -822,8 +863,8 @@ export default function ClientDetailsPage() {
           : `Generated ${totalTasks} task${totalTasks === 1 ? '' : 's'} across ${rows.length} service${rows.length === 1 ? '' : 's'}.`;
 
       setTaskMessage({ text: message, error: false });
-      if (clientId) {
-        const refreshedTasks = await api.get<Task[]>(`/tasks/client/${clientId}`);
+      if (client?.ref) {
+        const refreshedTasks = await api.get<Task[]>(`/tasks/client/${client.ref}`);
         setTasks(Array.isArray(refreshedTasks) ? refreshedTasks : []);
       }
     } catch (error: any) {
@@ -850,6 +891,22 @@ export default function ClientDetailsPage() {
       return officerRoles.has(party.role);
     });
   }, [parties]);
+
+  const [enrollingDirector, setEnrollingDirector] = useState<Record<string, boolean>>({});
+  const handleEnrollDirector = async (directorName: string) => {
+    if (!clientRef) return;
+    const key = directorName || 'unknown';
+    try {
+      setEnrollingDirector((prev) => ({ ...prev, [key]: true }));
+      const res = await api.post(`/clients/${clientRef}/enroll-director`, { name: directorName });
+      const nextRef = (res as any)?.ref;
+      if (nextRef) {
+        router.push(`/clients/${nextRef}`);
+      }
+    } finally {
+      setEnrollingDirector((prev) => ({ ...prev, [key]: false }));
+    }
+  };
   const hmrcRegistrations: HMRCRegistrationRow[] = useMemo(() => {
     if (!client) return [];
     const rows = [
@@ -2147,11 +2204,62 @@ export default function ClientDetailsPage() {
 
         {tab === 'people' && (
           <div style={{ padding: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '0.75rem' }}>
-              <button className="btn-outline-primary btn-sm" onClick={() => router.push(`/clients/${client.id}/parties`)}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+              <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>
+                Companies House directors can be enrolled as individual clients (e.g., {client?.ref ? `${client.ref}A` : '1M001A'}).
+              </div>
+              <button className="btn-outline-primary btn-sm" onClick={() => router.push(`/clients/${clientRef}/parties`)}>
                 Manage People
               </button>
             </div>
+
+            {showCompaniesHouse && client?.registeredNumber && (
+              <div className="card-mdj" style={{ padding: '1rem', marginBottom: '1rem' }}>
+                <h4 style={{ margin: '0 0 1rem 0' }}>Directors (Companies House)</h4>
+                {chLoading ? (
+                  <div style={{ color: 'var(--text-muted)' }}>Loading directors…</div>
+                ) : chError ? (
+                  <div style={{ color: 'var(--danger)' }}>{chError}</div>
+                ) : currentDirectors.length === 0 ? (
+                  <div style={{ color: 'var(--text-muted)' }}>No directors returned.</div>
+                ) : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table className="mdj-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Role</th>
+                          <th>Appointed</th>
+                          <th style={{ textAlign: 'right' }}></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {currentDirectors.map((o: any, i: number) => {
+                          const name = String(o?.name || '').trim();
+                          const busy = Boolean(enrollingDirector[name]);
+                          return (
+                            <tr key={`dir-${i}`}> 
+                              <td>{name || '—'}</td>
+                              <td>{String(o?.officer_role || '').replace(/-/g, ' ')}</td>
+                              <td>{o?.appointed_on ? new Date(o.appointed_on).toLocaleDateString('en-GB') : '—'}</td>
+                              <td style={{ textAlign: 'right' }}>
+                                <button
+                                  className="btn-outline-primary btn-xs"
+                                  onClick={() => handleEnrollDirector(name)}
+                                  disabled={!name || busy}
+                                >
+                                  {busy ? 'Enrolling…' : 'Manage as Client'}
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
             {currentOfficersParties.length === 0 ? (
               <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
                 No current officers linked to this client.

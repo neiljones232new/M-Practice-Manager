@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from '../../prisma/prisma.module';
 import { CompaniesHouseService } from './companies-house.service';
 import { CompaniesHouseController } from './companies-house.controller';
 import { FileStorageModule } from '../file-storage/file-storage.module';
@@ -13,6 +14,7 @@ import { ServicesModule } from '../services/services.module';
   imports: [
     HttpModule,
     ConfigModule,
+    PrismaModule,
     FileStorageModule,
     ClientsModule,
     FilingsModule,

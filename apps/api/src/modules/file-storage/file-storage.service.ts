@@ -43,7 +43,7 @@ export class FileStorageService {
   private readonly activeLocks = new Set<string>();
   private readonly pendingTransactions = new Map<string, FileStorageTransaction>();
   private readonly clientScopedMap = new Map<string, string>();
-  private readonly clientScopedCategories = new Set(['services', 'client-parties', 'compliance']);
+  private readonly clientScopedCategories = new Set(['services', 'client-parties', 'compliance', 'people']);
 
   private searchService: any; // Will be injected later to avoid circular dependency
 
@@ -51,7 +51,15 @@ export class FileStorageService {
     private configService: ConfigService,
     private readonly encryptionService: EncryptionService,
   ) {
-    this.storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
+    const configuredStoragePath = this.configService.get<string>('STORAGE_PATH');
+    const resolvedConfigured = configuredStoragePath ? path.resolve(configuredStoragePath) : null;
+    const candidates = [
+      resolvedConfigured,
+      path.resolve(process.cwd(), 'storage'),
+      path.resolve(process.cwd(), '../storage'),
+      path.resolve(process.cwd(), '../../storage'),
+    ].filter(Boolean) as string[];
+    this.storagePath = candidates.find((p) => existsSync(p)) || path.resolve(process.cwd(), 'storage');
     this.backupPath = path.join(this.storagePath, 'backups');
     this.snapshotPath = path.join(this.storagePath, 'snapshots');
     this.indexPath = path.join(this.storagePath, 'indexes');
@@ -76,6 +84,7 @@ export class FileStorageService {
       // Create structured directory hierarchy as per design
       const categories = [
         'clients',
+        'staff',
         'people', 
         'client-parties',
         'services',
@@ -183,6 +192,7 @@ export class FileStorageService {
   }
 
   private async buildClientScopedMap() {
+    this.clientScopedMap.clear();
     const clientsDir = path.join(this.storagePath, 'clients');
     if (!existsSync(clientsDir)) {
       return;
@@ -433,9 +443,9 @@ export class FileStorageService {
 
   async listFiles(category: string, portfolioCode?: number): Promise<string[]> {
     if (this.isClientScopedCategory(category)) {
-      if (this.clientScopedMap.size === 0) {
-        await this.buildClientScopedMap();
-      }
+      // Client-scoped categories are stored under clients/<ref>/<category>.
+      // Rebuild the map on each call so new/changed files are immediately discoverable.
+      await this.buildClientScopedMap();
       return Array.from(this.clientScopedMap.keys());
     }
     const categoryPath = path.join(this.storagePath, category);
@@ -786,7 +796,7 @@ export class FileStorageService {
   }
 
   private async initializeIndexes(): Promise<void> {
-    const categories = ['clients', 'people', 'client-parties', 'services', 'tasks', 'service-templates', 'task-templates', 'calendar', 'documents', 'compliance', 'events', 'templates', 'tax-calculations'];
+    const categories = ['clients', 'staff', 'people', 'client-parties', 'services', 'tasks', 'service-templates', 'task-templates', 'calendar', 'documents', 'compliance', 'events', 'templates', 'tax-calculations'];
     
     for (const category of categories) {
       const indexFile = path.join(this.indexPath, `${category}.json`);
@@ -1015,11 +1025,11 @@ export class FileStorageService {
       const backupPath = await this.createSnapshot();
       
       // Clear current data (except snapshots and locks)
-      const categories = ['clients', 'people', 'client-parties', 'services', 'tasks', 'calendar', 'documents', 'compliance', 'events', 'config'];
+      const categories = ['clients', 'staff', 'people', 'client-parties', 'services', 'tasks', 'calendar', 'documents', 'compliance', 'events', 'config'];
       for (const category of categories) {
         const categoryPath = path.join(this.storagePath, category);
         if (existsSync(categoryPath)) {
-          await fs.rm(categoryPath, { recursive: true });
+          await fs.rm(categoryPath, { recursive: true, force: true });
         }
       }
 
@@ -1123,7 +1133,7 @@ export class FileStorageService {
     };
 
     try {
-      const categories = ['clients', 'people', 'client-parties', 'services', 'tasks', 'service-templates', 'task-templates', 'calendar', 'documents', 'compliance', 'events', 'config', 'templates', 'tax-calculations'];
+      const categories = ['clients', 'staff', 'people', 'client-parties', 'services', 'tasks', 'service-templates', 'task-templates', 'calendar', 'documents', 'compliance', 'events', 'config', 'templates', 'tax-calculations'];
       
       for (const category of categories) {
         if (category === 'clients') {

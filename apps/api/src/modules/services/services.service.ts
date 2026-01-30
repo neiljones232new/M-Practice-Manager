@@ -41,7 +41,7 @@ export class ServicesService {
 
     const service: Service = {
       id,
-      clientId: createServiceDto.clientId,
+      clientId: client.ref,
       kind: createServiceDto.kind,
       frequency: createServiceDto.frequency,
       fee: createServiceDto.fee,
@@ -105,25 +105,34 @@ export class ServicesService {
   }
 
   async findByClient(clientId: string): Promise<Array<Service & { eligibility?: { status: 'active' | 'blocked' | 'warning'; reasons: string[]; eligible: boolean } }>> {
-    const services = await this.fileStorage.searchFiles<Service>(
-      'services',
-      (service) => service.clientId === clientId
+    const client = await this.clientsService.findOne(clientId);
+    const acceptableClientIds = new Set(
+      [clientId, client?.id, client?.ref].filter(Boolean).map(String)
     );
 
-    const client = await this.clientsService.findOne(clientId);
+    const services = await this.fileStorage.searchFiles<Service>('services', (service) => {
+      if (!service?.clientId) return false;
+      return acceptableClientIds.has(String(service.clientId));
+    });
+
     if (!client) {
       return services;
     }
 
-    const dbClient = client.registeredNumber
-      ? await this.databaseService.getClientByNumber(client.registeredNumber)
-      : null;
-    const context = buildClientContext(client, dbClient);
+    try {
+      const dbClient = client.registeredNumber
+        ? await this.databaseService.getClientByNumber(client.registeredNumber)
+        : null;
+      const context = buildClientContext(client, dbClient);
 
-    return services.map((service) => ({
-      ...service,
-      eligibility: evaluateServiceEligibility(service.kind, context),
-    }));
+      return services.map((service) => ({
+        ...service,
+        eligibility: evaluateServiceEligibility(service.kind, context),
+      }));
+    } catch (e: any) {
+      this.logger.warn(`Service eligibility enrichment failed; returning file-based services only: ${e?.message || e}`);
+      return services;
+    }
   }
 
   // Alias for compatibility with reports service
@@ -250,8 +259,12 @@ export class ServicesService {
     // Filter by portfolio if specified
     if (portfolioCode) {
       const clients = await this.clientsService.findByPortfolio(portfolioCode);
-      const clientIds = clients.map(c => c.id);
-      services = services.filter(s => clientIds.includes(s.clientId));
+      const acceptableClientIds = new Set<string>();
+      clients.forEach((c) => {
+        acceptableClientIds.add(String(c.id));
+        acceptableClientIds.add(String(c.ref));
+      });
+      services = services.filter(s => s?.clientId && acceptableClientIds.has(String(s.clientId)));
     }
 
     const activeServices = services.filter(s => s.status === 'ACTIVE');
@@ -320,7 +333,11 @@ export class ServicesService {
     let filtered = services;
 
     if (filters.clientId) {
-      filtered = filtered.filter(service => service.clientId === filters.clientId);
+      const client = await this.clientsService.findOne(filters.clientId);
+      const acceptableClientIds = new Set(
+        [filters.clientId, client?.id, client?.ref].filter(Boolean).map(String)
+      );
+      filtered = filtered.filter(service => service?.clientId && acceptableClientIds.has(String(service.clientId)));
     }
 
     if (filters.kind) {
@@ -340,8 +357,12 @@ export class ServicesService {
     if (filters.portfolioCode) {
       // Get clients for the portfolio
       const clients = await this.clientsService.findByPortfolio(filters.portfolioCode);
-      const clientIds = clients.map(c => c.id);
-      filtered = filtered.filter(service => clientIds.includes(service.clientId));
+      const acceptableClientIds = new Set<string>();
+      clients.forEach((c) => {
+        acceptableClientIds.add(String(c.id));
+        acceptableClientIds.add(String(c.ref));
+      });
+      filtered = filtered.filter(service => service?.clientId && acceptableClientIds.has(String(service.clientId)));
     }
 
     if (filters.search) {

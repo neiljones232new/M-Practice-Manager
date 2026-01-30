@@ -128,8 +128,8 @@ describe('CompaniesHouseService', () => {
   };
 
   const mockPerson: Person = {
-    id: 'person_123',
-    ref: 'P001',
+    id: '1A001A',
+    ref: '1A001A',
     firstName: 'John',
     lastName: 'Smith',
     fullName: 'John Smith',
@@ -477,7 +477,7 @@ describe('CompaniesHouseService', () => {
       clientPartyService.create.mockResolvedValue({
         id: 'party_123',
         clientId: 'client_123',
-        personId: 'person_123',
+        personId: '1A001A',
         role: 'DIRECTOR',
         primaryContact: false,
         suffixLetter: 'A',
@@ -527,22 +527,21 @@ describe('CompaniesHouseService', () => {
           country: 'United Kingdom',
         },
       });
-      expect(personService.create).toHaveBeenCalledWith({
+      expect(personService.create).toHaveBeenCalledWith(mockClient.ref, {
         firstName: 'John',
         lastName: 'SMITH',
         nationality: 'British',
+        countryOfResidence: 'United Kingdom',
         address: {
           line1: '456 Officer Street',
-          line2: undefined,
           city: 'London',
-          county: undefined,
           postcode: 'SW1A 2BB',
           country: 'United Kingdom',
         },
       });
       expect(clientPartyService.create).toHaveBeenCalledWith({
         clientId: 'client_123',
-        personId: 'person_123',
+        personId: '1A001A',
         role: 'DIRECTOR',
         appointedAt: new Date('2020-01-01'),
         primaryContact: false,
@@ -618,7 +617,7 @@ describe('CompaniesHouseService', () => {
       clientPartyService.create.mockResolvedValue({
         id: 'party_123',
         clientId: 'client_123',
-        personId: 'person_123',
+        personId: '1A001A',
         role: 'DIRECTOR',
         primaryContact: false,
         suffixLetter: 'A',
@@ -841,7 +840,7 @@ describe('CompaniesHouseService', () => {
         clientPartyService.create.mockResolvedValue({
           id: 'party_123',
           clientId: 'client_123',
-          personId: 'person_123',
+          personId: '1A001A',
           role: testCase.expected as any,
           primaryContact: false,
           suffixLetter: 'A',

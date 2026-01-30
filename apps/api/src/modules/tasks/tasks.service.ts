@@ -53,7 +53,7 @@ export class TasksService {
 
     const task: Task = {
       id,
-      clientId: createTaskDto.clientId,
+      clientId: client.ref,
       serviceId: createTaskDto.serviceId,
       title: createTaskDto.title,
       description: createTaskDto.description,
@@ -95,9 +95,15 @@ export class TasksService {
   }
 
   async findByClient(clientId: string): Promise<Task[]> {
-    return this.fileStorage.searchFiles<Task>('tasks', 
-      (task) => task.clientId === clientId
+    const resolvedClient = await this.clientsService.findOne(clientId);
+    const acceptableClientIds = new Set(
+      [clientId, resolvedClient?.id, resolvedClient?.ref].filter(Boolean).map(String)
     );
+
+    return this.fileStorage.searchFiles<Task>('tasks', (task) => {
+      if (!task?.clientId) return false;
+      return acceptableClientIds.has(String(task.clientId));
+    });
   }
 
   async findByService(serviceId: string): Promise<Task[]> {
@@ -443,7 +449,11 @@ export class TasksService {
     let filtered = tasks;
 
     if (filters.clientId) {
-      filtered = filtered.filter(task => task.clientId === filters.clientId);
+      const resolvedClient = await this.clientsService.findOne(filters.clientId);
+      const acceptableClientIds = new Set(
+        [filters.clientId, resolvedClient?.id, resolvedClient?.ref].filter(Boolean).map(String)
+      );
+      filtered = filtered.filter(task => task?.clientId && acceptableClientIds.has(String(task.clientId)));
     }
 
     if (filters.serviceId) {
@@ -477,8 +487,12 @@ export class TasksService {
     if (filters.portfolioCode) {
       // Get clients for the portfolio
       const clients = await this.clientsService.findByPortfolio(filters.portfolioCode);
-      const clientIds = clients.map(c => c.id);
-      filtered = filtered.filter(task => clientIds.includes(task.clientId));
+      const acceptableClientIds = new Set<string>();
+      clients.forEach((c) => {
+        acceptableClientIds.add(String(c.id));
+        acceptableClientIds.add(String(c.ref));
+      });
+      filtered = filtered.filter(task => task?.clientId && acceptableClientIds.has(String(task.clientId)));
     }
 
     if (filters.search) {

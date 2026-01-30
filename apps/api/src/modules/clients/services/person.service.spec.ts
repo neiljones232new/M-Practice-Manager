@@ -11,8 +11,8 @@ describe('PersonService', () => {
   let referenceGeneratorService: jest.Mocked<ReferenceGeneratorService>;
 
   const mockPerson: Person = {
-    id: 'person_123',
-    ref: 'P001',
+    id: '1M001A',
+    ref: '1M001A',
     firstName: 'John',
     lastName: 'Doe',
     fullName: 'John Doe',
@@ -39,7 +39,7 @@ describe('PersonService', () => {
     };
 
     const mockReferenceGeneratorService = {
-      generatePersonRef: jest.fn(),
+      generateConnectedPersonRef: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -62,6 +62,7 @@ describe('PersonService', () => {
   });
 
   describe('create', () => {
+    const clientRef = '1M001';
     const createPersonDto: CreatePersonDto = {
       firstName: 'John',
       lastName: 'Doe',
@@ -72,30 +73,30 @@ describe('PersonService', () => {
     };
 
     it('should create a person successfully', async () => {
-      referenceGeneratorService.generatePersonRef.mockResolvedValue('P001');
+      referenceGeneratorService.generateConnectedPersonRef.mockResolvedValue('1M001A');
       fileStorageService.writeJson.mockResolvedValue(undefined);
 
-      const result = await service.create(createPersonDto);
+      const result = await service.create(clientRef, createPersonDto);
 
       expect(result).toMatchObject({
         firstName: 'John',
         lastName: 'Doe',
         fullName: 'John Doe',
         email: 'john.doe@example.com',
-        ref: 'P001',
+        ref: '1M001A',
       });
       expect(result.id).toBeDefined();
       expect(result.createdAt).toBeDefined();
       expect(result.updatedAt).toBeDefined();
-      expect(referenceGeneratorService.generatePersonRef).toHaveBeenCalled();
-      expect(fileStorageService.writeJson).toHaveBeenCalledWith('people', 'P001', expect.any(Object));
+      expect(referenceGeneratorService.generateConnectedPersonRef).toHaveBeenCalledWith(clientRef);
+      expect(fileStorageService.writeJson).toHaveBeenCalledWith('people', '1M001A', expect.any(Object), undefined, clientRef);
     });
 
     it('should generate full name correctly', async () => {
-      referenceGeneratorService.generatePersonRef.mockResolvedValue('P001');
+      referenceGeneratorService.generateConnectedPersonRef.mockResolvedValue('1M001A');
       fileStorageService.writeJson.mockResolvedValue(undefined);
 
-      const result = await service.create(createPersonDto);
+      const result = await service.create(clientRef, createPersonDto);
 
       expect(result.fullName).toBe('John Doe');
     });
@@ -106,10 +107,10 @@ describe('PersonService', () => {
         lastName: 'Smith',
       };
 
-      referenceGeneratorService.generatePersonRef.mockResolvedValue('P002');
+      referenceGeneratorService.generateConnectedPersonRef.mockResolvedValue('1M001B');
       fileStorageService.writeJson.mockResolvedValue(undefined);
 
-      const result = await service.create(minimalDto);
+      const result = await service.create(clientRef, minimalDto);
 
       expect(result.firstName).toBe('Jane');
       expect(result.lastName).toBe('Smith');
@@ -119,9 +120,9 @@ describe('PersonService', () => {
     });
 
     it('should handle reference generation failure', async () => {
-      referenceGeneratorService.generatePersonRef.mockRejectedValue(new Error('Reference generation failed'));
+      referenceGeneratorService.generateConnectedPersonRef.mockRejectedValue(new Error('Reference generation failed'));
 
-      await expect(service.create(createPersonDto)).rejects.toThrow('Reference generation failed');
+      await expect(service.create(clientRef, createPersonDto)).rejects.toThrow('Reference generation failed');
       expect(fileStorageService.writeJson).not.toHaveBeenCalled();
     });
   });
@@ -180,16 +181,16 @@ describe('PersonService', () => {
     it('should find person by reference', async () => {
       fileStorageService.readJson.mockResolvedValue(mockPerson);
 
-      const result = await service.findByRef('P001');
+      const result = await service.findByRef('1M001A');
 
       expect(result).toEqual(mockPerson);
-      expect(fileStorageService.readJson).toHaveBeenCalledWith('people', 'P001');
+      expect(fileStorageService.readJson).toHaveBeenCalledWith('people', '1M001A');
     });
 
     it('should return null if person not found by reference', async () => {
       fileStorageService.readJson.mockResolvedValue(null);
 
-      const result = await service.findByRef('P999');
+      const result = await service.findByRef('1M001Z');
 
       expect(result).toBeNull();
     });
@@ -238,7 +239,7 @@ describe('PersonService', () => {
       const people = [mockPerson];
       fileStorageService.searchFiles.mockResolvedValue(people);
 
-      const result = await service.search('P001');
+      const result = await service.search('1M001A');
 
       expect(result).toEqual(people);
     });
@@ -269,7 +270,7 @@ describe('PersonService', () => {
       expect(result.fullName).toBe('Jane Doe');
       expect(result.email).toBe('jane.doe@example.com');
       expect(result.updatedAt).not.toEqual(mockPerson.updatedAt);
-      expect(fileStorageService.writeJson).toHaveBeenCalledWith('people', 'P001', expect.any(Object));
+      expect(fileStorageService.writeJson).toHaveBeenCalledWith('people', '1M001A', expect.any(Object));
     });
 
     it('should update full name when first or last name changes', async () => {
@@ -323,7 +324,7 @@ describe('PersonService', () => {
       const result = await service.delete('person_123');
 
       expect(result).toBe(true);
-      expect(fileStorageService.deleteJson).toHaveBeenCalledWith('people', 'P001');
+      expect(fileStorageService.deleteJson).toHaveBeenCalledWith('people', '1M001A');
     });
 
     it('should return false if person not found', async () => {
@@ -357,7 +358,7 @@ describe('PersonService', () => {
 
   describe('edge cases and error handling', () => {
     it('should handle file storage errors during creation', async () => {
-      referenceGeneratorService.generatePersonRef.mockResolvedValue('P001');
+      referenceGeneratorService.generateConnectedPersonRef.mockResolvedValue('1M001A');
       fileStorageService.writeJson.mockRejectedValue(new Error('Storage error'));
 
       const createPersonDto: CreatePersonDto = {
@@ -365,7 +366,7 @@ describe('PersonService', () => {
         lastName: 'Doe',
       };
 
-      await expect(service.create(createPersonDto)).rejects.toThrow('Storage error');
+      await expect(service.create('1M001', createPersonDto)).rejects.toThrow('Storage error');
     });
 
     it('should handle file storage errors during search', async () => {
@@ -380,10 +381,10 @@ describe('PersonService', () => {
         lastName: 'García-López',
       };
 
-      referenceGeneratorService.generatePersonRef.mockResolvedValue('P001');
+      referenceGeneratorService.generateConnectedPersonRef.mockResolvedValue('1M001A');
       fileStorageService.writeJson.mockResolvedValue(undefined);
 
-      const result = await service.create(specialDto);
+      const result = await service.create('1M001', specialDto);
 
       expect(result.firstName).toBe('José');
       expect(result.lastName).toBe('García-López');

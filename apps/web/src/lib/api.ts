@@ -108,12 +108,28 @@ class ApiClient {
 
       // One-time refresh on 401. Only attempt if we actually have an access token
       // (prevents trying to refresh during public endpoints like /auth/login)
-      if (response.status === 401 && retry && this.accessToken && endpoint !== '/auth/refresh') {
-        try {
-          await this.refreshToken();
-          return this.request<T>(endpoint, options, false);
-        } catch {
-          this.logout();
+      if (response.status === 401) {
+        const isAuthEndpoint = endpoint.startsWith('/auth/');
+        const isLogout = endpoint === '/auth/logout';
+
+        if (!isAuthEndpoint && retry && this.accessToken && endpoint !== '/auth/refresh') {
+          try {
+            await this.refreshToken();
+            return this.request<T>(endpoint, options, false);
+          } catch {
+            this.clearSession();
+            if (typeof window !== 'undefined') {
+              window.location.href = '/login';
+            }
+            throw new Error('Session expired. Please log in again.');
+          }
+        }
+
+        if (!isAuthEndpoint && !isLogout) {
+          this.clearSession();
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
           throw new Error('Session expired. Please log in again.');
         }
       }

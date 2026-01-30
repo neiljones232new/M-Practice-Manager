@@ -87,38 +87,28 @@ describe('ReferenceGeneratorService', () => {
     });
   });
 
-  describe('generatePersonRef', () => {
-    it('should generate first person reference', async () => {
+  describe('generatePersonRef (deprecated)', () => {
+    it('should throw to enforce connected-person refs', async () => {
+      await expect(service.generatePersonRef()).rejects.toThrow('deprecated');
+    });
+  });
+
+  describe('generateConnectedPersonRef', () => {
+    it('should generate first connected person ref for a client', async () => {
       fileStorageService.listFiles.mockResolvedValue([]);
 
-      const result = await service.generatePersonRef();
+      const result = await service.generateConnectedPersonRef('1M001');
 
-      expect(result).toBe('P001');
+      expect(result).toBe('1M001A');
       expect(fileStorageService.listFiles).toHaveBeenCalledWith('people');
     });
 
-    it('should generate next person reference', async () => {
-      fileStorageService.listFiles.mockResolvedValue(['P001', 'P002', 'P003']);
+    it('should generate next suffix for a client', async () => {
+      fileStorageService.listFiles.mockResolvedValue(['1M001A', '1M001B']);
 
-      const result = await service.generatePersonRef();
+      const result = await service.generateConnectedPersonRef('1M001');
 
-      expect(result).toBe('P004');
-    });
-
-    it('should handle gaps in person references', async () => {
-      fileStorageService.listFiles.mockResolvedValue(['P001', 'P003', 'P005']);
-
-      const result = await service.generatePersonRef();
-
-      expect(result).toBe('P002');
-    });
-
-    it('should handle non-sequential person references', async () => {
-      fileStorageService.listFiles.mockResolvedValue(['P010', 'P005', 'P001']);
-
-      const result = await service.generatePersonRef();
-
-      expect(result).toBe('P002');
+      expect(result).toBe('1M001C');
     });
   });
 
@@ -185,17 +175,17 @@ describe('ReferenceGeneratorService', () => {
 
   describe('validatePersonRef', () => {
     it('should validate correct person references', () => {
-      expect(service.validatePersonRef('P001')).toBe(true);
-      expect(service.validatePersonRef('P999')).toBe(true);
-      expect(service.validatePersonRef('P123')).toBe(true);
+      expect(service.validatePersonRef('1M001A')).toBe(true);
+      expect(service.validatePersonRef('10Z999B')).toBe(true);
+      expect(service.validatePersonRef('1T001AA')).toBe(true);
     });
 
     it('should reject invalid person references', () => {
-      expect(service.validatePersonRef('P1')).toBe(false);
-      expect(service.validatePersonRef('P0001')).toBe(false);
-      expect(service.validatePersonRef('p001')).toBe(false);
+      expect(service.validatePersonRef('1M0011')).toBe(false);
+      expect(service.validatePersonRef('1M001')).toBe(false);
+      expect(service.validatePersonRef('1m001a')).toBe(false);
       expect(service.validatePersonRef('001')).toBe(false);
-      expect(service.validatePersonRef('')).toBe(false);
+      expect(service.validatePersonRef('ABC')).toBe(false);
       expect(service.validatePersonRef('invalid')).toBe(false);
     });
   });
@@ -231,20 +221,12 @@ describe('ReferenceGeneratorService', () => {
       expect(result).toBe('1T001');
     });
 
-    it('should handle empty reference list for person generation', async () => {
-      fileStorageService.listFiles.mockResolvedValue([]);
+    it('should handle malformed person references during connected generation', async () => {
+      fileStorageService.listFiles.mockResolvedValue(['1M001?', 'invalid', '1M001A', '']);
 
-      const result = await service.generatePersonRef();
+      const result = await service.generateConnectedPersonRef('1M001');
 
-      expect(result).toBe('P001');
-    });
-
-    it('should handle malformed person references', async () => {
-      fileStorageService.listFiles.mockResolvedValue(['P001', 'invalid', 'P003', '']);
-
-      const result = await service.generatePersonRef();
-
-      expect(result).toBe('P002');
+      expect(result).toBe('1M001B');
     });
   });
 

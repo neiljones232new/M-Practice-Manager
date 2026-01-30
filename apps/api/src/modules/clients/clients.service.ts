@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { DatabaseService } from '../database/database.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { buildClientContext, ClientContext } from './dto/client-context.dto';
 import { Client as DbClient } from '../database/interfaces/database.interface';
 import { 
@@ -42,7 +43,99 @@ export class ClientsService {
   @Inject(forwardRef(() => ComplianceService))
   private complianceService: ComplianceService,
   private databaseService: DatabaseService,
+  private prisma: PrismaService,
 ) {}
+
+  private async generateConnectedClientRef(companyRef: string, portfolioCode: number): Promise<string> {
+    const existingClients = await this.fileStorage.listFiles('clients', portfolioCode);
+    const used = new Set(
+      (existingClients || [])
+        .map((id) => String(id || ''))
+        .filter((id) => id.startsWith(`${companyRef}`))
+        .map((id) => id.slice(companyRef.length))
+        .filter((suffix) => /^[A-Z]+$/.test(suffix))
+    );
+
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (let i = 0; i < alphabet.length; i++) {
+      const letter = alphabet[i];
+      if (!used.has(letter)) {
+        return `${companyRef}${letter}`;
+      }
+    }
+
+    return `${companyRef}AA`;
+  }
+
+  async enrollDirectorAsClient(companyRef: string, payload: { name: string }): Promise<{ ref: string; created: boolean }> {
+    const company = await this.findOne(companyRef);
+    if (!company) {
+      throw new NotFoundException(`Client ${companyRef} not found`);
+    }
+
+    const portfolioCode = company.portfolioCode;
+    const newRef = await this.generateConnectedClientRef(company.ref, portfolioCode);
+
+    const existing = await (this.prisma as any).client.findFirst({ where: { ref: newRef } });
+    if (existing) {
+      return { ref: newRef, created: false };
+    }
+
+    const trimmedName = String(payload?.name || '').trim();
+    if (!trimmedName) {
+      throw new BadRequestException('Director name is required');
+    }
+
+    // Ensure a corresponding Person record does not collide.
+    // Person identity is kept separate from Staff and Client.
+    try {
+      const existingPerson = await (this.prisma as any).person.findFirst({ where: { ref: newRef } });
+      if (!existingPerson) {
+        const parts = trimmedName.split(/\s+/).filter(Boolean);
+        const firstName = parts.shift() || trimmedName;
+        const lastName = parts.join(' ') || ' ';
+        await (this.prisma as any).person.create({
+          data: {
+            ref: newRef,
+            firstName,
+            lastName,
+          },
+        });
+      }
+    } catch (e) {
+      // If prisma isn't available or person model not generated yet, continue with client creation.
+    }
+
+    await (this.prisma as any).client.create({
+      data: {
+        ref: newRef,
+        name: trimmedName,
+        type: 'INDIVIDUAL',
+        portfolioCode,
+        status: 'ACTIVE',
+      },
+    });
+
+    const now = new Date();
+    const jsonClient: Client = {
+      id: newRef,
+      ref: newRef,
+      name: trimmedName,
+      type: 'INDIVIDUAL',
+      portfolioCode,
+      status: 'ACTIVE',
+      parties: [],
+      services: [],
+      tasks: [],
+      documents: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    await this.fileStorage.writeJson('clients', newRef, jsonClient, portfolioCode);
+
+    return { ref: newRef, created: true };
+  }
 
   private parseClientType(value?: string): Client['type'] {
     const normalized = (value || CLIENT_DEFAULTS.TYPE).toUpperCase().trim().replace(/\s+/g, '_');
@@ -66,65 +159,47 @@ export class ClientsService {
   }
 
   private async resolveDbClientForClient(client: Client): Promise<DbClient | null> {
-    if (client.registeredNumber) {
-      const byNumber = await this.databaseService.getClientByNumber(client.registeredNumber);
-      if (byNumber) return byNumber;
-    }
-
-    const name = this.normalizeName(client.name);
-    let matches: DbClient[] = [];
-    let exact: DbClient[] = [];
-
-    if (name) {
-      matches = await this.databaseService.searchClientsByName(client.name, 5);
-      exact = matches.filter((candidate) => {
-        const companyName = this.normalizeName(candidate.companyName);
-        const tradingName = this.normalizeName(candidate.tradingName);
-        return companyName === name || tradingName === name;
-      });
-    }
-
-    let resolved: DbClient | null = null;
-    if (exact.length === 1) {
-      resolved = exact[0];
-    } else if (matches.length === 1) {
-      resolved = matches[0];
-    }
-
-    if (!resolved) {
-      const all = await this.databaseService.getClientList();
-      if (all.length === 1) {
-        const full = all[0]?.companyNumber
-          ? await this.databaseService.getClientByNumber(all[0].companyNumber)
-          : null;
-        resolved = full || all[0];
+    try {
+      if (client.registeredNumber) {
+        const byNumber = await this.databaseService.getClientByNumber(client.registeredNumber);
+        if (byNumber) return byNumber;
       }
-    }
 
-    if (resolved) {
-      const needsRegisteredNumber = !client.registeredNumber && resolved.companyNumber;
-      const needsName = !client.name && resolved.companyName;
-      const needsStatus = !client.status && resolved.status;
-      const resolvedType = resolved.clientType ? String(resolved.clientType).toUpperCase() : '';
-      const normalizedType = ['COMPANY', 'INDIVIDUAL', 'SOLE_TRADER', 'PARTNERSHIP', 'LLP'].includes(resolvedType)
-        ? (resolvedType as Client['type'])
-        : undefined;
-      const needsType = !client.type && (normalizedType || resolved.companyNumber);
+      const name = this.normalizeName(client.name);
+      let matches: DbClient[] = [];
+      let exact: DbClient[] = [];
 
-      if (needsRegisteredNumber || needsName || needsStatus || needsType) {
-        const updated: Client = {
-          ...client,
-          registeredNumber: needsRegisteredNumber ? resolved.companyNumber : client.registeredNumber,
-          name: needsName ? resolved.companyName : client.name,
-          status: needsStatus ? (resolved.status as Client['status']) : client.status,
-          type: needsType ? (normalizedType || 'COMPANY') : client.type,
-          updatedAt: new Date(),
-        };
-        await this.fileStorage.writeJson('clients', client.ref, updated, client.portfolioCode);
+      if (name) {
+        matches = await this.databaseService.searchClientsByName(client.name, 5);
+        exact = matches.filter((candidate) => {
+          const companyName = this.normalizeName(candidate.companyName);
+          const tradingName = this.normalizeName(candidate.tradingName);
+          return companyName === name || tradingName === name;
+        });
       }
-    }
 
-    return resolved;
+      let resolved: DbClient | null = null;
+      if (exact.length === 1) {
+        resolved = exact[0];
+      } else if (matches.length === 1) {
+        resolved = matches[0];
+      }
+
+      if (!resolved) {
+        const all = await this.databaseService.getClientList();
+        if (all.length === 1) {
+          const full = all[0]?.companyNumber
+            ? await this.databaseService.getClientByNumber(all[0].companyNumber)
+            : null;
+          resolved = full || all[0];
+        }
+      }
+
+      return resolved;
+    } catch (e: any) {
+      this.logger.warn(`DB client resolution unavailable; returning null: ${e?.message || e}`);
+      return null;
+    }
   }
 
   private buildAddressFromCsv(record: Record<string, string>): Address | undefined {
@@ -166,8 +241,9 @@ export class ClientsService {
         this.logger.warn(`Client with reference ${createClientDto.ref} already exists, generating new ref`);
         // Generate a new ref instead of throwing error
         ref = await this.referenceGenerator.generateClientRef(
-          createClientDto.portfolioCode, 
-          createClientDto.name
+          createClientDto.portfolioCode,
+          createClientDto.name,
+          { clientType: createClientDto.type }
         );
       } else {
         ref = createClientDto.ref;
@@ -175,8 +251,9 @@ export class ClientsService {
     } else {
       // Generate a new ref
       ref = await this.referenceGenerator.generateClientRef(
-        createClientDto.portfolioCode, 
-        createClientDto.name
+        createClientDto.portfolioCode,
+        createClientDto.name,
+        { clientType: createClientDto.type }
       );
     }
     
@@ -226,7 +303,7 @@ export class ClientsService {
     // 2) Optionally add directors/main contact
     if (Array.isArray(payload.directors) && payload.directors.length > 0) {
       for (const [idx, d] of payload.directors.entries()) {
-        const person = await this.personService.create({
+        const person = await this.personService.create(client.ref, {
           firstName: d.firstName,
           lastName: d.lastName,
           email: d.email,
@@ -337,98 +414,105 @@ export class ClientsService {
 
   async findAllWithContext(filters?: ClientFilters): Promise<ClientContext[]> {
     const clients = await this.findAll(filters);
-    const dbClients = await this.databaseService.getClientList({}, [
-      'companyNumber',
-      'companyName',
-      'tradingName',
-      'mainContactName',
-      'partnerResponsible',
-      'clientManager',
-      'lifecycleStatus',
-      'engagementType',
-      'engagementLetterSigned',
-      'onboardingDate',
-      'disengagementDate',
-      'onboardingStartedAt',
-      'wentLiveAt',
-      'ceasedAt',
-      'dormantSince',
-      'accountingPeriodEnd',
-      'nextAccountsDueDate',
-      'nextCorporationTaxDueDate',
-      'statutoryYearEnd',
-      'vatRegistrationDate',
-      'vatPeriodStart',
-      'vatPeriodEnd',
-      'vatStagger',
-      'payrollPayDay',
-      'payrollPeriodEndDay',
-      'corporationTaxUtr',
-      'vatNumber',
-      'vatScheme',
-      'vatReturnFrequency',
-      'vatQuarter',
-      'payeReference',
-      'payeAccountsOfficeReference',
-      'accountsOfficeReference',
-      'cisRegistered',
-      'cisUtr',
-      'payrollRtiRequired',
-      'amlCompleted',
-      'clientRiskRating',
-      'annualFee',
-      'monthlyFee',
-      'personalUtr',
-      'selfAssessmentRequired',
-      'selfAssessmentFiled',
-      'companyType',
-      'registeredAddress',
-      'authenticationCode',
-      'employeeCount',
-      'payrollFrequency',
-      'contactPosition',
-      'telephone',
-      'mobile',
-      'email',
-      'preferredContactMethod',
-      'correspondenceAddress',
-      'feeArrangement',
-      'businessBankName',
-      'accountLastFour',
-      'directDebitInPlace',
-      'paymentIssues',
-      'notes',
-      'specialCircumstances',
-      'seasonalBusiness',
-      'dormant',
-      'doNotContact',
-      'nationalInsuranceNumber',
-      'dateOfBirth',
-      'personalAddress',
-      'personalTaxYear',
-      'selfAssessmentTaxYear',
-      'linkedCompanyNumber',
-      'directorRole',
-      'clientType',
-      'companyStatusDetail',
-      'jurisdiction',
-      'registeredOfficeFull',
-      'sicCodes',
-      'sicDescriptions',
-      'accountsOverdue',
-      'confirmationStatementOverdue',
-      'nextAccountsMadeUpTo',
-      'nextAccountsDueBy',
-      'lastAccountsMadeUpTo',
-      'nextConfirmationStatementDate',
-      'confirmationStatementDueBy',
-      'lastConfirmationStatementDate',
-      'directorCount',
-      'pscCount',
-      'currentDirectors',
-      'currentPscs',
-      'lastChRefresh',
-    ]);
+
+    let dbClients: any[] = [];
+    try {
+      dbClients = await this.databaseService.getClientList({}, [
+        'companyNumber',
+        'companyName',
+        'tradingName',
+        'mainContactName',
+        'partnerResponsible',
+        'clientManager',
+        'lifecycleStatus',
+        'engagementType',
+        'engagementLetterSigned',
+        'onboardingDate',
+        'disengagementDate',
+        'onboardingStartedAt',
+        'wentLiveAt',
+        'ceasedAt',
+        'dormantSince',
+        'accountingPeriodEnd',
+        'nextAccountsDueDate',
+        'nextCorporationTaxDueDate',
+        'statutoryYearEnd',
+        'vatRegistrationDate',
+        'vatPeriodStart',
+        'vatPeriodEnd',
+        'vatStagger',
+        'payrollPayDay',
+        'payrollPeriodEndDay',
+        'corporationTaxUtr',
+        'vatNumber',
+        'vatScheme',
+        'vatReturnFrequency',
+        'vatQuarter',
+        'payeReference',
+        'payeAccountsOfficeReference',
+        'accountsOfficeReference',
+        'cisRegistered',
+        'cisUtr',
+        'payrollRtiRequired',
+        'amlCompleted',
+        'clientRiskRating',
+        'annualFee',
+        'monthlyFee',
+        'personalUtr',
+        'selfAssessmentRequired',
+        'selfAssessmentFiled',
+        'companyType',
+        'registeredAddress',
+        'authenticationCode',
+        'employeeCount',
+        'payrollFrequency',
+        'contactPosition',
+        'telephone',
+        'mobile',
+        'email',
+        'preferredContactMethod',
+        'correspondenceAddress',
+        'feeArrangement',
+        'businessBankName',
+        'accountLastFour',
+        'directDebitInPlace',
+        'paymentIssues',
+        'notes',
+        'specialCircumstances',
+        'seasonalBusiness',
+        'dormant',
+        'doNotContact',
+        'nationalInsuranceNumber',
+        'dateOfBirth',
+        'personalAddress',
+        'personalTaxYear',
+        'selfAssessmentTaxYear',
+        'linkedCompanyNumber',
+        'directorRole',
+        'clientType',
+        'companyStatusDetail',
+        'jurisdiction',
+        'registeredOfficeFull',
+        'sicCodes',
+        'sicDescriptions',
+        'accountsOverdue',
+        'confirmationStatementOverdue',
+        'nextAccountsMadeUpTo',
+        'nextAccountsDueBy',
+        'lastAccountsMadeUpTo',
+        'nextConfirmationStatementDate',
+        'confirmationStatementDueBy',
+        'lastConfirmationStatementDate',
+        'directorCount',
+        'pscCount',
+        'currentDirectors',
+        'currentPscs',
+        'lastChRefresh',
+      ]);
+    } catch (e: any) {
+      this.logger.warn(`Database client list unavailable; falling back to file-only client contexts: ${e?.message || e}`);
+      dbClients = [];
+    }
 
     const dbMap = new Map(dbClients.map((dbClient) => [dbClient.companyNumber, dbClient]));
     const nameCounts = new Map<string, number>();
@@ -934,22 +1018,26 @@ export class ClientsService {
     const dbUpdate = this.buildDbUpdate(updateClientDto);
 
     if (Object.keys(dbUpdate).length > 0) {
-      let dbClient = await this.resolveDbClientForClient(updatedClient);
-      if (!dbClient && (updatedClient.registeredNumber || updatedClient.id)) {
-        const companyNumber = updatedClient.registeredNumber || updatedClient.id;
-        const addResult = await this.databaseService.addClient({
-          companyNumber,
-          companyName: updatedClient.name,
-          status: updatedClient.status,
-          ...dbUpdate,
-        });
-        if (addResult.success) {
-          dbClient = await this.databaseService.getClientByNumber(companyNumber);
+      try {
+        let dbClient = await this.resolveDbClientForClient(updatedClient);
+        if (!dbClient && (updatedClient.registeredNumber || updatedClient.id)) {
+          const companyNumber = updatedClient.registeredNumber || updatedClient.id;
+          const addResult = await this.databaseService.addClient({
+            companyNumber,
+            companyName: updatedClient.name,
+            status: updatedClient.status,
+            ...dbUpdate,
+          });
+          if (addResult.success) {
+            dbClient = await this.databaseService.getClientByNumber(companyNumber);
+          }
         }
-      }
 
-      if (dbClient) {
-        await this.databaseService.updateClient(dbClient.companyNumber, dbUpdate);
+        if (dbClient) {
+          await this.databaseService.updateClient(dbClient.companyNumber, dbUpdate);
+        }
+      } catch (e: any) {
+        this.logger.warn(`DB update failed during client update; file update succeeded: ${e?.message || e}`);
       }
     }
 
@@ -968,22 +1056,26 @@ export class ClientsService {
     const dbUpdate = this.buildDbUpdate(updateClientDto);
 
     if (Object.keys(dbUpdate).length > 0) {
-      let dbClient = await this.resolveDbClientForClient(existing);
-      if (!dbClient && (existing.registeredNumber || existing.id)) {
-        const companyNumber = existing.registeredNumber || existing.id;
-        const addResult = await this.databaseService.addClient({
-          companyNumber,
-          companyName: existing.name,
-          status: existing.status,
-          ...dbUpdate,
-        });
-        if (addResult.success) {
-          dbClient = await this.databaseService.getClientByNumber(companyNumber);
+      try {
+        let dbClient = await this.resolveDbClientForClient(existing);
+        if (!dbClient && (existing.registeredNumber || existing.id)) {
+          const companyNumber = existing.registeredNumber || existing.id;
+          const addResult = await this.databaseService.addClient({
+            companyNumber,
+            companyName: existing.name,
+            status: existing.status,
+            ...dbUpdate,
+          });
+          if (addResult.success) {
+            dbClient = await this.databaseService.getClientByNumber(companyNumber);
+          }
         }
-      }
 
-      if (dbClient) {
-        await this.databaseService.updateClient(dbClient.companyNumber, dbUpdate);
+        if (dbClient) {
+          await this.databaseService.updateClient(dbClient.companyNumber, dbUpdate);
+        }
+      } catch (e: any) {
+        this.logger.warn(`DB update failed during client profile update; continuing: ${e?.message || e}`);
       }
     }
 
@@ -1113,7 +1205,7 @@ export class ClientsService {
     if (existing.portfolioCode === newPortfolioCode) return existing;
 
     // Generate a new reference for the new portfolio
-    const newRef = await this.referenceGenerator.generateClientRef(newPortfolioCode, existing.name);
+    const newRef = await this.referenceGenerator.generateClientRef(newPortfolioCode, existing.name, { clientType: existing.type });
 
     const updated: Client = {
       ...existing,
@@ -1165,7 +1257,14 @@ export class ClientsService {
     return client;
   }
 
-  async getClientWithParties(clientId: string): Promise<ClientContext & { partiesDetails: Array<ClientParty & { partyRef: string }> }> {
+  async getClientWithParties(
+    clientId: string
+  ): Promise<
+    ClientContext & {
+      partiesDetails: Array<ClientParty & { partyRef: string }>;
+      companiesHouse?: { companyNumber?: string; officers?: any[]; lastFetched?: Date };
+    }
+  > {
     const client = await this.findOne(clientId);
     if (!client) {
       throw new NotFoundException(`Client with ID ${clientId} not found`);
@@ -1182,9 +1281,26 @@ export class ClientsService {
 
     const context = buildClientContext(client, dbClient);
 
+    let companiesHouse: { companyNumber?: string; officers?: any[]; lastFetched?: Date } | undefined;
+    try {
+      const snapshot = await (this.prisma as any).companiesHouseData.findFirst({
+        where: { companyNumber: client.registeredNumber || undefined },
+      });
+      if (snapshot) {
+        companiesHouse = {
+          companyNumber: snapshot.companyNumber,
+          officers: Array.isArray(snapshot.officers) ? snapshot.officers : (snapshot.officers?.items || []),
+          lastFetched: snapshot.lastFetched,
+        };
+      }
+    } catch (e) {
+      companiesHouse = undefined;
+    }
+
     return {
       ...context,
       partiesDetails,
+      companiesHouse,
     };
   }
 
