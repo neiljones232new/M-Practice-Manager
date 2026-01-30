@@ -123,6 +123,7 @@ export class DatabaseService implements OnModuleInit {
         personal_tax_year TEXT,
         self_assessment_required BOOLEAN,
         self_assessment_filed BOOLEAN,
+        self_assessment_tax_year TEXT,
         linked_company_number TEXT,
         director_role TEXT,
         client_type TEXT,
@@ -278,6 +279,7 @@ export class DatabaseService implements OnModuleInit {
       { name: 'vat_stagger', type: 'TEXT' },
       { name: 'payroll_pay_day', type: 'INTEGER' },
       { name: 'payroll_period_end_day', type: 'INTEGER' },
+      { name: 'self_assessment_tax_year', type: 'TEXT' },
     ];
 
     for (const column of desired) {
