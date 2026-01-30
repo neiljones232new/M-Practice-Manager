@@ -12,6 +12,10 @@ import {
 export class PrismaDatabaseService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private get isDbEnabled(): boolean {
+    return !!process.env.DATABASE_URL;
+  }
+
   private get clientModel(): any {
     return (this.prisma as any).client;
   }
@@ -30,6 +34,9 @@ export class PrismaDatabaseService {
 
   async testConnection(): Promise<OperationResult> {
     try {
+      if (!this.isDbEnabled) {
+        return { success: false, message: 'Database connection not configured (DATABASE_URL missing)' };
+      }
       await this.prisma.$queryRaw`SELECT 1`;
       return { success: true, message: 'Database connection successful.' };
     } catch (err: any) {
@@ -46,6 +53,7 @@ export class PrismaDatabaseService {
   }
 
   async getClientByNumber(companyNumber: string): Promise<Client | null> {
+    if (!this.isDbEnabled) return null;
     const c: any = await this.clientModel.findFirst({ where: { companyNumber } });
     if (!c) return null;
     return {
@@ -129,6 +137,7 @@ export class PrismaDatabaseService {
   }
 
   async searchClientsByName(name: string, limit = 50): Promise<Client[]> {
+    if (!this.isDbEnabled) return [];
     const rows: any[] = await this.clientModel.findMany({
       where: {
         OR: [
@@ -151,6 +160,7 @@ export class PrismaDatabaseService {
   }
 
   async getClientList(_filters: any = {}, _fields?: string[]): Promise<Client[]> {
+    if (!this.isDbEnabled) return [];
     const rows: any[] = await this.clientModel.findMany({
       orderBy: { name: 'asc' },
       take: 1000,
@@ -167,6 +177,9 @@ export class PrismaDatabaseService {
   }
 
   async storeCalculation(calculation: TaxCalculationResult): Promise<OperationResult> {
+    if (!this.isDbEnabled) {
+      return { success: false, message: 'Database not configured (DATABASE_URL missing)', id: calculation.id };
+    }
     const resolvedClient = calculation.clientId
       ? await this.clientModel.findFirst({
           where: {
@@ -225,6 +238,7 @@ export class PrismaDatabaseService {
   }
 
   async getCalculationById(id: string): Promise<TaxCalculationResult | null> {
+    if (!this.isDbEnabled) return null;
     const calc: any = await this.taxCalculationModel.findUnique({
       where: { id },
       include: { scenarios: true },
@@ -238,35 +252,29 @@ export class PrismaDatabaseService {
       companyId: calc.companyId || undefined,
       calculationType: calc.calculationType as any,
       taxYear: calc.taxYear,
-      parameters: calc.parameters || {},
+      parameters: calc.parameters || undefined,
       optimizedSalary: calc.optimizedSalary ? Number(calc.optimizedSalary) : undefined,
       optimizedDividend: calc.optimizedDividend ? Number(calc.optimizedDividend) : undefined,
       totalTakeHome: calc.totalTakeHome ? Number(calc.totalTakeHome) : undefined,
       totalTaxLiability: calc.totalTaxLiability ? Number(calc.totalTaxLiability) : undefined,
       estimatedSavings: calc.estimatedSavings ? Number(calc.estimatedSavings) : undefined,
-      recommendations: calc.recommendations || [],
-      calculatedAt: calc.calculatedAt || undefined,
+      recommendations: calc.recommendations || undefined,
+      calculatedAt: calc.calculatedAt ? calc.calculatedAt.toISOString() : undefined,
       calculatedBy: calc.calculatedBy || undefined,
       notes: calc.notes || undefined,
       scenarios: (calc.scenarios || []).map((s) => ({
         id: s.id,
         calculationId: s.calculationId,
-        scenarioName: s.scenarioName || '',
-        salary: s.salary ? Number(s.salary) : 0,
-        dividend: s.dividend ? Number(s.dividend) : 0,
-        incomeTax: s.incomeTax ? Number(s.incomeTax) : 0,
-        employeeNi: s.employeeNi ? Number(s.employeeNi) : 0,
-        employerNi: s.employerNi ? Number(s.employerNi) : 0,
-        dividendTax: s.dividendTax ? Number(s.dividendTax) : 0,
-        corporationTax: s.corporationTax ? Number(s.corporationTax) : 0,
-        totalTax: s.totalTax ? Number(s.totalTax) : 0,
-        takeHome: s.takeHome ? Number(s.takeHome) : 0,
-        effectiveRate: s.effectiveRate ? Number(s.effectiveRate) : 0,
+        name: s.name,
+        scenarioData: s.scenarioData || undefined,
+        createdAt: s.createdAt,
+        updatedAt: s.updatedAt,
       })),
     };
   }
 
   async getClientCalculations(clientId: string, limit = 10): Promise<TaxCalculationResult[]> {
+    if (!this.isDbEnabled) return [];
     const resolvedClient = await this.clientModel.findFirst({
       where: {
         OR: [{ id: clientId }, { ref: clientId }, { companyNumber: clientId }],
@@ -281,13 +289,33 @@ export class PrismaDatabaseService {
       where,
       orderBy: { calculatedAt: 'desc' },
       take: limit,
-      include: { scenarios: true },
     });
 
-    return Promise.all(calcs.map((c) => this.getCalculationById(c.id))).then((rows) => rows.filter(Boolean) as TaxCalculationResult[]);
+    return calcs.map((c) => ({
+      id: c.id,
+      clientId: c.clientRef || c.clientId || '',
+      companyId: c.companyId || undefined,
+      calculationType: c.calculationType as any,
+      taxYear: c.taxYear,
+      parameters: c.parameters || undefined,
+      optimizedSalary: c.optimizedSalary ?? undefined,
+      optimizedDividend: c.optimizedDividend ?? undefined,
+      totalTakeHome: c.totalTakeHome ?? undefined,
+      totalTaxLiability: c.totalTaxLiability ?? undefined,
+      estimatedSavings: c.estimatedSavings ?? undefined,
+      recommendations: c.recommendations || undefined,
+      calculatedAt: c.calculatedAt ? c.calculatedAt.toISOString() : undefined,
+      calculatedBy: c.calculatedBy || undefined,
+      notes: c.notes || undefined,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+    } as any));
   }
 
   async storeReport(report: GeneratedReport): Promise<OperationResult> {
+    if (!this.isDbEnabled) {
+      return { success: false, message: 'Database not configured (DATABASE_URL missing)', id: report.id };
+    }
     const resolvedClient = report.clientId
       ? await this.clientModel.findFirst({
           where: {
@@ -306,25 +334,25 @@ export class PrismaDatabaseService {
         clientId,
         clientRef,
         calculationId: report.calculationId || null,
-        templateId: report.templateId || null,
+        templateId: report.templateId,
         title: report.title,
         content: report.content || undefined,
         format: report.format as any,
         filePath: report.filePath || null,
         generatedAt: report.generatedAt ? new Date(report.generatedAt) : undefined,
-        generatedBy: report.generatedBy || null,
+        generatedBy: report.generatedBy,
       },
       update: {
         clientId,
         clientRef,
         calculationId: report.calculationId || null,
-        templateId: report.templateId || null,
+        templateId: report.templateId,
         title: report.title,
         content: report.content || undefined,
         format: report.format as any,
         filePath: report.filePath || null,
         generatedAt: report.generatedAt ? new Date(report.generatedAt) : undefined,
-        generatedBy: report.generatedBy || null,
+        generatedBy: report.generatedBy,
       },
     });
 
@@ -332,6 +360,7 @@ export class PrismaDatabaseService {
   }
 
   async getClientReports(clientId: string, limit = 10): Promise<GeneratedReport[]> {
+    if (!this.isDbEnabled) return [];
     const resolvedClient = await this.clientModel.findFirst({
       where: {
         OR: [{ id: clientId }, { ref: clientId }, { companyNumber: clientId }],
@@ -352,47 +381,53 @@ export class PrismaDatabaseService {
       id: r.id,
       clientId: r.clientRef || r.clientId || '',
       calculationId: r.calculationId || undefined,
-      templateId: r.templateId || '',
+      templateId: r.templateId,
       title: r.title,
-      content: r.content || {},
+      content: r.content || undefined,
       format: r.format as any,
       filePath: r.filePath || undefined,
-      generatedAt: r.generatedAt || new Date(),
-      generatedBy: r.generatedBy || '',
-    }));
+      generatedAt: r.generatedAt,
+      generatedBy: r.generatedBy,
+    } as any));
   }
 
   async getReportById(id: string): Promise<GeneratedReport | null> {
+    if (!this.isDbEnabled) return null;
     const r = await this.generatedReportModel.findUnique({ where: { id } });
     if (!r) return null;
     return {
       id: r.id,
       clientId: r.clientRef || r.clientId || '',
       calculationId: r.calculationId || undefined,
-      templateId: r.templateId || '',
+      templateId: r.templateId,
       title: r.title,
-      content: r.content || {},
+      content: r.content || undefined,
       format: r.format as any,
       filePath: r.filePath || undefined,
-      generatedAt: r.generatedAt || new Date(),
-      generatedBy: r.generatedBy || '',
-    };
+      generatedAt: r.generatedAt,
+      generatedBy: r.generatedBy,
+    } as any;
   }
 
   async storeRecommendations(calculationId: string, recommendations: any[]): Promise<OperationResult> {
+    if (!this.isDbEnabled) {
+      return { success: false, message: 'Database not configured (DATABASE_URL missing)', id: calculationId };
+    }
     await this.taxCalculationModel.update({
       where: { id: calculationId },
       data: { recommendations: recommendations || [] },
     });
-    return { success: true, message: 'Recommendations stored successfully' };
+    return { success: true, message: 'Recommendations stored successfully', id: calculationId };
   }
 
   async getRecommendations(calculationId: string): Promise<any[]> {
+    if (!this.isDbEnabled) return [];
     const row = await this.taxCalculationModel.findUnique({ where: { id: calculationId }, select: { recommendations: true } });
     return (row?.recommendations as any[]) || [];
   }
 
   async getClientRecommendations(clientId: string, options: any = {}): Promise<any[]> {
+    if (!this.isDbEnabled) return [];
     const limit = options.limit || 50;
 
     const resolvedClient = await this.clientModel.findFirst({

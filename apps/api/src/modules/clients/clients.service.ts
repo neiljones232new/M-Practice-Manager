@@ -30,6 +30,10 @@ export class ClientsService {
   private readonly clientTypes: Client['type'][] = ['COMPANY', 'INDIVIDUAL', 'SOLE_TRADER', 'PARTNERSHIP', 'LLP'];
   private readonly clientStatuses: Client['status'][] = ['ACTIVE', 'INACTIVE', 'ARCHIVED'];
 
+  private get isDbEnabled(): boolean {
+    return !!process.env.DATABASE_URL;
+  }
+
   constructor(
   private fileStorage: FileStorageService,
   private referenceGenerator: ReferenceGeneratorService,
@@ -76,9 +80,11 @@ export class ClientsService {
     const portfolioCode = company.portfolioCode;
     const newRef = await this.generateConnectedClientRef(company.ref, portfolioCode);
 
-    const existing = await (this.prisma as any).client.findFirst({ where: { ref: newRef } });
-    if (existing) {
-      return { ref: newRef, created: false };
+    if (this.isDbEnabled) {
+      const existing = await (this.prisma as any).client.findFirst({ where: { ref: newRef } });
+      if (existing) {
+        return { ref: newRef, created: false };
+      }
     }
 
     const trimmedName = String(payload?.name || '').trim();
@@ -89,32 +95,36 @@ export class ClientsService {
     // Ensure a corresponding Person record does not collide.
     // Person identity is kept separate from Staff and Client.
     try {
-      const existingPerson = await (this.prisma as any).person.findFirst({ where: { ref: newRef } });
-      if (!existingPerson) {
-        const parts = trimmedName.split(/\s+/).filter(Boolean);
-        const firstName = parts.shift() || trimmedName;
-        const lastName = parts.join(' ') || ' ';
-        await (this.prisma as any).person.create({
-          data: {
-            ref: newRef,
-            firstName,
-            lastName,
-          },
-        });
+      if (this.isDbEnabled) {
+        const existingPerson = await (this.prisma as any).person.findFirst({ where: { ref: newRef } });
+        if (!existingPerson) {
+          const parts = trimmedName.split(/\s+/).filter(Boolean);
+          const firstName = parts.shift() || trimmedName;
+          const lastName = parts.join(' ') || ' ';
+          await (this.prisma as any).person.create({
+            data: {
+              ref: newRef,
+              firstName,
+              lastName,
+            },
+          });
+        }
       }
     } catch (e) {
       // If prisma isn't available or person model not generated yet, continue with client creation.
     }
 
-    await (this.prisma as any).client.create({
-      data: {
-        ref: newRef,
-        name: trimmedName,
-        type: 'INDIVIDUAL',
-        portfolioCode,
-        status: 'ACTIVE',
-      },
-    });
+    if (this.isDbEnabled) {
+      await (this.prisma as any).client.create({
+        data: {
+          ref: newRef,
+          name: trimmedName,
+          type: 'INDIVIDUAL',
+          portfolioCode,
+          status: 'ACTIVE',
+        },
+      });
+    }
 
     const now = new Date();
     const jsonClient: Client = {
@@ -1017,7 +1027,7 @@ export class ClientsService {
 
     const dbUpdate = this.buildDbUpdate(updateClientDto);
 
-    if (Object.keys(dbUpdate).length > 0) {
+    if (this.isDbEnabled && Object.keys(dbUpdate).length > 0) {
       try {
         let dbClient = await this.resolveDbClientForClient(updatedClient);
         if (!dbClient && (updatedClient.registeredNumber || updatedClient.id)) {
@@ -1053,9 +1063,110 @@ export class ClientsService {
       throw new NotFoundException(`Client with ID ${id} not found`);
     }
 
+    const clientUpdate: Partial<Client> = Object.fromEntries(
+      Object.entries({
+      name: updateClientDto.name,
+      type: updateClientDto.type,
+      status: updateClientDto.status,
+      mainEmail: updateClientDto.mainEmail,
+      mainPhone: updateClientDto.mainPhone,
+      registeredNumber: updateClientDto.registeredNumber,
+      utrNumber: updateClientDto.utrNumber,
+      incorporationDate: updateClientDto.incorporationDate,
+      accountsAccountingReferenceDay: updateClientDto.accountsAccountingReferenceDay,
+      accountsAccountingReferenceMonth: updateClientDto.accountsAccountingReferenceMonth,
+      accountsLastMadeUpTo: updateClientDto.accountsLastMadeUpTo,
+      accountsNextDue: updateClientDto.accountsNextDue,
+      confirmationLastMadeUpTo: updateClientDto.confirmationLastMadeUpTo,
+      confirmationNextDue: updateClientDto.confirmationNextDue,
+      address: updateClientDto.address,
+      mainContactName: updateClientDto.mainContactName,
+      partnerResponsible: updateClientDto.partnerResponsible,
+      clientManager: updateClientDto.clientManager,
+      lifecycleStatus: updateClientDto.lifecycleStatus,
+      engagementType: updateClientDto.engagementType,
+      engagementLetterSigned: updateClientDto.engagementLetterSigned,
+      onboardingDate: updateClientDto.onboardingDate,
+      disengagementDate: updateClientDto.disengagementDate,
+      onboardingStartedAt: updateClientDto.onboardingStartedAt,
+      wentLiveAt: updateClientDto.wentLiveAt,
+      ceasedAt: updateClientDto.ceasedAt,
+      dormantSince: updateClientDto.dormantSince,
+      accountingPeriodEnd: updateClientDto.accountingPeriodEnd,
+      nextAccountsDueDate: updateClientDto.nextAccountsDueDate,
+      nextCorporationTaxDueDate: updateClientDto.nextCorporationTaxDueDate,
+      statutoryYearEnd: updateClientDto.statutoryYearEnd,
+      vatRegistrationDate: updateClientDto.vatRegistrationDate,
+      vatPeriodStart: updateClientDto.vatPeriodStart,
+      vatPeriodEnd: updateClientDto.vatPeriodEnd,
+      vatStagger: updateClientDto.vatStagger,
+      payrollPayDay: updateClientDto.payrollPayDay,
+      payrollPeriodEndDay: updateClientDto.payrollPeriodEndDay,
+      corporationTaxUtr: updateClientDto.corporationTaxUtr,
+      vatNumber: updateClientDto.vatNumber,
+      vatScheme: updateClientDto.vatScheme,
+      vatReturnFrequency: updateClientDto.vatReturnFrequency,
+      vatQuarter: updateClientDto.vatQuarter,
+      payeReference: updateClientDto.payeReference,
+      payeAccountsOfficeReference: updateClientDto.payeAccountsOfficeReference,
+      accountsOfficeReference: updateClientDto.accountsOfficeReference,
+      cisRegistered: updateClientDto.cisRegistered,
+      cisUtr: updateClientDto.cisUtr,
+      payrollRtiRequired: updateClientDto.payrollRtiRequired,
+      amlCompleted: updateClientDto.amlCompleted,
+      clientRiskRating: updateClientDto.clientRiskRating,
+      annualFee: updateClientDto.annualFee,
+      monthlyFee: updateClientDto.monthlyFee,
+      personalUtr: updateClientDto.personalUtr,
+      selfAssessmentRequired: updateClientDto.selfAssessmentRequired,
+      selfAssessmentFiled: updateClientDto.selfAssessmentFiled,
+      tradingName: updateClientDto.tradingName,
+      registeredAddress: updateClientDto.registeredAddress,
+      authenticationCode: updateClientDto.authenticationCode,
+      employeeCount: updateClientDto.employeeCount,
+      payrollFrequency: updateClientDto.payrollFrequency,
+      contactPosition: updateClientDto.contactPosition,
+      telephone: updateClientDto.telephone,
+      mobile: updateClientDto.mobile,
+      email: updateClientDto.email,
+      preferredContactMethod: updateClientDto.preferredContactMethod,
+      correspondenceAddress: updateClientDto.correspondenceAddress,
+      feeArrangement: updateClientDto.feeArrangement,
+      businessBankName: updateClientDto.businessBankName,
+      accountLastFour: updateClientDto.accountLastFour,
+      directDebitInPlace: updateClientDto.directDebitInPlace,
+      paymentIssues: updateClientDto.paymentIssues,
+      notes: updateClientDto.notes,
+      specialCircumstances: updateClientDto.specialCircumstances,
+      seasonalBusiness: updateClientDto.seasonalBusiness,
+      dormant: updateClientDto.dormant,
+      doNotContact: updateClientDto.doNotContact,
+      nationalInsuranceNumber: updateClientDto.nationalInsuranceNumber,
+      dateOfBirth: updateClientDto.dateOfBirth,
+      personalAddress: updateClientDto.personalAddress,
+      personalTaxYear: updateClientDto.personalTaxYear,
+      selfAssessmentTaxYear: updateClientDto.selfAssessmentTaxYear,
+      linkedCompanyNumber: updateClientDto.linkedCompanyNumber,
+      directorRole: updateClientDto.directorRole,
+      clientType: updateClientDto.clientType,
+      }).filter(([, value]) => value !== undefined)
+    );
+
+    const updatedClient: Client = {
+      ...existing,
+      ...clientUpdate,
+      id: existing.id,
+      ref: existing.ref,
+      portfolioCode: existing.portfolioCode,
+      updatedAt: new Date(),
+    };
+
+    await this.fileStorage.writeJson('clients', existing.ref, updatedClient, existing.portfolioCode);
+    this.logger.log(`Updated client: ${updatedClient.name} (${updatedClient.ref})`);
+
     const dbUpdate = this.buildDbUpdate(updateClientDto);
 
-    if (Object.keys(dbUpdate).length > 0) {
+    if (this.isDbEnabled && Object.keys(dbUpdate).length > 0) {
       try {
         let dbClient = await this.resolveDbClientForClient(existing);
         if (!dbClient && (existing.registeredNumber || existing.id)) {
@@ -1079,7 +1190,7 @@ export class ClientsService {
       }
     }
 
-    return this.getClientWithParties(existing.id);
+    return this.getClientWithParties(existing.ref);
   }
 
   /**
@@ -1283,15 +1394,17 @@ export class ClientsService {
 
     let companiesHouse: { companyNumber?: string; officers?: any[]; lastFetched?: Date } | undefined;
     try {
-      const snapshot = await (this.prisma as any).companiesHouseData.findFirst({
-        where: { companyNumber: client.registeredNumber || undefined },
-      });
-      if (snapshot) {
-        companiesHouse = {
-          companyNumber: snapshot.companyNumber,
-          officers: Array.isArray(snapshot.officers) ? snapshot.officers : (snapshot.officers?.items || []),
-          lastFetched: snapshot.lastFetched,
-        };
+      if (this.isDbEnabled) {
+        const snapshot = await (this.prisma as any).companiesHouseData.findFirst({
+          where: { companyNumber: client.registeredNumber || undefined },
+        });
+        if (snapshot) {
+          companiesHouse = {
+            companyNumber: snapshot.companyNumber,
+            officers: Array.isArray(snapshot.officers) ? snapshot.officers : (snapshot.officers?.items || []),
+            lastFetched: snapshot.lastFetched,
+          };
+        }
       }
     } catch (e) {
       companiesHouse = undefined;
