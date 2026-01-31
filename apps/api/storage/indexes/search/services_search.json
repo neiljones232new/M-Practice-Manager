@@ -1,1 +1,123 @@
-{}
+{
+  "2000": {
+    "services": {
+      "service_1769887810490_zrsaaifq9": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.494Z"
+      }
+    }
+  },
+  "service_1769887810490_zrsaaifq9": {
+    "services": {
+      "service_1769887810490_zrsaaifq9": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T19:30:10.494Z"
+      }
+    }
+  },
+  "active": {
+    "services": {
+      "service_1769887810490_zrsaaifq9": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.494Z"
+      },
+      "service_1769887810499_ivqbg6p1r": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.499Z"
+      }
+    }
+  },
+  "annual": {
+    "services": {
+      "service_1769887810490_zrsaaifq9": {
+        "fields": [
+          "type",
+          "frequency"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T19:30:10.494Z"
+      },
+      "service_1769887810499_ivqbg6p1r": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.499Z"
+      }
+    }
+  },
+  "accounts": {
+    "services": {
+      "service_1769887810490_zrsaaifq9": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.494Z"
+      }
+    }
+  },
+  "4p001": {
+    "services": {
+      "service_1769887810490_zrsaaifq9": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.494Z"
+      },
+      "service_1769887810499_ivqbg6p1r": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.499Z"
+      }
+    }
+  },
+  "service_1769887810499_ivqbg6p1r": {
+    "services": {
+      "service_1769887810499_ivqbg6p1r": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T19:30:10.499Z"
+      }
+    }
+  },
+  "company": {
+    "services": {
+      "service_1769887810499_ivqbg6p1r": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.499Z"
+      }
+    }
+  },
+  "secretarial": {
+    "services": {
+      "service_1769887810499_ivqbg6p1r": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.499Z"
+      }
+    }
+  }
+}

@@ -49,5 +49,11 @@
     }
   ],
   "createdAt": "2026-01-08T23:45:42.483Z",
-  "updatedAt": "2026-01-08T23:45:42.483Z"
+  "updatedAt": "2026-01-31T21:32:20.047Z",
+  "appliesTo": [
+    "Company",
+    "LLP"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period"
 }

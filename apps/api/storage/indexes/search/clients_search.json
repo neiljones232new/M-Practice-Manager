@@ -1,1 +1,194 @@
-{}
+{
+  "11849491": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "registeredNumber"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "client_1769887810389_mqr6be8cu": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "fulfilment": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "limited": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "name"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "active": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "company": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "4p001": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "ref"
+        ],
+        "score": 7.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "unit": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "address"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "alexandria": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "drive": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "ashton": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "under": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "lyne": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "ol7": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "0qn": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  },
+  "england": {
+    "clients": {
+      "4:4P001": {
+        "fields": [
+          "address"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-01-31T19:30:10.500Z",
+        "portfolioCode": 4
+      }
+    }
+  }
+}

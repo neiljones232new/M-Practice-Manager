@@ -1,0 +1,57 @@
+{
+  "e59dd1f8": {
+    "user-sessions": {
+      "local-dev-super-admin": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T21:34:15.337Z"
+      }
+    }
+  },
+  "0b37": {
+    "user-sessions": {
+      "local-dev-super-admin": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T21:34:15.337Z"
+      }
+    }
+  },
+  "4abc": {
+    "user-sessions": {
+      "local-dev-super-admin": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T21:34:15.337Z"
+      }
+    }
+  },
+  "b77e": {
+    "user-sessions": {
+      "local-dev-super-admin": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T21:34:15.337Z"
+      }
+    }
+  },
+  "02bb0432d6d0": {
+    "user-sessions": {
+      "local-dev-super-admin": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T21:34:15.337Z"
+      }
+    }
+  }
+}

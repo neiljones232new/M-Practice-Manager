@@ -21,7 +21,6 @@ import { ServicesService } from './services.service';
 import { IntegrationConfigService } from '../integrations/services/integration-config.service';
 import { TasksService } from '../tasks/tasks.service';
 import { ComplianceService } from '../filings/compliance.service';
-import { AllowDemoUser } from '../../common/decorators/allow-demo-user.decorator';
 import { 
   Service, 
   CreateServiceDto, 
@@ -31,7 +30,6 @@ import {
 } from './interfaces/service.interface';
 
 @ApiTags('Services')
-@AllowDemoUser()
 @Controller('services')
 export class ServicesController {
   constructor(
@@ -42,6 +40,10 @@ export class ServicesController {
     @Inject(forwardRef(() => ComplianceService))
     private readonly complianceService: ComplianceService,
   ) {}
+
+  private isDemoUser(req: any) {
+    return req?.user?.id === 'demo-user';
+  }
 
   @Get()
   @ApiOperation({ summary: 'Get all services with optional filters' })
@@ -54,24 +56,36 @@ export class ServicesController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
   async findAllServices(@Request() req: any, @Query() filters: ServiceFilters) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.servicesService.findAll(filters);
   }
 
   @Get('with-client-details')
   @ApiOperation({ summary: 'Get services with client details' })
   async getServicesWithClientDetails(@Request() req: any, @Query() filters: ServiceFilters) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.servicesService.getServicesWithClientDetails(filters);
   }
 
   @Get('client/:clientId')
   @ApiOperation({ summary: 'Get services by client ID' })
   async findByClient(@Request() req: any, @Param('clientId') clientId: string) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.servicesService.findByClient(clientId);
   }
 
   @Get('kind/:kind')
   @ApiOperation({ summary: 'Get services by kind' })
   async findByKind(@Request() req: any, @Param('kind') kind: string) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.servicesService.findByKind(kind);
   }
 
@@ -83,6 +97,9 @@ export class ServicesController {
     @Query('q') query: string,
     @Query() filters: ServiceFilters
   ) {
+    if (this.isDemoUser(req)) {
+      return [];
+    }
     return this.servicesService.search(query, filters);
   }
 
@@ -90,6 +107,15 @@ export class ServicesController {
   @ApiOperation({ summary: 'Get service summary statistics' })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   async getServiceSummary(@Request() req: any, @Query('portfolioCode') portfolioCode?: string): Promise<ServiceSummary> {
+    if (this.isDemoUser(req)) {
+      return {
+        totalServices: 0,
+        activeServices: 0,
+        totalAnnualFees: 0,
+        servicesByKind: {},
+        servicesByFrequency: {},
+      };
+    }
     const portfolio = portfolioCode ? parseInt(portfolioCode) : undefined;
     return this.servicesService.getServiceSummary(portfolio);
   }
@@ -99,6 +125,9 @@ export class ServicesController {
   @ApiResponse({ status: 200, description: 'Service details retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Service not found' })
   async getServiceDetails(@Request() req: any, @Param('id') id: string) {
+    if (this.isDemoUser(req)) {
+      throw new NotFoundException(`Service ${id} not found`);
+    }
     const service = await this.servicesService.findOne(id);
     if (!service) {
       throw new NotFoundException(`Service ${id} not found`);
@@ -141,6 +170,9 @@ export class ServicesController {
   @Get(':id')
   @ApiOperation({ summary: 'Get service by ID' })
   async findOneService(@Request() req: any, @Param('id') id: string) {
+    if (this.isDemoUser(req)) {
+      return null;
+    }
     return this.servicesService.findOne(id);
   }
 
@@ -194,6 +226,12 @@ export class ServicesController {
   @Header('Content-Type', 'text/csv; charset=utf-8')
   @Header('Content-Disposition', `attachment; filename="services-${new Date().toISOString().slice(0,10)}.csv"`)
   async exportCSV(@Request() req: any, @Query() filters: ServiceFilters): Promise<string> {
+    if (this.isDemoUser(req)) {
+      const headers = [
+        'Client Ref','Client','Service','Frequency','Fee','Annual','Status','Next Due','Portfolio'
+      ];
+      return headers.join(',') + '\n';
+    }
     const practice = await this.configService.getPracticeSettings();
     const items = await this.servicesService.getServicesWithClientDetails(filters);
     const headers = [

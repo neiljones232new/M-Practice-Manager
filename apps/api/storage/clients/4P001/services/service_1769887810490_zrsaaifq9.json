@@ -1,0 +1,11 @@
+{
+  "id": "service_1769887810490_zrsaaifq9",
+  "clientId": "4P001",
+  "kind": "Annual Accounts",
+  "frequency": "ANNUAL",
+  "fee": 2000,
+  "annualized": 2000,
+  "status": "ACTIVE",
+  "createdAt": "2026-01-31T19:30:10.491Z",
+  "updatedAt": "2026-01-31T19:30:10.491Z"
+}

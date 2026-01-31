@@ -70,14 +70,9 @@ export class ComplianceService {
       const files = await this.fileStorageService.listFiles('compliance');
       const complianceItems: ComplianceItem[] = [];
 
-      const resolvedClient = await this.clientsService.findOne(clientId);
-      const acceptableClientIds = new Set(
-        [clientId, resolvedClient?.id, resolvedClient?.ref].filter(Boolean).map(String),
-      );
-
       for (const id of files) {
         const item = await this.fileStorageService.readJson<ComplianceItem>('compliance', id);
-        if (item && item.clientId && acceptableClientIds.has(String(item.clientId))) {
+        if (item && item.clientId === clientId) {
           complianceItems.push(item);
         }
       }
@@ -157,21 +152,13 @@ export class ComplianceService {
     // Filter by portfolio if specified
     if (filters.portfolioCode) {
       const clients = await this.clientsService.findByPortfolio(filters.portfolioCode);
-      const acceptableClientIds = new Set<string>();
-      clients.forEach((c) => {
-        acceptableClientIds.add(String(c.id));
-        acceptableClientIds.add(String(c.ref));
-      });
-      items = items.filter(item => item.clientId && acceptableClientIds.has(String(item.clientId)));
+      const clientIds = clients.map(c => c.id);
+      items = items.filter(item => item.clientId && clientIds.includes(item.clientId));
     }
 
     // Filter by client ID
     if (filters.clientId) {
-      const resolvedClient = await this.clientsService.findOne(filters.clientId);
-      const acceptableClientIds = new Set(
-        [filters.clientId, resolvedClient?.id, resolvedClient?.ref].filter(Boolean).map(String),
-      );
-      items = items.filter(item => item.clientId && acceptableClientIds.has(String(item.clientId)));
+      items = items.filter(item => item.clientId === filters.clientId);
     }
 
     // Filter by service ID

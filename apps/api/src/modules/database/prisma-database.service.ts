@@ -12,10 +12,6 @@ import {
 export class PrismaDatabaseService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private get isDbEnabled(): boolean {
-    return !!process.env.DATABASE_URL;
-  }
-
   private get clientModel(): any {
     return (this.prisma as any).client;
   }
@@ -34,9 +30,6 @@ export class PrismaDatabaseService {
 
   async testConnection(): Promise<OperationResult> {
     try {
-      if (!this.isDbEnabled) {
-        return { success: false, message: 'Database connection not configured (DATABASE_URL missing)' };
-      }
       await this.prisma.$queryRaw`SELECT 1`;
       return { success: true, message: 'Database connection successful.' };
     } catch (err: any) {
@@ -53,91 +46,111 @@ export class PrismaDatabaseService {
   }
 
   async getClientByNumber(companyNumber: string): Promise<Client | null> {
-    if (!this.isDbEnabled) return null;
-    const c: any = await this.clientModel.findFirst({ where: { companyNumber } });
-    if (!c) return null;
-    return {
-      companyNumber: c.companyNumber || companyNumber,
-      companyName: c.name,
-      tradingName: c.tradingName || undefined,
-      status: c.status,
-      companyType: c.companyType || undefined,
-      incorporationDate: c.dateOfCreation ? c.dateOfCreation.toISOString() : undefined,
-      registeredAddress: c.registeredAddress || undefined,
-      corporationTaxUtr: c.corporationTaxUtr || undefined,
-      vatNumber: c.vatNumber || undefined,
-      vatRegistrationDate: c.vatRegistrationDate || undefined,
-      vatScheme: c.vatScheme || undefined,
-      vatStagger: (c.vatStagger as any) || undefined,
-      payeReference: c.payeReference || undefined,
-      payeAccountsOfficeReference: c.payeAccountsOfficeReference || undefined,
-      authenticationCode: c.authenticationCode || undefined,
-      accountsOfficeReference: c.accountsOfficeReference || undefined,
-      employeeCount: c.employeeCount ?? undefined,
-      payrollFrequency: c.payrollFrequency || undefined,
-      payrollPayDay: c.payrollPayDay ?? undefined,
-      payrollPeriodEndDay: c.payrollPeriodEndDay ?? undefined,
-      cisRegistered: c.cisRegistered ?? undefined,
-      cisUtr: c.cisUtr || undefined,
-      mainContactName: c.mainContactName || undefined,
-      contactPosition: c.contactPosition || undefined,
-      telephone: c.telephone || undefined,
-      mobile: c.mobile || undefined,
-      email: c.email || undefined,
-      preferredContactMethod: c.preferredContactMethod || undefined,
-      correspondenceAddress: c.correspondenceAddress || undefined,
-      clientManager: c.clientManager || undefined,
-      partnerResponsible: c.partnerResponsible || undefined,
-      engagementType: c.engagementType || undefined,
-      onboardingDate: c.onboardingDate || undefined,
-      disengagementDate: c.disengagementDate || undefined,
-      engagementLetterSigned: c.engagementLetterSigned ?? undefined,
-      amlCompleted: c.amlCompleted ?? undefined,
-      lifecycleStatus: (c.lifecycleStatus as any) || undefined,
-      onboardingStartedAt: c.onboardingStartedAt || undefined,
-      wentLiveAt: c.wentLiveAt || undefined,
-      ceasedAt: c.ceasedAt || undefined,
-      dormantSince: c.dormantSince || undefined,
-      feeArrangement: c.feeArrangement || undefined,
-      monthlyFee: c.monthlyFee ? Number(c.monthlyFee) : undefined,
-      annualFee: c.annualFee ? Number(c.annualFee) : undefined,
-      accountingPeriodEnd: c.accountingPeriodEnd || undefined,
-      nextAccountsDueDate: c.nextAccountsDueDate || undefined,
-      nextCorporationTaxDueDate: c.nextCorporationTaxDueDate || undefined,
-      statutoryYearEnd: c.statutoryYearEnd || undefined,
-      vatReturnFrequency: c.vatReturnFrequency || undefined,
-      vatQuarter: c.vatQuarter || undefined,
-      vatPeriodStart: c.vatPeriodStart || undefined,
-      vatPeriodEnd: c.vatPeriodEnd || undefined,
-      payrollRtiRequired: c.payrollRtiRequired ?? undefined,
-      businessBankName: c.businessBankName || undefined,
-      accountLastFour: c.accountLastFour || undefined,
-      directDebitInPlace: c.directDebitInPlace ?? undefined,
-      paymentIssues: c.paymentIssues || undefined,
-      notes: c.notes || undefined,
-      specialCircumstances: c.specialCircumstances || undefined,
-      seasonalBusiness: c.seasonalBusiness ?? undefined,
-      dormant: c.dormant ?? undefined,
-      clientRiskRating: c.clientRiskRating || undefined,
-      doNotContact: c.doNotContact ?? undefined,
-      personalUtr: c.personalUtr || undefined,
-      nationalInsuranceNumber: c.nationalInsuranceNumber || undefined,
-      dateOfBirth: c.dateOfBirth || undefined,
-      personalAddress: c.personalAddress || undefined,
-      personalTaxYear: c.personalTaxYear || undefined,
-      selfAssessmentTaxYear: c.selfAssessmentTaxYear || undefined,
-      selfAssessmentRequired: c.selfAssessmentRequired ?? undefined,
-      selfAssessmentFiled: c.selfAssessmentFiled ?? undefined,
-      linkedCompanyNumber: c.linkedCompanyNumber || undefined,
-      directorRole: c.directorRole || undefined,
-      clientType: c.clientType || undefined,
-      createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
-    };
+    try {
+      const c: any = await this.clientModel.findFirst({ where: { companyNumber } });
+      if (!c) return null;
+      return {
+        companyNumber: c.companyNumber || companyNumber,
+        companyName: c.name,
+        tradingName: c.tradingName || undefined,
+        status: c.status,
+        createdAt: c.createdAt || new Date(),
+        updatedAt: c.updatedAt || new Date(),
+        companyType: c.companyType || undefined,
+        incorporationDate: c.dateOfCreation ? c.dateOfCreation.toISOString() : undefined,
+        registeredAddress: c.registeredAddress || undefined,
+        corporationTaxUtr: c.corporationTaxUtr || undefined,
+        vatNumber: c.vatNumber || undefined,
+        vatRegistrationDate: c.vatRegistrationDate || undefined,
+        vatScheme: c.vatScheme || undefined,
+        vatStagger: (c.vatStagger as any) || undefined,
+        payeReference: c.payeReference || undefined,
+        payeAccountsOfficeReference: c.payeAccountsOfficeReference || undefined,
+        authenticationCode: c.authenticationCode || undefined,
+        accountsOfficeReference: c.accountsOfficeReference || undefined,
+        employeeCount: c.employeeCount ?? undefined,
+        payrollFrequency: c.payrollFrequency || undefined,
+        payrollPayDay: c.payrollPayDay ?? undefined,
+        payrollPeriodEndDay: c.payrollPeriodEndDay ?? undefined,
+        cisRegistered: c.cisRegistered ?? undefined,
+        cisUtr: c.cisUtr || undefined,
+        mainContactName: c.mainContactName || undefined,
+        contactPosition: c.contactPosition || undefined,
+        telephone: c.telephone || undefined,
+        mobile: c.mobile || undefined,
+        email: c.email || undefined,
+        preferredContactMethod: c.preferredContactMethod || undefined,
+        correspondenceAddress: c.correspondenceAddress || undefined,
+        clientManager: c.clientManager || undefined,
+        partnerResponsible: c.partnerResponsible || undefined,
+        engagementType: c.engagementType || undefined,
+        onboardingDate: c.onboardingDate || undefined,
+        disengagementDate: c.disengagementDate || undefined,
+        engagementLetterSigned: c.engagementLetterSigned ?? undefined,
+        amlCompleted: c.amlCompleted ?? undefined,
+        lifecycleStatus: (c.lifecycleStatus as any) || undefined,
+        onboardingStartedAt: c.onboardingStartedAt || undefined,
+        wentLiveAt: c.wentLiveAt || undefined,
+        ceasedAt: c.ceasedAt || undefined,
+        dormantSince: c.dormantSince || undefined,
+        feeArrangement: c.feeArrangement || undefined,
+        monthlyFee: c.monthlyFee ? Number(c.monthlyFee) : undefined,
+        annualFee: c.annualFee ? Number(c.annualFee) : undefined,
+        accountingPeriodEnd: c.accountingPeriodEnd || undefined,
+        nextAccountsDueDate: c.nextAccountsDueDate || undefined,
+        nextCorporationTaxDueDate: c.nextCorporationTaxDueDate || undefined,
+        statutoryYearEnd: c.statutoryYearEnd || undefined,
+        vatReturnFrequency: c.vatReturnFrequency || undefined,
+        vatQuarter: c.vatQuarter || undefined,
+        vatPeriodStart: c.vatPeriodStart || undefined,
+        vatPeriodEnd: c.vatPeriodEnd || undefined,
+        payrollRtiRequired: c.payrollRtiRequired ?? undefined,
+        businessBankName: c.businessBankName || undefined,
+        accountLastFour: c.accountLastFour || undefined,
+        directDebitInPlace: c.directDebitInPlace ?? undefined,
+        paymentIssues: c.paymentIssues || undefined,
+        notes: c.notes || undefined,
+        specialCircumstances: c.specialCircumstances || undefined,
+        seasonalBusiness: c.seasonalBusiness ?? undefined,
+        dormant: c.dormant ?? undefined,
+        clientRiskRating: c.clientRiskRating || undefined,
+        doNotContact: c.doNotContact ?? undefined,
+        personalUtr: c.personalUtr || undefined,
+        nationalInsuranceNumber: c.nationalInsuranceNumber || undefined,
+        dateOfBirth: c.dateOfBirth || undefined,
+        personalAddress: c.personalAddress || undefined,
+        personalTaxYear: c.personalTaxYear || undefined,
+        selfAssessmentTaxYear: c.selfAssessmentTaxYear || undefined,
+        selfAssessmentRequired: c.selfAssessmentRequired ?? undefined,
+        selfAssessmentFiled: c.selfAssessmentFiled ?? undefined,
+        linkedCompanyNumber: c.linkedCompanyNumber || undefined,
+        directorRole: c.directorRole || undefined,
+        clientType: c.clientType || undefined,
+        companyStatusDetail: c.companyStatusDetail || undefined,
+        jurisdiction: c.jurisdiction || undefined,
+        registeredOfficeFull: c.registeredOfficeFull || undefined,
+        sicCodes: c.sicCodes || undefined,
+        sicDescriptions: c.sicDescriptions || undefined,
+        accountsOverdue: c.accountsOverdue ?? undefined,
+        confirmationStatementOverdue: c.confirmationStatementOverdue ?? undefined,
+        nextAccountsMadeUpTo: c.nextAccountsMadeUpTo || undefined,
+        nextAccountsDueBy: c.nextAccountsDueBy || undefined,
+        lastAccountsMadeUpTo: c.lastAccountsMadeUpTo || undefined,
+        nextConfirmationStatementDate: c.nextConfirmationStatementDate || undefined,
+        confirmationStatementDueBy: c.confirmationStatementDueBy || undefined,
+        lastConfirmationStatementDate: c.lastConfirmationStatementDate || undefined,
+        directorCount: c.directorCount ?? undefined,
+        pscCount: c.pscCount ?? undefined,
+        currentDirectors: c.currentDirectors || undefined,
+        currentPscs: c.currentPscs || undefined,
+        lastChRefresh: c.lastChRefresh || undefined,
+      };
+    } catch (_err) {
+      return null;
+    }
   }
 
   async searchClientsByName(name: string, limit = 50): Promise<Client[]> {
-    if (!this.isDbEnabled) return [];
     const rows: any[] = await this.clientModel.findMany({
       where: {
         OR: [
@@ -160,26 +173,26 @@ export class PrismaDatabaseService {
   }
 
   async getClientList(_filters: any = {}, _fields?: string[]): Promise<Client[]> {
-    if (!this.isDbEnabled) return [];
-    const rows: any[] = await this.clientModel.findMany({
-      orderBy: { name: 'asc' },
-      take: 1000,
-    });
+    try {
+      const rows: any[] = await this.clientModel.findMany({
+        orderBy: { name: 'asc' },
+        take: 1000,
+      });
 
-    return rows.map((c) => ({
-      companyNumber: c.companyNumber || '',
-      companyName: c.name,
-      tradingName: c.tradingName || undefined,
-      status: c.status,
-      createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
-    } as Client));
+      return rows.map((c) => ({
+        companyNumber: c.companyNumber || '',
+        companyName: c.name,
+        tradingName: c.tradingName || undefined,
+        status: c.status,
+        createdAt: c.createdAt,
+        updatedAt: c.updatedAt,
+      } as Client));
+    } catch (_err) {
+      return [];
+    }
   }
 
   async storeCalculation(calculation: TaxCalculationResult): Promise<OperationResult> {
-    if (!this.isDbEnabled) {
-      return { success: false, message: 'Database not configured (DATABASE_URL missing)', id: calculation.id };
-    }
     const resolvedClient = calculation.clientId
       ? await this.clientModel.findFirst({
           where: {
@@ -238,7 +251,6 @@ export class PrismaDatabaseService {
   }
 
   async getCalculationById(id: string): Promise<TaxCalculationResult | null> {
-    if (!this.isDbEnabled) return null;
     const calc: any = await this.taxCalculationModel.findUnique({
       where: { id },
       include: { scenarios: true },
@@ -252,29 +264,35 @@ export class PrismaDatabaseService {
       companyId: calc.companyId || undefined,
       calculationType: calc.calculationType as any,
       taxYear: calc.taxYear,
-      parameters: calc.parameters || undefined,
+      parameters: calc.parameters || {},
       optimizedSalary: calc.optimizedSalary ? Number(calc.optimizedSalary) : undefined,
       optimizedDividend: calc.optimizedDividend ? Number(calc.optimizedDividend) : undefined,
       totalTakeHome: calc.totalTakeHome ? Number(calc.totalTakeHome) : undefined,
       totalTaxLiability: calc.totalTaxLiability ? Number(calc.totalTaxLiability) : undefined,
       estimatedSavings: calc.estimatedSavings ? Number(calc.estimatedSavings) : undefined,
-      recommendations: calc.recommendations || undefined,
-      calculatedAt: calc.calculatedAt ? calc.calculatedAt.toISOString() : undefined,
+      recommendations: calc.recommendations || [],
+      calculatedAt: calc.calculatedAt || undefined,
       calculatedBy: calc.calculatedBy || undefined,
       notes: calc.notes || undefined,
       scenarios: (calc.scenarios || []).map((s) => ({
         id: s.id,
         calculationId: s.calculationId,
-        name: s.name,
-        scenarioData: s.scenarioData || undefined,
-        createdAt: s.createdAt,
-        updatedAt: s.updatedAt,
+        scenarioName: s.scenarioName || '',
+        salary: s.salary ? Number(s.salary) : 0,
+        dividend: s.dividend ? Number(s.dividend) : 0,
+        incomeTax: s.incomeTax ? Number(s.incomeTax) : 0,
+        employeeNi: s.employeeNi ? Number(s.employeeNi) : 0,
+        employerNi: s.employerNi ? Number(s.employerNi) : 0,
+        dividendTax: s.dividendTax ? Number(s.dividendTax) : 0,
+        corporationTax: s.corporationTax ? Number(s.corporationTax) : 0,
+        totalTax: s.totalTax ? Number(s.totalTax) : 0,
+        takeHome: s.takeHome ? Number(s.takeHome) : 0,
+        effectiveRate: s.effectiveRate ? Number(s.effectiveRate) : 0,
       })),
     };
   }
 
   async getClientCalculations(clientId: string, limit = 10): Promise<TaxCalculationResult[]> {
-    if (!this.isDbEnabled) return [];
     const resolvedClient = await this.clientModel.findFirst({
       where: {
         OR: [{ id: clientId }, { ref: clientId }, { companyNumber: clientId }],
@@ -289,33 +307,13 @@ export class PrismaDatabaseService {
       where,
       orderBy: { calculatedAt: 'desc' },
       take: limit,
+      include: { scenarios: true },
     });
 
-    return calcs.map((c) => ({
-      id: c.id,
-      clientId: c.clientRef || c.clientId || '',
-      companyId: c.companyId || undefined,
-      calculationType: c.calculationType as any,
-      taxYear: c.taxYear,
-      parameters: c.parameters || undefined,
-      optimizedSalary: c.optimizedSalary ?? undefined,
-      optimizedDividend: c.optimizedDividend ?? undefined,
-      totalTakeHome: c.totalTakeHome ?? undefined,
-      totalTaxLiability: c.totalTaxLiability ?? undefined,
-      estimatedSavings: c.estimatedSavings ?? undefined,
-      recommendations: c.recommendations || undefined,
-      calculatedAt: c.calculatedAt ? c.calculatedAt.toISOString() : undefined,
-      calculatedBy: c.calculatedBy || undefined,
-      notes: c.notes || undefined,
-      createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
-    } as any));
+    return Promise.all(calcs.map((c) => this.getCalculationById(c.id))).then((rows) => rows.filter(Boolean) as TaxCalculationResult[]);
   }
 
   async storeReport(report: GeneratedReport): Promise<OperationResult> {
-    if (!this.isDbEnabled) {
-      return { success: false, message: 'Database not configured (DATABASE_URL missing)', id: report.id };
-    }
     const resolvedClient = report.clientId
       ? await this.clientModel.findFirst({
           where: {
@@ -334,25 +332,25 @@ export class PrismaDatabaseService {
         clientId,
         clientRef,
         calculationId: report.calculationId || null,
-        templateId: report.templateId,
+        templateId: report.templateId || null,
         title: report.title,
         content: report.content || undefined,
         format: report.format as any,
         filePath: report.filePath || null,
         generatedAt: report.generatedAt ? new Date(report.generatedAt) : undefined,
-        generatedBy: report.generatedBy,
+        generatedBy: report.generatedBy || null,
       },
       update: {
         clientId,
         clientRef,
         calculationId: report.calculationId || null,
-        templateId: report.templateId,
+        templateId: report.templateId || null,
         title: report.title,
         content: report.content || undefined,
         format: report.format as any,
         filePath: report.filePath || null,
         generatedAt: report.generatedAt ? new Date(report.generatedAt) : undefined,
-        generatedBy: report.generatedBy,
+        generatedBy: report.generatedBy || null,
       },
     });
 
@@ -360,7 +358,6 @@ export class PrismaDatabaseService {
   }
 
   async getClientReports(clientId: string, limit = 10): Promise<GeneratedReport[]> {
-    if (!this.isDbEnabled) return [];
     const resolvedClient = await this.clientModel.findFirst({
       where: {
         OR: [{ id: clientId }, { ref: clientId }, { companyNumber: clientId }],
@@ -381,53 +378,47 @@ export class PrismaDatabaseService {
       id: r.id,
       clientId: r.clientRef || r.clientId || '',
       calculationId: r.calculationId || undefined,
-      templateId: r.templateId,
+      templateId: r.templateId || '',
       title: r.title,
-      content: r.content || undefined,
+      content: r.content || {},
       format: r.format as any,
       filePath: r.filePath || undefined,
-      generatedAt: r.generatedAt,
-      generatedBy: r.generatedBy,
-    } as any));
+      generatedAt: r.generatedAt || new Date(),
+      generatedBy: r.generatedBy || '',
+    }));
   }
 
   async getReportById(id: string): Promise<GeneratedReport | null> {
-    if (!this.isDbEnabled) return null;
     const r = await this.generatedReportModel.findUnique({ where: { id } });
     if (!r) return null;
     return {
       id: r.id,
       clientId: r.clientRef || r.clientId || '',
       calculationId: r.calculationId || undefined,
-      templateId: r.templateId,
+      templateId: r.templateId || '',
       title: r.title,
-      content: r.content || undefined,
+      content: r.content || {},
       format: r.format as any,
       filePath: r.filePath || undefined,
-      generatedAt: r.generatedAt,
-      generatedBy: r.generatedBy,
-    } as any;
+      generatedAt: r.generatedAt || new Date(),
+      generatedBy: r.generatedBy || '',
+    };
   }
 
   async storeRecommendations(calculationId: string, recommendations: any[]): Promise<OperationResult> {
-    if (!this.isDbEnabled) {
-      return { success: false, message: 'Database not configured (DATABASE_URL missing)', id: calculationId };
-    }
     await this.taxCalculationModel.update({
       where: { id: calculationId },
       data: { recommendations: recommendations || [] },
     });
-    return { success: true, message: 'Recommendations stored successfully', id: calculationId };
+    return { success: true, message: 'Recommendations stored successfully' };
   }
 
   async getRecommendations(calculationId: string): Promise<any[]> {
-    if (!this.isDbEnabled) return [];
     const row = await this.taxCalculationModel.findUnique({ where: { id: calculationId }, select: { recommendations: true } });
     return (row?.recommendations as any[]) || [];
   }
 
   async getClientRecommendations(clientId: string, options: any = {}): Promise<any[]> {
-    if (!this.isDbEnabled) return [];
     const limit = options.limit || 50;
 
     const resolvedClient = await this.clientModel.findFirst({

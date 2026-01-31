@@ -1,7 +1,17 @@
 {
   "integrations": {
-    "lastModified": "2026-01-08T23:56:05.444Z",
-    "size": 1039,
-    "checksum": "1fecd8ecf4d567ef68bd1f7afc1544250c6a51f6beb15f5385ec30c49d30cdd5"
+    "lastModified": "2026-01-31T21:28:26.860Z",
+    "size": 1411,
+    "checksum": "138682ea15031e8d0ba8e95a0facbfec2cfd78f88bbb32e1358c4a78c16fedc6"
+  },
+  "practice-settings": {
+    "lastModified": "2026-01-31T19:26:54.249Z",
+    "size": 629,
+    "checksum": "836a2368e84ac103d97cf59a5aba5b7734f299744139bd4cea1aed6187a3e9fb"
+  },
+  "portfolios": {
+    "lastModified": "2026-01-31T19:30:21.243Z",
+    "size": 858,
+    "checksum": "246b1df2d49d2f01461eb7a617edc2fd8165275bb7caf8c77369a91e7fdb20ad"
   }
 }

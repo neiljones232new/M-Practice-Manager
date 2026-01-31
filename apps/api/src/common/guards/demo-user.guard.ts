@@ -10,6 +10,13 @@ export class DemoUserGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const user = request?.user;
+
+    if (user?.role === 'SUPER_ADMIN') {
+      return true;
+    }
+
     // Check if endpoint explicitly allows demo users
     const allowDemoUser = this.reflector.getAllAndOverride<boolean>('allowDemoUser', [
       context.getHandler(),
@@ -19,9 +26,6 @@ export class DemoUserGuard implements CanActivate {
     if (allowDemoUser) {
       return true;
     }
-
-    const request = context.switchToHttp().getRequest();
-    const user = request?.user;
 
     // If user is demo user, block access
     if (user?.id === 'demo-user') {

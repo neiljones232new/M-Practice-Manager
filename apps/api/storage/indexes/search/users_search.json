@@ -1,0 +1,46 @@
+{
+  "local": {
+    "users": {
+      "local-dev-super-admin": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T21:34:15.336Z"
+      }
+    }
+  },
+  "dev": {
+    "users": {
+      "local-dev-super-admin": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T21:34:15.336Z"
+      }
+    }
+  },
+  "super": {
+    "users": {
+      "local-dev-super-admin": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T21:34:15.336Z"
+      }
+    }
+  },
+  "admin": {
+    "users": {
+      "local-dev-super-admin": {
+        "fields": [
+          "id"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-01-31T21:34:15.336Z"
+      }
+    }
+  }
+}

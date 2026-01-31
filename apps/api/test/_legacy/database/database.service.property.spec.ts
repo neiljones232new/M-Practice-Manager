@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import * as fc from 'fast-check';
 import { DatabaseService } from './database.service';
 import { QueryResult, OperationResult, Client } from './interfaces/database.interface';
 import * as fs from 'fs/promises';

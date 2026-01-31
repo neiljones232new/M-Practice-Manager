@@ -1,0 +1,46 @@
+{
+  "client_party_1769887810437_k7s7x2b9m": {
+    "client-parties": {
+      "client_party_1769887810437_k7s7x2b9m": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T19:30:10.446Z"
+      }
+    }
+  },
+  "client_party_1769887810451_bsspmx8e5": {
+    "client-parties": {
+      "client_party_1769887810451_bsspmx8e5": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T19:30:10.457Z"
+      }
+    }
+  },
+  "client_party_1769887810461_0uzwha6r4": {
+    "client-parties": {
+      "client_party_1769887810461_0uzwha6r4": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T19:30:10.466Z"
+      }
+    }
+  },
+  "client_party_1769887810469_ikuc8aot3": {
+    "client-parties": {
+      "client_party_1769887810469_ikuc8aot3": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-01-31T19:30:10.473Z"
+      }
+    }
+  }
+}

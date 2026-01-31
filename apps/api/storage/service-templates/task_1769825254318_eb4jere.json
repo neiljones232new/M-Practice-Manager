@@ -1,0 +1,47 @@
+{
+  "id": "task_1769825254318_eb4jere",
+  "serviceKind": "R&D Tax Credits",
+  "frequency": "ANNUAL",
+  "appliesTo": [
+    "Company"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_service",
+  "taskTemplates": [
+    {
+      "title": "Identify R&D activities",
+      "description": "Review business activities to identify R&D eligibility.",
+      "daysBeforeDue": 60,
+      "priority": "HIGH",
+      "tags": [
+        "eligibility",
+        "planning"
+      ],
+      "id": "task_1769825254318_jkfh28c"
+    },
+    {
+      "title": "Prepare R&D claim",
+      "description": "Compile R&D expenditure and prepare claim.",
+      "daysBeforeDue": 30,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "claim"
+      ],
+      "id": "task_1769825254318_8cchlby"
+    },
+    {
+      "title": "Submit R&D claim",
+      "description": "Submit R&D claim with CT600 to HMRC.",
+      "daysBeforeDue": 10,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "hmrc"
+      ],
+      "id": "task_1769825254318_0kweovz"
+    }
+  ],
+  "createdAt": "2026-01-31T02:07:34.318Z",
+  "updatedAt": "2026-01-31T21:32:20.066Z"
+}

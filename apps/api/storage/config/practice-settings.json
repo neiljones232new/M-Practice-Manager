@@ -1,0 +1,25 @@
+{
+  "id": "74f3f3192ba963a0710db841f9af483d",
+  "practiceName": "MDJ Practice",
+  "practiceEmail": "admin@example.com",
+  "practicePhone": "",
+  "defaultPortfolioCode": 1,
+  "portfolios": [
+    {
+      "code": 1,
+      "name": "Main Portfolio",
+      "description": "Default portfolio",
+      "enabled": true,
+      "clientCount": 0
+    }
+  ],
+  "systemSettings": {
+    "backupRetentionDays": 30,
+    "autoBackupEnabled": true,
+    "auditLogRetentionDays": 365,
+    "defaultServiceFrequency": "ANNUAL",
+    "taskGenerationWindowDays": 60
+  },
+  "createdAt": "2026-01-31T19:26:54.145Z",
+  "updatedAt": "2026-01-31T19:26:54.145Z"
+}

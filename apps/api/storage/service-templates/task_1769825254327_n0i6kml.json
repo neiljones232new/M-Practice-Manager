@@ -1,0 +1,48 @@
+{
+  "id": "task_1769825254327_n0i6kml",
+  "serviceKind": "CIS Returns",
+  "frequency": "MONTHLY",
+  "appliesTo": [
+    "Company"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period",
+  "taskTemplates": [
+    {
+      "title": "Collect CIS records",
+      "description": "Gather subcontractor payment details and verification records.",
+      "daysBeforeDue": 10,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "cis"
+      ],
+      "id": "task_1769825254327_7ycsqtx"
+    },
+    {
+      "title": "Prepare CIS return",
+      "description": "Compile CIS monthly return for submission.",
+      "daysBeforeDue": 5,
+      "priority": "HIGH",
+      "tags": [
+        "preparation",
+        "cis"
+      ],
+      "id": "task_1769825254327_f5sq72w"
+    },
+    {
+      "title": "Submit CIS return",
+      "description": "File CIS return with HMRC.",
+      "daysBeforeDue": 2,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "hmrc",
+        "cis"
+      ],
+      "id": "task_1769825254327_sb4tf0o"
+    }
+  ],
+  "createdAt": "2026-01-31T02:07:34.327Z",
+  "updatedAt": "2026-01-31T21:32:20.075Z"
+}

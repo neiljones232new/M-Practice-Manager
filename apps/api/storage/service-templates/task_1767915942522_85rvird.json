@@ -1,6 +1,6 @@
 {
   "id": "task_1767915942522_85rvird",
-  "serviceKind": "Self Assessment",
+  "serviceKind": "Self Assessment Tax Return",
   "frequency": "ANNUAL",
   "taskTemplates": [
     {
@@ -48,5 +48,12 @@
     }
   ],
   "createdAt": "2026-01-08T23:45:42.522Z",
-  "updatedAt": "2026-01-08T23:45:42.522Z"
+  "updatedAt": "2026-01-31T21:32:20.053Z",
+  "appliesTo": [
+    "Individual",
+    "Sole Trader",
+    "Director"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period"
 }

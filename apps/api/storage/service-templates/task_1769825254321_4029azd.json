@@ -1,0 +1,35 @@
+{
+  "id": "task_1769825254321_4029azd",
+  "serviceKind": "Director Payroll",
+  "frequency": "MONTHLY",
+  "appliesTo": [
+    "Company"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period",
+  "taskTemplates": [
+    {
+      "title": "Prepare director payslip",
+      "description": "Run monthly payroll for directors.",
+      "daysBeforeDue": 5,
+      "priority": "HIGH",
+      "tags": [
+        "payroll"
+      ],
+      "id": "task_1769825254321_806dyrr"
+    },
+    {
+      "title": "Submit RTI",
+      "description": "Submit RTI return to HMRC.",
+      "daysBeforeDue": 3,
+      "priority": "URGENT",
+      "tags": [
+        "filing",
+        "hmrc"
+      ],
+      "id": "task_1769825254321_7mzkz12"
+    }
+  ],
+  "createdAt": "2026-01-31T02:07:34.321Z",
+  "updatedAt": "2026-01-31T21:32:20.069Z"
+}

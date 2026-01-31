@@ -2,60 +2,43 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import * as path from 'path';
-import * as dotenv from 'dotenv';
-import * as fs from 'fs';
 import { AppModule } from './app.module';
+import * as bcrypt from 'bcryptjs';
+import { FileStorageService } from './modules/file-storage/file-storage.service';
+import { User } from './modules/auth/entities/user.entity';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-
-  const cwd = process.cwd();
-  const repoRoot = cwd.endsWith(path.join('apps', 'api')) ? path.resolve(cwd, '..', '..') : cwd;
-  const defaultStoragePath = path.resolve(repoRoot, 'storage');
-  if (!process.env.STORAGE_PATH || String(process.env.STORAGE_PATH).trim() === '') {
-    process.env.STORAGE_PATH = defaultStoragePath;
-  }
-
-  const envCandidates = [
-    path.resolve(process.cwd(), '.env.prod'),
-    path.resolve(process.cwd(), '.env.local'),
-    path.resolve(process.cwd(), '.env'),
-    path.resolve(process.cwd(), '../.env.prod'),
-    path.resolve(process.cwd(), '../.env.local'),
-    path.resolve(process.cwd(), '../.env'),
-    path.resolve(process.cwd(), '../../.env.prod'),
-    path.resolve(process.cwd(), '../../.env.local'),
-    path.resolve(process.cwd(), '../../.env'),
-  ];
-  for (const p of envCandidates) {
-    dotenv.config({ path: p, override: false });
-  }
-
-  // If an env file has set COMPANIES_HOUSE_API_KEY to an empty string, dotenv won't override it.
-  // Ensure the key is populated from .env.prod if present.
-  if (!process.env.COMPANIES_HOUSE_API_KEY || String(process.env.COMPANIES_HOUSE_API_KEY).trim() === '') {
-    const prodCandidates = envCandidates.filter((p) => p.endsWith('.env.prod'));
-    for (const p of prodCandidates) {
-      try {
-        if (!fs.existsSync(p)) continue;
-        const parsed = dotenv.parse(fs.readFileSync(p));
-        const key = parsed?.COMPANIES_HOUSE_API_KEY;
-        if (key && String(key).trim() !== '') {
-          process.env.COMPANIES_HOUSE_API_KEY = key;
-          break;
-        }
-      } catch {
-        // ignore
-      }
-    }
-  }
   
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
   const configService = app.get(ConfigService);
+
+  try {
+    const fileStorageService = app.get(FileStorageService);
+    const existing = await fileStorageService.readJson<User>('users', 'local-dev-super-admin');
+    if (!existing) {
+      const passwordHash = await bcrypt.hash('password123', 12);
+      const user: User = {
+        id: 'local-dev-super-admin',
+        email: 'local-dev@example.com',
+        firstName: 'Local',
+        lastName: 'Dev',
+        passwordHash,
+        role: 'SUPER_ADMIN',
+        portfolios: ['*'],
+        isActive: true,
+        emailVerified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      await fileStorageService.writeJson('users', user.id, user);
+    }
+  } catch (error) {
+    logger.warn('Failed to initialize local dev user');
+  }
 
   // Global validation pipe
   app.useGlobalPipes(
@@ -82,6 +65,22 @@ async function bootstrap() {
   // API prefix
   const apiPrefix = configService.get<string>('API_PREFIX', 'api/v1');
   app.setGlobalPrefix(apiPrefix);
+
+  app.use((req: any, _res: any, next: any) => {
+    req.user = {
+      id: 'local-dev-super-admin',
+      email: 'local-dev@example.com',
+      firstName: 'Local',
+      lastName: 'Dev',
+      role: 'SUPER_ADMIN',
+      portfolios: ['*'],
+      isActive: true,
+      emailVerified: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    next();
+  });
 
   // Swagger documentation
   const config = new DocumentBuilder()

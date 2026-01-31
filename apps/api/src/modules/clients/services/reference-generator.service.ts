@@ -49,14 +49,12 @@ export class ReferenceGeneratorService {
       throw new Error(`Invalid clientRef: ${clientRef}`);
     }
 
-    const existing = await this.fileStorage.listClientScopedFiles('people', clientRef);
+    const existing = await this.fileStorage.listFiles('people');
     const used = new Set(
       (existing || [])
         .map((id) => String(id || ''))
-        .map((id) => {
-          if (!id.startsWith(`${clientRef}`)) return '';
-          return id.slice(clientRef.length);
-        })
+        .filter((id) => id.startsWith(`${clientRef}`))
+        .map((id) => id.slice(clientRef.length))
         .filter((suffix) => /^[A-Z]+$/.test(suffix))
     );
 

@@ -1,6 +1,6 @@
 {
   "id": "task_1767915942518_jvb9quw",
-  "serviceKind": "Corporation Tax",
+  "serviceKind": "Corporation Tax Return",
   "frequency": "ANNUAL",
   "taskTemplates": [
     {
@@ -49,5 +49,10 @@
     }
   ],
   "createdAt": "2026-01-08T23:45:42.518Z",
-  "updatedAt": "2026-01-08T23:45:42.518Z"
+  "updatedAt": "2026-01-31T21:32:20.050Z",
+  "appliesTo": [
+    "Company"
+  ],
+  "complianceImpact": true,
+  "pricingModel": "per_period"
 }

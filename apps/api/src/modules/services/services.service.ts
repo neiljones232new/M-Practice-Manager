@@ -83,26 +83,7 @@ export class ServicesService {
   }
 
   async findAll(filters?: ServiceFilters): Promise<Service[]> {
-    // Prefer authoritative client-scoped storage: storage/clients/<ref>/services/*.json
-    // The generic category scan can miss client-scoped files depending on runtime/index state.
-    const clients = await this.clientsService.findAll();
-    let services: Service[] = [];
-
-    for (const client of clients) {
-      const clientRef = client?.ref;
-      if (!clientRef) continue;
-      const ids = await this.fileStorage.listClientScopedFiles('services', clientRef);
-      for (const id of ids) {
-        try {
-          const service = await this.fileStorage.readClientScopedJson<Service>('services', clientRef, id);
-          if (service) {
-            services.push(service);
-          }
-        } catch (e: any) {
-          this.logger.warn(`Failed to read service ${clientRef}/${id}: ${e?.message || e}`);
-        }
-      }
-    }
+    let services = await this.fileStorage.searchFiles<Service>('services', () => true);
 
     // Apply filters
     if (filters) {
@@ -129,41 +110,24 @@ export class ServicesService {
       [clientId, client?.id, client?.ref].filter(Boolean).map(String)
     );
 
-    // Prefer authoritative client-scoped storage.
-    // If we can resolve a ref, read directly from that folder; otherwise fall back to filtering
-    // across all services.
-    const resolvedRef = client?.ref && this.referenceLike(client?.ref) ? client.ref : null;
-    let services: Service[] = [];
-
-    if (resolvedRef) {
-      const ids = await this.fileStorage.listClientScopedFiles('services', resolvedRef);
-      for (const id of ids) {
-        const service = await this.fileStorage.readClientScopedJson<Service>('services', resolvedRef, id);
-        if (service) services.push(service);
-      }
-    } else {
-      const all = await this.findAll();
-      services = all.filter((service) => service?.clientId && acceptableClientIds.has(String(service.clientId)));
-    }
+    const services = await this.fileStorage.searchFiles<Service>('services', (service) => {
+      if (!service?.clientId) return false;
+      return acceptableClientIds.has(String(service.clientId));
+    });
 
     if (!client) {
       return services;
     }
 
-    try {
-      const dbClient = client.registeredNumber
-        ? await this.databaseService.getClientByNumber(client.registeredNumber)
-        : null;
-      const context = buildClientContext(client, dbClient);
+    const dbClient = client.registeredNumber
+      ? await this.databaseService.getClientByNumber(client.registeredNumber)
+      : null;
+    const context = buildClientContext(client, dbClient);
 
-      return services.map((service) => ({
-        ...service,
-        eligibility: evaluateServiceEligibility(service.kind, context),
-      }));
-    } catch (e: any) {
-      this.logger.warn(`Service eligibility enrichment failed; returning file-based services only: ${e?.message || e}`);
-      return services;
-    }
+    return services.map((service) => ({
+      ...service,
+      eligibility: evaluateServiceEligibility(service.kind, context),
+    }));
   }
 
   // Alias for compatibility with reports service
@@ -285,7 +249,7 @@ export class ServicesService {
   }
 
   async getServiceSummary(portfolioCode?: number): Promise<ServiceSummary> {
-    let services = await this.findAll();
+    let services = await this.fileStorage.searchFiles<Service>('services', () => true);
 
     // Filter by portfolio if specified
     if (portfolioCode) {
@@ -405,12 +369,6 @@ export class ServicesService {
     }
 
     return filtered;
-  }
-
-  private referenceLike(value: string | undefined | null): boolean {
-    if (!value) return false;
-    // Client refs in this system look like 1M001 / 4P001A etc.
-    return /^[0-9]+[A-Z][0-9]{3}[A-Z]?$/.test(String(value));
   }
 
   /**

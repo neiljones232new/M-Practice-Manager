@@ -1,0 +1,45 @@
+{
+  "id": "task_1769825254320_u97ci2o",
+  "serviceKind": "Dividend Planning",
+  "frequency": "QUARTERLY",
+  "appliesTo": [
+    "Company",
+    "Director"
+  ],
+  "complianceImpact": false,
+  "pricingModel": "per_period",
+  "taskTemplates": [
+    {
+      "title": "Assess profit availability",
+      "description": "Review financials to determine dividend capacity.",
+      "daysBeforeDue": 15,
+      "priority": "MEDIUM",
+      "tags": [
+        "review"
+      ],
+      "id": "task_1769825254320_gzala37"
+    },
+    {
+      "title": "Calculate tax impact",
+      "description": "Model dividend tax liabilities for shareholders.",
+      "daysBeforeDue": 10,
+      "priority": "MEDIUM",
+      "tags": [
+        "planning"
+      ],
+      "id": "task_1769825254320_0f9p963"
+    },
+    {
+      "title": "Prepare dividend vouchers",
+      "description": "Generate dividend paperwork and update records.",
+      "daysBeforeDue": 5,
+      "priority": "HIGH",
+      "tags": [
+        "documentation"
+      ],
+      "id": "task_1769825254320_i0scci8"
+    }
+  ],
+  "createdAt": "2026-01-31T02:07:34.320Z",
+  "updatedAt": "2026-01-31T21:32:20.067Z"
+}

@@ -1,0 +1,46 @@
+{
+  "id": "task_1769825254317_2ct3r6l",
+  "serviceKind": "Tax Planning & Advisory",
+  "frequency": "ANNUAL",
+  "appliesTo": [
+    "Company",
+    "Individual"
+  ],
+  "complianceImpact": false,
+  "pricingModel": "per_service",
+  "taskTemplates": [
+    {
+      "title": "Initial tax review",
+      "description": "Review client data for current tax position.",
+      "daysBeforeDue": 30,
+      "priority": "MEDIUM",
+      "tags": [
+        "planning",
+        "review"
+      ],
+      "id": "task_1769825254317_5jx0vlx"
+    },
+    {
+      "title": "Strategy meeting",
+      "description": "Conduct advisory session to discuss tax strategy.",
+      "daysBeforeDue": 14,
+      "priority": "MEDIUM",
+      "tags": [
+        "client-meeting"
+      ],
+      "id": "task_1769825254317_9o363m4"
+    },
+    {
+      "title": "Deliver tax recommendations",
+      "description": "Send client tax planning recommendations.",
+      "daysBeforeDue": 7,
+      "priority": "LOW",
+      "tags": [
+        "advisory"
+      ],
+      "id": "task_1769825254317_1rq7n1h"
+    }
+  ],
+  "createdAt": "2026-01-31T02:07:34.317Z",
+  "updatedAt": "2026-01-31T21:32:20.064Z"
+}

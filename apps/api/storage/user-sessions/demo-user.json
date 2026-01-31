@@ -1,0 +1,10 @@
+{
+  "id": "3c27af62-81f4-46f3-8a20-8abdb1a7b5b8",
+  "userId": "demo-user",
+  "token": "local-dev-access-53edfdb6-6eef-4b87-9017-7ca2f55ce38c",
+  "refreshToken": "local-dev-refresh-ae8d39b9-a01d-470a-bc78-a17ce0861f54",
+  "expiresAt": "2026-02-07T19:24:05.744Z",
+  "rememberMe": false,
+  "createdAt": "2026-01-31T19:24:05.744Z",
+  "lastUsedAt": "2026-01-31T19:24:05.744Z"
+}

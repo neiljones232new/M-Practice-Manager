@@ -1,0 +1,31 @@
+{
+  "id": "client_1769887810389_mqr6be8cu",
+  "ref": "4P001",
+  "name": "PB FULFILMENT LIMITED",
+  "type": "COMPANY",
+  "portfolioCode": 4,
+  "status": "ACTIVE",
+  "registeredNumber": "11849491",
+  "address": {
+    "line1": "Unit 8 Alexandria Drive",
+    "city": "Ashton-Under-Lyne",
+    "postcode": "OL7 0QN",
+    "country": "England"
+  },
+  "parties": [
+    "client_party_1769887810437_k7s7x2b9m",
+    "client_party_1769887810451_bsspmx8e5",
+    "client_party_1769887810461_0uzwha6r4",
+    "client_party_1769887810469_ikuc8aot3"
+  ],
+  "services": [
+    "service_1769887810490_zrsaaifq9",
+    "service_1769887810499_ivqbg6p1r"
+  ],
+  "tasks": [],
+  "documents": [],
+  "createdAt": "2026-01-31T19:30:10.389Z",
+  "updatedAt": "2026-01-31T19:30:10.500Z",
+  "accountsAccountingReferenceDay": 31,
+  "accountsAccountingReferenceMonth": 3
+}

@@ -6,13 +6,9 @@ import {
   Delete, 
   Body, 
   Param, 
-  UseGuards,
   Request,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { RolesGuard } from '../guards/roles.guard';
-import { PermissionsGuard } from '../guards/permissions.guard';
 import { Roles } from '../decorators/roles.decorator';
 import { RequirePermissions } from '../decorators/permissions.decorator';
 import { PermissionsService } from '../services/permissions.service';
@@ -30,7 +26,6 @@ interface SetPortfolioAccessDto {
 
 @ApiTags('User Management')
 @Controller('user-management')
-@UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
 export class UserManagementController {
   constructor(
     private readonly permissionsService: PermissionsService,

@@ -1,0 +1,16 @@
+{
+  "id": "local-dev-super-admin",
+  "email": "local-dev@example.com",
+  "firstName": "Local",
+  "lastName": "Dev",
+  "passwordHash": "$2a$12$KfQS8daUthv5cNrWfy5o/.TzZMo.nwgefVoUpGXB.ddCZtcZJi/V.",
+  "role": "SUPER_ADMIN",
+  "portfolios": [
+    "*"
+  ],
+  "isActive": true,
+  "emailVerified": true,
+  "createdAt": "2026-01-31T19:25:46.282Z",
+  "updatedAt": "2026-01-31T21:34:15.335Z",
+  "lastLoginAt": "2026-01-31T21:34:15.335Z"
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "code": 1,
+    "name": "Main",
+    "description": "Main",
+    "enabled": true,
+    "clientCount": 0,
+    "createdAt": "2026-01-31T19:28:40.624Z",
+    "updatedAt": "2026-01-31T19:28:40.624Z"
+  },
+  {
+    "code": 2,
+    "name": "VVV Group",
+    "description": "VVV Group",
+    "enabled": true,
+    "clientCount": 0,
+    "createdAt": "2026-01-31T19:28:58.292Z",
+    "updatedAt": "2026-01-31T19:28:58.292Z"
+  },
+  {
+    "code": 3,
+    "name": "Matt Haycox Group",
+    "description": "Matt Haycox Group",
+    "enabled": true,
+    "clientCount": 0,
+    "createdAt": "2026-01-31T19:29:18.639Z",
+    "updatedAt": "2026-01-31T19:29:18.639Z"
+  },
+  {
+    "code": 4,
+    "name": "PB Group",
+    "description": "PB Group",
+    "enabled": true,
+    "clientCount": 1,
+    "createdAt": "2026-01-31T19:29:34.861Z",
+    "updatedAt": "2026-01-31T19:30:21.138Z"
+  }
+]

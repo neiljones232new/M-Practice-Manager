@@ -4,8 +4,8 @@ export interface User {
   firstName: string;
   lastName: string;
   passwordHash: string;
-  role: 'ADMIN' | 'MANAGER' | 'STAFF' | 'READ_ONLY';
-  portfolios: number[];
+  role: 'ADMIN' | 'MANAGER' | 'STAFF' | 'READ_ONLY' | 'SUPER_ADMIN';
+  portfolios: Array<number | '*'>;
   isActive: boolean;
   emailVerified: boolean;
   lastLoginAt?: Date;
@@ -46,7 +46,7 @@ export interface JwtPayload {
   sub: string;
   email: string;
   role: string;
-  portfolios: number[];
+  portfolios: Array<number | '*'>;
   iat?: number;
   exp?: number;
 }
