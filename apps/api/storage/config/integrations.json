@@ -11,7 +11,7 @@
     "status": "CONNECTED",
     "createdAt": "2026-01-08T23:56:05.439Z",
     "updatedAt": "2026-01-31T22:07:20.632Z",
-    "apiKey": "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",
+    "apiKey": "${OPENAI_API_KEY}",
     "lastTested": "2026-01-31T22:07:20.632Z"
   },
   {
@@ -29,7 +29,7 @@
     "createdAt": "2026-01-08T23:56:05.439Z",
     "updatedAt": "2026-01-31T22:07:20.848Z",
     "lastTested": "2026-01-31T22:07:20.848Z",
-    "apiKey": "6989d5d3-d95b-4642-9be4-1c81ed9e5221"
+    "apiKey": "${OPENAI_API_KEY}"
   },
   {
     "id": "9af2cc4e633ab138357c8ba2cbeb5d55",
