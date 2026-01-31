@@ -2,6 +2,8 @@
 .DS_Store
 
 # Env files
+.env
+.env.*
 
 # Logs
 *.log
@@ -13,6 +15,7 @@ node_modules/
 .next/
 dist/
 apps/api/dist/
+.turbo/cache/
 
 
 # IDE
