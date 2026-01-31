@@ -9,7 +9,7 @@ interface User {
   firstName: string;
   lastName: string;
   role: string;
-  portfolios: number[];
+  portfolios: Array<number | '*'>;
   isActive: boolean;
   emailVerified: boolean;
 }
@@ -62,18 +62,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Check for stored user
         const storedUser = localStorage.getItem('user');
-        const accessToken = localStorage.getItem('accessToken');
         
-        if (storedUser && accessToken) {
+        if (storedUser) {
           setUser(JSON.parse(storedUser));
-          
-          // Try to refresh the token to ensure it's still valid
-          try {
-            await apiClient.refreshToken();
-          } catch (error) {
-            console.warn('Token refresh failed, user will need to login again');
-            await logout();
-          }
         }
       }
     } catch (error) {

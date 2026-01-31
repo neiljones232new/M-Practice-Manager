@@ -39,14 +39,8 @@ import { InternalController } from './modules/internal/internal.controller';
         process.env.NODE_ENV === 'production'
           ? (fs.existsSync('.env.prod') ? '.env.prod' : fs.existsSync('env.prod') ? 'env.prod' : '.env')
           : [
-              '.env.prod',
-              '.env.local',
-              // When running the API from apps/api, also consider repo-root env files.
-              path.resolve(process.cwd(), '../.env.prod'),
-              path.resolve(process.cwd(), '../.env.local'),
-              // When running from apps/api, repo root is typically two levels up.
-              path.resolve(process.cwd(), '../../.env.prod'),
-              path.resolve(process.cwd(), '../../.env.local'),
+              path.resolve(__dirname, '../.env.local'),
+              path.resolve(__dirname, '../.env'),
             ],
       cache: true,
     }),

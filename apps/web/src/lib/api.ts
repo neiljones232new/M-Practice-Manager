@@ -44,7 +44,7 @@ export interface AuthResponse {
     firstName: string;
     lastName: string;
     role: string;
-    portfolios: number[];
+    portfolios: Array<number | '*'>;
     isActive: boolean;
     emailVerified: boolean;
   };
@@ -93,10 +93,6 @@ class ApiClient {
       ...(fetchOptions.headers as Record<string, string> | undefined),
     };
 
-    if (this.accessToken) {
-      headers.Authorization = `Bearer ${this.accessToken}`;
-    }
-
     const config: RequestInit = { ...fetchOptions, headers };
 
     try {
@@ -106,32 +102,8 @@ class ApiClient {
 
       const response = await fetch(url, config);
 
-      // One-time refresh on 401. Only attempt if we actually have an access token
-      // (prevents trying to refresh during public endpoints like /auth/login)
-      if (response.status === 401) {
-        const isAuthEndpoint = endpoint.startsWith('/auth/');
-        const isLogout = endpoint === '/auth/logout';
-
-        if (!isAuthEndpoint && retry && this.accessToken && endpoint !== '/auth/refresh') {
-          try {
-            await this.refreshToken();
-            return this.request<T>(endpoint, options, false);
-          } catch {
-            this.clearSession();
-            if (typeof window !== 'undefined') {
-              window.location.href = '/login';
-            }
-            throw new Error('Session expired. Please log in again.');
-          }
-        }
-
-        if (!isAuthEndpoint && !isLogout) {
-          this.clearSession();
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
-          }
-          throw new Error('Session expired. Please log in again.');
-        }
+      if (response.status === 401 && retry && endpoint !== '/auth/refresh') {
+        throw new Error('Unauthorized');
       }
 
       if (!response.ok) {

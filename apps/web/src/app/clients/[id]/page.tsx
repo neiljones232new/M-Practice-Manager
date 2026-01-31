@@ -277,46 +277,15 @@ export default function ClientDetailsPage() {
         });
 
         const effectiveRef = c?.node?.ref || clientRef;
-        const results = await Promise.allSettled([
-          api.get(`/services/client/${effectiveRef}`) as Promise<Service[]>,
-          api.get(`/tasks/client/${effectiveRef}`) as Promise<Task[]>,
-          api.get(`/documents/client/${effectiveRef}`) as Promise<any>,
-          api.get(`/compliance?clientId=${effectiveRef}`) as Promise<Compliance[]>,
-          api.get(`/letters/client/${effectiveRef}`) as Promise<GeneratedLetter[]>,
-          api.get(`/accounts-sets/client/${effectiveRef}`) as Promise<AccountsSet[]>,
-          api.get(`/tax-calculations/client/${effectiveRef}`) as Promise<TaxCalculation[]>,
+        const [s, t, d, comp, ltrs, aSets, tCalcs] = await Promise.all([
+          api.get(`/services/client/${effectiveRef}`).catch(() => []) as Promise<Service[]>,
+          api.get(`/tasks/client/${effectiveRef}`).catch(() => []) as Promise<Task[]>,
+          api.get(`/documents/client/${effectiveRef}`).catch(() => []) as Promise<any>,
+          api.get(`/compliance?clientId=${effectiveRef}`).catch(() => []) as Promise<Compliance[]>,
+          api.get(`/letters/client/${effectiveRef}`).catch(() => []) as Promise<GeneratedLetter[]>,
+          api.get(`/accounts-sets/client/${effectiveRef}`).catch(() => []) as Promise<AccountsSet[]>,
+          api.get(`/tax-calculations/client/${effectiveRef}`).catch(() => []) as Promise<TaxCalculation[]>,
         ]);
-
-        const endpoints = [
-          `/services/client/${effectiveRef}`,
-          `/tasks/client/${effectiveRef}`,
-          `/documents/client/${effectiveRef}`,
-          `/compliance?clientId=${effectiveRef}`,
-          `/letters/client/${effectiveRef}`,
-          `/accounts-sets/client/${effectiveRef}`,
-          `/tax-calculations/client/${effectiveRef}`,
-        ];
-
-        const failures = results
-          .map((r, idx) => ({ r, idx }))
-          .filter(({ r }) => r.status === 'rejected') as Array<{ r: PromiseRejectedResult; idx: number }>;
-
-        if (failures.length > 0) {
-          const msg = failures
-            .map(({ r, idx }) => `${endpoints[idx]}: ${(r.reason as any)?.message || String(r.reason)}`)
-            .join(' | ');
-          if (on) setTabMessage({ text: msg, error: true });
-        } else {
-          if (on) setTabMessage(null);
-        }
-
-        const s = results[0].status === 'fulfilled' ? results[0].value : [];
-        const t = results[1].status === 'fulfilled' ? results[1].value : [];
-        const d = results[2].status === 'fulfilled' ? results[2].value : [];
-        const comp = results[3].status === 'fulfilled' ? results[3].value : [];
-        const ltrs = results[4].status === 'fulfilled' ? results[4].value : [];
-        const aSets = results[5].status === 'fulfilled' ? results[5].value : [];
-        const tCalcs = results[6].status === 'fulfilled' ? results[6].value : [];
 
         if (on) {
           setClientContext(c);

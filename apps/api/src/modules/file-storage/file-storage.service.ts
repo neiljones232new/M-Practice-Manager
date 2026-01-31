@@ -42,8 +42,6 @@ export class FileStorageService {
   private readonly encryptAtRest: boolean;
   private readonly activeLocks = new Set<string>();
   private readonly pendingTransactions = new Map<string, FileStorageTransaction>();
-  // Cache for client-scoped resources.
-  // Keyed by `${category}:${id}` to avoid collisions across categories.
   private readonly clientScopedMap = new Map<string, string>();
   private readonly clientScopedCategories = new Set(['services', 'client-parties', 'compliance', 'people']);
 
@@ -53,15 +51,7 @@ export class FileStorageService {
     private configService: ConfigService,
     private readonly encryptionService: EncryptionService,
   ) {
-    const configuredStoragePath = this.configService.get<string>('STORAGE_PATH');
-    const resolvedConfigured = configuredStoragePath ? path.resolve(configuredStoragePath) : null;
-    const candidates = [
-      resolvedConfigured,
-      path.resolve(process.cwd(), 'storage'),
-      path.resolve(process.cwd(), '../storage'),
-      path.resolve(process.cwd(), '../../storage'),
-    ].filter(Boolean) as string[];
-    this.storagePath = candidates.find((p) => existsSync(p)) || path.resolve(process.cwd(), 'storage');
+    this.storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
     this.backupPath = path.join(this.storagePath, 'backups');
     this.snapshotPath = path.join(this.storagePath, 'snapshots');
     this.indexPath = path.join(this.storagePath, 'indexes');
@@ -155,43 +145,6 @@ export class FileStorageService {
     return path.join(this.storagePath, 'clients', clientRef, category);
   }
 
-  async listClientScopedFiles(category: string, clientRef: string): Promise<string[]> {
-    if (!this.isClientScopedCategory(category)) {
-      throw new Error(`Category is not client-scoped: ${category}`);
-    }
-
-    const categoryDir = this.getClientScopedDirectory(clientRef, category);
-    if (!existsSync(categoryDir)) {
-      return [];
-    }
-
-    const files = await fs.readdir(categoryDir);
-    return files
-      .filter((file) => file.endsWith('.json') && !file.includes('index.json'))
-      .map((file) => file.replace('.json', ''));
-  }
-
-  async readClientScopedJson<T>(category: string, clientRef: string, id: string): Promise<T | null> {
-    if (!this.isClientScopedCategory(category)) {
-      throw new Error(`Category is not client-scoped: ${category}`);
-    }
-
-    const filePath = this.getClientScopedFilePathFromRef(clientRef, category, id);
-    try {
-      if (!existsSync(filePath)) {
-        return null;
-      }
-
-      const content = await fs.readFile(filePath, 'utf8');
-      const parsed = JSON.parse(content) as unknown;
-      const jsonContent = this.decryptIfNeeded(parsed);
-      return JSON.parse(jsonContent) as T;
-    } catch (error) {
-      this.logger.error(`Failed to read clients/${clientRef}/${category}/${id}.json:`, error);
-      throw error;
-    }
-  }
-
   private getClientScopedFilePathFromRef(clientRef: string, category: string, id: string): string {
     return path.join(this.getClientScopedDirectory(clientRef, category), `${id}.json`);
   }
@@ -216,14 +169,14 @@ export class FileStorageService {
   }
 
   private async getClientScopedFilePath(category: string, id: string): Promise<string | null> {
-    const cachedRef = this.clientScopedMap.get(`${category}:${id}`);
+    const cachedRef = this.clientScopedMap.get(id);
     if (cachedRef) {
       return this.getClientScopedFilePathFromRef(cachedRef, category, id);
     }
 
     const located = await this.locateClientScopedFile(category, id);
     if (located) {
-      this.clientScopedMap.set(`${category}:${id}`, located.clientRef);
+      this.clientScopedMap.set(id, located.clientRef);
       return located.filePath;
     }
 
@@ -231,7 +184,6 @@ export class FileStorageService {
   }
 
   private async buildClientScopedMap() {
-    this.clientScopedMap.clear();
     const clientsDir = path.join(this.storagePath, 'clients');
     if (!existsSync(clientsDir)) {
       return;
@@ -248,8 +200,8 @@ export class FileStorageService {
         const files = await fs.readdir(categoryDir);
         for (const file of files) {
           if (!file.endsWith('.json')) continue;
-          const resourceId = file.replace(/\.json$/, '');
-          this.clientScopedMap.set(`${category}:${resourceId}`, clientRef);
+          const resourceId = file.replace(/\\.json$/, '');
+          this.clientScopedMap.set(resourceId, clientRef);
         }
       }
     }
@@ -317,12 +269,10 @@ export class FileStorageService {
         }
         await this.ensureDirectory(this.getClientScopedDirectory(clientRef, category));
         filePath = this.getClientScopedFilePathFromRef(clientRef, category, id);
-        this.clientScopedMap.set(`${category}:${id}`, clientRef);
+        this.clientScopedMap.set(id, clientRef);
       } else {
         filePath = this.getFilePath(category, id, portfolioCode);
-        if (category === 'clients') {
-          await this.ensureDirectory(path.dirname(filePath));
-        }
+        await this.ensureDirectory(path.dirname(filePath));
       }
       
       // Create backup if file exists
@@ -457,7 +407,7 @@ export class FileStorageService {
         await fs.unlink(filePath);
         deleted = true;
         if (this.isClientScopedCategory(category)) {
-          this.clientScopedMap.delete(`${category}:${id}`);
+          this.clientScopedMap.delete(id);
         }
       }
       
@@ -482,13 +432,10 @@ export class FileStorageService {
 
   async listFiles(category: string, portfolioCode?: number): Promise<string[]> {
     if (this.isClientScopedCategory(category)) {
-      // Client-scoped categories are stored under clients/<ref>/<category>.
-      // Rebuild the map on each call so new/changed files are immediately discoverable.
-      await this.buildClientScopedMap();
-      const prefix = `${category}:`;
-      return Array.from(this.clientScopedMap.keys())
-        .filter((key) => key.startsWith(prefix))
-        .map((key) => key.slice(prefix.length));
+      if (this.clientScopedMap.size === 0) {
+        await this.buildClientScopedMap();
+      }
+      return Array.from(this.clientScopedMap.keys());
     }
     const categoryPath = path.join(this.storagePath, category);
     
@@ -852,16 +799,9 @@ export class FileStorageService {
     const indexFile = path.join(this.indexPath, `${category}.json`);
     
     try {
-      let index: StorageIndex[string] = {};
-      if (existsSync(indexFile)) {
-        try {
-          index = JSON.parse(await fs.readFile(indexFile, 'utf8'));
-        } catch (e) {
-          // Self-heal corrupted index file.
-          this.logger.warn(`Index file corrupted, resetting: ${indexFile}`);
-          index = {};
-        }
-      }
+      const index: StorageIndex[string] = existsSync(indexFile) 
+        ? JSON.parse(await fs.readFile(indexFile, 'utf8'))
+        : {};
 
       index[id] = {
         lastModified: new Date(),
@@ -880,13 +820,7 @@ export class FileStorageService {
     
     try {
       if (existsSync(indexFile)) {
-        let index: StorageIndex[string] = {};
-        try {
-          index = JSON.parse(await fs.readFile(indexFile, 'utf8'));
-        } catch (e) {
-          this.logger.warn(`Index file corrupted, resetting: ${indexFile}`);
-          index = {};
-        }
+        const index: StorageIndex[string] = JSON.parse(await fs.readFile(indexFile, 'utf8'));
         delete index[id];
         await fs.writeFile(indexFile, JSON.stringify(index, null, 2), 'utf8');
       }
@@ -900,13 +834,7 @@ export class FileStorageService {
     
     try {
       if (existsSync(indexFile)) {
-        let index: StorageIndex[string] = {};
-        try {
-          index = JSON.parse(await fs.readFile(indexFile, 'utf8'));
-        } catch (e) {
-          this.logger.warn(`Index file corrupted, skipping integrity check: ${indexFile}`);
-          return true;
-        }
+        const index: StorageIndex[string] = JSON.parse(await fs.readFile(indexFile, 'utf8'));
         const entry = index[id];
         
         if (entry) {
