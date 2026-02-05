@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException, ConflictException, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { FileStorageService } from '../file-storage/file-storage.service';
@@ -11,6 +12,7 @@ export class AuthService {
 
   constructor(
     private fileStorageService: FileStorageService,
+    private jwtService: JwtService,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
@@ -287,11 +289,17 @@ export class AuthService {
   }
 
   private async generateAuthResponse(user: User, rememberMe = false): Promise<AuthResponse> {
-    (user as any).role = 'SUPER_ADMIN';
-    (user as any).portfolios = ['*'];
+    // Create JWT payload
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      portfolios: user.portfolios,
+    };
 
-    const accessToken = `local-dev-access-${uuidv4()}`;
-    const refreshToken = `local-dev-refresh-${uuidv4()}`;
+    // Generate proper JWT tokens
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: rememberMe ? '30d' : '7d' });
 
     // Keep creating a session record for compatibility, but do not rely on JWT.
     const sessionId = uuidv4();
@@ -326,7 +334,7 @@ export class AuthService {
       // Search through user files to find by email
       const users = await this.fileStorageService.searchFiles<User>(
         'users',
-        (user) => user.email.toLowerCase() === email.toLowerCase()
+        (user) => user?.email?.toLowerCase() === email.toLowerCase()
       );
       return users.length > 0 ? users[0] : null;
     } catch (error) {

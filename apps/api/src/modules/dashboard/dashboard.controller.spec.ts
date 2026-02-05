@@ -226,7 +226,7 @@ describe('DashboardController', () => {
     const mockClientReport = {
       clients: [
         {
-          ref: '1A001',
+          clientIdentifier: '1A001',
           name: 'Test Client',
           type: 'COMPANY',
           status: 'ACTIVE',
@@ -281,7 +281,7 @@ describe('DashboardController', () => {
         {
           id: 'comp1',
           clientName: 'Test Client',
-          clientRef: '1A001',
+          clientIdentifier: '1A001',
           type: 'Annual Accounts',
           dueDate: new Date(),
           status: 'PENDING',

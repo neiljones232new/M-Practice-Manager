@@ -20,13 +20,14 @@ async function bootstrap() {
   try {
     const fileStorageService = app.get(FileStorageService);
     const existing = await fileStorageService.readJson<User>('users', 'local-dev-super-admin');
-    if (!existing) {
-      const passwordHash = await bcrypt.hash('password123', 12);
+    if (!existing && process.env.NODE_ENV === 'development') {
+      const defaultPassword = process.env.DEFAULT_DEV_PASSWORD || 'change-me-in-production';
+      const passwordHash = await bcrypt.hash(defaultPassword, 12);
       const user: User = {
         id: 'local-dev-super-admin',
-        email: 'local-dev@example.com',
-        firstName: 'Local',
-        lastName: 'Dev',
+        email: process.env.DEFAULT_DEV_EMAIL || 'dev@example.com',
+        firstName: 'Development',
+        lastName: 'User',
         passwordHash,
         role: 'SUPER_ADMIN',
         portfolios: ['*'],
@@ -36,6 +37,7 @@ async function bootstrap() {
         updatedAt: new Date(),
       };
       await fileStorageService.writeJson('users', user.id, user);
+      logger.log('Created development user - please change the default password');
     }
   } catch (error) {
     logger.warn('Failed to initialize local dev user');
@@ -45,7 +47,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: false, // Allow extra properties for flexibility
+      forbidNonWhitelisted: true, // Strict validation - reject extra properties
       transform: true,
       transformOptions: {
         enableImplicitConversion: true,
@@ -66,22 +68,6 @@ async function bootstrap() {
   // API prefix
   const apiPrefix = configService.get<string>('API_PREFIX', 'api/v1');
   app.setGlobalPrefix(apiPrefix);
-
-  app.use((req: any, _res: any, next: any) => {
-    req.user = {
-      id: 'local-dev-super-admin',
-      email: 'local-dev@example.com',
-      firstName: 'Local',
-      lastName: 'Dev',
-      role: 'SUPER_ADMIN',
-      portfolios: ['*'],
-      isActive: true,
-      emailVerified: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    next();
-  });
 
   // Swagger documentation
   const config = new DocumentBuilder()

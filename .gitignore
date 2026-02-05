@@ -15,7 +15,11 @@ node_modules/
 .next/
 dist/
 apps/api/dist/
-.turbo/cache/
+.turbo/
+*.tsbuildinfo
+
+# Migration locks
+**/migration_lock.toml
 
 
 # IDE

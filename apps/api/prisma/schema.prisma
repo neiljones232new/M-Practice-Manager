@@ -74,7 +74,7 @@ model Client {
   annualFee                         Decimal?            @db.Decimal(12, 2)
   authenticationCode                String?
   businessBankName                  String?
-  ceasedAt                          String?
+  ceasedAt                          DateTime?
   cisRegistered                     Boolean?
   cisUtr                            String?
   clientManager                     String?
@@ -83,13 +83,13 @@ model Client {
   contactPosition                   String?
   corporationTaxUtr                 String?
   correspondenceAddress             String?
-  dateOfBirth                       String?
+  dateOfBirth                       DateTime?
   directDebitInPlace                Boolean?
   directorRole                      String?
-  disengagementDate                 String?
+  disengagementDate                 DateTime?
   doNotContact                      Boolean?
   dormant                           Boolean?
-  dormantSince                      String?
+  dormantSince                      DateTime?
   email                             String?             @db.VarChar(320)
   employeeCount                     Int?
   engagementLetterSigned            Boolean?
@@ -101,11 +101,11 @@ model Client {
   mobile                            String?
   monthlyFee                        Decimal?            @db.Decimal(12, 2)
   nationalInsuranceNumber           String?
-  nextAccountsDueDate               String?
-  nextCorporationTaxDueDate         String?
+  nextAccountsDueDate               DateTime?
+  nextCorporationTaxDueDate         DateTime?
   notes                             String?
-  onboardingDate                    String?
-  onboardingStartedAt               String?
+  onboardingDate                    DateTime?
+  onboardingStartedAt               DateTime?
   partnerResponsible                String?
   payeAccountsOfficeReference       String?
   payeReference                     String?
@@ -132,11 +132,11 @@ model Client {
   vatPeriodEnd                      String?
   vatPeriodStart                    String?
   vatQuarter                        String?
-  vatRegistrationDate               String?
+  vatRegistrationDate               DateTime?
   vatReturnFrequency                String?
   vatScheme                         String?
   vatStagger                        String?
-  wentLiveAt                        String?
+  wentLiveAt                        DateTime?
   parties                           ClientParty[]
   portfolio                         Portfolio           @relation(fields: [portfolioCode], references: [code])
   companiesHouseData                CompaniesHouseData?

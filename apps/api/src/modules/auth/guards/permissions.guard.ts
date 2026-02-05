@@ -11,7 +11,6 @@ export class PermissionsGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    return true;
     const request = context.switchToHttp().getRequest();
     const user = request?.user;
 

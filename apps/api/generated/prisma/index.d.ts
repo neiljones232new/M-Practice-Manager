@@ -4339,7 +4339,7 @@ export namespace Prisma {
     annualFee: Decimal | null
     authenticationCode: string | null
     businessBankName: string | null
-    ceasedAt: string | null
+    ceasedAt: Date | null
     cisRegistered: boolean | null
     cisUtr: string | null
     clientManager: string | null
@@ -4348,13 +4348,13 @@ export namespace Prisma {
     contactPosition: string | null
     corporationTaxUtr: string | null
     correspondenceAddress: string | null
-    dateOfBirth: string | null
+    dateOfBirth: Date | null
     directDebitInPlace: boolean | null
     directorRole: string | null
-    disengagementDate: string | null
+    disengagementDate: Date | null
     doNotContact: boolean | null
     dormant: boolean | null
-    dormantSince: string | null
+    dormantSince: Date | null
     email: string | null
     employeeCount: number | null
     engagementLetterSigned: boolean | null
@@ -4366,11 +4366,11 @@ export namespace Prisma {
     mobile: string | null
     monthlyFee: Decimal | null
     nationalInsuranceNumber: string | null
-    nextAccountsDueDate: string | null
-    nextCorporationTaxDueDate: string | null
+    nextAccountsDueDate: Date | null
+    nextCorporationTaxDueDate: Date | null
     notes: string | null
-    onboardingDate: string | null
-    onboardingStartedAt: string | null
+    onboardingDate: Date | null
+    onboardingStartedAt: Date | null
     partnerResponsible: string | null
     payeAccountsOfficeReference: string | null
     payeReference: string | null
@@ -4397,11 +4397,11 @@ export namespace Prisma {
     vatPeriodEnd: string | null
     vatPeriodStart: string | null
     vatQuarter: string | null
-    vatRegistrationDate: string | null
+    vatRegistrationDate: Date | null
     vatReturnFrequency: string | null
     vatScheme: string | null
     vatStagger: string | null
-    wentLiveAt: string | null
+    wentLiveAt: Date | null
   }
 
   export type ClientMaxAggregateOutputType = {
@@ -4446,7 +4446,7 @@ export namespace Prisma {
     annualFee: Decimal | null
     authenticationCode: string | null
     businessBankName: string | null
-    ceasedAt: string | null
+    ceasedAt: Date | null
     cisRegistered: boolean | null
     cisUtr: string | null
     clientManager: string | null
@@ -4455,13 +4455,13 @@ export namespace Prisma {
     contactPosition: string | null
     corporationTaxUtr: string | null
     correspondenceAddress: string | null
-    dateOfBirth: string | null
+    dateOfBirth: Date | null
     directDebitInPlace: boolean | null
     directorRole: string | null
-    disengagementDate: string | null
+    disengagementDate: Date | null
     doNotContact: boolean | null
     dormant: boolean | null
-    dormantSince: string | null
+    dormantSince: Date | null
     email: string | null
     employeeCount: number | null
     engagementLetterSigned: boolean | null
@@ -4473,11 +4473,11 @@ export namespace Prisma {
     mobile: string | null
     monthlyFee: Decimal | null
     nationalInsuranceNumber: string | null
-    nextAccountsDueDate: string | null
-    nextCorporationTaxDueDate: string | null
+    nextAccountsDueDate: Date | null
+    nextCorporationTaxDueDate: Date | null
     notes: string | null
-    onboardingDate: string | null
-    onboardingStartedAt: string | null
+    onboardingDate: Date | null
+    onboardingStartedAt: Date | null
     partnerResponsible: string | null
     payeAccountsOfficeReference: string | null
     payeReference: string | null
@@ -4504,11 +4504,11 @@ export namespace Prisma {
     vatPeriodEnd: string | null
     vatPeriodStart: string | null
     vatQuarter: string | null
-    vatRegistrationDate: string | null
+    vatRegistrationDate: Date | null
     vatReturnFrequency: string | null
     vatScheme: string | null
     vatStagger: string | null
-    wentLiveAt: string | null
+    wentLiveAt: Date | null
   }
 
   export type ClientCountAggregateOutputType = {
@@ -5095,7 +5095,7 @@ export namespace Prisma {
     annualFee: Decimal | null
     authenticationCode: string | null
     businessBankName: string | null
-    ceasedAt: string | null
+    ceasedAt: Date | null
     cisRegistered: boolean | null
     cisUtr: string | null
     clientManager: string | null
@@ -5104,13 +5104,13 @@ export namespace Prisma {
     contactPosition: string | null
     corporationTaxUtr: string | null
     correspondenceAddress: string | null
-    dateOfBirth: string | null
+    dateOfBirth: Date | null
     directDebitInPlace: boolean | null
     directorRole: string | null
-    disengagementDate: string | null
+    disengagementDate: Date | null
     doNotContact: boolean | null
     dormant: boolean | null
-    dormantSince: string | null
+    dormantSince: Date | null
     email: string | null
     employeeCount: number | null
     engagementLetterSigned: boolean | null
@@ -5122,11 +5122,11 @@ export namespace Prisma {
     mobile: string | null
     monthlyFee: Decimal | null
     nationalInsuranceNumber: string | null
-    nextAccountsDueDate: string | null
-    nextCorporationTaxDueDate: string | null
+    nextAccountsDueDate: Date | null
+    nextCorporationTaxDueDate: Date | null
     notes: string | null
-    onboardingDate: string | null
-    onboardingStartedAt: string | null
+    onboardingDate: Date | null
+    onboardingStartedAt: Date | null
     partnerResponsible: string | null
     payeAccountsOfficeReference: string | null
     payeReference: string | null
@@ -5153,11 +5153,11 @@ export namespace Prisma {
     vatPeriodEnd: string | null
     vatPeriodStart: string | null
     vatQuarter: string | null
-    vatRegistrationDate: string | null
+    vatRegistrationDate: Date | null
     vatReturnFrequency: string | null
     vatScheme: string | null
     vatStagger: string | null
-    wentLiveAt: string | null
+    wentLiveAt: Date | null
     _count: ClientCountAggregateOutputType | null
     _avg: ClientAvgAggregateOutputType | null
     _sum: ClientSumAggregateOutputType | null
@@ -5589,7 +5589,7 @@ export namespace Prisma {
       annualFee: Prisma.Decimal | null
       authenticationCode: string | null
       businessBankName: string | null
-      ceasedAt: string | null
+      ceasedAt: Date | null
       cisRegistered: boolean | null
       cisUtr: string | null
       clientManager: string | null
@@ -5598,13 +5598,13 @@ export namespace Prisma {
       contactPosition: string | null
       corporationTaxUtr: string | null
       correspondenceAddress: string | null
-      dateOfBirth: string | null
+      dateOfBirth: Date | null
       directDebitInPlace: boolean | null
       directorRole: string | null
-      disengagementDate: string | null
+      disengagementDate: Date | null
       doNotContact: boolean | null
       dormant: boolean | null
-      dormantSince: string | null
+      dormantSince: Date | null
       email: string | null
       employeeCount: number | null
       engagementLetterSigned: boolean | null
@@ -5616,11 +5616,11 @@ export namespace Prisma {
       mobile: string | null
       monthlyFee: Prisma.Decimal | null
       nationalInsuranceNumber: string | null
-      nextAccountsDueDate: string | null
-      nextCorporationTaxDueDate: string | null
+      nextAccountsDueDate: Date | null
+      nextCorporationTaxDueDate: Date | null
       notes: string | null
-      onboardingDate: string | null
-      onboardingStartedAt: string | null
+      onboardingDate: Date | null
+      onboardingStartedAt: Date | null
       partnerResponsible: string | null
       payeAccountsOfficeReference: string | null
       payeReference: string | null
@@ -5647,11 +5647,11 @@ export namespace Prisma {
       vatPeriodEnd: string | null
       vatPeriodStart: string | null
       vatQuarter: string | null
-      vatRegistrationDate: string | null
+      vatRegistrationDate: Date | null
       vatReturnFrequency: string | null
       vatScheme: string | null
       vatStagger: string | null
-      wentLiveAt: string | null
+      wentLiveAt: Date | null
     }, ExtArgs["result"]["client"]>
     composites: {}
   }
@@ -6097,7 +6097,7 @@ export namespace Prisma {
     readonly annualFee: FieldRef<"Client", 'Decimal'>
     readonly authenticationCode: FieldRef<"Client", 'String'>
     readonly businessBankName: FieldRef<"Client", 'String'>
-    readonly ceasedAt: FieldRef<"Client", 'String'>
+    readonly ceasedAt: FieldRef<"Client", 'DateTime'>
     readonly cisRegistered: FieldRef<"Client", 'Boolean'>
     readonly cisUtr: FieldRef<"Client", 'String'>
     readonly clientManager: FieldRef<"Client", 'String'>
@@ -6106,13 +6106,13 @@ export namespace Prisma {
     readonly contactPosition: FieldRef<"Client", 'String'>
     readonly corporationTaxUtr: FieldRef<"Client", 'String'>
     readonly correspondenceAddress: FieldRef<"Client", 'String'>
-    readonly dateOfBirth: FieldRef<"Client", 'String'>
+    readonly dateOfBirth: FieldRef<"Client", 'DateTime'>
     readonly directDebitInPlace: FieldRef<"Client", 'Boolean'>
     readonly directorRole: FieldRef<"Client", 'String'>
-    readonly disengagementDate: FieldRef<"Client", 'String'>
+    readonly disengagementDate: FieldRef<"Client", 'DateTime'>
     readonly doNotContact: FieldRef<"Client", 'Boolean'>
     readonly dormant: FieldRef<"Client", 'Boolean'>
-    readonly dormantSince: FieldRef<"Client", 'String'>
+    readonly dormantSince: FieldRef<"Client", 'DateTime'>
     readonly email: FieldRef<"Client", 'String'>
     readonly employeeCount: FieldRef<"Client", 'Int'>
     readonly engagementLetterSigned: FieldRef<"Client", 'Boolean'>
@@ -6124,11 +6124,11 @@ export namespace Prisma {
     readonly mobile: FieldRef<"Client", 'String'>
     readonly monthlyFee: FieldRef<"Client", 'Decimal'>
     readonly nationalInsuranceNumber: FieldRef<"Client", 'String'>
-    readonly nextAccountsDueDate: FieldRef<"Client", 'String'>
-    readonly nextCorporationTaxDueDate: FieldRef<"Client", 'String'>
+    readonly nextAccountsDueDate: FieldRef<"Client", 'DateTime'>
+    readonly nextCorporationTaxDueDate: FieldRef<"Client", 'DateTime'>
     readonly notes: FieldRef<"Client", 'String'>
-    readonly onboardingDate: FieldRef<"Client", 'String'>
-    readonly onboardingStartedAt: FieldRef<"Client", 'String'>
+    readonly onboardingDate: FieldRef<"Client", 'DateTime'>
+    readonly onboardingStartedAt: FieldRef<"Client", 'DateTime'>
     readonly partnerResponsible: FieldRef<"Client", 'String'>
     readonly payeAccountsOfficeReference: FieldRef<"Client", 'String'>
     readonly payeReference: FieldRef<"Client", 'String'>
@@ -6155,11 +6155,11 @@ export namespace Prisma {
     readonly vatPeriodEnd: FieldRef<"Client", 'String'>
     readonly vatPeriodStart: FieldRef<"Client", 'String'>
     readonly vatQuarter: FieldRef<"Client", 'String'>
-    readonly vatRegistrationDate: FieldRef<"Client", 'String'>
+    readonly vatRegistrationDate: FieldRef<"Client", 'DateTime'>
     readonly vatReturnFrequency: FieldRef<"Client", 'String'>
     readonly vatScheme: FieldRef<"Client", 'String'>
     readonly vatStagger: FieldRef<"Client", 'String'>
-    readonly wentLiveAt: FieldRef<"Client", 'String'>
+    readonly wentLiveAt: FieldRef<"Client", 'DateTime'>
   }
     
 
@@ -20305,7 +20305,7 @@ export namespace Prisma {
     annualFee?: DecimalNullableFilter<"Client"> | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: StringNullableFilter<"Client"> | string | null
     businessBankName?: StringNullableFilter<"Client"> | string | null
-    ceasedAt?: StringNullableFilter<"Client"> | string | null
+    ceasedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     cisRegistered?: BoolNullableFilter<"Client"> | boolean | null
     cisUtr?: StringNullableFilter<"Client"> | string | null
     clientManager?: StringNullableFilter<"Client"> | string | null
@@ -20314,13 +20314,13 @@ export namespace Prisma {
     contactPosition?: StringNullableFilter<"Client"> | string | null
     corporationTaxUtr?: StringNullableFilter<"Client"> | string | null
     correspondenceAddress?: StringNullableFilter<"Client"> | string | null
-    dateOfBirth?: StringNullableFilter<"Client"> | string | null
+    dateOfBirth?: DateTimeNullableFilter<"Client"> | Date | string | null
     directDebitInPlace?: BoolNullableFilter<"Client"> | boolean | null
     directorRole?: StringNullableFilter<"Client"> | string | null
-    disengagementDate?: StringNullableFilter<"Client"> | string | null
+    disengagementDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     doNotContact?: BoolNullableFilter<"Client"> | boolean | null
     dormant?: BoolNullableFilter<"Client"> | boolean | null
-    dormantSince?: StringNullableFilter<"Client"> | string | null
+    dormantSince?: DateTimeNullableFilter<"Client"> | Date | string | null
     email?: StringNullableFilter<"Client"> | string | null
     employeeCount?: IntNullableFilter<"Client"> | number | null
     engagementLetterSigned?: BoolNullableFilter<"Client"> | boolean | null
@@ -20332,11 +20332,11 @@ export namespace Prisma {
     mobile?: StringNullableFilter<"Client"> | string | null
     monthlyFee?: DecimalNullableFilter<"Client"> | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: StringNullableFilter<"Client"> | string | null
-    nextAccountsDueDate?: StringNullableFilter<"Client"> | string | null
-    nextCorporationTaxDueDate?: StringNullableFilter<"Client"> | string | null
+    nextAccountsDueDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    nextCorporationTaxDueDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     notes?: StringNullableFilter<"Client"> | string | null
-    onboardingDate?: StringNullableFilter<"Client"> | string | null
-    onboardingStartedAt?: StringNullableFilter<"Client"> | string | null
+    onboardingDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    onboardingStartedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     partnerResponsible?: StringNullableFilter<"Client"> | string | null
     payeAccountsOfficeReference?: StringNullableFilter<"Client"> | string | null
     payeReference?: StringNullableFilter<"Client"> | string | null
@@ -20363,11 +20363,11 @@ export namespace Prisma {
     vatPeriodEnd?: StringNullableFilter<"Client"> | string | null
     vatPeriodStart?: StringNullableFilter<"Client"> | string | null
     vatQuarter?: StringNullableFilter<"Client"> | string | null
-    vatRegistrationDate?: StringNullableFilter<"Client"> | string | null
+    vatRegistrationDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     vatReturnFrequency?: StringNullableFilter<"Client"> | string | null
     vatScheme?: StringNullableFilter<"Client"> | string | null
     vatStagger?: StringNullableFilter<"Client"> | string | null
-    wentLiveAt?: StringNullableFilter<"Client"> | string | null
+    wentLiveAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     parties?: ClientPartyListRelationFilter
     portfolio?: XOR<PortfolioRelationFilter, PortfolioWhereInput>
     companiesHouseData?: XOR<CompaniesHouseDataNullableRelationFilter, CompaniesHouseDataWhereInput> | null
@@ -20544,7 +20544,7 @@ export namespace Prisma {
     annualFee?: DecimalNullableFilter<"Client"> | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: StringNullableFilter<"Client"> | string | null
     businessBankName?: StringNullableFilter<"Client"> | string | null
-    ceasedAt?: StringNullableFilter<"Client"> | string | null
+    ceasedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     cisRegistered?: BoolNullableFilter<"Client"> | boolean | null
     cisUtr?: StringNullableFilter<"Client"> | string | null
     clientManager?: StringNullableFilter<"Client"> | string | null
@@ -20553,13 +20553,13 @@ export namespace Prisma {
     contactPosition?: StringNullableFilter<"Client"> | string | null
     corporationTaxUtr?: StringNullableFilter<"Client"> | string | null
     correspondenceAddress?: StringNullableFilter<"Client"> | string | null
-    dateOfBirth?: StringNullableFilter<"Client"> | string | null
+    dateOfBirth?: DateTimeNullableFilter<"Client"> | Date | string | null
     directDebitInPlace?: BoolNullableFilter<"Client"> | boolean | null
     directorRole?: StringNullableFilter<"Client"> | string | null
-    disengagementDate?: StringNullableFilter<"Client"> | string | null
+    disengagementDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     doNotContact?: BoolNullableFilter<"Client"> | boolean | null
     dormant?: BoolNullableFilter<"Client"> | boolean | null
-    dormantSince?: StringNullableFilter<"Client"> | string | null
+    dormantSince?: DateTimeNullableFilter<"Client"> | Date | string | null
     email?: StringNullableFilter<"Client"> | string | null
     employeeCount?: IntNullableFilter<"Client"> | number | null
     engagementLetterSigned?: BoolNullableFilter<"Client"> | boolean | null
@@ -20571,11 +20571,11 @@ export namespace Prisma {
     mobile?: StringNullableFilter<"Client"> | string | null
     monthlyFee?: DecimalNullableFilter<"Client"> | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: StringNullableFilter<"Client"> | string | null
-    nextAccountsDueDate?: StringNullableFilter<"Client"> | string | null
-    nextCorporationTaxDueDate?: StringNullableFilter<"Client"> | string | null
+    nextAccountsDueDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    nextCorporationTaxDueDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     notes?: StringNullableFilter<"Client"> | string | null
-    onboardingDate?: StringNullableFilter<"Client"> | string | null
-    onboardingStartedAt?: StringNullableFilter<"Client"> | string | null
+    onboardingDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    onboardingStartedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     partnerResponsible?: StringNullableFilter<"Client"> | string | null
     payeAccountsOfficeReference?: StringNullableFilter<"Client"> | string | null
     payeReference?: StringNullableFilter<"Client"> | string | null
@@ -20602,11 +20602,11 @@ export namespace Prisma {
     vatPeriodEnd?: StringNullableFilter<"Client"> | string | null
     vatPeriodStart?: StringNullableFilter<"Client"> | string | null
     vatQuarter?: StringNullableFilter<"Client"> | string | null
-    vatRegistrationDate?: StringNullableFilter<"Client"> | string | null
+    vatRegistrationDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     vatReturnFrequency?: StringNullableFilter<"Client"> | string | null
     vatScheme?: StringNullableFilter<"Client"> | string | null
     vatStagger?: StringNullableFilter<"Client"> | string | null
-    wentLiveAt?: StringNullableFilter<"Client"> | string | null
+    wentLiveAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     parties?: ClientPartyListRelationFilter
     portfolio?: XOR<PortfolioRelationFilter, PortfolioWhereInput>
     companiesHouseData?: XOR<CompaniesHouseDataNullableRelationFilter, CompaniesHouseDataWhereInput> | null
@@ -20778,7 +20778,7 @@ export namespace Prisma {
     annualFee?: DecimalNullableWithAggregatesFilter<"Client"> | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: StringNullableWithAggregatesFilter<"Client"> | string | null
     businessBankName?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    ceasedAt?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    ceasedAt?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     cisRegistered?: BoolNullableWithAggregatesFilter<"Client"> | boolean | null
     cisUtr?: StringNullableWithAggregatesFilter<"Client"> | string | null
     clientManager?: StringNullableWithAggregatesFilter<"Client"> | string | null
@@ -20787,13 +20787,13 @@ export namespace Prisma {
     contactPosition?: StringNullableWithAggregatesFilter<"Client"> | string | null
     corporationTaxUtr?: StringNullableWithAggregatesFilter<"Client"> | string | null
     correspondenceAddress?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    dateOfBirth?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    dateOfBirth?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     directDebitInPlace?: BoolNullableWithAggregatesFilter<"Client"> | boolean | null
     directorRole?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    disengagementDate?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    disengagementDate?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     doNotContact?: BoolNullableWithAggregatesFilter<"Client"> | boolean | null
     dormant?: BoolNullableWithAggregatesFilter<"Client"> | boolean | null
-    dormantSince?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    dormantSince?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     email?: StringNullableWithAggregatesFilter<"Client"> | string | null
     employeeCount?: IntNullableWithAggregatesFilter<"Client"> | number | null
     engagementLetterSigned?: BoolNullableWithAggregatesFilter<"Client"> | boolean | null
@@ -20805,11 +20805,11 @@ export namespace Prisma {
     mobile?: StringNullableWithAggregatesFilter<"Client"> | string | null
     monthlyFee?: DecimalNullableWithAggregatesFilter<"Client"> | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    nextAccountsDueDate?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    nextCorporationTaxDueDate?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    nextAccountsDueDate?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
+    nextCorporationTaxDueDate?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     notes?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    onboardingDate?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    onboardingStartedAt?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    onboardingDate?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
+    onboardingStartedAt?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     partnerResponsible?: StringNullableWithAggregatesFilter<"Client"> | string | null
     payeAccountsOfficeReference?: StringNullableWithAggregatesFilter<"Client"> | string | null
     payeReference?: StringNullableWithAggregatesFilter<"Client"> | string | null
@@ -20836,11 +20836,11 @@ export namespace Prisma {
     vatPeriodEnd?: StringNullableWithAggregatesFilter<"Client"> | string | null
     vatPeriodStart?: StringNullableWithAggregatesFilter<"Client"> | string | null
     vatQuarter?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    vatRegistrationDate?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    vatRegistrationDate?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     vatReturnFrequency?: StringNullableWithAggregatesFilter<"Client"> | string | null
     vatScheme?: StringNullableWithAggregatesFilter<"Client"> | string | null
     vatStagger?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    wentLiveAt?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    wentLiveAt?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
   }
 
   export type ServiceWhereInput = {
@@ -22243,7 +22243,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -22252,13 +22252,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -22270,11 +22270,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -22301,11 +22301,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
@@ -22361,7 +22361,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -22370,13 +22370,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -22388,11 +22388,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -22419,11 +22419,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
@@ -22477,7 +22477,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22486,13 +22486,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -22504,11 +22504,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22535,11 +22535,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
@@ -22595,7 +22595,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22604,13 +22604,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -22622,11 +22622,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22653,11 +22653,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
@@ -22712,7 +22712,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -22721,13 +22721,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -22739,11 +22739,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -22770,11 +22770,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
   }
 
   export type ClientUpdateManyMutationInput = {
@@ -22819,7 +22819,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22828,13 +22828,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -22846,11 +22846,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22877,11 +22877,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ClientUncheckedUpdateManyInput = {
@@ -22927,7 +22927,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22936,13 +22936,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -22954,11 +22954,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22985,11 +22985,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ServiceCreateInput = {
@@ -27431,7 +27431,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -27440,13 +27440,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -27458,11 +27458,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -27489,11 +27489,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
     documents?: DocumentCreateNestedManyWithoutClientInput
@@ -27547,7 +27547,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -27556,13 +27556,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -27574,11 +27574,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -27605,11 +27605,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
@@ -27693,7 +27693,7 @@ export namespace Prisma {
     annualFee?: DecimalNullableFilter<"Client"> | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: StringNullableFilter<"Client"> | string | null
     businessBankName?: StringNullableFilter<"Client"> | string | null
-    ceasedAt?: StringNullableFilter<"Client"> | string | null
+    ceasedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     cisRegistered?: BoolNullableFilter<"Client"> | boolean | null
     cisUtr?: StringNullableFilter<"Client"> | string | null
     clientManager?: StringNullableFilter<"Client"> | string | null
@@ -27702,13 +27702,13 @@ export namespace Prisma {
     contactPosition?: StringNullableFilter<"Client"> | string | null
     corporationTaxUtr?: StringNullableFilter<"Client"> | string | null
     correspondenceAddress?: StringNullableFilter<"Client"> | string | null
-    dateOfBirth?: StringNullableFilter<"Client"> | string | null
+    dateOfBirth?: DateTimeNullableFilter<"Client"> | Date | string | null
     directDebitInPlace?: BoolNullableFilter<"Client"> | boolean | null
     directorRole?: StringNullableFilter<"Client"> | string | null
-    disengagementDate?: StringNullableFilter<"Client"> | string | null
+    disengagementDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     doNotContact?: BoolNullableFilter<"Client"> | boolean | null
     dormant?: BoolNullableFilter<"Client"> | boolean | null
-    dormantSince?: StringNullableFilter<"Client"> | string | null
+    dormantSince?: DateTimeNullableFilter<"Client"> | Date | string | null
     email?: StringNullableFilter<"Client"> | string | null
     employeeCount?: IntNullableFilter<"Client"> | number | null
     engagementLetterSigned?: BoolNullableFilter<"Client"> | boolean | null
@@ -27720,11 +27720,11 @@ export namespace Prisma {
     mobile?: StringNullableFilter<"Client"> | string | null
     monthlyFee?: DecimalNullableFilter<"Client"> | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: StringNullableFilter<"Client"> | string | null
-    nextAccountsDueDate?: StringNullableFilter<"Client"> | string | null
-    nextCorporationTaxDueDate?: StringNullableFilter<"Client"> | string | null
+    nextAccountsDueDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    nextCorporationTaxDueDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     notes?: StringNullableFilter<"Client"> | string | null
-    onboardingDate?: StringNullableFilter<"Client"> | string | null
-    onboardingStartedAt?: StringNullableFilter<"Client"> | string | null
+    onboardingDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    onboardingStartedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     partnerResponsible?: StringNullableFilter<"Client"> | string | null
     payeAccountsOfficeReference?: StringNullableFilter<"Client"> | string | null
     payeReference?: StringNullableFilter<"Client"> | string | null
@@ -27751,11 +27751,11 @@ export namespace Prisma {
     vatPeriodEnd?: StringNullableFilter<"Client"> | string | null
     vatPeriodStart?: StringNullableFilter<"Client"> | string | null
     vatQuarter?: StringNullableFilter<"Client"> | string | null
-    vatRegistrationDate?: StringNullableFilter<"Client"> | string | null
+    vatRegistrationDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     vatReturnFrequency?: StringNullableFilter<"Client"> | string | null
     vatScheme?: StringNullableFilter<"Client"> | string | null
     vatStagger?: StringNullableFilter<"Client"> | string | null
-    wentLiveAt?: StringNullableFilter<"Client"> | string | null
+    wentLiveAt?: DateTimeNullableFilter<"Client"> | Date | string | null
   }
 
   export type ClientPartyCreateWithoutClientInput = {
@@ -28544,7 +28544,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -28553,13 +28553,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -28571,11 +28571,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -28602,11 +28602,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
@@ -28661,7 +28661,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -28670,13 +28670,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -28688,11 +28688,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -28719,11 +28719,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
@@ -28830,7 +28830,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -28839,13 +28839,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -28857,11 +28857,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -28888,11 +28888,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
@@ -28947,7 +28947,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -28956,13 +28956,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -28974,11 +28974,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29005,11 +29005,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
@@ -29078,7 +29078,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -29087,13 +29087,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -29105,11 +29105,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -29136,11 +29136,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
@@ -29195,7 +29195,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -29204,13 +29204,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -29222,11 +29222,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -29253,11 +29253,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
@@ -29359,7 +29359,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29368,13 +29368,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -29386,11 +29386,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29417,11 +29417,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
@@ -29476,7 +29476,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29485,13 +29485,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -29503,11 +29503,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29534,11 +29534,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
@@ -29630,7 +29630,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -29639,13 +29639,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -29657,11 +29657,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -29688,11 +29688,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
@@ -29747,7 +29747,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -29756,13 +29756,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -29774,11 +29774,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -29805,11 +29805,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     auditEvents?: EventUncheckedCreateNestedManyWithoutClientInput
@@ -29878,7 +29878,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29887,13 +29887,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -29905,11 +29905,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29936,11 +29936,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
@@ -29995,7 +29995,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30004,13 +30004,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -30022,11 +30022,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30053,11 +30053,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     auditEvents?: EventUncheckedUpdateManyWithoutClientNestedInput
@@ -30174,7 +30174,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -30183,13 +30183,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -30201,11 +30201,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -30232,11 +30232,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
     documents?: DocumentCreateNestedManyWithoutClientInput
@@ -30291,7 +30291,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -30300,13 +30300,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -30318,11 +30318,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -30349,11 +30349,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
     auditEvents?: EventUncheckedCreateNestedManyWithoutClientInput
@@ -30477,7 +30477,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30486,13 +30486,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -30504,11 +30504,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30535,11 +30535,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
     documents?: DocumentUpdateManyWithoutClientNestedInput
@@ -30594,7 +30594,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30603,13 +30603,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -30621,11 +30621,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30652,11 +30652,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
     auditEvents?: EventUncheckedUpdateManyWithoutClientNestedInput
@@ -30770,7 +30770,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -30779,13 +30779,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -30797,11 +30797,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -30828,11 +30828,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     documents?: DocumentCreateNestedManyWithoutClientInput
@@ -30887,7 +30887,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -30896,13 +30896,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -30914,11 +30914,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -30945,11 +30945,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
     auditEvents?: EventUncheckedCreateNestedManyWithoutClientInput
@@ -31018,7 +31018,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31027,13 +31027,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -31045,11 +31045,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31076,11 +31076,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     documents?: DocumentUpdateManyWithoutClientNestedInput
@@ -31135,7 +31135,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31144,13 +31144,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -31162,11 +31162,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31193,11 +31193,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
     auditEvents?: EventUncheckedUpdateManyWithoutClientNestedInput
@@ -31250,7 +31250,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -31259,13 +31259,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -31277,11 +31277,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -31308,11 +31308,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
@@ -31367,7 +31367,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -31376,13 +31376,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -31394,11 +31394,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -31425,11 +31425,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
@@ -31498,7 +31498,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31507,13 +31507,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -31525,11 +31525,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31556,11 +31556,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
@@ -31615,7 +31615,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31624,13 +31624,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -31642,11 +31642,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31673,11 +31673,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
@@ -31770,7 +31770,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -31779,13 +31779,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -31797,11 +31797,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -31828,11 +31828,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
@@ -31887,7 +31887,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -31896,13 +31896,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -31914,11 +31914,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -31945,11 +31945,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
@@ -32074,7 +32074,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32083,13 +32083,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -32101,11 +32101,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32132,11 +32132,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
@@ -32191,7 +32191,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32200,13 +32200,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -32218,11 +32218,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32249,11 +32249,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
@@ -32494,7 +32494,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -32503,13 +32503,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -32521,11 +32521,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -32552,11 +32552,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
@@ -32611,7 +32611,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -32620,13 +32620,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -32638,11 +32638,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -32669,11 +32669,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
@@ -32797,7 +32797,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32806,13 +32806,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -32824,11 +32824,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32855,11 +32855,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
@@ -32914,7 +32914,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32923,13 +32923,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -32941,11 +32941,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32972,11 +32972,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
@@ -33029,7 +33029,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -33038,13 +33038,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -33056,11 +33056,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -33087,11 +33087,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyCreateNestedManyWithoutClientInput
     portfolio: PortfolioCreateNestedOneWithoutClientsInput
     companiesHouseData?: CompaniesHouseDataCreateNestedOneWithoutClientInput
@@ -33146,7 +33146,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -33155,13 +33155,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -33173,11 +33173,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -33204,11 +33204,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
     parties?: ClientPartyUncheckedCreateNestedManyWithoutClientInput
     companiesHouseData?: CompaniesHouseDataUncheckedCreateNestedOneWithoutClientInput
     documents?: DocumentUncheckedCreateNestedManyWithoutClientInput
@@ -33277,7 +33277,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33286,13 +33286,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -33304,11 +33304,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33335,11 +33335,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutClientsNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
@@ -33394,7 +33394,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33403,13 +33403,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -33421,11 +33421,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33452,11 +33452,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
@@ -33509,7 +33509,7 @@ export namespace Prisma {
     annualFee?: Decimal | DecimalJsLike | number | string | null
     authenticationCode?: string | null
     businessBankName?: string | null
-    ceasedAt?: string | null
+    ceasedAt?: Date | string | null
     cisRegistered?: boolean | null
     cisUtr?: string | null
     clientManager?: string | null
@@ -33518,13 +33518,13 @@ export namespace Prisma {
     contactPosition?: string | null
     corporationTaxUtr?: string | null
     correspondenceAddress?: string | null
-    dateOfBirth?: string | null
+    dateOfBirth?: Date | string | null
     directDebitInPlace?: boolean | null
     directorRole?: string | null
-    disengagementDate?: string | null
+    disengagementDate?: Date | string | null
     doNotContact?: boolean | null
     dormant?: boolean | null
-    dormantSince?: string | null
+    dormantSince?: Date | string | null
     email?: string | null
     employeeCount?: number | null
     engagementLetterSigned?: boolean | null
@@ -33536,11 +33536,11 @@ export namespace Prisma {
     mobile?: string | null
     monthlyFee?: Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: string | null
-    nextAccountsDueDate?: string | null
-    nextCorporationTaxDueDate?: string | null
+    nextAccountsDueDate?: Date | string | null
+    nextCorporationTaxDueDate?: Date | string | null
     notes?: string | null
-    onboardingDate?: string | null
-    onboardingStartedAt?: string | null
+    onboardingDate?: Date | string | null
+    onboardingStartedAt?: Date | string | null
     partnerResponsible?: string | null
     payeAccountsOfficeReference?: string | null
     payeReference?: string | null
@@ -33567,11 +33567,11 @@ export namespace Prisma {
     vatPeriodEnd?: string | null
     vatPeriodStart?: string | null
     vatQuarter?: string | null
-    vatRegistrationDate?: string | null
+    vatRegistrationDate?: Date | string | null
     vatReturnFrequency?: string | null
     vatScheme?: string | null
     vatStagger?: string | null
-    wentLiveAt?: string | null
+    wentLiveAt?: Date | string | null
   }
 
   export type ClientUpdateWithoutPortfolioInput = {
@@ -33616,7 +33616,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33625,13 +33625,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -33643,11 +33643,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33674,11 +33674,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUpdateOneWithoutClientNestedInput
     documents?: DocumentUpdateManyWithoutClientNestedInput
@@ -33732,7 +33732,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33741,13 +33741,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -33759,11 +33759,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33790,11 +33790,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parties?: ClientPartyUncheckedUpdateManyWithoutClientNestedInput
     companiesHouseData?: CompaniesHouseDataUncheckedUpdateOneWithoutClientNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutClientNestedInput
@@ -33848,7 +33848,7 @@ export namespace Prisma {
     annualFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     authenticationCode?: NullableStringFieldUpdateOperationsInput | string | null
     businessBankName?: NullableStringFieldUpdateOperationsInput | string | null
-    ceasedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    ceasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cisRegistered?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cisUtr?: NullableStringFieldUpdateOperationsInput | string | null
     clientManager?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33857,13 +33857,13 @@ export namespace Prisma {
     contactPosition?: NullableStringFieldUpdateOperationsInput | string | null
     corporationTaxUtr?: NullableStringFieldUpdateOperationsInput | string | null
     correspondenceAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    dateOfBirth?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     directDebitInPlace?: NullableBoolFieldUpdateOperationsInput | boolean | null
     directorRole?: NullableStringFieldUpdateOperationsInput | string | null
-    disengagementDate?: NullableStringFieldUpdateOperationsInput | string | null
+    disengagementDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     doNotContact?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dormant?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    dormantSince?: NullableStringFieldUpdateOperationsInput | string | null
+    dormantSince?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     employeeCount?: NullableIntFieldUpdateOperationsInput | number | null
     engagementLetterSigned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -33875,11 +33875,11 @@ export namespace Prisma {
     mobile?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyFee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     nationalInsuranceNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    nextAccountsDueDate?: NullableStringFieldUpdateOperationsInput | string | null
-    nextCorporationTaxDueDate?: NullableStringFieldUpdateOperationsInput | string | null
+    nextAccountsDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextCorporationTaxDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingDate?: NullableStringFieldUpdateOperationsInput | string | null
-    onboardingStartedAt?: NullableStringFieldUpdateOperationsInput | string | null
+    onboardingDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     partnerResponsible?: NullableStringFieldUpdateOperationsInput | string | null
     payeAccountsOfficeReference?: NullableStringFieldUpdateOperationsInput | string | null
     payeReference?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33906,11 +33906,11 @@ export namespace Prisma {
     vatPeriodEnd?: NullableStringFieldUpdateOperationsInput | string | null
     vatPeriodStart?: NullableStringFieldUpdateOperationsInput | string | null
     vatQuarter?: NullableStringFieldUpdateOperationsInput | string | null
-    vatRegistrationDate?: NullableStringFieldUpdateOperationsInput | string | null
+    vatRegistrationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     vatReturnFrequency?: NullableStringFieldUpdateOperationsInput | string | null
     vatScheme?: NullableStringFieldUpdateOperationsInput | string | null
     vatStagger?: NullableStringFieldUpdateOperationsInput | string | null
-    wentLiveAt?: NullableStringFieldUpdateOperationsInput | string | null
+    wentLiveAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ClientPartyCreateManyClientInput = {

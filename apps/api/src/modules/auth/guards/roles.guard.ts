@@ -11,7 +11,6 @@ export class RolesGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    return true;
     const request = context.switchToHttp().getRequest();
     const user = request?.user;
 
@@ -35,8 +34,9 @@ export class RolesGuard implements CanActivate {
     try {
       const userPermissions = await this.permissionsService.getUserPermissions(user.id);
       
-      // Role hierarchy: Admin > Manager > Staff > ReadOnly
+      // Role hierarchy: SuperAdmin > Admin > Manager > Staff > ReadOnly
       const roleHierarchy = {
+        'SUPER_ADMIN': 5,
         [UserRole.READONLY]: 1,
         [UserRole.STAFF]: 2,
         [UserRole.MANAGER]: 3,

@@ -4,7 +4,7 @@ export interface User {
   firstName: string;
   lastName: string;
   passwordHash: string;
-  role: 'ADMIN' | 'MANAGER' | 'STAFF' | 'READ_ONLY' | 'SUPER_ADMIN';
+  role: 'ADMIN' | 'MANAGER' | 'STAFF' | 'READONLY' | 'SUPER_ADMIN';
   portfolios: Array<number | '*'>;
   isActive: boolean;
   emailVerified: boolean;
