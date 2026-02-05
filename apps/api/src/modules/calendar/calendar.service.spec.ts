@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CalendarService } from './calendar.service';
-import { FileStorageService } from '../file-storage/file-storage.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CalendarEvent, CreateCalendarEventDto, UpdateCalendarEventDto } from './interfaces/calendar.interface';
 
 describe('CalendarService', () => {
   let service: CalendarService;
-  let fileStorageService: jest.Mocked<FileStorageService>;
+  let prismaService: jest.Mocked<PrismaService>;
 
   const mockEvent: CalendarEvent = {
     id: 'event-1',
@@ -17,33 +17,36 @@ describe('CalendarService', () => {
     allDay: false,
     clientId: 'client-1',
     type: 'MEETING',
-    location: 'Conference Room A',
-    attendees: ['user1@example.com', 'user2@example.com'],
-    status: 'SCHEDULED',
     createdAt: new Date('2024-01-01T00:00:00Z'),
     updatedAt: new Date('2024-01-01T00:00:00Z'),
   };
 
   beforeEach(async () => {
-    const mockFileStorageService = {
-      writeJson: jest.fn(),
-      readJson: jest.fn(),
-      deleteJson: jest.fn(),
-      listFiles: jest.fn(),
+    const mockPrismaService = {
+      calendarEvent: {
+        create: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+      },
+      client: {
+        findMany: jest.fn(),
+      },
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CalendarService,
         {
-          provide: FileStorageService,
-          useValue: mockFileStorageService,
+          provide: PrismaService,
+          useValue: mockPrismaService,
         },
       ],
     }).compile();
 
     service = module.get<CalendarService>(CalendarService);
-    fileStorageService = module.get(FileStorageService);
+    prismaService = module.get(PrismaService);
   });
 
   describe('createEvent', () => {
@@ -55,14 +58,32 @@ describe('CalendarService', () => {
         endDate: new Date('2024-01-15T11:00:00Z'),
         clientId: 'client-1',
         type: 'MEETING',
-        location: 'Conference Room A',
-        attendees: ['user1@example.com'],
       };
 
-      fileStorageService.writeJson.mockResolvedValue(undefined);
+      prismaService.calendarEvent.create.mockResolvedValue({
+        ...mockEvent,
+        title: createDto.title,
+        description: createDto.description,
+        startDate: createDto.startDate,
+        endDate: createDto.endDate,
+        clientId: createDto.clientId,
+        type: createDto.type || 'APPOINTMENT',
+      });
 
       const result = await service.createEvent(createDto);
 
+      expect(prismaService.calendarEvent.create).toHaveBeenCalledWith({
+        data: {
+          title: createDto.title,
+          description: createDto.description,
+          startDate: createDto.startDate,
+          endDate: createDto.endDate,
+          allDay: false,
+          clientId: createDto.clientId,
+          taskId: undefined,
+          type: createDto.type,
+        },
+      });
       expect(result).toMatchObject({
         title: createDto.title,
         description: createDto.description,
@@ -70,15 +91,8 @@ describe('CalendarService', () => {
         endDate: createDto.endDate,
         clientId: createDto.clientId,
         type: createDto.type,
-        location: createDto.location,
-        attendees: createDto.attendees,
         allDay: false,
-        status: 'SCHEDULED',
       });
-      expect(result.id).toBeDefined();
-      expect(result.createdAt).toBeDefined();
-      expect(result.updatedAt).toBeDefined();
-      expect(fileStorageService.writeJson).toHaveBeenCalledTimes(1);
     });
 
     it('should throw BadRequestException when start date is after end date', async () => {
@@ -95,16 +109,16 @@ describe('CalendarService', () => {
 
   describe('getEventById', () => {
     it('should return an event by ID', async () => {
-      fileStorageService.readJson.mockResolvedValue(mockEvent);
+      prismaService.calendarEvent.findUnique.mockResolvedValue(mockEvent);
 
       const result = await service.getEventById('event-1');
 
       expect(result).toEqual(mockEvent);
-      expect(fileStorageService.readJson).toHaveBeenCalledWith('calendar/events', 'event-1');
+      expect(prismaService.calendarEvent.findUnique).toHaveBeenCalledWith({ where: { id: 'event-1' } });
     });
 
     it('should throw NotFoundException when event does not exist', async () => {
-      fileStorageService.readJson.mockResolvedValue(null);
+      prismaService.calendarEvent.findUnique.mockResolvedValue(null);
 
       await expect(service.getEventById('nonexistent')).rejects.toThrow(NotFoundException);
     });
@@ -114,16 +128,21 @@ describe('CalendarService', () => {
     it('should update an event successfully', async () => {
       const updateDto: UpdateCalendarEventDto = {
         title: 'Updated Meeting',
-        location: 'Conference Room B',
+        description: 'Updated description',
       };
 
-      fileStorageService.readJson.mockResolvedValue(mockEvent);
-      fileStorageService.writeJson.mockResolvedValue(undefined);
+      prismaService.calendarEvent.findUnique.mockResolvedValue(mockEvent);
+      prismaService.calendarEvent.update.mockResolvedValue({
+        ...mockEvent,
+        title: updateDto.title || mockEvent.title,
+        description: updateDto.description || mockEvent.description,
+        updatedAt: new Date('2024-01-02T00:00:00Z'),
+      });
 
       const result = await service.updateEvent('event-1', updateDto);
 
       expect(result.title).toBe(updateDto.title);
-      expect(result.location).toBe(updateDto.location);
+      expect(result.description).toBe(updateDto.description);
       expect(result.updatedAt).not.toEqual(mockEvent.updatedAt);
     });
 
@@ -133,7 +152,7 @@ describe('CalendarService', () => {
         endDate: new Date('2024-01-15T10:00:00Z'),
       };
 
-      fileStorageService.readJson.mockResolvedValue(mockEvent);
+      prismaService.calendarEvent.findUnique.mockResolvedValue(mockEvent);
 
       await expect(service.updateEvent('event-1', updateDto)).rejects.toThrow(BadRequestException);
     });
@@ -141,12 +160,12 @@ describe('CalendarService', () => {
 
   describe('deleteEvent', () => {
     it('should delete an event successfully', async () => {
-      fileStorageService.readJson.mockResolvedValue(mockEvent);
-      fileStorageService.deleteJson.mockResolvedValue(undefined);
+      prismaService.calendarEvent.findUnique.mockResolvedValue(mockEvent);
+      prismaService.calendarEvent.delete.mockResolvedValue(mockEvent);
 
       await service.deleteEvent('event-1');
 
-      expect(fileStorageService.deleteJson).toHaveBeenCalledWith('calendar/events', 'event-1');
+      expect(prismaService.calendarEvent.delete).toHaveBeenCalledWith({ where: { id: 'event-1' } });
     });
   });
 
@@ -155,27 +174,24 @@ describe('CalendarService', () => {
       const startDate = new Date('2024-01-01T00:00:00Z');
       const endDate = new Date('2024-01-31T23:59:59Z');
 
-      fileStorageService.listFiles.mockResolvedValue(['event-1.json']);
-      fileStorageService.readJson.mockResolvedValue(mockEvent);
+      prismaService.calendarEvent.findMany.mockResolvedValue([mockEvent]);
 
       const result = await service.getEventsByDateRange(startDate, endDate);
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(mockEvent);
+      expect(prismaService.calendarEvent.findMany).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('getCalendarSummary', () => {
     it('should return calendar summary', async () => {
       const events = [
-        { ...mockEvent, type: 'MEETING', status: 'SCHEDULED' },
-        { ...mockEvent, id: 'event-2', type: 'DEADLINE', status: 'COMPLETED' },
+        { ...mockEvent, type: 'MEETING' },
+        { ...mockEvent, id: 'event-2', type: 'DEADLINE' },
       ];
 
-      fileStorageService.listFiles.mockResolvedValue(['event-1.json', 'event-2.json']);
-      fileStorageService.readJson
-        .mockResolvedValueOnce(events[0])
-        .mockResolvedValueOnce(events[1]);
+      prismaService.calendarEvent.findMany.mockResolvedValue(events);
 
       const result = await service.getCalendarSummary();
 
@@ -183,10 +199,6 @@ describe('CalendarService', () => {
       expect(result.eventsByType).toEqual({
         MEETING: 1,
         DEADLINE: 1,
-      });
-      expect(result.eventsByStatus).toEqual({
-        SCHEDULED: 1,
-        COMPLETED: 1,
       });
     });
   });

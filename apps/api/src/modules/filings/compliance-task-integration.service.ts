@@ -60,7 +60,7 @@ export class ComplianceTaskIntegrationService {
           const relatedTasks = await this.complianceService.findTasksForComplianceItem(item.id);
           
           for (const task of relatedTasks) {
-            if (task.status === 'OPEN' || task.status === 'IN_PROGRESS') {
+            if (task.status === 'TODO' || task.status === 'IN_PROGRESS') {
               if (task.priority !== 'URGENT') {
                 const updatedTask = {
                   ...task,
@@ -266,7 +266,7 @@ export class ComplianceTaskIntegrationService {
       for (const item of overdueItems) {
         const relatedTasks = await this.complianceService.findTasksForComplianceItem(item.id);
         const hasActiveTasks = relatedTasks.some(task => 
-          task.status === 'OPEN' || task.status === 'IN_PROGRESS'
+          task.status === 'TODO' || task.status === 'IN_PROGRESS'
         );
 
         criticalItems.push({
@@ -291,7 +291,7 @@ export class ComplianceTaskIntegrationService {
       for (const item of upcomingItems) {
         const relatedTasks = await this.complianceService.findTasksForComplianceItem(item.id);
         const hasActiveTasks = relatedTasks.some(task => 
-          task.status === 'OPEN' || task.status === 'IN_PROGRESS'
+          task.status === 'TODO' || task.status === 'IN_PROGRESS'
         );
 
         if (!hasActiveTasks) {

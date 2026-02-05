@@ -69,7 +69,7 @@ type Document = {
   originalName?: string;
   mimeType?: string;
   category?: string;
-  uploadedAt?: string;
+  createdAt?: string;
 };
 
 // ---- Page ----
@@ -278,7 +278,9 @@ export default function ClientDetailPage() {
             <Card title="Company Information">
               <div className="mdj-info-grid">
                 <span style={{ color: '#6b7280' }}>Reference</span>
-                <span style={{ fontFamily: 'ui-monospace, Menlo, monospace', color: '#c8a652' }}>{client.ref ?? '—'}</span>
+                <span style={{ fontFamily: 'ui-monospace, Menlo, monospace', color: '#c8a652' }}>
+                  {client.registeredNumber || client.id || '—'}
+                </span>
 
                 <span style={{ color: '#6b7280' }}>Company Number</span>
                 <span>{client.registeredNumber || '—'}</span>
@@ -406,7 +408,7 @@ export default function ClientDetailPage() {
                       <tr key={doc.id}>
                         <td>{doc.filename || doc.originalName || doc.id}</td>
                         <td>{doc.category || '—'}</td>
-                        <td>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString('en-GB') : '—'}</td>
+                        <td>{doc.createdAt ? new Date(doc.createdAt).toLocaleDateString('en-GB') : '—'}</td>
                         <td style={{ textAlign: 'right' }}>
                           <button className="btn-outline-gold btn-xs" onClick={() => handleDocumentDownload(doc, true)} style={{ marginRight: 6 }}>
                             Preview

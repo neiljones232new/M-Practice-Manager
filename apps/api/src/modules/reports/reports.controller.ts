@@ -207,66 +207,6 @@ export class ReportsController {
     }
   }
 
-  @Post('bulk-generate')
-  @ApiOperation({ summary: 'Generate multiple reports for a client' })
-  @ApiResponse({ status: 201, description: 'Reports generated successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid request data' })
-  async bulkGenerateReports(@Body() request: {
-    clientId: string;
-    reports: Array<{
-      type: 'client-pack' | 'tax-strategy' | 'company-profile';
-      title: string;
-      format: 'PDF' | 'HTML';
-      calculationIds?: string[];
-      includeBranding?: boolean;
-      includeCharts?: boolean;
-    }>;
-  }): Promise<GeneratedReport[]> {
-    try {
-      this.logger.log(`Bulk generating ${request.reports.length} reports for client: ${request.clientId}`);
-      
-      const results: GeneratedReport[] = [];
-      
-      for (const reportRequest of request.reports) {
-        const config: ReportConfig = {
-          clientId: request.clientId,
-          title: reportRequest.title,
-          format: reportRequest.format,
-          calculationIds: reportRequest.calculationIds,
-          includeBranding: reportRequest.includeBranding,
-          includeCharts: reportRequest.includeCharts,
-        };
-
-        let report: GeneratedReport;
-        
-        switch (reportRequest.type) {
-          case 'client-pack':
-            report = await this.reportsService.generateClientPack(config);
-            break;
-          case 'tax-strategy':
-            report = await this.reportsService.generateTaxStrategyReport(config);
-            break;
-          case 'company-profile':
-            report = await this.reportsService.generateCompanyProfileReport(config);
-            break;
-          default:
-            throw new Error(`Unknown report type: ${reportRequest.type}`);
-        }
-        
-        results.push(report);
-      }
-      
-      this.logger.log(`Successfully generated ${results.length} reports for client: ${request.clientId}`);
-      return results;
-    } catch (error) {
-      this.logger.error(`Failed to bulk generate reports: ${error.message}`, error);
-      throw new HttpException(
-        error.message || 'Failed to generate reports',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
   @Get('stats/overview')
   @ApiOperation({ summary: 'Get report generation statistics' })
   @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })

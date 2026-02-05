@@ -120,7 +120,7 @@ describe('AssistService', () => {
 
     const mockClientsService = {
       findAll: jest.fn(),
-      findByRef: jest.fn(),
+      findByIdentifier: jest.fn(),
     } as any;
 
     const mockClientPartyService = {
@@ -221,7 +221,7 @@ describe('AssistService', () => {
 
     it('should generate context data with specific client', async () => {
       const clientRef = '1A001';
-      clientsService.findByRef.mockResolvedValue(mockClients[0] as any);
+      clientsService.findByIdentifier.mockResolvedValue(mockClients[0] as any);
 
       const context: AssistContext = {
         clientRef,
@@ -231,7 +231,7 @@ describe('AssistService', () => {
       const result = await service['generateContextData'](context);
 
       expect(result.client).toEqual(mockClients[0]);
-      expect(clientsService.findByRef).toHaveBeenCalledWith(clientRef);
+      expect(clientsService.findByIdentifier).toHaveBeenCalledWith(clientRef);
     });
 
     it('should filter tasks by assignee', async () => {
@@ -309,13 +309,13 @@ describe('AssistService', () => {
   describe('Specialized Query Methods', () => {
     it('should get client summary', async () => {
       const clientRef = '1A001';
-      clientsService.findByRef.mockResolvedValue(mockClients[0] as any);
+      clientsService.findByIdentifier.mockResolvedValue(mockClients[0] as any);
 
       const result = await service.getClientSummary(clientRef);
 
       expect(result).toContain('CLIENT SUMMARY');
       expect(result).toContain(clientRef);
-      expect(clientsService.findByRef).toHaveBeenCalledWith(clientRef);
+      expect(clientsService.findByIdentifier).toHaveBeenCalledWith(clientRef);
     });
 
     it('should check deadlines', async () => {

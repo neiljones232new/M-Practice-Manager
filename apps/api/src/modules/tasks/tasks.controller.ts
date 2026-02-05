@@ -11,6 +11,7 @@ import {
   HttpStatus,
   Header,
   NotFoundException,
+  BadRequestException,
   Request
 } from '@nestjs/common';
 import { Res } from '@nestjs/common';
@@ -47,8 +48,8 @@ export class TasksController {
   @ApiOperation({ summary: 'Get all tasks with optional filters' })
   @ApiQuery({ name: 'clientId', required: false, type: String })
   @ApiQuery({ name: 'serviceId', required: false, type: String })
-  @ApiQuery({ name: 'assignee', required: false, type: String })
-  @ApiQuery({ name: 'status', required: false, enum: ['OPEN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] })
+  @ApiQuery({ name: 'assigneeId', required: false, type: String })
+  @ApiQuery({ name: 'status', required: false, enum: ['TODO', 'IN_PROGRESS', 'REVIEW', 'COMPLETED', 'CANCELLED'] })
   @ApiQuery({ name: 'priority', required: false, enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false, type: String })
@@ -79,6 +80,7 @@ export class TasksController {
         totalTasks: 0,
         openTasks: 0,
         inProgressTasks: 0,
+        reviewTasks: 0,
         completedTasks: 0,
         cancelledTasks: 0,
         overdueTasks: 0,
@@ -90,8 +92,9 @@ export class TasksController {
           URGENT: 0,
         },
         tasksByStatus: {
-          OPEN: 0,
+          TODO: 0,
           IN_PROGRESS: 0,
+          REVIEW: 0,
           COMPLETED: 0,
           CANCELLED: 0,
         },
@@ -139,13 +142,13 @@ export class TasksController {
     return this.tasksService.findByService(serviceId);
   }
 
-  @Get('assignee/:assignee')
+  @Get('assignee/:assigneeId')
   @ApiOperation({ summary: 'Get tasks by assignee' })
-  async findByAssignee(@Request() req: any, @Param('assignee') assignee: string) {
+  async findByAssignee(@Request() req: any, @Param('assigneeId') assigneeId: string) {
     if (this.isDemoUser(req)) {
       return [];
     }
-    return this.tasksService.findByAssignee(assignee);
+    return this.tasksService.findByAssignee(assigneeId);
   }
 
   @Get(':id')
@@ -178,6 +181,20 @@ export class TasksController {
     return { deleted };
   }
 
+  @Post('bulk-delete')
+  @ApiOperation({ summary: 'Bulk delete tasks' })
+  async bulkDeleteTasks(@Request() req: any, @Body() body: { ids?: string[] }) {
+    if (this.isDemoUser(req)) {
+      return { deletedCount: 0 };
+    }
+    const ids = body?.ids;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw new BadRequestException('ids array is required');
+    }
+    const deletedCount = await this.tasksService.deleteMany(ids);
+    return { deletedCount };
+  }
+
   // Service Template endpoints
   @Get('templates/service-templates')
   @ApiOperation({ summary: 'Get all service templates' })
@@ -185,13 +202,10 @@ export class TasksController {
     return this.tasksService.getAllServiceTemplates();
   }
 
-  @Get('templates/service-templates/:serviceKind/:frequency')
-  @ApiOperation({ summary: 'Get service template by kind and frequency' })
-  async getServiceTemplate(
-    @Param('serviceKind') serviceKind: string,
-    @Param('frequency') frequency: string
-  ) {
-    return this.tasksService.findServiceTemplate(serviceKind, frequency);
+  @Get('templates/service-templates/:id')
+  @ApiOperation({ summary: 'Get service template by id' })
+  async getServiceTemplate(@Param('id') id: string) {
+    return this.tasksService.findServiceTemplate(id);
   }
 
   @Post('templates/service-templates')
@@ -314,7 +328,7 @@ export class TasksController {
   @ApiQuery({ name: 'clientId', required: false, type: String })
   @ApiQuery({ name: 'serviceId', required: false, type: String })
   @ApiQuery({ name: 'assignee', required: false, type: String })
-  @ApiQuery({ name: 'status', required: false, enum: ['OPEN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] })
+  @ApiQuery({ name: 'status', required: false, enum: ['TODO', 'IN_PROGRESS', 'REVIEW', 'COMPLETED', 'CANCELLED'] })
   @ApiQuery({ name: 'priority', required: false, enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false, type: String })
@@ -323,7 +337,7 @@ export class TasksController {
   async exportCSV(@Query() filters: TaskFilters): Promise<string> {
     const practice = await this.configService.getPracticeSettings();
     const items = await this.tasksService.findAllWithClientDetails(filters);
-    const headers = ['Title','Client Ref','Client','Service','Priority','Status','Assignee','Due Date','Portfolio'];
+    const headers = ['Title','Client Identifier','Client','Service','Priority','Status','Assignee','Due Date','Portfolio'];
     const esc = (v: any) => {
       if (v === null || v === undefined) return '';
       const s = typeof v === 'string' ? v : v instanceof Date ? v.toISOString() : String(v);
@@ -334,7 +348,7 @@ export class TasksController {
     for (const t of items) {
       rows.push([
         t.title,
-        t.clientRef,
+        t.clientIdentifier,
         t.clientName,
         t.serviceName || '',
         t.priority,
@@ -355,11 +369,11 @@ export class TasksController {
       const ExcelJS = require('exceljs');
       const wb = new ExcelJS.Workbook();
       const ws = wb.addWorksheet('Tasks');
-      ws.addRow(['Title','Client Ref','Client','Service','Priority','Status','Assignee','Due Date','Portfolio']);
+      ws.addRow(['Title','Client Identifier','Client','Service','Priority','Status','Assignee','Due Date','Portfolio']);
       for (const t of items) {
         ws.addRow([
           t.title,
-          t.clientRef,
+          t.clientIdentifier,
           t.clientName,
           t.serviceName || '',
           t.priority,
@@ -374,11 +388,11 @@ export class TasksController {
       res.setHeader('Content-Disposition', `attachment; filename="tasks-${new Date().toISOString().slice(0,10)}.xlsx"`);
       res.send(Buffer.from(buffer));
     } catch (e) {
-      const headers = ['Title','Client Ref','Client','Service','Priority','Status','Assignee','Due Date','Portfolio'];
+      const headers = ['Title','Client Identifier','Client','Service','Priority','Status','Assignee','Due Date','Portfolio'];
       const cell = (v: any) => `<Cell><Data ss:Type=\"String\">${String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</Data></Cell>`;
       const rows = items.map(t => `<Row>${[
         t.title,
-        t.clientRef,
+        t.clientIdentifier,
         t.clientName,
         t.serviceName || '',
         t.priority,
@@ -405,7 +419,7 @@ export class TasksController {
       [{ text: 'Title', bold: true }, { text: 'Client', bold: true }, { text: 'Service', bold: true }, { text: 'Priority', bold: true }, { text: 'Status', bold: true }, { text: 'Assignee', bold: true }, { text: 'Due', bold: true }],
       ...items.map(t => [
         t.title,
-        `${t.clientRef} ${t.clientName}`,
+        `${t.clientIdentifier || ''} ${t.clientName || ''}`.trim(),
         t.serviceName || '',
         t.priority,
         t.status,

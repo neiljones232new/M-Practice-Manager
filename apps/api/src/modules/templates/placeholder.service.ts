@@ -1,6 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ClientsService } from '../clients/clients.service';
-import { DatabaseService } from '../database/database.service';
 import { buildClientContext } from '../clients/dto/client-context.dto';
 import { ServicesService } from '../services/services.service';
 import { IntegrationConfigService } from '../integrations/services/integration-config.service';
@@ -26,7 +25,6 @@ export class PlaceholderService {
   constructor(
     private readonly clientsService: ClientsService,
     private readonly servicesService: ServicesService,
-    private readonly databaseService: DatabaseService,
     private readonly integrationConfigService: IntegrationConfigService,
     private readonly errorHandler: TemplateErrorHandlerService,
   ) {}
@@ -150,10 +148,8 @@ export class PlaceholderService {
     const clientWithParties = await this.clientsService.getClientWithParties(clientId);
     const primaryContact = clientWithParties.partiesDetails?.find(p => p.primaryContact);
 
-    const dbClient = client.registeredNumber
-      ? await this.databaseService.getClientByNumber(client.registeredNumber)
-      : null;
-    const ctx = buildClientContext(client, dbClient);
+    const profile = await this.clientsService.getProfile(clientId);
+    const ctx = buildClientContext(client, profile || undefined);
 
     const addressText = this.formatAddress(ctx.node.address);
     const nodeAny = ctx.node as any;
@@ -219,7 +215,7 @@ export class PlaceholderService {
 
       // Basic info
       clientName: ctx.node.name,
-      clientReference: ctx.node.ref,
+      clientIdentifier: ctx.node.registeredNumber || ctx.node.id,
       clientType: ctx.node.type,
       name: ctx.node.name,
       registeredNumber: ctx.node.registeredNumber,

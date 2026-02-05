@@ -65,13 +65,13 @@ export interface FilingData {
 export interface DocumentData {
   filename: string;
   category: string;
-  uploadedAt: string;
+  createdAt: string;
 }
 
 export interface TemplateData {
   // Header data
   companyName: string;
-  clientRef: string;
+  clientIdentifier: string;
   generatedDate: string;
   
   // Company overview
@@ -633,7 +633,7 @@ export class ReportsService {
           width: 'auto',
           stack: [
             {
-              text: `Reference: ${node?.ref || 'N/A'}`,
+              text: `Identifier: ${node?.registeredNumber || node?.id || 'N/A'}`,
               style: 'headerInfo'
             },
             {
@@ -655,8 +655,8 @@ export class ReportsService {
     const { node } = this.unwrapClientContext(client);
     const clientInfo: TableCell[][] = [
       [
-        { text: 'Client Reference', style: 'tableHeader' },
-        { text: node?.ref || 'N/A', style: 'tableCell' }
+        { text: 'Client Identifier', style: 'tableHeader' },
+        { text: node?.registeredNumber || node?.id || 'N/A', style: 'tableCell' }
       ],
       [
         { text: 'Company Name', style: 'tableHeader' },
@@ -924,8 +924,7 @@ export class ReportsService {
         { text: 'Document Name', style: 'tableHeader' },
         { text: 'Category', style: 'tableHeader' },
         { text: 'Size', style: 'tableHeader' },
-        { text: 'Uploaded', style: 'tableHeader' },
-        { text: 'Tags', style: 'tableHeader' }
+        { text: 'Uploaded', style: 'tableHeader' }
       ]
     ];
 
@@ -934,8 +933,7 @@ export class ReportsService {
         { text: doc.originalName || 'N/A', style: 'tableCell' },
         { text: doc.category || 'N/A', style: 'tableCell' },
         { text: this.formatFileSize(doc.size || 0), style: 'tableCell' },
-        { text: doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString('en-GB') : 'N/A', style: 'tableCell' },
-        { text: doc.tags ? doc.tags.slice(0, 3).join(', ') : 'N/A', style: 'tableCell' }
+        { text: doc.createdAt ? new Date(doc.createdAt).toLocaleDateString('en-GB') : 'N/A', style: 'tableCell' }
       ]);
     });
 
@@ -944,7 +942,7 @@ export class ReportsService {
         { text: 'Documents', style: 'sectionHeader' },
         {
           table: {
-            widths: ['30%', '15%', '15%', '20%', '20%'],
+            widths: ['40%', '20%', '20%', '20%'],
             body: documentsTable
           },
           layout: 'lightHorizontalLines'
@@ -1134,12 +1132,12 @@ export class ReportsService {
       const documents: DocumentData[] = (reportData.documents || []).map((doc: any) => ({
         filename: doc.originalName || doc.filename || 'N/A',
         category: doc.category || 'N/A',
-        uploadedAt: this.formatDate(doc.uploadedAt),
+        createdAt: this.formatDate(doc.createdAt),
       }));
 
       // Extract parties
       const partiesSummary = (parties || [])
-        .map(party => party.person?.name || 'Unknown')
+        .map(party => party.person?.fullName || 'Unknown')
         .join(', ') || 'N/A';
 
       const mainContact = profile?.mainContactName || 'N/A';
@@ -1148,7 +1146,7 @@ export class ReportsService {
       return {
         // Header data
         companyName: client.name || 'Unknown Company',
-        clientRef: client.ref || 'N/A',
+        clientIdentifier: client.registeredNumber || client.id || 'N/A',
         generatedDate: this.formatDate(new Date()),
         
         // Company overview

@@ -127,7 +127,7 @@ export default function ReportsPage() {
                   <option value="">Choose a client...</option>
                   {clients.map(client => (
                     <option key={client.node.id} value={client.node.id}>
-                      {client.node.name} ({client.node.ref || '—'})
+                      {client.node.name} ({client.node.registeredNumber || client.node.id || '—'})
                     </option>
                   ))}
                 </select>

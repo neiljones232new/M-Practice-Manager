@@ -38,18 +38,6 @@ export interface ReportStats {
   recentReports: ReportMetadata[];
 }
 
-export interface BulkReportRequest {
-  clientId: string;
-  reports: Array<{
-    type: 'client-pack' | 'tax-strategy' | 'company-profile';
-    title: string;
-    format: 'PDF' | 'HTML';
-    calculationIds?: string[];
-    includeBranding?: boolean;
-    includeCharts?: boolean;
-  }>;
-}
-
 export interface PDFGenerationResult {
   success: boolean;
   filePath: string;

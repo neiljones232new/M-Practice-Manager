@@ -165,7 +165,7 @@ export default function ComplianceItemPage() {
             </h1>
             {client && (
               <p className="text-gray-400">
-                Client: <span className="text-white">{client.name} ({client.ref})</span>
+                Client: <span className="text-white">{client.name} ({client.registeredNumber || client.id})</span>
               </p>
             )}
           </div>

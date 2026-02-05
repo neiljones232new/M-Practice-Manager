@@ -102,11 +102,11 @@ export const MDJAssistChat: React.FC = () => {
       // Build compact transcript
       const prompt = buildTranscriptPrompt(messages, text);
 
-      // Attach lightweight implicit context (e.g., clientRef from URL)
+      // Attach lightweight implicit context (e.g., clientId from URL)
       const context: Record<string, any> = {};
       try {
         const m = window.location.pathname.match(/\/clients\/([^/]+)/);
-        if (m?.[1]) context.clientRef = m[1];
+        if (m?.[1]) context.clientId = m[1];
       } catch {
         /* noop */
       }

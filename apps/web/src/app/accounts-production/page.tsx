@@ -10,7 +10,6 @@ import { AccountsSet } from '@/lib/types';
 interface Client {
   id: string;
   name: string;
-  ref?: string;
   registeredNumber?: string;
 }
 
@@ -65,9 +64,9 @@ export default function AccountsProductionPage() {
     return client?.name || 'Unknown Client';
   };
 
-  const getClientRef = (clientId: string) => {
+  const getClientIdentifier = (clientId: string) => {
     const client = clients.find(c => c.id === clientId);
-    return client?.ref || '';
+    return client?.registeredNumber || client?.id || '';
   };
 
   const getStatusBadge = (status: string) => {
@@ -128,13 +127,13 @@ export default function AccountsProductionPage() {
   // Filter accounts sets based on search and status
   const filteredAccountsSets = accountsSets.filter(accountsSet => {
     const clientName = getClientName(accountsSet.clientId).toLowerCase();
-    const clientRef = getClientRef(accountsSet.clientId).toLowerCase();
+    const clientIdentifier = getClientIdentifier(accountsSet.clientId).toLowerCase();
     const companyName = accountsSet.sections.companyPeriod?.company.name?.toLowerCase() || '';
     const companyNumber = accountsSet.companyNumber?.toLowerCase() || '';
     
     const matchesSearch = !searchTerm || 
       clientName.includes(searchTerm.toLowerCase()) ||
-      clientRef.includes(searchTerm.toLowerCase()) ||
+      clientIdentifier.includes(searchTerm.toLowerCase()) ||
       companyName.includes(searchTerm.toLowerCase()) ||
       companyNumber.includes(searchTerm.toLowerCase());
     
@@ -153,7 +152,7 @@ export default function AccountsProductionPage() {
             {getClientName(row.clientId)}
           </div>
           <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-            {getClientRef(row.clientId)} • {row.companyNumber || 'No company number'}
+            {getClientIdentifier(row.clientId)} • {row.companyNumber || 'No company number'}
           </div>
         </div>
       ),
@@ -334,7 +333,7 @@ export default function AccountsProductionPage() {
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '250px' }}>
             <MDJInput
-              placeholder="Search by client name, ref, or company number..."
+              placeholder="Search by client name, identifier, or company number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               leftIcon="🔍"

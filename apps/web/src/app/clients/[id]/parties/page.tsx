@@ -9,7 +9,6 @@ import type { ClientContextWithParties, ClientParty } from '@/lib/types';
 
 type Person = {
   id: string;
-  ref?: string;
   firstName?: string;
   lastName?: string;
   fullName?: string;
@@ -264,7 +263,9 @@ export default function ClientPartiesPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
           <div>
             <div style={{ fontWeight: 700 }}>{context?.node?.name || 'Client'}</div>
-            <div style={{ color: 'var(--text-muted)' }}>{context?.node?.ref ? `Ref ${context.node.ref}` : '—'}</div>
+            <div style={{ color: 'var(--text-muted)' }}>
+              {context?.node?.registeredNumber || context?.node?.id ? `ID ${context.node.registeredNumber || context.node.id}` : '—'}
+            </div>
           </div>
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)' }}>
             <input type="checkbox" checked={showFormer} onChange={(e) => setShowFormer(e.target.checked)} />

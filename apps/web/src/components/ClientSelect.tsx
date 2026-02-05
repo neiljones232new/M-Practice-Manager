@@ -7,10 +7,10 @@ import { useClientData, type ClientData } from '@/hooks/useClientData';
  * Props for the ClientSelect component
  */
 export interface ClientSelectProps {
-  /** Current selected client reference or ID */
+  /** Current selected client identifier or ID */
   value?: string;
-  /** Callback when a client is selected - provides ref, name, and id */
-  onChange: (clientRef: string, clientName: string, clientId: string) => void;
+  /** Callback when a client is selected - provides identifier, name, and id */
+  onChange: (clientIdentifier: string, clientName: string, clientId: string) => void;
   /** Placeholder text for the search input */
   placeholder?: string;
   /** Whether the field is required */
@@ -24,10 +24,10 @@ export interface ClientSelectProps {
 /**
  * ClientSelect Component
  * 
- * A searchable dropdown component for selecting clients by name or reference.
+ * A searchable dropdown component for selecting clients by name or identifier.
  * Features:
  * - Debounced search (300ms) to minimize API calls
- * - Displays client name and reference in results
+ * - Displays client name and identifier in results
  * - Shows loading indicator during search
  * - Handles "No clients found" state
  * - Supports clearing selection with "No client" option
@@ -37,7 +37,7 @@ export interface ClientSelectProps {
 export function ClientSelect({
   value,
   onChange,
-  placeholder = 'Search client by name or reference...',
+  placeholder = 'Search client by name or identifier...',
   required = false,
   disabled = false,
   onValidationError,
@@ -47,8 +47,8 @@ export function ClientSelect({
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   // Requirement 8.2: Access error state for displaying error messages
-  const { searchClients, loading, error, fetchClientByRef, fetchClientById } = useClientData();
-  // Requirement 8.3: Track validation errors for invalid client references
+  const { searchClients, loading, error, fetchClientByIdentifier, fetchClientById } = useClientData();
+  // Requirement 8.3: Track validation errors for invalid client identifiers
   const [validationError, setValidationError] = useState<string | null>(null);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -59,14 +59,14 @@ export function ClientSelect({
   useEffect(() => {
     if (value && !selectedClient) {
       const loadClient = async () => {
-        // Try to fetch by ref first, then by ID
-        let client = await fetchClientByRef(value);
+        // Try to fetch by identifier first, then by ID
+        let client = await fetchClientByIdentifier(value);
         if (!client) {
           client = await fetchClientById(value);
         }
         if (client) {
           setSelectedClient(client);
-          setQuery(`${client.name} (${client.ref})`);
+          setQuery(`${client.name} (${client.identifier})`);
           setValidationError(null);
           onValidationError?.(null);
         } else if (value) {
@@ -79,7 +79,7 @@ export function ClientSelect({
       };
       loadClient();
     }
-  }, [value, selectedClient, fetchClientByRef, fetchClientById, onValidationError]);
+  }, [value, selectedClient, fetchClientByIdentifier, fetchClientById, onValidationError]);
 
   // Debounced search effect (300ms)
   useEffect(() => {
@@ -116,13 +116,13 @@ export function ClientSelect({
 
   /**
    * Handle client selection from dropdown
-   * Requirement 6.3: Populate both client reference and client name fields
+   * Requirement 6.3: Populate both client identifier and client name fields
    * Requirement 8.3: Clear validation errors on valid selection
    */
   const handleSelect = (client: ClientData) => {
     setSelectedClient(client);
-    onChange(client.ref, client.name, client.id);
-    setQuery(`${client.name} (${client.ref})`);
+    onChange(client.identifier, client.name, client.id);
+    setQuery(`${client.name} (${client.identifier})`);
     setShowDropdown(false);
     setValidationError(null);
     onValidationError?.(null);
@@ -152,7 +152,7 @@ export function ClientSelect({
     setQuery(newQuery);
     
     // Clear selection if user modifies the input
-    if (selectedClient && newQuery !== `${selectedClient.name} (${selectedClient.ref})`) {
+    if (selectedClient && newQuery !== `${selectedClient.name} (${selectedClient.identifier})`) {
       setSelectedClient(null);
     }
   };
@@ -322,7 +322,7 @@ export function ClientSelect({
             </div>
           )}
 
-          {/* Client Results - Requirement 6.2 (display client name and reference) */}
+          {/* Client Results - Requirement 6.2 (display client name and identifier) */}
           {results.length > 0 ? (
             results.map((client) => (
               <button
@@ -358,7 +358,7 @@ export function ClientSelect({
                     fontFamily: 'monospace',
                   }}
                 >
-                  {client.ref}
+                  {client.identifier}
                 </span>
               </button>
             ))
@@ -382,7 +382,7 @@ export function ClientSelect({
         </div>
       )}
 
-      {/* Requirement 8.3: Display validation error for invalid client references */}
+      {/* Requirement 8.3: Display validation error for invalid client identifiers */}
       {validationError && (
         <div
           style={{

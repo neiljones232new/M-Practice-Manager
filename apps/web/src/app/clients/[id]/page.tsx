@@ -9,7 +9,6 @@ import type { ClientContextWithParties, ServiceEligibility } from '@/lib/types';
 type ClientType = 'COMPANY' | 'INDIVIDUAL' | 'SOLE_TRADER' | 'PARTNERSHIP' | 'LLP';
 type Person = {
   id: string;
-  ref?: string;
   firstName?: string;
   lastName?: string;
   fullName: string;
@@ -33,7 +32,7 @@ type Task = {
   id: string;
   title: string;
   description?: string;
-  status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'OVERDUE' | string;
+  status: 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELLED' | string;
   dueDate?: string;
   tags?: string[];
   serviceId?: string;
@@ -55,7 +54,7 @@ type Document = {
   id: string;
   filename: string;
   category?: string;
-  uploadedAt: string;
+  createdAt: string;
   mimeType?: string;
   originalName?: string;
 };
@@ -191,7 +190,7 @@ export default function ClientDetailsPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
-  const clientRef = params?.id as string;
+  const clientId = params?.id as string;
 
   const [clientContext, setClientContext] = useState<ClientContextWithParties | null>(null);
   const [services, setServices] = useState<Service[]>([]);
@@ -238,6 +237,7 @@ export default function ClientDetailsPage() {
   const peopleCacheRef = useRef<Record<string, Person | null>>({});
 
   const client = clientContext?.node ?? null;
+  const clientIdentifier = client?.id || clientId;
   const profile = clientContext?.profile;
   const computed = clientContext?.computed;
   const partiesDetails = useMemo(() => clientContext?.partiesDetails ?? [], [clientContext?.partiesDetails]);
@@ -266,25 +266,25 @@ export default function ClientDetailsPage() {
   }, []);
 
   useEffect(() => {
-    if (!clientRef) return;
+    if (!clientId) return;
     let on = true;
     (async () => {
       try {
         setLoading(true);
         setErr(null);
-        const c = await api.get<ClientContextWithParties>(`/clients/${clientRef}/with-parties`, { params: { t: refreshTick } }).catch((e) => {
+        const c = await api.get<ClientContextWithParties>(`/clients/${clientId}/with-parties`, { params: { t: refreshTick } }).catch((e) => {
           throw new Error((e as Error)?.message || 'Failed to load client');
         });
 
-        const effectiveRef = c?.node?.ref || clientRef;
+        const effectiveId = c?.node?.id || clientId;
         const [s, t, d, comp, ltrs, aSets, tCalcs] = await Promise.all([
-          api.get(`/services/client/${effectiveRef}`).catch(() => []) as Promise<Service[]>,
-          api.get(`/tasks/client/${effectiveRef}`).catch(() => []) as Promise<Task[]>,
-          api.get(`/documents/client/${effectiveRef}`).catch(() => []) as Promise<any>,
-          api.get(`/compliance?clientId=${effectiveRef}`).catch(() => []) as Promise<Compliance[]>,
-          api.get(`/letters/client/${effectiveRef}`).catch(() => []) as Promise<GeneratedLetter[]>,
-          api.get(`/accounts-sets/client/${effectiveRef}`).catch(() => []) as Promise<AccountsSet[]>,
-          api.get(`/tax-calculations/client/${effectiveRef}`).catch(() => []) as Promise<TaxCalculation[]>,
+          api.get(`/services/client/${effectiveId}`).catch(() => []) as Promise<Service[]>,
+          api.get(`/tasks/client/${effectiveId}`).catch(() => []) as Promise<Task[]>,
+          api.get(`/documents/client/${effectiveId}`).catch(() => []) as Promise<any>,
+          api.get(`/compliance?clientId=${effectiveId}`).catch(() => []) as Promise<Compliance[]>,
+          api.get(`/letters/client/${effectiveId}`).catch(() => []) as Promise<GeneratedLetter[]>,
+          api.get(`/accounts-sets/client/${effectiveId}`).catch(() => []) as Promise<AccountsSet[]>,
+          api.get(`/tax-calculations/client/${effectiveId}`).catch(() => []) as Promise<TaxCalculation[]>,
         ]);
 
         if (on) {
@@ -309,7 +309,7 @@ export default function ClientDetailsPage() {
     return () => {
       on = false;
     };
-  }, [clientRef, refreshTick]);
+  }, [clientId, refreshTick]);
 
   useEffect(() => {
     const updated = searchParams?.get('updated');
@@ -326,7 +326,7 @@ export default function ClientDetailsPage() {
         if (ev?.data?.topic === 'clients:changed') {
           setRefreshTick((t) => t + 1);
         }
-        if (ev?.data?.topic === 'client:updated' && ev?.data?.clientId === clientRef) {
+        if (ev?.data?.topic === 'client:updated' && ev?.data?.clientId === clientId) {
           setRefreshTick((t) => t + 1);
         }
       };
@@ -336,7 +336,7 @@ export default function ClientDetailsPage() {
     return () => {
       try { bc?.close(); } catch {}
     };
-  }, [clientRef]);
+  }, [clientId]);
 
   const refreshDocuments = async (targetId: string) => {
     const res = await api.get(`/documents/client/${targetId}`).catch(() => null);
@@ -399,7 +399,7 @@ export default function ClientDetailsPage() {
   const getTaskBadge = (status: Task['status']) => {
     const key = String(status || '').toUpperCase();
     if (key === 'COMPLETED') return 'success';
-    if (key === 'OVERDUE') return 'danger';
+    if (key === 'REVIEW') return 'warning';
     if (key === 'IN_PROGRESS') return 'warning';
     if (key === 'CANCELLED') return 'default';
     return 'default';
@@ -414,7 +414,7 @@ export default function ClientDetailsPage() {
   };
 
   const handleDeleteClient = async () => {
-    const targetId = client?.ref || clientRef;
+    const targetId = client?.id || clientId;
     if (!targetId) return;
     const ok = window.confirm('Delete this client? This cannot be undone.');
     if (!ok) return;
@@ -467,7 +467,7 @@ export default function ClientDetailsPage() {
   };
 
   const handleUploadDocument = async () => {
-    if (!client?.ref && !clientRef) return;
+    if (!client?.id && !clientId) return;
     if (!docFile) {
       setDocUploadMsg('Select a file to upload.');
       return;
@@ -475,12 +475,11 @@ export default function ClientDetailsPage() {
     setDocUploading(true);
     setDocUploadMsg(null);
     try {
-      const targetRef = client?.ref || clientRef;
+      const targetId = client?.id || clientId;
       const formData = new FormData();
       formData.append('file', docFile);
-      formData.append('clientId', targetRef);
+      formData.append('clientId', targetId);
       formData.append('category', docCategory);
-      if (docDescription) formData.append('description', docDescription);
 
       const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
       const response = await fetch(`${API_BASE_URL}/documents/upload`, {
@@ -496,7 +495,7 @@ export default function ClientDetailsPage() {
 
       setDocFile(null);
       setDocDescription('');
-      await refreshDocuments(targetRef);
+      await refreshDocuments(targetId);
       setDocUploadMsg('Document uploaded.');
     } catch (e: any) {
       setDocUploadMsg(e?.message || 'Failed to upload document.');
@@ -687,10 +686,10 @@ export default function ClientDetailsPage() {
 
     pushSection(
       'Client',
-      ['id', 'ref', 'name', 'type', 'status', 'portfolioCode', 'mainEmail', 'mainPhone', 'registeredNumber', 'utrNumber'],
+      ['id', 'clientIdentifier', 'name', 'type', 'status', 'portfolioCode', 'mainEmail', 'mainPhone', 'registeredNumber', 'utrNumber'],
       [[
         client.id,
-        client.ref || '',
+        clientIdentifier || '',
         client.name,
         client.type,
         client.status,
@@ -742,8 +741,8 @@ export default function ClientDetailsPage() {
 
     pushSection(
       'Documents',
-      ['id', 'filename', 'category', 'uploadedAt'],
-      documents.map((d) => [d.id, d.filename, d.category || '', d.uploadedAt || ''])
+      ['id', 'filename', 'category', 'createdAt'],
+      documents.map((d) => [d.id, d.filename, d.category || '', d.createdAt || ''])
     );
 
     pushSection(
@@ -756,7 +755,7 @@ export default function ClientDetailsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `client-${client.ref || client.id}-export.csv`;
+    a.download = `client-${clientIdentifier}-export.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -797,13 +796,13 @@ export default function ClientDetailsPage() {
   };
 
   const handleSync = async () => {
-    if (!client?.ref) return;
+    if (!client?.id) return;
     setSyncMessage(null);
     setSyncing(true);
     try {
-      const res = await api.post<{ message?: string }>(`/companies-house/sync/${client.ref}`);
+      const res = await api.post<{ message?: string }>(`/companies-house/sync/${client.id}`);
       setSyncMessage({ text: res?.message || 'Synchronized with Companies House', error: false });
-      const refreshed = await api.get<ClientContextWithParties>(`/clients/${client.ref}/with-parties`).catch(() => null);
+      const refreshed = await api.get<ClientContextWithParties>(`/clients/${client.id}/with-parties`).catch(() => null);
       if (refreshed) {
         setClientContext(refreshed);
         try { new BroadcastChannel('mdj').postMessage({ topic: 'clients:changed' }); } catch {}
@@ -821,7 +820,7 @@ export default function ClientDetailsPage() {
     setGeneratingTasks(true);
     try {
       const res = (await api.post<{ serviceId: string; tasksGenerated: number }[]>(
-        `/tasks/generate/client/${client.ref}`
+        `/tasks/generate/client/${client.id}`
       )) || [];
 
       const rows = Array.isArray(res) ? res : [];
@@ -832,8 +831,8 @@ export default function ClientDetailsPage() {
           : `Generated ${totalTasks} task${totalTasks === 1 ? '' : 's'} across ${rows.length} service${rows.length === 1 ? '' : 's'}.`;
 
       setTaskMessage({ text: message, error: false });
-      if (client?.ref) {
-        const refreshedTasks = await api.get<Task[]>(`/tasks/client/${client.ref}`);
+      if (client?.id) {
+        const refreshedTasks = await api.get<Task[]>(`/tasks/client/${client.id}`);
         setTasks(Array.isArray(refreshedTasks) ? refreshedTasks : []);
       }
     } catch (error: any) {
@@ -863,14 +862,14 @@ export default function ClientDetailsPage() {
 
   const [enrollingDirector, setEnrollingDirector] = useState<Record<string, boolean>>({});
   const handleEnrollDirector = async (directorName: string) => {
-    if (!clientRef) return;
+    if (!clientId) return;
     const key = directorName || 'unknown';
     try {
       setEnrollingDirector((prev) => ({ ...prev, [key]: true }));
-      const res = await api.post(`/clients/${clientRef}/enroll-director`, { name: directorName });
-      const nextRef = (res as any)?.ref;
-      if (nextRef) {
-        router.push(`/clients/${nextRef}`);
+      const res = await api.post(`/clients/${clientId}/enroll-director`, { name: directorName });
+      const nextId = (res as any)?.id || (res as any)?.clientId;
+      if (nextId) {
+        router.push(`/clients/${nextId}`);
       }
     } finally {
       setEnrollingDirector((prev) => ({ ...prev, [key]: false }));
@@ -1291,8 +1290,8 @@ export default function ClientDetailsPage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem 1.25rem' }}>
                 <div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Client Ref</div>
-                  <div style={{ fontWeight: 600 }}>{client.ref || '—'}</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Client Identifier</div>
+                  <div style={{ fontWeight: 600 }}>{clientIdentifier || '—'}</div>
                 </div>
                 <div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Primary Contact</div>
@@ -2044,7 +2043,7 @@ export default function ClientDetailsPage() {
                       <tr key={doc.id}>
                         <td>{doc.filename}</td>
                         <td>{doc.category || '—'}</td>
-                        <td>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString('en-GB') : '—'}</td>
+                        <td>{doc.createdAt ? new Date(doc.createdAt).toLocaleDateString('en-GB') : '—'}</td>
                         <td style={{ textAlign: 'right' }}>
                           <button
                             className="btn-outline-primary btn-xs"
@@ -2175,9 +2174,9 @@ export default function ClientDetailsPage() {
           <div style={{ padding: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
               <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-                Companies House directors can be enrolled as individual clients (e.g., {client?.ref ? `${client.ref}A` : '1M001A'}).
+                Companies House directors can be enrolled as individual clients (e.g., {client?.id ? `${client.id}-director` : 'client-director'}).
               </div>
-              <button className="btn-outline-primary btn-sm" onClick={() => router.push(`/clients/${clientRef}/parties`)}>
+              <button className="btn-outline-primary btn-sm" onClick={() => router.push(`/clients/${clientId}/parties`)}>
                 Manage People
               </button>
             </div>

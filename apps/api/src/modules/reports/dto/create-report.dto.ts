@@ -36,23 +36,6 @@ export class CreateReportDto {
   includeCharts?: boolean;
 }
 
-export class BulkReportRequestDto {
-  @ApiProperty({ description: 'Client company number' })
-  @IsString()
-  clientId: string;
-
-  @ApiProperty({ description: 'Reports to generate', type: [Object] })
-  @IsArray()
-  reports: Array<{
-    type: 'client-pack' | 'tax-strategy' | 'company-profile';
-    title: string;
-    format: 'PDF' | 'HTML';
-    calculationIds?: string[];
-    includeBranding?: boolean;
-    includeCharts?: boolean;
-  }>;
-}
-
 export class ReportResponseDto {
   @ApiProperty({ description: 'Report ID' })
   id: string;

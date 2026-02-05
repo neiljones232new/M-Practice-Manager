@@ -2,7 +2,6 @@ import { Injectable, Logger, BadRequestException, NotFoundException, Inject, for
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import { FileStorageService } from '../file-storage/file-storage.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { IntegrationConfigService } from '../integrations/services/integration-config.service';
 import { ClientsService } from '../clients/clients.service';
@@ -23,7 +22,8 @@ import {
   ComplianceItem,
   CreateComplianceItemDto,
 } from './interfaces/companies-house.interface';
-import { Client, CreateClientDto, Person, CreatePersonDto, CreateClientPartyDto, Address } from '../clients/interfaces/client.interface';
+import { Client, CreateClientDto } from '../clients/interfaces/client.interface';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CompaniesHouseService {
@@ -34,7 +34,6 @@ export class CompaniesHouseService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-    private readonly fileStorageService: FileStorageService,
     private readonly prisma: PrismaService,
     private readonly integrationConfigService: IntegrationConfigService,
     private readonly clientsService: ClientsService,
@@ -256,9 +255,9 @@ export class CompaniesHouseService {
       const companyDetails = await this.getCompanyDetails(importData.companyNumber);
       
       // Try to locate an existing client by registered number across portfolios
-      const existing = (await this.fileStorageService.searchFiles<Client>('clients', (c) => {
-        return (c as any)?.registeredNumber === companyDetails.company_number;
-      }))[0] || null;
+      const existing = await (this.prisma as any).client.findFirst({
+        where: { registeredNumber: companyDetails.company_number },
+      });
 
       let client: Client;
       if (existing) {
@@ -267,7 +266,6 @@ export class CompaniesHouseService {
           name: companyDetails.company_name,
           status: companyDetails.company_status === 'active' ? 'ACTIVE' : 'INACTIVE',
           registeredNumber: companyDetails.company_number,
-          address: this.mapCompaniesHouseAddress(companyDetails.registered_office_address),
           incorporationDate: companyDetails.date_of_creation ? new Date(companyDetails.date_of_creation) : undefined,
           accountsLastMadeUpTo: companyDetails.accounts?.last_accounts?.made_up_to
             ? new Date(companyDetails.accounts.last_accounts.made_up_to)
@@ -288,7 +286,6 @@ export class CompaniesHouseService {
           portfolioCode: importData.portfolioCode,
           status: companyDetails.company_status === 'active' ? 'ACTIVE' : 'INACTIVE',
           registeredNumber: companyDetails.company_number,
-          address: this.mapCompaniesHouseAddress(companyDetails.registered_office_address),
           incorporationDate: companyDetails.date_of_creation ? new Date(companyDetails.date_of_creation) : undefined,
           accountsLastMadeUpTo: companyDetails.accounts?.last_accounts?.made_up_to
             ? new Date(companyDetails.accounts.last_accounts.made_up_to)
@@ -309,7 +306,6 @@ export class CompaniesHouseService {
         await this.importCompanyOfficers(client.id, importData.companyNumber, {
           createOfficerClients: !!importData.createOfficerClients,
           portfolioCode: importData.portfolioCode,
-          companyRef: client.ref,
           selfAssessmentFee: importData.selfAssessmentFee,
         });
       }
@@ -323,7 +319,7 @@ export class CompaniesHouseService {
         }
       }
 
-      this.logger.log(`Successfully imported company ${importData.companyNumber} as client ${client.ref}`);
+      this.logger.log(`Successfully imported company ${importData.companyNumber} as client ${client.id}`);
       return client;
     } catch (error) {
       this.logger.error(`Error importing company: ${error.message}`, error.stack);
@@ -331,11 +327,11 @@ export class CompaniesHouseService {
     }
   }
 
-  async syncCompanyData(clientRef: string): Promise<void> {
+  async syncCompanyData(clientId: string): Promise<void> {
     try {
-      this.logger.log(`Syncing company data for client: ${clientRef}`);
+      this.logger.log(`Syncing company data for client: ${clientId}`);
 
-      const client = await this.clientsService.findByRef(clientRef);
+      const client = await this.clientsService.findByIdentifier(clientId);
       if (!client.registeredNumber) {
         throw new BadRequestException('Client does not have a registered company number');
       }
@@ -353,10 +349,9 @@ export class CompaniesHouseService {
       ]);
 
       // Update client with latest data (status/address/incorporation)
-      await this.clientsService.update(clientRef, {
+      await this.clientsService.update(client.id, {
         name: companyDetails.company_name,
         status: companyDetails.company_status === 'active' ? 'ACTIVE' : 'INACTIVE',
-        address: this.mapCompaniesHouseAddress(companyDetails.registered_office_address),
         incorporationDate: companyDetails.date_of_creation ? new Date(companyDetails.date_of_creation) : undefined,
         accountsLastMadeUpTo: companyDetails.accounts?.last_accounts?.made_up_to
           ? new Date(companyDetails.accounts.last_accounts.made_up_to)
@@ -384,7 +379,6 @@ export class CompaniesHouseService {
           where: { companyNumber },
           create: {
             clientId: client.id,
-            clientRef: client.ref,
             companyNumber,
             companyDetails: companyDetails as any,
             officers: mergedOfficers as any,
@@ -395,7 +389,6 @@ export class CompaniesHouseService {
           },
           update: {
             clientId: client.id,
-            clientRef: client.ref,
             companyDetails: companyDetails as any,
             officers: mergedOfficers as any,
             filingHistory: filingHistory as any,
@@ -408,7 +401,7 @@ export class CompaniesHouseService {
         this.logger.warn(`Failed to persist CompaniesHouseData snapshot for ${companyNumber}: ${e?.message || e}`);
       }
 
-      this.logger.log(`Successfully synced company data for client ${clientRef}`);
+      this.logger.log(`Successfully synced company data for client ${clientId}`);
     } catch (error) {
       this.logger.error(`Error syncing company data: ${error.message}`, error.stack);
       throw new BadRequestException(`Failed to sync company data: ${error.message}`);
@@ -419,14 +412,14 @@ export class CompaniesHouseService {
    * Compare stored client data with live Companies House data and return field-level differences.
    * Useful for UI to show a preview before applying updates.
    */
-  async compareClientWithCompany(clientRef: string): Promise<{
+  async compareClientWithCompany(clientId: string): Promise<{
     client: Client;
     company: CompanyDetails;
     diffs: Array<{ field: string; clientValue: any; companiesHouseValue: any }>;
   }> {
-    const client = await this.clientsService.findByRef(clientRef);
+    const client = await this.clientsService.findByIdentifier(clientId);
     if (!client) {
-      throw new BadRequestException(`Client ${clientRef} not found`);
+      throw new BadRequestException(`Client ${clientId} not found`);
     }
 
     if (!client.registeredNumber) {
@@ -434,9 +427,6 @@ export class CompaniesHouseService {
     }
 
     const companyDetails = await this.getCompanyDetails(client.registeredNumber);
-
-    // Map CH address to same shape used by clients
-    const chAddress = this.mapCompaniesHouseAddress(companyDetails.registered_office_address);
 
     const diffs: Array<{ field: string; clientValue: any; companiesHouseValue: any }> = [];
 
@@ -454,83 +444,46 @@ export class CompaniesHouseService {
       diffs.push({ field: 'registeredNumber', clientValue: client.registeredNumber, companiesHouseValue: companyDetails.company_number });
     }
 
-    // Compare address fields
-    const addressFields: Array<keyof typeof chAddress> = ['line1', 'line2', 'city', 'county', 'postcode', 'country'];
-    for (const f of addressFields) {
-      const cVal = (client.address && (client.address as any)[f]) || '';
-      const chVal = (chAddress && (chAddress as any)[f]) || '';
-      if ((cVal || '').toString().trim() !== (chVal || '').toString().trim()) {
-        diffs.push({ field: `address.${String(f)}`, clientValue: cVal, companiesHouseValue: chVal });
-      }
-    }
-
     return { client, company: companyDetails, diffs };
   }
 
   private async importCompanyOfficers(
     clientId: string,
     companyNumber: string,
-    options?: { createOfficerClients?: boolean; portfolioCode?: number; companyRef?: string; selfAssessmentFee?: number }
+    options?: { createOfficerClients?: boolean; portfolioCode?: number; selfAssessmentFee?: number }
   ): Promise<void> {
     try {
       const officers = await this.getCompanyOfficers(companyNumber);
-      
-      // Get the company client to use its ref for director naming
-      const companyClient = await this.clientsService.findOne(clientId);
-      const companyRef = options?.companyRef || companyClient?.ref;
-      
-      // Track which letter suffix to use for each director (A, B, C, etc.)
-      let directorIndex = 0;
-      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      
+
       for (const officer of officers) {
         // If creating officers as clients, create standalone client records and link them
         if (options?.createOfficerClients) {
           try {
-            // Generate director ref: CompanyRef + Letter (e.g., CLI001A, CLI001B)
-            let directorRef: string | undefined;
-            if (companyRef && directorIndex < alphabet.length) {
-              directorRef = `${companyRef}${alphabet[directorIndex]}`;
-            }
-            
-            // Check if director client already exists
-            let directorClient = directorRef ? await this.clientsService.findByRef(directorRef) : null;
-            
-            if (directorClient) {
-              this.logger.log(`Director client ${directorRef} already exists, will link to company`);
-            } else {
-              directorIndex++; // Increment for next director
-              
-              directorClient = await this.clientsService.create({
-                ref: directorRef, // Use the generated ref
-                name: officer.name,
-                type: 'INDIVIDUAL',
-                portfolioCode: options.portfolioCode || 1,
-                status: 'ACTIVE',
-                address: this.mapCompaniesHouseAddress(officer.address),
-              });
-              
-              this.logger.log(`Created director client ${directorRef} for ${officer.name}`);
-              
-              // Add Self Assessment service if fee is provided
-              if (options?.selfAssessmentFee && options.selfAssessmentFee > 0) {
-                try {
-                  await this.servicesService.create({
-                    clientId: directorClient.id,
-                    kind: 'Self Assessment',
-                    frequency: 'ANNUAL',
-                    fee: options.selfAssessmentFee,
-                    status: 'ACTIVE',
-                    description: 'Personal Tax Return',
-                  });
-                  this.logger.log(`Added Self Assessment service (£${options.selfAssessmentFee}) to director ${directorRef}`);
-                } catch (serviceError) {
-                  this.logger.warn(`Failed to create Self Assessment service for director ${directorRef}: ${serviceError?.message || serviceError}`);
-                }
+            const directorClient = await this.clientsService.create({
+              id: uuidv4(),
+              name: officer.name,
+              type: 'INDIVIDUAL',
+              portfolioCode: options.portfolioCode || 1,
+              status: 'ACTIVE',
+            });
+
+            if (options?.selfAssessmentFee && options.selfAssessmentFee > 0) {
+              try {
+                await this.servicesService.create({
+                  clientId: directorClient.id,
+                  kind: 'Self Assessment',
+                  frequency: 'ANNUAL',
+                  fee: options.selfAssessmentFee,
+                  status: 'ACTIVE',
+                  description: 'Personal Tax Return',
+                });
+                this.logger.log(`Added Self Assessment service (£${options.selfAssessmentFee}) to director ${directorClient.id}`);
+              } catch (serviceError) {
+                this.logger.warn(`Failed to create Self Assessment service for director ${directorClient.id}: ${serviceError?.message || serviceError}`);
               }
             }
-            
-            // Create party record linking director client to company client
+
+            // Create party record linking officer to company client
             const sourceId = (officer as any)?.links?.officer?.appointments || officer.name;
             await this.clientPartyService.upsertFromExternal({
               clientId,
@@ -539,14 +492,10 @@ export class CompaniesHouseService {
               payload: {
                 name: officer.name,
                 role: this.mapOfficerRoleToClientPartyRole(officer.officer_role),
-                address: this.mapCompaniesHouseAddress(officer.address),
                 appointedAt: officer.appointed_on ? new Date(officer.appointed_on) : undefined,
-                personId: directorClient.id, // Link to the director client
               },
             });
-            
-            this.logger.log(`Linked director client ${directorRef} to company ${companyRef}`);
-            
+
           } catch (e) {
             this.logger.warn(`Creating officer as client failed: ${e?.message || e}`);
           }
@@ -560,7 +509,6 @@ export class CompaniesHouseService {
             payload: {
               name: officer.name,
               role: this.mapOfficerRoleToClientPartyRole(officer.officer_role),
-              address: this.mapCompaniesHouseAddress(officer.address),
               appointedAt: officer.appointed_on ? new Date(officer.appointed_on) : undefined,
               personId: undefined,
             },
@@ -770,19 +718,6 @@ export class CompaniesHouseService {
     return 'COMPANY'; // Default to company
   }
 
-  private mapCompaniesHouseAddress(chAddress: any): Address | undefined {
-    if (!chAddress) return undefined;
-
-    return {
-      line1: chAddress.address_line_1 || '',
-      line2: chAddress.address_line_2,
-      city: chAddress.locality || '',
-      county: chAddress.region,
-      postcode: chAddress.postal_code || '',
-      country: chAddress.country || 'United Kingdom',
-    };
-  }
-
   private mapOfficerRoleToClientPartyRole(officerRole: string): 'DIRECTOR' | 'SHAREHOLDER' | 'PARTNER' | 'MEMBER' | 'OWNER' | 'UBO' | 'SECRETARY' | 'CONTACT' {
     const lowerRole = officerRole.toLowerCase();
     
@@ -793,15 +728,5 @@ export class CompaniesHouseService {
     if (lowerRole.includes('shareholder')) return 'SHAREHOLDER';
     
     return 'DIRECTOR'; // Default to director
-  }
-
-  private extractFirstName(fullName: string): string {
-    const parts = fullName.trim().split(' ');
-    return parts[0] || '';
-  }
-
-  private extractLastName(fullName: string): string {
-    const parts = fullName.trim().split(' ');
-    return parts.length > 1 ? parts.slice(1).join(' ') : '';
   }
 }

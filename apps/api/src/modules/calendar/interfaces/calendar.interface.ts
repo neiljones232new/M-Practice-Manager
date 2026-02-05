@@ -3,16 +3,11 @@ export interface CalendarEvent {
   title: string;
   description?: string;
   startDate: Date;
-  endDate: Date;
+  endDate?: Date;
   allDay: boolean;
   clientId?: string;
-  clientRef?: string;  // Client reference (e.g., "1A001")
-  clientName?: string; // Client name for display
   taskId?: string;
-  type: 'MEETING' | 'DEADLINE' | 'REMINDER' | 'APPOINTMENT' | 'FILING';
-  location?: string;
-  attendees?: string[];
-  status: 'SCHEDULED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  type: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,8 +15,7 @@ export interface CalendarEvent {
 export interface CalendarEventFilters {
   clientId?: string;
   taskId?: string;
-  type?: 'MEETING' | 'DEADLINE' | 'REMINDER' | 'APPOINTMENT' | 'FILING';
-  status?: 'SCHEDULED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  type?: string;
   startDate?: Date;
   endDate?: Date;
   dateRange?: {
@@ -38,16 +32,11 @@ export interface CreateCalendarEventDto {
   title: string;
   description?: string;
   startDate: Date;
-  endDate: Date;
+  endDate?: Date;
   allDay?: boolean;
   clientId?: string;
-  clientRef?: string;  // Client reference (e.g., "1A001")
-  clientName?: string; // Client name for display
   taskId?: string;
-  type: 'MEETING' | 'DEADLINE' | 'REMINDER' | 'APPOINTMENT' | 'FILING';
-  location?: string;
-  attendees?: string[];
-  status?: 'SCHEDULED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  type?: string;
 }
 
 export interface UpdateCalendarEventDto {
@@ -57,13 +46,8 @@ export interface UpdateCalendarEventDto {
   endDate?: Date;
   allDay?: boolean;
   clientId?: string;
-  clientRef?: string;  // Client reference (e.g., "1A001")
-  clientName?: string; // Client name for display
   taskId?: string;
-  type?: 'MEETING' | 'DEADLINE' | 'REMINDER' | 'APPOINTMENT' | 'FILING';
-  location?: string;
-  attendees?: string[];
-  status?: 'SCHEDULED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+  type?: string;
 }
 
 export interface CalendarView {
@@ -80,5 +64,4 @@ export interface CalendarSummary {
   upcomingEvents: number;
   overdueEvents: number;
   eventsByType: Record<string, number>;
-  eventsByStatus: Record<string, number>;
 }

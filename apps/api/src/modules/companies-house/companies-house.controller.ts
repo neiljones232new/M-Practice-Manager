@@ -52,9 +52,9 @@ export class CompaniesHouseController {
   }
 
   /** Compare a client with live Companies House data (diffs) */
-  @Get('compare/:clientRef')
-  async compareClient(@Param('clientRef') clientRef: string) {
-    return this.companiesHouseService.compareClientWithCompany(clientRef);
+  @Get('compare/:clientId')
+  async compareClient(@Param('clientId') clientId: string) {
+    return this.companiesHouseService.compareClientWithCompany(clientId);
   }
 
   @Post('import')
@@ -62,9 +62,9 @@ export class CompaniesHouseController {
     return this.companiesHouseService.importCompany(importData);
   }
 
-  @Post('sync/:clientRef')
-  async syncCompanyData(@Param('clientRef') clientRef: string): Promise<{ message: string }> {
-    await this.companiesHouseService.syncCompanyData(clientRef);
+  @Post('sync/:clientId')
+  async syncCompanyData(@Param('clientId') clientId: string): Promise<{ message: string }> {
+    await this.companiesHouseService.syncCompanyData(clientId);
     return { message: 'Company data synchronized successfully' };
   }
 }

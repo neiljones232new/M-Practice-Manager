@@ -18,8 +18,9 @@ describe('CalendarIntegrationService', () => {
     title: 'Test Task',
     description: 'Test task description',
     dueDate: new Date('2024-02-15T00:00:00Z'),
-    assignee: 'test-user',
-    status: 'OPEN',
+    assigneeId: 'user-1',
+    creatorId: 'user-2',
+    status: 'TODO',
     priority: 'MEDIUM',
     tags: [],
     createdAt: new Date('2024-01-01T00:00:00Z'),
@@ -91,7 +92,6 @@ describe('CalendarIntegrationService', () => {
         clientId: mockTask.clientId,
         taskId: mockTask.id,
         type: 'DEADLINE',
-        status: 'SCHEDULED',
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -111,7 +111,6 @@ describe('CalendarIntegrationService', () => {
         clientId: mockTask.clientId,
         taskId: mockTask.id,
         type: 'DEADLINE',
-        status: 'SCHEDULED',
       });
     });
 
@@ -134,7 +133,6 @@ describe('CalendarIntegrationService', () => {
         clientId: mockTask.clientId,
         taskId: mockTask.id,
         type: 'DEADLINE',
-        status: 'SCHEDULED',
         createdAt: new Date(),
         updatedAt: new Date(),
       }]);
@@ -156,7 +154,6 @@ describe('CalendarIntegrationService', () => {
         allDay: true,
         clientId: mockComplianceItem.clientId,
         type: 'FILING',
-        status: 'SCHEDULED',
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -176,7 +173,6 @@ describe('CalendarIntegrationService', () => {
         allDay: true,
         clientId: mockComplianceItem.clientId,
         type: 'FILING',
-        status: 'SCHEDULED',
       });
     });
 
@@ -198,8 +194,6 @@ describe('CalendarIntegrationService', () => {
         startDate: new Date('2024-02-15T10:00:00Z'),
         endDate: new Date('2024-02-15T11:00:00Z'),
         clientId: 'client-1',
-        location: 'Conference Room A',
-        attendees: ['client@example.com'],
       };
 
       calendarService.createEvent.mockResolvedValue({
@@ -207,7 +201,6 @@ describe('CalendarIntegrationService', () => {
         ...appointmentData,
         allDay: false,
         type: 'APPOINTMENT',
-        status: 'SCHEDULED',
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -217,7 +210,6 @@ describe('CalendarIntegrationService', () => {
       expect(calendarService.createEvent).toHaveBeenCalledWith({
         ...appointmentData,
         type: 'APPOINTMENT',
-        status: 'SCHEDULED',
         allDay: false,
       });
     });
@@ -230,8 +222,6 @@ describe('CalendarIntegrationService', () => {
         description: 'Weekly team sync',
         startDate: new Date('2024-02-15T14:00:00Z'),
         endDate: new Date('2024-02-15T15:00:00Z'),
-        location: 'Zoom',
-        attendees: ['team@example.com'],
       };
 
       calendarService.createEvent.mockResolvedValue({
@@ -239,7 +229,6 @@ describe('CalendarIntegrationService', () => {
         ...meetingData,
         allDay: false,
         type: 'MEETING',
-        status: 'SCHEDULED',
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -249,7 +238,6 @@ describe('CalendarIntegrationService', () => {
       expect(calendarService.createEvent).toHaveBeenCalledWith({
         ...meetingData,
         type: 'MEETING',
-        status: 'SCHEDULED',
         allDay: false,
       });
     });

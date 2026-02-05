@@ -3,16 +3,14 @@ export interface Template {
   name: string;
   description: string;
   category: TemplateCategory;
-  fileName: string;
-  filePath: string;
-  fileFormat: 'DOCX' | 'MD';
-  placeholders: TemplatePlaceholder[];
-  version: number;
-  isActive: boolean;
-  createdBy: string;
+  type: TemplateType;
+  content: string;
+  isActive?: boolean;
+  placeholders?: TemplatePlaceholder[];
+  metadata?: TemplateMetadata;
+  createdById?: string;
   createdAt: Date;
   updatedAt: Date;
-  metadata?: TemplateMetadata;
 }
 
 export enum TemplateCategory {
@@ -22,18 +20,27 @@ export enum TemplateCategory {
   COMPLIANCE = 'COMPLIANCE',
   GENERAL = 'GENERAL',
   ENGAGEMENT = 'ENGAGEMENT',
-  CLIENT = 'CLIENT'
+  CLIENT = 'CLIENT',
+  REPORTS = 'REPORTS',
+  COMMERCIAL = 'COMMERCIAL',
+}
+
+export enum TemplateType {
+  DOCUMENT = 'DOCUMENT',
+  TASK = 'TASK',
+  SERVICE = 'SERVICE',
+  EMAIL = 'EMAIL',
 }
 
 export interface TemplatePlaceholder {
-  key: string;                    // e.g., "clientName"
-  label: string;                  // e.g., "Client Name"
+  key: string;
+  label: string;
   type: PlaceholderType;
   required: boolean;
   defaultValue?: string;
-  format?: string;                // For dates, currency, etc.
-  source?: PlaceholderSource;     // Where to get the data
-  sourcePath?: string;            // Path to data (e.g., "client.name")
+  format?: string;
+  source?: PlaceholderSource;
+  sourcePath?: string;
   validation?: PlaceholderValidation;
 }
 
@@ -46,7 +53,7 @@ export enum PlaceholderType {
   PHONE = 'PHONE',
   ADDRESS = 'ADDRESS',
   LIST = 'LIST',
-  CONDITIONAL = 'CONDITIONAL'
+  CONDITIONAL = 'CONDITIONAL',
 }
 
 export enum PlaceholderSource {
@@ -56,7 +63,7 @@ export enum PlaceholderSource {
   USER = 'USER',
   MANUAL = 'MANUAL',
   SYSTEM = 'SYSTEM',
-  PRACTICE = 'PRACTICE'
+  PRACTICE = 'PRACTICE',
 }
 
 export interface PlaceholderValidation {
@@ -77,38 +84,35 @@ export interface TemplateMetadata {
 
 export interface TemplateFilters {
   category?: TemplateCategory;
-  isActive?: boolean;
+  type?: TemplateType;
   search?: string;
-  tags?: string[];
-  createdBy?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
+  createdById?: string;
 }
 
 export interface CreateTemplateDto {
   name: string;
   description: string;
   category: TemplateCategory;
-  fileName: string;
-  fileFormat: 'DOCX' | 'MD';
+  type: TemplateType;
+  content: string;
   placeholders?: TemplatePlaceholder[];
-  isActive?: boolean;
-  createdBy: string;
   metadata?: TemplateMetadata;
+  createdById?: string;
 }
 
 export interface UpdateTemplateDto {
   name?: string;
   description?: string;
   category?: TemplateCategory;
+  type?: TemplateType;
+  content?: string;
   placeholders?: TemplatePlaceholder[];
-  isActive?: boolean;
   metadata?: TemplateMetadata;
 }
 
 export interface ParsedTemplate {
   content: string;
-  placeholders: TemplatePlaceholder[];
+  placeholders?: TemplatePlaceholder[];
   metadata?: Record<string, any>;
 }
 

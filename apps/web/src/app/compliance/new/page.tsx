@@ -134,7 +134,7 @@ export default function NewComplianceItemPage() {
                   <option value="">Select a client</option>
                   {clients.map((client) => (
                     <option key={client.id} value={client.id}>
-                      {client.name} ({client.ref})
+                      {client.name} ({client.registeredNumber || client.id})
                     </option>
                   ))}
                 </select>

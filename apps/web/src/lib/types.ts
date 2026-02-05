@@ -11,7 +11,6 @@ export type ClientStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
 
 export interface Client {
   id: string;
-  ref?: string;
   name: string;
   type: ClientType;
   status: ClientStatus;

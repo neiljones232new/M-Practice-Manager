@@ -8,7 +8,6 @@ import { MDJCard, MDJButton, MDJInput } from '@/components/mdj-ui';
 
 interface Client {
   id: string;
-  ref?: string;
   name: string;
   type: string;
   status: string;
@@ -64,8 +63,7 @@ export default function SelectClientPage() {
     } else {
       const filtered = clients.filter(client =>
         client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.ref?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.registeredNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+        (client.registeredNumber || client.id).toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredClients(filtered);
     }
@@ -166,7 +164,7 @@ export default function SelectClientPage() {
       >
         <div style={{ marginBottom: '1.5rem' }}>
           <MDJInput
-            placeholder="Search clients by name, ref, or company number..."
+            placeholder="Search clients by name, identifier, or company number..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             leftIcon="🔍"
@@ -232,9 +230,9 @@ export default function SelectClientPage() {
                     </div>
                     
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                      {client.ref && (
+                      {(client.registeredNumber || client.id) && (
                         <div>
-                          <strong>Ref:</strong> {client.ref}
+                          <strong>Identifier:</strong> {client.registeredNumber || client.id}
                         </div>
                       )}
                       <div>

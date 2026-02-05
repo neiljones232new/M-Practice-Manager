@@ -16,9 +16,9 @@ describe('SearchService', () => {
   let fileStorageService: jest.Mocked<FileStorageService>;
 
   const mockClients = [
-    { id: 'client-1', name: 'ABC Company Ltd', type: 'COMPANY', status: 'ACTIVE', ref: '1A001' },
-    { id: 'client-2', name: 'XYZ Partnership', type: 'PARTNERSHIP', status: 'ACTIVE', ref: '1A002' },
-    { id: 'client-3', name: 'John Smith', type: 'INDIVIDUAL', status: 'INACTIVE', ref: '1A003' }
+    { id: 'client-1', name: 'ABC Company Ltd', type: 'COMPANY', status: 'ACTIVE', registeredNumber: '1A001' },
+    { id: 'client-2', name: 'XYZ Partnership', type: 'PARTNERSHIP', status: 'ACTIVE', registeredNumber: '1A002' },
+    { id: 'client-3', name: 'John Smith', type: 'INDIVIDUAL', status: 'INACTIVE', registeredNumber: '1A003' }
   ];
 
   const mockTasks = [
@@ -292,7 +292,6 @@ describe('SearchService', () => {
       const client = {
         id: 'client-1',
         name: 'ABC Company',
-        ref: '1A001',
         type: 'COMPANY',
         registeredNumber: '12345678',
         mainEmail: 'info@abc.com'
@@ -301,7 +300,7 @@ describe('SearchService', () => {
       const fields = service['getSearchableFields']('clients', client);
 
       expect(fields).toHaveProperty('name', 'ABC Company');
-      expect(fields).toHaveProperty('ref', '1A001');
+      expect(fields).toHaveProperty('identifier', '12345678');
       expect(fields).toHaveProperty('type', 'COMPANY');
       expect(fields).toHaveProperty('registeredNumber', '12345678');
       expect(fields).toHaveProperty('mainEmail', 'info@abc.com');

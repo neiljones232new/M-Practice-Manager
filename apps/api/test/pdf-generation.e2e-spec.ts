@@ -10,7 +10,7 @@ describe('PDF Generation (e2e)', () => {
   let app: INestApplication;
   let testDataDir: string;
   let authToken: string;
-  let testClientRef: string;
+  let testClientId: string;
 
   beforeAll(async () => {
     testDataDir = path.join(__dirname, 'test-data-pdf');
@@ -36,6 +36,7 @@ describe('PDF Generation (e2e)', () => {
     authToken = authResponse.body.access_token;
 
     const clientData = {
+      id: 'client-pdf-1',
       name: 'PDF Test Company Ltd',
       type: 'COMPANY',
       portfolioCode: 1,
@@ -48,7 +49,7 @@ describe('PDF Generation (e2e)', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send(clientData);
 
-    testClientRef = clientResponse.status === 201 ? clientResponse.body.ref : 'test-client-1';
+    testClientId = clientResponse.status === 201 ? clientResponse.body.id : 'test-client-1';
   });
 
   afterAll(async () => {
@@ -63,7 +64,7 @@ describe('PDF Generation (e2e)', () => {
   describe('HTML to PDF Conversion', () => {
     it('should generate HTML report', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/html`)
+        .get(`/documents/reports/client/${testClientId}/html`)
         .set('Authorization', `Bearer ${authToken}`);
 
       expect([200, 400, 401]).toContain(response.status);
@@ -76,7 +77,7 @@ describe('PDF Generation (e2e)', () => {
 
     it('should convert HTML to PDF using Puppeteer', async () => {
       const htmlResponse = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/html`)
+        .get(`/documents/reports/client/${testClientId}/html`)
         .set('Authorization', `Bearer ${authToken}`);
 
       if (htmlResponse.status !== 200) {
@@ -117,7 +118,7 @@ describe('PDF Generation (e2e)', () => {
 
     it('should generate PDF via API endpoint', async () => {
       const response = await request(app.getHttpServer())
-        .post(`/documents/reports/client/${testClientRef}`)
+        .post(`/documents/reports/client/${testClientId}`)
         .set('Authorization', `Bearer ${authToken}`)
         .send({});
 
@@ -139,7 +140,7 @@ describe('PDF Generation (e2e)', () => {
   describe('Report Endpoints', () => {
     it('should access HTML endpoint', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/html`)
+        .get(`/documents/reports/client/${testClientId}/html`)
         .set('Authorization', `Bearer ${authToken}`);
 
       expect([200, 400, 401]).toContain(response.status);
@@ -147,7 +148,7 @@ describe('PDF Generation (e2e)', () => {
 
     it('should access preview endpoint', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/preview`)
+        .get(`/documents/reports/client/${testClientId}/preview`)
         .set('Authorization', `Bearer ${authToken}`);
 
       expect([200, 400, 401]).toContain(response.status);

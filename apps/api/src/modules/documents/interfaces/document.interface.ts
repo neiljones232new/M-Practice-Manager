@@ -4,47 +4,17 @@ export interface Document {
   originalName: string;
   mimeType: string;
   size: number;
-  clientId?: string;
-  serviceId?: string;
-  taskId?: string;
   category: DocumentCategory;
-  tags: string[];
-  description?: string;
-  uploadedBy: string;
-  uploadedAt: Date;
-  updatedAt: Date;
-  filePath: string;
-  checksum: string;
   isArchived: boolean;
-  metadata?: DocumentMetadata;
-}
-
-export interface DocumentMetadata {
-  pageCount?: number;
-  author?: string;
-  title?: string;
-  subject?: string;
-  keywords?: string[];
-  createdDate?: Date;
-  modifiedDate?: Date;
-  application?: string;
-  version?: string;
-  // Template-generated document metadata
-  templateId?: string;
-  templateName?: string;
-  templateVersion?: number;
-  generatedBy?: string;
-  generatedAt?: Date;
-  placeholderValues?: Record<string, any>;
-  [key: string]: any;
+  uploadedById?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  clientId?: string;
 }
 
 export enum DocumentCategory {
+  TAX = 'TAX',
   ACCOUNTS = 'ACCOUNTS',
-  VAT = 'VAT',
-  PAYROLL = 'PAYROLL',
-  CORRESPONDENCE = 'CORRESPONDENCE',
-  CONTRACTS = 'CONTRACTS',
   COMPLIANCE = 'COMPLIANCE',
   REPORTS = 'REPORTS',
   INVOICES = 'INVOICES',
@@ -55,11 +25,8 @@ export enum DocumentCategory {
 
 export interface DocumentFilters {
   clientId?: string;
-  serviceId?: string;
-  taskId?: string;
   category?: DocumentCategory;
-  tags?: string[];
-  uploadedBy?: string;
+  uploadedById?: string;
   dateFrom?: Date;
   dateTo?: Date;
   mimeType?: string;
@@ -73,23 +40,15 @@ export interface CreateDocumentDto {
   mimeType: string;
   size: number;
   clientId?: string;
-  serviceId?: string;
-  taskId?: string;
   category: DocumentCategory;
-  tags?: string[];
-  description?: string;
-  uploadedBy: string;
+  uploadedById?: string;
 }
 
 export interface UpdateDocumentDto {
   category?: DocumentCategory;
-  tags?: string[];
-  description?: string;
   clientId?: string;
-  serviceId?: string;
-  taskId?: string;
   isArchived?: boolean;
-  metadata?: DocumentMetadata;
+  uploadedById?: string;
 }
 
 export interface DocumentSearchResult {
@@ -99,16 +58,15 @@ export interface DocumentSearchResult {
 }
 
 export interface DocumentUploadResult {
-  document: Document;
+  document: Document | null;
   success: boolean;
   error?: string;
 }
 
 export interface BulkDocumentOperation {
   documentIds: string[];
-  operation: 'archive' | 'unarchive' | 'delete' | 'tag' | 'untag' | 'move';
+  operation: 'archive' | 'unarchive' | 'delete' | 'move';
   parameters?: {
-    tags?: string[];
     clientId?: string;
     category?: DocumentCategory;
   };

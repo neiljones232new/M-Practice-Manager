@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { existsSync } from 'fs';
 import Database from 'better-sqlite3';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../apps/api/generated/prisma';
 
 const storagePath = process.env.STORAGE_PATH
   ? path.resolve(process.env.STORAGE_PATH)

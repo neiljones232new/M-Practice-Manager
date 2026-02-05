@@ -31,10 +31,10 @@ export class QueryTemplatesService {
       category: 'client',
       title: 'Client Summary',
       description: 'Get a comprehensive overview of a specific client',
-      prompt: 'Provide a detailed summary of client {clientRef} including their current services, recent activity, compliance status, outstanding tasks, and any recommendations for improving our service delivery.',
+      prompt: 'Provide a detailed summary of client {clientId} including their current services, recent activity, compliance status, outstanding tasks, and any recommendations for improving our service delivery.',
       icon: 'user',
       requiresContext: true,
-      contextFields: ['clientRef'],
+      contextFields: ['clientId'],
       examples: ['Summarize client 1A001', 'Give me an overview of ABC Limited'],
     },
     {
@@ -52,10 +52,10 @@ export class QueryTemplatesService {
       category: 'client',
       title: 'Onboarding Checklist',
       description: 'Generate onboarding tasks for new clients',
-      prompt: 'Create a comprehensive onboarding checklist for new client {clientRef} of type {clientType}. Include all necessary documentation, setup tasks, compliance requirements, and initial service delivery steps.',
+      prompt: 'Create a comprehensive onboarding checklist for new client {clientId} of type {clientType}. Include all necessary documentation, setup tasks, compliance requirements, and initial service delivery steps.',
       icon: 'clipboard-list',
       requiresContext: true,
-      contextFields: ['clientRef', 'clientType'],
+      contextFields: ['clientId', 'clientType'],
       examples: ['Create onboarding checklist for new company client'],
     },
 
@@ -258,11 +258,11 @@ export class QueryTemplatesService {
     );
   }
 
-  getContextualTemplates(context: { clientRef?: string; hasOverdueTasks?: boolean; hasUpcomingDeadlines?: boolean }): QueryTemplate[] {
+  getContextualTemplates(context: { clientId?: string; hasOverdueTasks?: boolean; hasUpcomingDeadlines?: boolean }): QueryTemplate[] {
     const contextualTemplates: QueryTemplate[] = [];
 
     // If we have a specific client, suggest client-specific templates
-    if (context.clientRef) {
+    if (context.clientId) {
       contextualTemplates.push(
         this.getTemplateById('client-summary')!,
         this.getTemplateById('client-onboarding-checklist')!

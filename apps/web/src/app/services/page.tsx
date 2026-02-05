@@ -14,7 +14,7 @@ interface Service {
   id: string;
   clientId: string;
   clientName: string;
-  clientRef: string;
+  clientIdentifier: string;
   kind: string;
   frequency: Frequency;
   fee: number;
@@ -73,7 +73,7 @@ export default function ServicesPage() {
       const matchesQ =
         !needle ||
         s.clientName.toLowerCase().includes(needle) ||
-        (s.clientRef ?? '').toLowerCase().includes(needle) ||
+        (s.clientIdentifier ?? '').toLowerCase().includes(needle) ||
         (s.kind ?? '').toLowerCase().includes(needle);
 
       const matchesStatus = !status || s.status === status;
@@ -302,7 +302,7 @@ export default function ServicesPage() {
                   <tr key={s.id}>
                     <td>
                       <div style={{ display:'grid', gap: '2px' }}>
-                        <span className="mdj-ref">{s.clientRef}</span>
+                        <span className="mdj-ref">{s.clientIdentifier}</span>
                         <Link className="mdj-link" href={`/clients/${s.clientId}`}>
                           {s.clientName}
                         </Link>

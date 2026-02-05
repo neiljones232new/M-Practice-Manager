@@ -6,7 +6,7 @@ export interface AuditEvent {
   action: string; // CREATE, UPDATE, DELETE, READ, LOGIN, LOGOUT, etc.
   entity: string; // Client, Service, Task, etc.
   entityId?: string; // Specific entity identifier
-  entityRef?: string; // Human-readable reference (e.g., client ref)
+  entityRef?: string; // Human-readable identifier (e.g., client identifier)
   changes?: AuditChange[];
   metadata?: Record<string, any>;
   ipAddress?: string;

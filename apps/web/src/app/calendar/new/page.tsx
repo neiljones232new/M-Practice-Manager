@@ -195,7 +195,7 @@ export default function NewCalendarEventPage() {
                 { value: '', label: 'None' },
                 ...clients.map(c => ({
                   value: c.node.id,
-                  label: `${c.node.ref ?? '—'} - ${c.node.name}`,
+                  label: `${c.node.registeredNumber || c.node.id || '—'} - ${c.node.name}`,
                 })),
               ]}
               onChange={(e) => updateField('clientId', e.target.value)}

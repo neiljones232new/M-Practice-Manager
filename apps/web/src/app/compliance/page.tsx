@@ -93,15 +93,15 @@ export default function CompliancePage() {
       // Load clients to enrich compliance items with client names
       const clients = await api.getClients();
       console.log('Loaded clients:', clients.length);
-      console.log('Sample client IDs:', clients.slice(0, 3).map(c => ({ id: c.node.id, ref: c.node.ref, name: c.node.name })));
+      console.log('Sample client IDs:', clients.slice(0, 3).map(c => ({ id: c.node.id, identifier: c.node.registeredNumber || c.node.id, name: c.node.name })));
 
-      // Create client maps for both ID and ref lookups
+      // Create client maps for both ID and registered number lookups
       const clientByIdMap = new Map(clients.map(c => [c.node.id, c]));
-      const clientByRefMap = new Map(clients.map(c => [c.node.ref, c]));
+      const clientByRefMap = new Map(clients.map(c => [c.node.registeredNumber, c]));
 
       // Enrich items with client information - but don't fail if client not found
       items = items.map(item => {
-        // Try to find client by ID first, then by ref
+        // Try to find client by ID first, then by registered number
         let client = clientByIdMap.get(item.clientId);
         if (!client) {
           client = clientByRefMap.get(item.clientId);
@@ -110,7 +110,7 @@ export default function CompliancePage() {
         if (client) {
           return {
             ...item,
-            description: `${client.node.name} (${client.node.ref || client.node.id}) - ${item.type.replace(/_/g, ' ')}`,
+            description: `${client.node.name} (${client.node.registeredNumber || client.node.id}) - ${item.type.replace(/_/g, ' ')}`,
           };
         } else {
           console.warn('Client not found for compliance item:', item.clientId, 'Item:', item.id);

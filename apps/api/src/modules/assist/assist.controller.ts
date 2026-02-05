@@ -44,7 +44,7 @@ class QueryDto {
 
 class ClientSummaryDto {
   @IsString()
-  clientRef!: string;
+  clientId!: string;
 }
 
 class DeadlineCheckDto {
@@ -77,7 +77,7 @@ class TemplateQueryDto {
 class ContextualTemplatesDto {
   @IsOptional()
   @IsString()
-  clientRef?: string;
+  clientId?: string;
 
   @IsOptional()
   @IsString()
@@ -191,10 +191,10 @@ export class AssistController {
   @ApiOperation({ summary: 'Get comprehensive client summary' })
   @ApiBody({ type: ClientSummaryDto })
   async getClientSummary(@Body() body: ClientSummaryDto) {
-    const response = await this.assistService.getClientSummary(body.clientRef);
+    const response = await this.assistService.getClientSummary(body.clientId);
 
     return {
-      clientRef: body.clientRef,
+      clientId: body.clientId,
       response,
       timestamp: new Date().toISOString(),
       mode: this.assistService.getStatus().mode,

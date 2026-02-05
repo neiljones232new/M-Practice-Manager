@@ -190,7 +190,6 @@ export default function TemplatesPage() {
       actions={[
         { label: 'Refresh', onClick: fetchTemplates, variant: 'outline' },
         { label: 'Letter Search', href: '/letters', variant: 'outline' },
-        { label: 'Bulk Generate', href: '/templates/bulk-generate', variant: 'outline' },
         { label: 'Generate Letter', href: '/templates/generate', variant: 'primary' },
       ]}
     >
