@@ -178,11 +178,11 @@ export default function AddClientWizardPage() {
         directors,
         generateTasks: generateTasks && selectedServices.length > 0,
       };
-      const res = await api.post<{ client?: { id: string } }>(
+      const res = await api.post<any>(
         '/clients/create-full',
         payload
       );
-      const id = res?.client?.id;
+      const id = res?.assignedReference ?? res?.client?.id;
       router.push(id ? `/clients/${id}` : '/clients');
     } catch (e: any) {
       setError(e?.message || 'Failed to create client');

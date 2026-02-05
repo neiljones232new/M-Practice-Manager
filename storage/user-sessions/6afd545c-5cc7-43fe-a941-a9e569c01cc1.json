@@ -1,10 +1,10 @@
 {
-  "id": "318837f5-e20b-4717-93cd-aa7cf93014d7",
+  "id": "d83d114a-8b4c-4269-8179-3032e318184b",
   "userId": "6afd545c-5cc7-43fe-a941-a9e569c01cc1",
-  "token": "local-dev-access-8a6ba56b-7b49-4aea-9729-5ff84f2d8006",
-  "refreshToken": "local-dev-refresh-80f608be-ed3b-4070-a0c1-b18dce8d2406",
-  "expiresAt": "2026-02-12T02:32:28.977Z",
+  "token": "local-dev-access-fe97b528-4520-419d-b1c7-2fa14f8f5bd4",
+  "refreshToken": "local-dev-refresh-2a358070-1708-43ba-9b5e-ae084901d8df",
+  "expiresAt": "2026-02-12T18:31:58.369Z",
   "rememberMe": false,
-  "createdAt": "2026-02-05T02:32:28.977Z",
-  "lastUsedAt": "2026-02-05T02:32:28.977Z"
+  "createdAt": "2026-02-05T18:31:58.369Z",
+  "lastUsedAt": "2026-02-05T18:31:58.369Z"
 }

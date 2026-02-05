@@ -16,12 +16,12 @@
   "systemSettings": {
     "backupRetentionDays": 30,
     "autoBackupEnabled": false,
-    "auditLogRetentionDays": 365,
+    "auditLogRetentionDays": 30,
     "defaultServiceFrequency": "ANNUAL",
     "taskGenerationWindowDays": 60
   },
   "createdAt": "2025-11-06T01:02:43.387Z",
-  "updatedAt": "2026-02-05T14:04:36.494Z",
+  "updatedAt": "2026-02-05T14:36:09.393Z",
   "tradingName": "MDJ Consultants Ltd",
   "legalForm": "LIMITED",
   "companyNumber": "15110513",

@@ -1,16 +1,17 @@
 export interface Document {
   id: string;
-  filename: string;
-  originalName: string;
-  mimeType: string;
-  size: number;
-  category: DocumentCategory;
-  isArchived: boolean;
-  uploadedById?: string;
+  title: string;
+  kind: string;
+  path: string;
+  mimeType?: string;
+  size?: number;
+  tags?: string[];
   createdAt: Date;
   updatedAt: Date;
-  clientId?: string;
+  clientId: string;
+  clientRef?: string;
 }
+
 
 export enum DocumentCategory {
   TAX = 'TAX',
@@ -25,30 +26,24 @@ export enum DocumentCategory {
 
 export interface DocumentFilters {
   clientId?: string;
-  category?: DocumentCategory;
-  uploadedById?: string;
+  kind?: string;
   dateFrom?: Date;
   dateTo?: Date;
   mimeType?: string;
-  isArchived?: boolean;
   search?: string;
 }
 
 export interface CreateDocumentDto {
-  filename: string;
   originalName: string;
   mimeType: string;
-  size: number;
   clientId?: string;
-  category: DocumentCategory;
-  uploadedById?: string;
+  category?: string;
 }
 
 export interface UpdateDocumentDto {
-  category?: DocumentCategory;
+  title?: string;
+  kind?: string;
   clientId?: string;
-  isArchived?: boolean;
-  uploadedById?: string;
 }
 
 export interface DocumentSearchResult {

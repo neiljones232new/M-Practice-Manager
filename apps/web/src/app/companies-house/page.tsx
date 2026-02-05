@@ -314,7 +314,7 @@ export default function CompaniesHousePage() {
     }
     try {
       setImporting(true);
-      const client = await api.post<{ id: string }>(
+      const client = await api.post<any>(
         '/companies-house/import',
         {
           companyNumber: selected.company_number,
@@ -329,9 +329,10 @@ export default function CompaniesHousePage() {
       );
       // Create selected services
       const chosen = serviceChoices.filter((s) => s.selected);
+      const clientId = client.assignedReference ?? client.id;
       for (const s of chosen) {
         await api.post('/services', {
-          clientId: client.id,
+          clientId: clientId,
           kind: s.kind,
           frequency: s.frequency,
           fee: Number(s.fee) || 0,
@@ -340,7 +341,7 @@ export default function CompaniesHousePage() {
       }
       // Notify and navigate to client
       try { new BroadcastChannel('mdj').postMessage({ topic: 'clients:changed' }); } catch {}
-      window.location.href = `/clients/${client.id}`;
+      window.location.href = `/clients/${clientId}`;
     } catch (e) {
       alert('Import failed. See console for details.');
       console.error('[Import company failed]', e);

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import * as fs from 'fs';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -23,7 +24,6 @@ import { TemplatesModule } from './modules/templates/templates.module';
 import { TaxCalculationsModule } from './modules/tax-calculations/tax-calculations.module';
 import { AccountsProductionModule } from './modules/accounts-production/accounts-production.module';
 import { DatabaseModule } from './modules/database/database.module';
-import { StaffModule } from './modules/staff/staff.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { InternalController } from './modules/internal/internal.controller';
@@ -33,7 +33,10 @@ import { InternalController } from './modules/internal/internal.controller';
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `${process.cwd()}/.env`,
+      envFilePath:
+        process.env.NODE_ENV === 'production'
+          ? (fs.existsSync('.env.prod') ? '.env.prod' : fs.existsSync('env.prod') ? 'env.prod' : '.env')
+          : ['.env.local', '.env'],
       cache: true,
     }),
 
@@ -62,17 +65,16 @@ import { InternalController } from './modules/internal/internal.controller';
     DocumentsModule,
     AssistModule,
     CompaniesHouseModule,
+    IntegrationsModule,
     ReportsModule,
     CalendarModule,
     DashboardModule,
     AuditModule,
     SecurityModule,
-    IntegrationsModule,
     PortfoliosModule,
     TemplatesModule,
     TaxCalculationsModule,
     AccountsProductionModule,
-    StaffModule,
   ],
   controllers: [AppController, InternalController],
   providers: [AppService],

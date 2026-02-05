@@ -22,7 +22,7 @@ import {
   ComplianceItem,
   CreateComplianceItemDto,
 } from './interfaces/companies-house.interface';
-import { Client, CreateClientDto } from '../clients/interfaces/client.interface';
+import { Client, CreateClientDto, CreateClientResponse } from '../clients/interfaces/client.interface';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -247,7 +247,7 @@ export class CompaniesHouseService {
     }
   }
 
-  async importCompany(importData: CompaniesHouseImportData): Promise<Client> {
+  async importCompany(importData: CompaniesHouseImportData): Promise<any> {
     try {
       this.logger.log(`Importing company: ${importData.companyNumber}`);
 
@@ -260,6 +260,7 @@ export class CompaniesHouseService {
       });
 
       let client: Client;
+      let isNewClient = false;
       if (existing) {
         // Update existing client with any newer CH details
         client = await this.clientsService.update(existing.id, {
@@ -279,6 +280,7 @@ export class CompaniesHouseService {
             : undefined,
         });
       } else {
+        isNewClient = true;
         // Create client from company data
         const createClientDto: CreateClientDto = {
           name: companyDetails.company_name,
@@ -320,6 +322,15 @@ export class CompaniesHouseService {
       }
 
       this.logger.log(`Successfully imported company ${importData.companyNumber} as client ${client.id}`);
+      
+      // Return assignedReference wrapper if new client was created (for consistency with /clients endpoints)
+      if (isNewClient) {
+        return {
+          assignedReference: client.id,
+          portfolioNumber: importData.portfolioCode,
+          client,
+        };
+      }
       return client;
     } catch (error) {
       this.logger.error(`Error importing company: ${error.message}`, error.stack);

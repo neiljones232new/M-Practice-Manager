@@ -13,7 +13,7 @@ import {
   CompaniesHouseSearchParams,
   CompaniesHouseImportData,
 } from './interfaces/companies-house.interface';
-import { Client } from '../clients/interfaces/client.interface';
+import { Client, CreateClientResponse } from '../clients/interfaces/client.interface';
 
 @ApiTags('Companies House')
 @Controller('companies-house')
@@ -58,7 +58,7 @@ export class CompaniesHouseController {
   }
 
   @Post('import')
-  async importCompany(@Body() importData: CompaniesHouseImportData): Promise<Client> {
+  async importCompany(@Body() importData: CompaniesHouseImportData): Promise<any> {
     return this.companiesHouseService.importCompany(importData);
   }
 

@@ -56,13 +56,10 @@ export class DocumentsController {
     this.assertNoForbiddenFields(createDocumentDto as any, 'Document upload');
 
     const documentDto: CreateDocumentDto = {
-      filename: file.filename || file.originalname,
       originalName: file.originalname,
       mimeType: file.mimetype,
-      size: file.size,
       clientId: createDocumentDto.clientId,
-      category: createDocumentDto.category || DocumentCategory.OTHER,
-      uploadedById: createDocumentDto.uploadedById,
+      category: createDocumentDto.category || 'OTHER',
     };
 
     const result = await this.documentsService.uploadDocument(file.buffer, documentDto);
@@ -156,9 +153,9 @@ export class DocumentsController {
     const { buffer, document } = await this.documentsService.getDocumentFile(id);
 
     res.set({
-      'Content-Type': document.mimeType,
-      'Content-Disposition': `attachment; filename="${document.originalName}"`,
-      'Content-Length': document.size.toString(),
+      'Content-Type': document.mimeType || 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="${document.title}"`,
+      'Content-Length': (document.size || buffer.length).toString(),
     });
 
     res.send(buffer);
@@ -169,9 +166,9 @@ export class DocumentsController {
     const { buffer, document } = await this.documentsService.getDocumentFile(id);
 
     res.set({
-      'Content-Type': document.mimeType,
-      'Content-Disposition': `inline; filename="${document.originalName}"`,
-      'Content-Length': document.size.toString(),
+      'Content-Type': document.mimeType || 'application/octet-stream',
+      'Content-Disposition': `inline; filename="${document.title}"`,
+      'Content-Length': (document.size || buffer.length).toString(),
     });
 
     res.send(buffer);

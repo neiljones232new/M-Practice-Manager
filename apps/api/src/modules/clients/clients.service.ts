@@ -21,7 +21,13 @@ export class ClientsService {
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
     const portfolioCode = createClientDto.portfolioCode ?? 1;
-    const id = createClientDto.id || await this.generateClientIdentifier(portfolioCode);
+    // If caller supplied an `id` that looks like a UUID (e.g. from imports),
+    // prefer to generate a bucketed identifier using portfolio/bucket logic.
+    let id = createClientDto.id;
+    const uuidV4 = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!id || uuidV4.test(id)) {
+      id = await this.generateClientIdentifier(portfolioCode);
+    }
 
     const created = await (this.prisma as any).client.create({
       data: {
@@ -99,11 +105,24 @@ export class ClientsService {
         orderBy: { alpha: 'asc' },
       });
 
-      let bucket = buckets.find((b: any) => b.nextIndex <= 999);
+      // Find first bucket with available indices (nextIndex <= 999)
+      let bucket = buckets.find((b: any) => (b.nextIndex ?? 1) <= 999);
+      
       if (!bucket) {
-        const lastAlpha = buckets.length ? buckets[buckets.length - 1].alpha : 'A';
-        const lastIndex = alphabet.indexOf(lastAlpha || 'A');
-        const nextAlpha = alphabet[Math.min(lastIndex + 1, alphabet.length - 1)] || 'A';
+        // All existing buckets are exhausted, create new bucket with next alpha
+        const lastBucket = buckets.length ? buckets[buckets.length - 1] : null;
+        const lastAlpha = lastBucket?.alpha || 'A';
+        const lastIndex = alphabet.indexOf(String(lastAlpha).toUpperCase());
+        
+        if (lastIndex < 0) {
+          throw new BadRequestException(`Invalid alpha in RefBucket: ${lastAlpha}`);
+        }
+        
+        const nextAlpha = alphabet[Math.min(lastIndex + 1, alphabet.length - 1)];
+        if (!nextAlpha) {
+          throw new BadRequestException('Exhausted all client reference letters (Z)');
+        }
+        
         bucket = await (tx as any).refBucket.create({
           data: {
             portfolioCode: code,
@@ -113,20 +132,29 @@ export class ClientsService {
         });
       }
 
-      let nextIndex = bucket.nextIndex || 1;
+      let nextIndex = bucket.nextIndex ?? 1;
       for (let attempts = 0; attempts < 2000; attempts++) {
         if (nextIndex > 999) {
-          const currentIdx = alphabet.indexOf(bucket.alpha || 'A');
-          const nextAlpha = alphabet[Math.min(currentIdx + 1, alphabet.length - 1)] || 'A';
+          // Current bucket exhausted, move to next alpha
+          const currentIdx = alphabet.indexOf(String(bucket.alpha).toUpperCase());
+          if (currentIdx < 0) {
+            throw new BadRequestException(`Invalid alpha in RefBucket: ${bucket.alpha}`);
+          }
+          
+          const nextAlpha = alphabet[Math.min(currentIdx + 1, alphabet.length - 1)];
+          if (!nextAlpha || nextAlpha === String(bucket.alpha).toUpperCase()) {
+            throw new BadRequestException('Exhausted all client reference letters (Z)');
+          }
+          
           bucket = await (tx as any).refBucket.upsert({
             where: { portfolioCode_alpha: { portfolioCode: code, alpha: nextAlpha } },
             update: {},
             create: { portfolioCode: code, alpha: nextAlpha, nextIndex: 1 },
           });
-          nextIndex = bucket.nextIndex || 1;
+          nextIndex = bucket.nextIndex ?? 1;
         }
 
-        const candidate = `${code}${bucket.alpha}${String(nextIndex).padStart(3, '0')}`;
+        const candidate = `${code}${String(bucket.alpha).toUpperCase()}${String(nextIndex).padStart(3, '0')}`;
         const exists = await (tx as any).client.findUnique({ where: { id: candidate } });
         if (!exists) {
           await (tx as any).refBucket.update({
@@ -138,7 +166,7 @@ export class ClientsService {
         nextIndex += 1;
       }
 
-      throw new BadRequestException('Unable to generate client identifier');
+      throw new BadRequestException('Unable to generate client identifier after 2000 attempts');
     });
   }
 

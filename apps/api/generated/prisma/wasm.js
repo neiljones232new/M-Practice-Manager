@@ -122,103 +122,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.PracticeScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  legalEntityName: 'legalEntityName',
-  tradingName: 'tradingName',
-  description: 'description',
-  website: 'website',
-  mainEmail: 'mainEmail',
-  mainPhone: 'mainPhone',
-  fax: 'fax',
-  addressId: 'addressId',
-  practicingCertificateNumber: 'practicingCertificateNumber',
-  professionalBody: 'professionalBody',
-  membershipNumber: 'membershipNumber',
-  vatNumber: 'vatNumber',
-  taxReference: 'taxReference',
-  bankAccountName: 'bankAccountName',
-  bankAccountNumber: 'bankAccountNumber',
-  bankSortCode: 'bankSortCode',
-  bankIban: 'bankIban',
-  bankSwift: 'bankSwift',
-  piInsurer: 'piInsurer',
-  piPolicyNumber: 'piPolicyNumber',
-  piExpiryDate: 'piExpiryDate',
-  piCoverAmount: 'piCoverAmount',
-  piExcess: 'piExcess',
-  moneyLaunderingSupervisor: 'moneyLaunderingSupervisor',
-  amlSupervisorNumber: 'amlSupervisorNumber',
-  amlRegistrationDate: 'amlRegistrationDate',
-  lastAmlCheckDate: 'lastAmlCheckDate',
-  nextAmlCheckDueDate: 'nextAmlCheckDueDate',
-  companiesHouseApiKey: 'companiesHouseApiKey',
-  companiesHouseWebhook: 'companiesHouseWebhook',
-  chLastSyncDate: 'chLastSyncDate',
-  hmrcClientId: 'hmrcClientId',
-  hmrcClientSecret: 'hmrcClientSecret',
-  hmrcEnvironment: 'hmrcEnvironment',
-  mtdVatEnabled: 'mtdVatEnabled',
-  mtdPayeEnabled: 'mtdPayeEnabled',
-  mtdItsaEnabled: 'mtdItsaEnabled',
-  defaultHourlyRate: 'defaultHourlyRate',
-  currency: 'currency',
-  timezone: 'timezone',
-  dateFormat: 'dateFormat',
-  numberFormat: 'numberFormat',
-  workingDays: 'workingDays',
-  workingHoursStart: 'workingHoursStart',
-  workingHoursEnd: 'workingHoursEnd',
-  lunchBreakStart: 'lunchBreakStart',
-  lunchBreakEnd: 'lunchBreakEnd',
-  logoPath: 'logoPath',
-  primaryColor: 'primaryColor',
-  secondaryColor: 'secondaryColor',
-  emailHeaderTemplate: 'emailHeaderTemplate',
-  emailFooterTemplate: 'emailFooterTemplate',
-  emailNotificationsEnabled: 'emailNotificationsEnabled',
-  smsNotificationsEnabled: 'smsNotificationsEnabled',
-  slackWebhookUrl: 'slackWebhookUrl',
-  teamsWebhookUrl: 'teamsWebhookUrl',
-  backupEnabled: 'backupEnabled',
-  backupFrequency: 'backupFrequency',
-  backupRetentionDays: 'backupRetentionDays',
-  twoFactorAuthEnabled: 'twoFactorAuthEnabled',
-  dataRetentionMonths: 'dataRetentionMonths',
-  autoArchiveClients: 'autoArchiveClients',
-  enforceStrongPasswords: 'enforceStrongPasswords',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  lastUpdatedBy: 'lastUpdatedBy'
-};
-
-exports.Prisma.PracticeBranchScalarFieldEnum = {
-  id: 'id',
-  practiceId: 'practiceId',
-  name: 'name',
-  isMain: 'isMain',
-  addressId: 'addressId',
-  phone: 'phone',
-  email: 'email',
-  manager: 'manager',
-  openingHours: 'openingHours',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.PracticeSettingScalarFieldEnum = {
-  id: 'id',
-  practiceId: 'practiceId',
-  category: 'category',
-  key: 'key',
-  value: 'value',
-  description: 'description',
-  isEditable: 'isEditable',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.PortfolioScalarFieldEnum = {
   code: 'code',
   name: 'name',
@@ -229,167 +132,119 @@ exports.Prisma.PortfolioScalarFieldEnum = {
 
 exports.Prisma.RefBucketScalarFieldEnum = {
   id: 'id',
-  portfolioCode: 'portfolioCode',
+  portfolio: 'portfolio',
   alpha: 'alpha',
   nextIndex: 'nextIndex',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
-  email: 'email',
-  name: 'name',
-  role: 'role',
-  isActive: 'isActive',
-  lastLoginAt: 'lastLoginAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.ClientScalarFieldEnum = {
   id: 'id',
+  ref: 'ref',
   name: 'name',
   type: 'type',
+  portfolioCode: 'portfolioCode',
   status: 'status',
   mainEmail: 'mainEmail',
   mainPhone: 'mainPhone',
-  registeredNumber: 'registeredNumber',
-  utrNumber: 'utrNumber',
-  vatNumber: 'vatNumber',
-  payeReference: 'payeReference',
-  accountsOfficeReference: 'accountsOfficeReference',
-  cisUtr: 'cisUtr',
-  eoriNumber: 'eoriNumber',
-  mtdVatEnabled: 'mtdVatEnabled',
-  mtdItsaEnabled: 'mtdItsaEnabled',
-  hmrcCtStatus: 'hmrcCtStatus',
-  hmrcSaStatus: 'hmrcSaStatus',
-  hmrcVatStatus: 'hmrcVatStatus',
-  hmrcPayeStatus: 'hmrcPayeStatus',
-  hmrcCisStatus: 'hmrcCisStatus',
-  hmrcMtdVatStatus: 'hmrcMtdVatStatus',
-  hmrcMtdItsaStatus: 'hmrcMtdItsaStatus',
-  hmrcEoriStatus: 'hmrcEoriStatus',
-  incorporationDate: 'incorporationDate',
-  yearEnd: 'yearEnd',
-  accountsNextDue: 'accountsNextDue',
-  accountsLastMadeUpTo: 'accountsLastMadeUpTo',
-  confirmationNextDue: 'confirmationNextDue',
-  confirmationLastMadeUpTo: 'confirmationLastMadeUpTo',
-  accountsAccountingReferenceDay: 'accountsAccountingReferenceDay',
-  accountsAccountingReferenceMonth: 'accountsAccountingReferenceMonth',
-  portfolioCode: 'portfolioCode',
-  annualFees: 'annualFees',
-  tasksDueCount: 'tasksDueCount',
+  source: 'source',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  addressId: 'addressId',
+  accountsAccountingReferenceDay: 'accountsAccountingReferenceDay',
+  accountsAccountingReferenceMonth: 'accountsAccountingReferenceMonth',
+  accountsLastMadeUpTo: 'accountsLastMadeUpTo',
+  accountsNextDue: 'accountsNextDue',
+  accountsOverdue: 'accountsOverdue',
+  companyName: 'companyName',
+  companyNumber: 'companyNumber',
+  companyStatus: 'companyStatus',
+  companyType: 'companyType',
+  confirmationStatementLastMadeUpTo: 'confirmationStatementLastMadeUpTo',
+  confirmationStatementNextDue: 'confirmationStatementNextDue',
+  confirmationStatementOverdue: 'confirmationStatementOverdue',
+  dateOfCessation: 'dateOfCessation',
+  dateOfCreation: 'dateOfCreation',
+  etag: 'etag',
+  jurisdiction: 'jurisdiction',
   lastSyncedAt: 'lastSyncedAt',
-  source: 'source'
-};
-
-exports.Prisma.ClientProfileScalarFieldEnum = {
-  id: 'id',
-  clientId: 'clientId',
-  mainContactName: 'mainContactName',
-  partnerResponsible: 'partnerResponsible',
-  clientManager: 'clientManager',
-  lifecycleStatus: 'lifecycleStatus',
-  engagementType: 'engagementType',
-  engagementLetterSigned: 'engagementLetterSigned',
-  onboardingDate: 'onboardingDate',
-  disengagementDate: 'disengagementDate',
-  onboardingStartedAt: 'onboardingStartedAt',
-  wentLiveAt: 'wentLiveAt',
-  ceasedAt: 'ceasedAt',
-  dormantSince: 'dormantSince',
+  registeredOfficeAddressLine1: 'registeredOfficeAddressLine1',
+  registeredOfficeAddressLine2: 'registeredOfficeAddressLine2',
+  registeredOfficeCountry: 'registeredOfficeCountry',
+  registeredOfficeLocality: 'registeredOfficeLocality',
+  registeredOfficePostalCode: 'registeredOfficePostalCode',
+  registeredOfficeRegion: 'registeredOfficeRegion',
+  sicCodes: 'sicCodes',
+  accountLastFour: 'accountLastFour',
   accountingPeriodEnd: 'accountingPeriodEnd',
-  nextAccountsDueDate: 'nextAccountsDueDate',
-  nextCorporationTaxDueDate: 'nextCorporationTaxDueDate',
-  statutoryYearEnd: 'statutoryYearEnd',
-  vatRegistrationDate: 'vatRegistrationDate',
-  vatPeriodStart: 'vatPeriodStart',
-  vatPeriodEnd: 'vatPeriodEnd',
-  vatStagger: 'vatStagger',
-  payrollPayDay: 'payrollPayDay',
-  payrollPeriodEndDay: 'payrollPeriodEndDay',
-  corporationTaxUtr: 'corporationTaxUtr',
-  vatNumber: 'vatNumber',
-  vatScheme: 'vatScheme',
-  vatReturnFrequency: 'vatReturnFrequency',
-  vatQuarter: 'vatQuarter',
-  payeReference: 'payeReference',
-  payeAccountsOfficeReference: 'payeAccountsOfficeReference',
+  accountsOfficeReference: 'accountsOfficeReference',
+  amlCompleted: 'amlCompleted',
+  annualFee: 'annualFee',
+  authenticationCode: 'authenticationCode',
+  businessBankName: 'businessBankName',
+  ceasedAt: 'ceasedAt',
   cisRegistered: 'cisRegistered',
   cisUtr: 'cisUtr',
-  personalUtr: 'personalUtr',
-  payrollRtiRequired: 'payrollRtiRequired',
-  amlCompleted: 'amlCompleted',
+  clientManager: 'clientManager',
   clientRiskRating: 'clientRiskRating',
-  annualFee: 'annualFee',
-  monthlyFee: 'monthlyFee',
-  selfAssessmentRequired: 'selfAssessmentRequired',
-  selfAssessmentFiled: 'selfAssessmentFiled',
-  tradingName: 'tradingName',
-  companyType: 'companyType',
-  registeredAddress: 'registeredAddress',
-  authenticationCode: 'authenticationCode',
-  employeeCount: 'employeeCount',
-  payrollFrequency: 'payrollFrequency',
+  clientType: 'clientType',
   contactPosition: 'contactPosition',
-  telephone: 'telephone',
-  mobile: 'mobile',
-  email: 'email',
-  preferredContactMethod: 'preferredContactMethod',
+  corporationTaxUtr: 'corporationTaxUtr',
   correspondenceAddress: 'correspondenceAddress',
-  feeArrangement: 'feeArrangement',
-  businessBankName: 'businessBankName',
-  accountLastFour: 'accountLastFour',
-  directDebitInPlace: 'directDebitInPlace',
-  paymentIssues: 'paymentIssues',
-  nationalInsuranceNumber: 'nationalInsuranceNumber',
   dateOfBirth: 'dateOfBirth',
+  directDebitInPlace: 'directDebitInPlace',
+  directorRole: 'directorRole',
+  disengagementDate: 'disengagementDate',
+  doNotContact: 'doNotContact',
+  dormant: 'dormant',
+  dormantSince: 'dormantSince',
+  email: 'email',
+  employeeCount: 'employeeCount',
+  engagementLetterSigned: 'engagementLetterSigned',
+  engagementType: 'engagementType',
+  feeArrangement: 'feeArrangement',
+  lifecycleStatus: 'lifecycleStatus',
+  linkedCompanyNumber: 'linkedCompanyNumber',
+  mainContactName: 'mainContactName',
+  mobile: 'mobile',
+  monthlyFee: 'monthlyFee',
+  nationalInsuranceNumber: 'nationalInsuranceNumber',
+  nextAccountsDueDate: 'nextAccountsDueDate',
+  nextCorporationTaxDueDate: 'nextCorporationTaxDueDate',
+  notes: 'notes',
+  onboardingDate: 'onboardingDate',
+  onboardingStartedAt: 'onboardingStartedAt',
+  partnerResponsible: 'partnerResponsible',
+  payeAccountsOfficeReference: 'payeAccountsOfficeReference',
+  payeReference: 'payeReference',
+  paymentIssues: 'paymentIssues',
+  payrollFrequency: 'payrollFrequency',
+  payrollPayDay: 'payrollPayDay',
+  payrollPeriodEndDay: 'payrollPeriodEndDay',
+  payrollRtiRequired: 'payrollRtiRequired',
   personalAddress: 'personalAddress',
   personalTaxYear: 'personalTaxYear',
-  selfAssessmentTaxYear: 'selfAssessmentTaxYear',
-  linkedCompanyNumber: 'linkedCompanyNumber',
-  directorRole: 'directorRole',
-  companyStatusDetail: 'companyStatusDetail',
-  jurisdiction: 'jurisdiction',
-  sicCodes: 'sicCodes',
-  sicDescriptions: 'sicDescriptions',
-  registeredOfficeFull: 'registeredOfficeFull',
-  directorCount: 'directorCount',
-  pscCount: 'pscCount',
-  currentDirectors: 'currentDirectors',
-  currentPscs: 'currentPscs',
-  lastChRefresh: 'lastChRefresh',
-  accountsOverdue: 'accountsOverdue',
-  confirmationStatementOverdue: 'confirmationStatementOverdue',
-  nextAccountsMadeUpTo: 'nextAccountsMadeUpTo',
-  nextAccountsDueBy: 'nextAccountsDueBy',
-  lastAccountsMadeUpTo: 'lastAccountsMadeUpTo',
-  nextConfirmationStatementDate: 'nextConfirmationStatementDate',
-  confirmationStatementDueBy: 'confirmationStatementDueBy',
-  lastConfirmationStatementDate: 'lastConfirmationStatementDate',
-  notes: 'notes',
-  specialCircumstances: 'specialCircumstances',
+  personalUtr: 'personalUtr',
+  preferredContactMethod: 'preferredContactMethod',
+  registeredAddress: 'registeredAddress',
   seasonalBusiness: 'seasonalBusiness',
-  dormant: 'dormant',
-  doNotContact: 'doNotContact',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.AddressScalarFieldEnum = {
-  id: 'id',
-  line1: 'line1',
-  line2: 'line2',
-  city: 'city',
-  county: 'county',
-  postcode: 'postcode',
-  country: 'country'
+  selfAssessmentFiled: 'selfAssessmentFiled',
+  selfAssessmentRequired: 'selfAssessmentRequired',
+  selfAssessmentTaxYear: 'selfAssessmentTaxYear',
+  specialCircumstances: 'specialCircumstances',
+  statutoryYearEnd: 'statutoryYearEnd',
+  telephone: 'telephone',
+  tradingName: 'tradingName',
+  utrNumber: 'utrNumber',
+  vatNumber: 'vatNumber',
+  vatPeriodEnd: 'vatPeriodEnd',
+  vatPeriodStart: 'vatPeriodStart',
+  vatQuarter: 'vatQuarter',
+  vatRegistrationDate: 'vatRegistrationDate',
+  vatReturnFrequency: 'vatReturnFrequency',
+  vatScheme: 'vatScheme',
+  vatStagger: 'vatStagger',
+  wentLiveAt: 'wentLiveAt'
 };
 
 exports.Prisma.ServiceScalarFieldEnum = {
@@ -398,122 +253,86 @@ exports.Prisma.ServiceScalarFieldEnum = {
   kind: 'kind',
   frequency: 'frequency',
   fee: 'fee',
-  annualized: 'annualized',
   status: 'status',
   nextDue: 'nextDue',
-  description: 'description',
+  annualized: 'annualized',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ComplianceItemScalarFieldEnum = {
-  id: 'id',
-  clientId: 'clientId',
-  serviceId: 'serviceId',
-  type: 'type',
-  description: 'description',
-  dueDate: 'dueDate',
-  status: 'status',
-  source: 'source',
-  reference: 'reference',
-  period: 'period',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  clientRef: 'clientRef'
 };
 
 exports.Prisma.TaskScalarFieldEnum = {
   id: 'id',
-  title: 'title',
   clientId: 'clientId',
   serviceId: 'serviceId',
+  title: 'title',
   description: 'description',
   dueDate: 'dueDate',
-  assigneeId: 'assigneeId',
-  creatorId: 'creatorId',
+  assignee: 'assignee',
   status: 'status',
   priority: 'priority',
-  tags: 'tags',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  clientRef: 'clientRef'
 };
 
 exports.Prisma.DocumentScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
-  filename: 'filename',
-  originalName: 'originalName',
-  mimeType: 'mimeType',
+  title: 'title',
+  kind: 'kind',
+  path: 'path',
   size: 'size',
-  category: 'category',
-  isArchived: 'isArchived',
-  uploadedById: 'uploadedById',
+  mimeType: 'mimeType',
+  tags: 'tags',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.TemplateScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  description: 'description',
-  category: 'category',
-  type: 'type',
-  content: 'content',
-  placeholders: 'placeholders',
-  metadata: 'metadata',
-  createdById: 'createdById',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  clientRef: 'clientRef'
 };
 
 exports.Prisma.PersonScalarFieldEnum = {
   id: 'id',
-  fullName: 'fullName',
+  ref: 'ref',
+  firstName: 'firstName',
+  lastName: 'lastName',
   email: 'email',
   phone: 'phone',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  country: 'country',
+  countryOfResidence: 'countryOfResidence',
+  dateOfBirthMonth: 'dateOfBirthMonth',
+  dateOfBirthYear: 'dateOfBirthYear',
+  etag: 'etag',
+  locality: 'locality',
+  nationality: 'nationality',
+  occupation: 'occupation',
+  personNumber: 'personNumber',
+  postalCode: 'postalCode',
+  premises: 'premises',
+  region: 'region'
 };
 
 exports.Prisma.ClientPartyScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
   personId: 'personId',
-  primaryContact: 'primaryContact',
-  suffixLetter: 'suffixLetter',
+  role: 'role',
   ownershipPercent: 'ownershipPercent',
   appointedAt: 'appointedAt',
   resignedAt: 'resignedAt',
-  role: 'role',
-  partyRef: 'partyRef',
+  primaryContact: 'primaryContact',
+  suffixLetter: 'suffixLetter',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.AccountsSetScalarFieldEnum = {
-  id: 'id',
-  clientId: 'clientId',
-  companyNumber: 'companyNumber',
-  framework: 'framework',
-  status: 'status',
-  periodStartDate: 'periodStartDate',
-  periodEndDate: 'periodEndDate',
-  isFirstYear: 'isFirstYear',
-  companyData: 'companyData',
-  frameworkData: 'frameworkData',
-  policiesData: 'policiesData',
-  profitLossData: 'profitLossData',
-  balanceSheetData: 'balanceSheetData',
-  notesData: 'notesData',
-  approvalData: 'approvalData',
-  validationErrors: 'validationErrors',
-  validationWarnings: 'validationWarnings',
-  isBalanced: 'isBalanced',
-  htmlUrl: 'htmlUrl',
-  pdfUrl: 'pdfUrl',
-  createdById: 'createdById',
-  lastEditedById: 'lastEditedById',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  appointedOn: 'appointedOn',
+  isPre1992Appointment: 'isPre1992Appointment',
+  officerRole: 'officerRole',
+  resignedOn: 'resignedOn',
+  clientRef: 'clientRef',
+  personRef: 'personRef'
 };
 
 exports.Prisma.CompaniesHouseDataScalarFieldEnum = {
@@ -527,7 +346,8 @@ exports.Prisma.CompaniesHouseDataScalarFieldEnum = {
   pscs: 'pscs',
   lastFetched: 'lastFetched',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  clientRef: 'clientRef'
 };
 
 exports.Prisma.FilingScalarFieldEnum = {
@@ -538,23 +358,25 @@ exports.Prisma.FilingScalarFieldEnum = {
   dueDate: 'dueDate',
   status: 'status',
   source: 'source',
-  transactionId: 'transactionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  actionDate: 'actionDate',
+  barcode: 'barcode',
   category: 'category',
   description: 'description',
-  actionDate: 'actionDate',
   filedDate: 'filedDate',
-  barcode: 'barcode',
+  madeUpTo: 'madeUpTo',
   pages: 'pages',
   paperFiled: 'paperFiled',
   reference: 'reference',
-  madeUpTo: 'madeUpTo',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  transactionId: 'transactionId',
+  clientRef: 'clientRef'
 };
 
 exports.Prisma.TaxCalculationScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
+  clientRef: 'clientRef',
   companyId: 'companyId',
   calculationType: 'calculationType',
   taxYear: 'taxYear',
@@ -591,6 +413,7 @@ exports.Prisma.TaxScenarioScalarFieldEnum = {
 exports.Prisma.GeneratedReportScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
+  clientRef: 'clientRef',
   calculationId: 'calculationId',
   templateId: 'templateId',
   title: 'title',
@@ -614,7 +437,8 @@ exports.Prisma.CalendarEventScalarFieldEnum = {
   taskId: 'taskId',
   type: 'type',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  clientRef: 'clientRef'
 };
 
 exports.Prisma.EventScalarFieldEnum = {
@@ -623,9 +447,9 @@ exports.Prisma.EventScalarFieldEnum = {
   actor: 'actor',
   entity: 'entity',
   entityId: 'entityId',
-  entityRef: 'entityRef',
   action: 'action',
-  payload: 'payload'
+  payload: 'payload',
+  entityRef: 'entityRef'
 };
 
 exports.Prisma.SortOrder = {
@@ -657,14 +481,6 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
-exports.UserRole = exports.$Enums.UserRole = {
-  ADMIN: 'ADMIN',
-  PARTNER: 'PARTNER',
-  MANAGER: 'MANAGER',
-  STAFF: 'STAFF',
-  READONLY: 'READONLY'
-};
-
 exports.ClientType = exports.$Enums.ClientType = {
   COMPANY: 'COMPANY',
   INDIVIDUAL: 'INDIVIDUAL',
@@ -673,98 +489,22 @@ exports.ClientType = exports.$Enums.ClientType = {
   LLP: 'LLP'
 };
 
-exports.ClientStatus = exports.$Enums.ClientStatus = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
-  ARCHIVED: 'ARCHIVED'
+exports.Frequency = exports.$Enums.Frequency = {
+  ANNUAL: 'ANNUAL',
+  QUARTERLY: 'QUARTERLY',
+  MONTHLY: 'MONTHLY',
+  WEEKLY: 'WEEKLY'
 };
 
-exports.LifecycleStatus = exports.$Enums.LifecycleStatus = {
-  PROSPECT: 'PROSPECT',
-  ONBOARDING: 'ONBOARDING',
-  ACTIVE: 'ACTIVE',
-  DORMANT: 'DORMANT',
-  CEASED: 'CEASED'
-};
-
-exports.VatStagger = exports.$Enums.VatStagger = {
-  A: 'A',
-  B: 'B',
-  C: 'C',
-  NONE: 'NONE'
-};
-
-exports.ComplianceStatus = exports.$Enums.ComplianceStatus = {
-  PENDING: 'PENDING',
-  FILED: 'FILED',
-  OVERDUE: 'OVERDUE',
-  EXEMPT: 'EXEMPT'
-};
-
-exports.ComplianceSource = exports.$Enums.ComplianceSource = {
-  COMPANIES_HOUSE: 'COMPANIES_HOUSE',
-  HMRC: 'HMRC',
-  MANUAL: 'MANUAL'
-};
-
-exports.TaskStatus = exports.$Enums.TaskStatus = {
-  TODO: 'TODO',
-  IN_PROGRESS: 'IN_PROGRESS',
-  REVIEW: 'REVIEW',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED'
-};
-
-exports.Priority = exports.$Enums.Priority = {
-  LOW: 'LOW',
-  MEDIUM: 'MEDIUM',
-  HIGH: 'HIGH',
-  URGENT: 'URGENT'
-};
-
-exports.DocumentCategory = exports.$Enums.DocumentCategory = {
-  TAX: 'TAX',
-  ACCOUNTS: 'ACCOUNTS',
-  COMPLIANCE: 'COMPLIANCE',
-  REPORTS: 'REPORTS',
-  INVOICES: 'INVOICES',
-  RECEIPTS: 'RECEIPTS',
-  BANK_STATEMENTS: 'BANK_STATEMENTS',
-  OTHER: 'OTHER'
-};
-
-exports.TemplateCategory = exports.$Enums.TemplateCategory = {
-  TAX: 'TAX',
-  HMRC: 'HMRC',
-  VAT: 'VAT',
-  COMPLIANCE: 'COMPLIANCE',
-  GENERAL: 'GENERAL',
-  ENGAGEMENT: 'ENGAGEMENT',
-  CLIENT: 'CLIENT',
-  REPORTS: 'REPORTS',
-  COMMERCIAL: 'COMMERCIAL'
-};
-
-exports.TemplateType = exports.$Enums.TemplateType = {
-  DOCUMENT: 'DOCUMENT',
-  TASK: 'TASK',
-  SERVICE: 'SERVICE',
-  EMAIL: 'EMAIL'
-};
-
-exports.AccountingFramework = exports.$Enums.AccountingFramework = {
-  MICRO_FRS105: 'MICRO_FRS105',
-  SMALL_FRS102_1A: 'SMALL_FRS102_1A',
-  DORMANT: 'DORMANT',
-  SOLE_TRADER: 'SOLE_TRADER',
-  INDIVIDUAL: 'INDIVIDUAL'
-};
-
-exports.AccountsSetStatus = exports.$Enums.AccountsSetStatus = {
-  DRAFT: 'DRAFT',
-  IN_REVIEW: 'IN_REVIEW',
-  READY: 'READY',
-  LOCKED: 'LOCKED'
+exports.PartyRole = exports.$Enums.PartyRole = {
+  DIRECTOR: 'DIRECTOR',
+  SHAREHOLDER: 'SHAREHOLDER',
+  PARTNER: 'PARTNER',
+  MEMBER: 'MEMBER',
+  OWNER: 'OWNER',
+  UBO: 'UBO',
+  SECRETARY: 'SECRETARY',
+  CONTACT: 'CONTACT'
 };
 
 exports.TaxCalculationType = exports.$Enums.TaxCalculationType = {
@@ -782,23 +522,14 @@ exports.ReportFormat = exports.$Enums.ReportFormat = {
 };
 
 exports.Prisma.ModelName = {
-  Practice: 'Practice',
-  PracticeBranch: 'PracticeBranch',
-  PracticeSetting: 'PracticeSetting',
   Portfolio: 'Portfolio',
   RefBucket: 'RefBucket',
-  User: 'User',
   Client: 'Client',
-  ClientProfile: 'ClientProfile',
-  Address: 'Address',
   Service: 'Service',
-  ComplianceItem: 'ComplianceItem',
   Task: 'Task',
   Document: 'Document',
-  Template: 'Template',
   Person: 'Person',
   ClientParty: 'ClientParty',
-  AccountsSet: 'AccountsSet',
   CompaniesHouseData: 'CompaniesHouseData',
   Filing: 'Filing',
   TaxCalculation: 'TaxCalculation',

@@ -78,7 +78,7 @@ export default function ClientPartiesPage() {
   const loadPerson = async (personId: string) => {
     if (!personId || people[personId]) return;
     try {
-      const res = await api.get<Person>(`/clients/people/${personId}`);
+      const res = await api.get<Person>(`/people/${personId}`);
       setPeople((prev) => ({ ...prev, [personId]: res }));
     } catch {
       // ignore missing person for now
@@ -136,7 +136,7 @@ export default function ClientPartiesPage() {
     setSaving(true);
     setError(null);
     try {
-      const person = await api.post<Person>('/clients/people', {
+      const person = await api.post<Person>('/people', {
         firstName: personForm.firstName,
         lastName: personForm.lastName,
         email: personForm.email || undefined,
@@ -169,7 +169,7 @@ export default function ClientPartiesPage() {
     setError(null);
     try {
       if (selectedParty.personId) {
-        await api.put(`/clients/people/${selectedParty.personId}`, {
+        await api.put(`/people/${selectedParty.personId}`, {
           firstName: personForm.firstName || undefined,
           lastName: personForm.lastName || undefined,
           email: personForm.email || undefined,

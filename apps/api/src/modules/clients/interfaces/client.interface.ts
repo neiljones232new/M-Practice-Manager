@@ -124,6 +124,12 @@ export interface CreateClientDto {
   lastSyncedAt?: Date;
 }
 
+export interface CreateClientResponse {
+  assignedReference: string;
+  portfolioNumber: number;
+  client: Client;
+}
+
 export interface UpdateClientDto {
   name?: string;
   type?: ClientType;

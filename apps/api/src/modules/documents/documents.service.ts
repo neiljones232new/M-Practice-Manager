@@ -87,18 +87,16 @@ export class DocumentsService {
 
       const document = await (this.prisma as any).document.create({
         data: {
-          filename: uniqueFilename,
-          originalName: createDocumentDto.originalName,
+          title: createDocumentDto.originalName,
+          kind: createDocumentDto.category || 'OTHER',
+          path: uniqueFilename,
           mimeType: createDocumentDto.mimeType,
           size: fileBuffer.length,
           clientId: createDocumentDto.clientId,
-          category: createDocumentDto.category,
-          uploadedById: createDocumentDto.uploadedById,
-          isArchived: false,
         },
       });
 
-      this.logger.log(`Document uploaded successfully: ${document.originalName} (${document.id})`);
+      this.logger.log(`Document uploaded successfully: ${document.title} (${document.id})`);
 
       return { document, success: true };
     } catch (error) {
@@ -119,10 +117,8 @@ export class DocumentsService {
     const where: any = {};
 
     if (filters.clientId) where.clientId = filters.clientId;
-    if (filters.category) where.category = filters.category;
-    if (filters.uploadedById) where.uploadedById = filters.uploadedById;
+    if (filters.kind) where.kind = filters.kind;
     if (filters.mimeType) where.mimeType = filters.mimeType;
-    if (filters.isArchived !== undefined) where.isArchived = filters.isArchived;
 
     if (filters.dateFrom || filters.dateTo) {
       where.createdAt = {};
@@ -132,8 +128,8 @@ export class DocumentsService {
 
     if (filters.search) {
       where.OR = [
-        { originalName: { contains: filters.search, mode: 'insensitive' } },
-        { filename: { contains: filters.search, mode: 'insensitive' } },
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { kind: { contains: filters.search, mode: 'insensitive' } },
       ];
     }
 
@@ -159,7 +155,7 @@ export class DocumentsService {
   async deleteDocument(id: string): Promise<void> {
     const document = await this.getDocument(id);
 
-    const filePath = path.join(this.documentsPath, document.filename);
+    const filePath = path.join(this.documentsPath, document.path);
     if (existsSync(filePath)) {
       await fs.unlink(filePath);
     }
@@ -170,10 +166,10 @@ export class DocumentsService {
 
   async getDocumentFile(id: string): Promise<{ buffer: Buffer; document: Document }> {
     const document = await this.getDocument(id);
-    const filePath = path.join(this.documentsPath, document.filename);
+    const filePath = path.join(this.documentsPath, document.path);
 
     if (!existsSync(filePath)) {
-      throw new NotFoundException(`Document file not found: ${document.filename}`);
+      throw new NotFoundException(`Document file not found: ${document.path}`);
     }
 
     const buffer = await fs.readFile(filePath);
@@ -185,7 +181,7 @@ export class DocumentsService {
     return docs.map((document) => ({
       document,
       relevanceScore: 1,
-      matchedFields: ['originalName', 'filename'],
+      matchedFields: ['title', 'kind'],
     }));
   }
 
@@ -199,19 +195,12 @@ export class DocumentsService {
     for (const documentId of operation.documentIds) {
       try {
         switch (operation.operation) {
-          case 'archive':
-            await this.updateDocument(documentId, { isArchived: true });
-            break;
-          case 'unarchive':
-            await this.updateDocument(documentId, { isArchived: false });
-            break;
           case 'delete':
             await this.deleteDocument(documentId);
             break;
           case 'move':
             await this.updateDocument(documentId, {
               clientId: operation.parameters?.clientId,
-              category: operation.parameters?.category,
             });
             break;
         }
@@ -228,7 +217,7 @@ export class DocumentsService {
   async getDocumentStats(): Promise<{
     totalDocuments: number;
     totalSize: number;
-    documentsByCategory: Record<DocumentCategory, number>;
+    documentsByKind: Record<string, number>;
     documentsByMimeType: Record<string, number>;
     recentUploads: Document[];
   }> {
@@ -236,20 +225,22 @@ export class DocumentsService {
 
     const stats = {
       totalDocuments: allDocuments.length,
-      totalSize: allDocuments.reduce((sum, doc) => sum + doc.size, 0),
-      documentsByCategory: {} as Record<DocumentCategory, number>,
+      totalSize: allDocuments.reduce((sum, doc) => sum + (doc.size || 0), 0),
+      documentsByKind: {} as Record<string, number>,
       documentsByMimeType: {} as Record<string, number>,
       recentUploads: allDocuments
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .slice(0, 10),
     };
 
-    Object.values(DocumentCategory).forEach((category) => {
-      stats.documentsByCategory[category] = allDocuments.filter((doc) => doc.category === category).length;
+    allDocuments.forEach((doc) => {
+      stats.documentsByKind[doc.kind] = (stats.documentsByKind[doc.kind] || 0) + 1;
     });
 
     allDocuments.forEach((doc) => {
-      stats.documentsByMimeType[doc.mimeType] = (stats.documentsByMimeType[doc.mimeType] || 0) + 1;
+      if (doc.mimeType) {
+        stats.documentsByMimeType[doc.mimeType] = (stats.documentsByMimeType[doc.mimeType] || 0) + 1;
+      }
     });
 
     return stats;
@@ -260,7 +251,7 @@ export class DocumentsService {
     originalName: string,
     mimeType: string,
     clientId: string,
-    uploadedById?: string,
+    _uploadedById?: string,
     _templateMetadata?: {
       templateId: string;
       templateName: string;
@@ -269,13 +260,10 @@ export class DocumentsService {
     },
   ): Promise<Document> {
     const createDto: CreateDocumentDto = {
-      filename: originalName,
       originalName,
       mimeType,
-      size: fileBuffer.length,
       clientId,
-      category: DocumentCategory.REPORTS,
-      uploadedById,
+      category: 'REPORTS',
     };
 
     const result = await this.uploadDocument(fileBuffer, createDto);

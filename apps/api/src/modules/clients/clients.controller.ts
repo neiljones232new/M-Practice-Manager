@@ -19,6 +19,7 @@ import {
   ClientFilters,
   CreateClientDto,
   UpdateClientDto,
+  CreateClientResponse,
   CreateClientProfileDto,
   UpdateClientProfileDto,
   CreateClientPartyDto,
@@ -65,8 +66,15 @@ export class ClientsController {
   @Post()
   @ApiOperation({ summary: 'Create new client' })
   @ApiResponse({ status: 201, description: 'Client created successfully' })
-  async createClient(@Body() createClientDto: CreateClientDto): Promise<Client> {
-    return this.clientsService.create(createClientDto);
+  async createClient(
+    @Body() createClientDto: CreateClientDto,
+  ): Promise<CreateClientResponse> {
+    const created = await this.clientsService.create(createClientDto);
+    return {
+      assignedReference: created.id,
+      portfolioNumber: created.portfolioCode,
+      client: created,
+    };
   }
 
   @Post(':id/enroll-director')
