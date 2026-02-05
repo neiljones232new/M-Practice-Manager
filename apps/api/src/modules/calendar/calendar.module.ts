@@ -2,13 +2,11 @@ import { Module, forwardRef } from '@nestjs/common';
 import { CalendarController } from './calendar.controller';
 import { CalendarService } from './calendar.service';
 import { CalendarIntegrationService } from './calendar-integration.service';
-import { FileStorageModule } from '../file-storage/file-storage.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { FilingsModule } from '../filings/filings.module';
 
 @Module({
   imports: [
-    FileStorageModule,
     forwardRef(() => TasksModule),
     forwardRef(() => FilingsModule),
   ],

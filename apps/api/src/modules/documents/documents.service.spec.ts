@@ -39,10 +39,8 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
     mimeType: 'application/pdf',
     size: 1024,
     category: DocumentCategory.ACCOUNTS,
-    tags: ['accounts', '2024', 'client-a'],
-    description: 'Test document for accounts',
-    uploadedBy: 'test-user',
-    uploadedAt: new Date(),
+    uploadedById: 'test-user',
+    createdAt: new Date(),
     updatedAt: new Date(),
     filePath: 'test.pdf',
     checksum: 'test-checksum',
@@ -109,9 +107,7 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
       mimeType: 'application/pdf',
       size: 1024,
       category: DocumentCategory.OTHER,
-      tags: ['test', 'document'],
-      description: 'Test document description',
-      uploadedBy: 'test-user',
+      uploadedById: 'test-user',
       ...overrides,
     });
 
@@ -209,70 +205,7 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
       expect(result.error).toBe('File already exists');
     });
 
-    it('should generate auto-tags based on filename and content', async () => {
-      const testBuffer = createTestBuffer('Invoice content');
-      const createDto = createTestDocumentDto({
-        originalName: 'Invoice_2024_VAT_Report.pdf',
-        category: DocumentCategory.INVOICES,
-        tags: ['manual-tag'],
-      });
-
-      jest.spyOn(fileStorageService, 'writeJson').mockResolvedValue(undefined);
-      jest.spyOn(searchService, 'updateIndex').mockResolvedValue(undefined);
-
-      const result = await service.uploadDocument(testBuffer, createDto);
-
-      expect(result.success).toBe(true);
-      expect(result.document!.tags).toContain('manual-tag');
-      expect(result.document!.tags).toContain('invoice');
-      expect(result.document!.tags).toContain('vat');
-      expect(result.document!.tags).toContain('pdf');
-      expect(result.document!.tags).toContain('invoices');
-      expect(result.document!.tags).toContain(new Date().getFullYear().toString());
-    });
-
-    it('should handle different file types correctly', async () => {
-      const testCases = [
-        {
-          mimeType: 'application/pdf',
-          expectedTags: ['pdf'],
-          content: 'PDF content',
-        },
-        {
-          mimeType: 'image/jpeg',
-          expectedTags: ['image'],
-          content: 'JPEG content',
-        },
-        {
-          mimeType: 'application/vnd.ms-excel',
-          expectedTags: ['spreadsheet'],
-          content: 'Excel content',
-        },
-        {
-          mimeType: 'application/msword',
-          expectedTags: ['document'],
-          content: 'Word content',
-        },
-      ];
-
-      jest.spyOn(fileStorageService, 'writeJson').mockResolvedValue(undefined);
-      jest.spyOn(searchService, 'updateIndex').mockResolvedValue(undefined);
-
-      for (const testCase of testCases) {
-        const testBuffer = createTestBuffer(testCase.content);
-        const createDto = createTestDocumentDto({
-          mimeType: testCase.mimeType,
-          originalName: `test.${testCase.mimeType.split('/')[1]}`,
-        });
-
-        const result = await service.uploadDocument(testBuffer, createDto);
-
-        expect(result.success).toBe(true);
-        testCase.expectedTags.forEach(tag => {
-          expect(result.document!.tags).toContain(tag);
-        });
-      }
-    });
+    // Tagging behavior removed from documents API (schema-aligned).
   });
 
   describe('Document Tagging and Search Functionality', () => {
@@ -342,7 +275,7 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
     it('should filter documents by category', async () => {
       const documents = [
         { ...mockDocumentData, category: DocumentCategory.ACCOUNTS },
-        { ...mockDocumentData, id: 'doc-2', category: DocumentCategory.VAT },
+        { ...mockDocumentData, id: 'doc-2', category: DocumentCategory.TAX },
         { ...mockDocumentData, id: 'doc-3', category: DocumentCategory.ACCOUNTS },
       ];
 
@@ -356,28 +289,12 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
       });
     });
 
-    it('should filter documents by tags', async () => {
-      const documents = [
-        { ...mockDocumentData, tags: ['accounts', '2024', 'important'] },
-        { ...mockDocumentData, id: 'doc-2', tags: ['vat', '2024'] },
-        { ...mockDocumentData, id: 'doc-3', tags: ['accounts', '2023'] },
-      ];
-
-      jest.spyOn(fileStorageService, 'searchFiles').mockResolvedValue(documents);
-
-      const results = await service.getDocuments({ tags: ['accounts', '2024'] });
-
-      expect(results).toHaveLength(1);
-      expect(results[0].tags).toContain('accounts');
-      expect(results[0].tags).toContain('2024');
-    });
-
     it('should filter documents by date range', async () => {
       const baseDate = new Date('2024-01-15');
       const documents = [
-        { ...mockDocumentData, uploadedAt: new Date('2024-01-10') },
-        { ...mockDocumentData, id: 'doc-2', uploadedAt: new Date('2024-01-20') },
-        { ...mockDocumentData, id: 'doc-3', uploadedAt: new Date('2024-01-25') },
+        { ...mockDocumentData, createdAt: new Date('2024-01-10') },
+        { ...mockDocumentData, id: 'doc-2', createdAt: new Date('2024-01-20') },
+        { ...mockDocumentData, id: 'doc-3', createdAt: new Date('2024-01-25') },
       ];
 
       jest.spyOn(fileStorageService, 'searchFiles').mockResolvedValue(documents);
@@ -417,15 +334,15 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
           category: DocumentCategory.ACCOUNTS,
           mimeType: 'application/pdf',
           size: 1024,
-          uploadedAt: new Date(),
+          createdAt: new Date(),
         },
         {
           ...mockDocumentData,
           id: 'doc-2',
-          category: DocumentCategory.VAT,
+          category: DocumentCategory.TAX,
           mimeType: 'image/jpeg',
           size: 2048,
-          uploadedAt: new Date(Date.now() - 86400000), // Yesterday
+          createdAt: new Date(Date.now() - 86400000), // Yesterday
         },
         {
           ...mockDocumentData,
@@ -433,7 +350,7 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
           category: DocumentCategory.ACCOUNTS,
           mimeType: 'application/pdf',
           size: 512,
-          uploadedAt: new Date(),
+          createdAt: new Date(),
         },
       ];
 
@@ -444,7 +361,7 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
       expect(stats.totalDocuments).toBe(3);
       expect(stats.totalSize).toBe(3584); // 1024 + 2048 + 512
       expect(stats.documentsByCategory[DocumentCategory.ACCOUNTS]).toBe(2);
-      expect(stats.documentsByCategory[DocumentCategory.VAT]).toBe(1);
+      expect(stats.documentsByCategory[DocumentCategory.TAX]).toBe(1);
       expect(stats.documentsByMimeType['application/pdf']).toBe(2);
       expect(stats.documentsByMimeType['image/jpeg']).toBe(1);
       expect(stats.recentUploads).toHaveLength(3);
@@ -493,55 +410,6 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
       expect(result.errors[0]).toContain('doc-2');
     });
 
-    it('should handle tag operations in bulk', async () => {
-      const documentIds = ['doc-1', 'doc-2'];
-      const mockDocs = [
-        { ...mockDocumentData, id: 'doc-1', tags: ['existing', 'tag'] },
-        { ...mockDocumentData, id: 'doc-2', tags: ['other', 'tags'] },
-      ];
-
-      jest.spyOn(service, 'getDocument')
-        .mockImplementation(async (id) => mockDocs.find(doc => doc.id === id)!);
-      jest.spyOn(service, 'updateDocument').mockResolvedValue(mockDocumentData);
-
-      const result = await service.bulkOperation({
-        documentIds,
-        operation: 'tag',
-        parameters: { tags: ['new-tag', 'bulk-tag'] },
-      });
-
-      expect(result.success).toBe(2);
-      expect(service.updateDocument).toHaveBeenCalledWith('doc-1', {
-        tags: ['existing', 'tag', 'new-tag', 'bulk-tag'],
-      });
-      expect(service.updateDocument).toHaveBeenCalledWith('doc-2', {
-        tags: ['other', 'tags', 'new-tag', 'bulk-tag'],
-      });
-    });
-
-    it('should handle untag operations in bulk', async () => {
-      const documentIds = ['doc-1'];
-      const mockDoc = {
-        ...mockDocumentData,
-        id: 'doc-1',
-        tags: ['keep-this', 'remove-this', 'also-remove'],
-      };
-
-      jest.spyOn(service, 'getDocument').mockResolvedValue(mockDoc);
-      jest.spyOn(service, 'updateDocument').mockResolvedValue(mockDocumentData);
-
-      const result = await service.bulkOperation({
-        documentIds,
-        operation: 'untag',
-        parameters: { tags: ['remove-this', 'also-remove'] },
-      });
-
-      expect(result.success).toBe(1);
-      expect(service.updateDocument).toHaveBeenCalledWith('doc-1', {
-        tags: ['keep-this'],
-      });
-    });
-
     it('should handle move operations in bulk', async () => {
       const documentIds = ['doc-1', 'doc-2'];
 
@@ -554,18 +422,18 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
         operation: 'move',
         parameters: {
           clientId: 'new-client-id',
-          category: DocumentCategory.VAT,
+          category: DocumentCategory.TAX,
         },
       });
 
       expect(result.success).toBe(2);
       expect(service.updateDocument).toHaveBeenCalledWith('doc-1', {
         clientId: 'new-client-id',
-        category: DocumentCategory.VAT,
+        category: DocumentCategory.TAX,
       });
       expect(service.updateDocument).toHaveBeenCalledWith('doc-2', {
         clientId: 'new-client-id',
-        category: DocumentCategory.VAT,
+        category: DocumentCategory.TAX,
       });
     });
   });
@@ -653,9 +521,7 @@ describe('DocumentsService - File Upload and Storage Operations', () => {
     mimeType: 'application/pdf',
     size: 1024,
     category: DocumentCategory.OTHER,
-    tags: ['test', 'document'],
-    description: 'Test document description',
-    uploadedBy: 'test-user',
+    uploadedById: 'test-user',
     ...overrides,
   });
 });

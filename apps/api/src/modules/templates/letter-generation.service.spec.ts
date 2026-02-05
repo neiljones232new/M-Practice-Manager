@@ -17,7 +17,6 @@ import {
   PlaceholderType,
   PlaceholderSource,
   GenerateLetterDto,
-  BulkGenerateLetterDto,
   LetterStatus,
 } from './interfaces';
 
@@ -107,11 +106,9 @@ describe('LetterGenerationService', () => {
       originalName: 'test-letter.pdf',
       mimeType: 'application/pdf',
       size: 1024,
-      category: 'CORRESPONDENCE' as const,
+      category: 'REPORTS' as const,
       clientId: 'client-1',
-      uploadedBy: 'test-user',
-      uploadedAt: new Date(),
-      tags: [],
+      uploadedById: 'test-user',
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -166,7 +163,6 @@ describe('LetterGenerationService', () => {
       handleDocumentGenerationError: jest.fn(),
       handleLetterNotFound: jest.fn(),
       handleGenericError: jest.fn(),
-      handleZipFileNotFound: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -423,126 +419,6 @@ describe('LetterGenerationService', () => {
 
       await expect(service.generateLetter(generateDto, 'test-user')).rejects.toThrow(NotFoundException);
       expect(errorHandler.handleClientNotFound).toHaveBeenCalledWith('client-1');
-    });
-  });
-
-  describe('bulkGenerateLetter - Bulk Generation', () => {
-    const bulkDto: BulkGenerateLetterDto = {
-      templateId: 'template-1',
-      clientIds: ['client-1', 'client-2', 'client-3'],
-      outputFormats: ['PDF'],
-    };
-
-    beforeEach(() => {
-      templatesService.getTemplate.mockResolvedValue(mockTemplate);
-      templatesService.getTemplateContent.mockResolvedValue('Dear {{clientName}}');
-      placeholderService.resolvePlaceholders.mockResolvedValue({
-        placeholders: {
-          clientName: {
-            key: 'clientName',
-            value: 'Test Client',
-            formattedValue: 'Test Client',
-            source: PlaceholderSource.CLIENT,
-            type: PlaceholderType.TEXT,
-          },
-        },
-        missingRequired: [],
-        errors: [],
-      });
-      documentGeneratorService.populateTemplate.mockReturnValue('Dear Test Client');
-      documentGeneratorService.generatePDF.mockResolvedValue(Buffer.from('PDF content'));
-      clientsService.findOne.mockResolvedValue(mockClient as any);
-      clientsService.getClientWithParties.mockResolvedValue({ ...mockClient, partiesDetails: [] } as any);
-      documentsService.uploadDocument.mockResolvedValue(mockDocument as any);
-      documentsService.getDocumentFile.mockResolvedValue({ 
-        buffer: Buffer.from('PDF content'),
-        document: mockDocument.document,
-      } as any);
-      fileStorageService.writeJson.mockResolvedValue(undefined);
-      auditService.logEvent.mockResolvedValue(undefined);
-    });
-
-    it('should generate letters for multiple clients', async () => {
-      const result = await service.bulkGenerateLetter(bulkDto, 'test-user');
-
-      expect(result).toBeDefined();
-      expect(result.totalRequested).toBe(3);
-      expect(result.successCount).toBe(3);
-      expect(result.failureCount).toBe(0);
-      expect(result.results).toHaveLength(3);
-    });
-
-    it('should process each client sequentially', async () => {
-      await service.bulkGenerateLetter(bulkDto, 'test-user');
-
-      // Each client is processed: findOne is called once per client, plus getClientWithParties
-      expect(clientsService.findOne).toHaveBeenCalled();
-      expect(documentGeneratorService.generatePDF).toHaveBeenCalledTimes(3);
-    });
-
-    it('should track successful generations', async () => {
-      const result = await service.bulkGenerateLetter(bulkDto, 'test-user');
-
-      expect(result.results.every(r => r.success)).toBe(true);
-      expect(result.results.every(r => r.letterId)).toBeTruthy();
-    });
-
-    it('should handle partial failures gracefully', async () => {
-      clientsService.findOne
-        .mockResolvedValueOnce(mockClient as any)
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(mockClient as any);
-      
-      errorHandler.handleClientNotFound.mockImplementation(() => {
-        throw new NotFoundException('Client not found');
-      });
-
-      const result = await service.bulkGenerateLetter(bulkDto, 'test-user');
-
-      expect(result.totalRequested).toBe(3);
-      expect(result.successCount).toBe(2);
-      expect(result.failureCount).toBe(1);
-      expect(result.results.filter(r => r.success)).toHaveLength(2);
-      expect(result.results.filter(r => !r.success)).toHaveLength(1);
-    });
-
-    it('should include error messages for failed generations', async () => {
-      clientsService.findOne
-        .mockResolvedValueOnce(mockClient as any)
-        .mockResolvedValueOnce(null);
-      
-      errorHandler.handleClientNotFound.mockImplementation(() => {
-        throw new NotFoundException('Client not found');
-      });
-
-      const result = await service.bulkGenerateLetter(
-        { ...bulkDto, clientIds: ['client-1', 'client-2'] },
-        'test-user'
-      );
-
-      const failedResult = result.results.find(r => !r.success);
-      expect(failedResult).toBeDefined();
-      expect(failedResult?.error).toBeDefined();
-    });
-
-    it('should generate summary report', async () => {
-      const result = await service.bulkGenerateLetter(bulkDto, 'test-user');
-
-      expect(result.summary).toBeDefined();
-      expect(result.summary).toContain('3 successful');
-      expect(result.summary).toContain('0 failed');
-    });
-
-    it('should create audit log for bulk generation', async () => {
-      await service.bulkGenerateLetter(bulkDto, 'test-user');
-
-      expect(auditService.logEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          actor: 'test-user',
-          action: 'BULK_GENERATE_LETTERS',
-          entity: 'LETTER',
-        })
-      );
     });
   });
 

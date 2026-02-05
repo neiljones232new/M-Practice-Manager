@@ -42,7 +42,7 @@ export default function ClientsSummaryPage() {
     const needle = q.trim().toLowerCase();
     return rows.filter((c) => {
       const node = c.node;
-      const txt = `${node.name} ${node.ref || ''} ${node.registeredNumber || ''} ${node.utrNumber || ''}`.toLowerCase();
+      const txt = `${node.name} ${node.registeredNumber || node.id || ''} ${node.utrNumber || ''}`.toLowerCase();
       const matchesQ = !needle || txt.includes(needle);
       const matchesP = !portfolio || String(node.portfolioCode || '') === portfolio;
       const matchesS = !status || node.status === status;
@@ -85,7 +85,7 @@ export default function ClientsSummaryPage() {
     >
       <div className="card-mdj" style={{ marginBottom: '1rem' }}>
         <div className="filter-grid">
-          <input className="mdj-input" placeholder="Search name/ref/number/UTR…" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input className="mdj-input" placeholder="Search name/identifier/number/UTR…" value={q} onChange={(e) => setQ(e.target.value)} />
           <select className="mdj-select" value={portfolio} onChange={(e) => setPortfolio(e.target.value)}>
             <option value="">All Portfolios</option>
             {[1,3,7,9].map((p) => (
@@ -116,7 +116,7 @@ export default function ClientsSummaryPage() {
           <table className="mdj-table">
             <thead>
               <tr>
-                <th>M Code</th>
+                <th>Identifier</th>
                 <th>Status</th>
                 <th>Company Name</th>
                 <th>Company Number</th>
@@ -134,7 +134,7 @@ export default function ClientsSummaryPage() {
             <tbody>
               {filtered.map((c) => (
                 <tr key={c.node.id}>
-                  <td><span className="gold-ref">{c.node.ref || '—'}</span></td>
+                  <td><span className="gold-ref">{c.node.registeredNumber || c.node.id || '—'}</span></td>
                   <td>{c.node.status}</td>
                   <td>{c.node.name}</td>
                   <td>{c.node.registeredNumber || '—'}</td>

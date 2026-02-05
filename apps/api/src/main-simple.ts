@@ -47,7 +47,6 @@ app.get('/clients', (req, res) => {
   res.json([
     {
       id: '1',
-      ref: 'CLI001',
       name: 'ABC Limited',
       type: 'COMPANY',
       status: 'ACTIVE',
@@ -57,7 +56,6 @@ app.get('/clients', (req, res) => {
     },
     {
       id: '2', 
-      ref: 'CLI002',
       name: 'XYZ Partnership',
       type: 'PARTNERSHIP',
       status: 'ACTIVE',
@@ -101,10 +99,10 @@ app.get('/tasks', (req, res) => {
       id: '1',
       title: 'Prepare VAT Return',
       description: 'Quarterly VAT return for ABC Ltd',
-      status: 'PENDING',
+      status: 'TODO',
       priority: 'HIGH',
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      clientRef: 'CLI001'
+      clientId: '1'
     }
   ]);
 });
@@ -113,7 +111,7 @@ app.get('/services', (req, res) => {
   res.json([
     {
       id: '1',
-      clientRef: 'CLI001',
+      clientId: '1',
       kind: 'Annual Accounts',
       frequency: 'ANNUAL',
       fee: 1200,

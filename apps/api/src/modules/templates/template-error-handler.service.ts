@@ -208,52 +208,6 @@ export class TemplateErrorHandlerService {
   }
 
   /**
-   * Handle bulk generation errors
-   * Requirements: All
-   */
-  handleBulkGenerationError(error: Error, context?: { templateId?: string; clientCount?: number }): never {
-    const message = `Failed to complete bulk letter generation. ${context?.clientCount ? `Processing ${context.clientCount} clients.` : ''} Please try again or contact support if the problem persists.`;
-    this.logger.error(`Bulk generation error: ${error.message}`, error.stack);
-    throw new InternalServerErrorException({
-      message,
-      error: 'Bulk Generation Failed',
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      ...context,
-      details: error.message,
-    });
-  }
-
-  /**
-   * Handle ZIP file creation errors
-   * Requirements: All
-   */
-  handleZipCreationError(error: Error): never {
-    const message = `Failed to create ZIP file for bulk download. The individual documents were generated successfully, but packaging failed. Please try downloading documents individually.`;
-    this.logger.error(`ZIP creation error: ${error.message}`, error.stack);
-    throw new InternalServerErrorException({
-      message,
-      error: 'ZIP Creation Failed',
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      details: error.message,
-    });
-  }
-
-  /**
-   * Handle ZIP file not found errors
-   * Requirements: All
-   */
-  handleZipFileNotFound(zipFileId: string): never {
-    const message = `ZIP file not found or has expired. Bulk download files are only available for 24 hours. Please regenerate the letters if needed.`;
-    this.logger.warn(`ZIP file not found: ${zipFileId}`);
-    throw new NotFoundException({
-      message,
-      error: 'ZIP File Not Found',
-      statusCode: HttpStatus.NOT_FOUND,
-      zipFileId,
-    });
-  }
-
-  /**
    * Handle document save errors
    * Requirements: All
    */

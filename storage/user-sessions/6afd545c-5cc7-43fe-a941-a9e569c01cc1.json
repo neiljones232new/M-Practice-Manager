@@ -1,10 +1,10 @@
 {
-  "id": "e53d2384-d257-4572-9293-8c1cd86bdb96",
+  "id": "318837f5-e20b-4717-93cd-aa7cf93014d7",
   "userId": "6afd545c-5cc7-43fe-a941-a9e569c01cc1",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YWZkNTQ1Yy01Y2M3LTQzZmUtYTk0MS1hOWU1NjljMDFjYzEiLCJlbWFpbCI6Im5laWxAbWRqdGVhbS5jby51ayIsInJvbGUiOiJTVEFGRiIsInBvcnRmb2xpb3MiOlsxXSwiaWF0IjoxNzY5ODE2NDc0LCJleHAiOjE3Njk4MTczNzR9.JLWtHCYfumME6tPF0RNA90AM9fPVMdqZw5MJU5wKdMs",
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YWZkNTQ1Yy01Y2M3LTQzZmUtYTk0MS1hOWU1NjljMDFjYzEiLCJlbWFpbCI6Im5laWxAbWRqdGVhbS5jby51ayIsInJvbGUiOiJTVEFGRiIsInBvcnRmb2xpb3MiOlsxXSwiaWF0IjoxNzY5ODE2NDc0LCJleHAiOjE3NzA0MjEyNzR9.v8G4V1xFHN5O8lGVqAL16Om9Mhg3OjZLsWUeb9DbpyM",
-  "expiresAt": "2026-02-06T23:41:14.862Z",
+  "token": "local-dev-access-8a6ba56b-7b49-4aea-9729-5ff84f2d8006",
+  "refreshToken": "local-dev-refresh-80f608be-ed3b-4070-a0c1-b18dce8d2406",
+  "expiresAt": "2026-02-12T02:32:28.977Z",
   "rememberMe": false,
-  "createdAt": "2026-01-30T23:41:14.862Z",
-  "lastUsedAt": "2026-01-30T23:41:14.862Z"
+  "createdAt": "2026-02-05T02:32:28.977Z",
+  "lastUsedAt": "2026-02-05T02:32:28.977Z"
 }

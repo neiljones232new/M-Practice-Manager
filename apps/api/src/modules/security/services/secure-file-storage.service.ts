@@ -87,7 +87,7 @@ export class SecureFileStorageService {
   /**
    * Store encrypted client data
    */
-  async writeClientData(clientRef: string, clientData: any): Promise<void> {
+  async writeClientData(clientId: string, clientData: any): Promise<void> {
     const sensitiveFields = [
       'mainEmail', 
       'mainPhone', 
@@ -98,7 +98,7 @@ export class SecureFileStorageService {
     ];
 
     await this.writeSecureFile(
-      `clients/${clientRef}.json`,
+      `clients/${clientId}.json`,
       clientData,
       {
         encrypt: true,
@@ -111,7 +111,7 @@ export class SecureFileStorageService {
   /**
    * Read encrypted client data
    */
-  async readClientData(clientRef: string): Promise<any> {
+  async readClientData(clientId: string): Promise<any> {
     const sensitiveFields = [
       'mainEmail', 
       'mainPhone', 
@@ -122,7 +122,7 @@ export class SecureFileStorageService {
     ];
 
     return this.readSecureFile(
-      `clients/${clientRef}.json`,
+      `clients/${clientId}.json`,
       {
         encrypt: true,
         sensitiveFields,

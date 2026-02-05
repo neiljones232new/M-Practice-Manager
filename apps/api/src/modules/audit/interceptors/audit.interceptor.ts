@@ -92,8 +92,15 @@ export class AuditInterceptor implements NestInterceptor {
       const actorType = user ? 'USER' : 'API';
       
       // Extract entity ID from params or body
-      const entityId = params?.id || body?.id || body?.ref || query?.id;
-      const entityRef = body?.ref || params?.ref || query?.ref;
+      const entityId = params?.id || body?.id || body?.clientId || query?.id;
+      const entityRef =
+        body?.identifier ||
+        body?.registeredNumber ||
+        params?.identifier ||
+        query?.identifier ||
+        body?.ref ||
+        params?.ref ||
+        query?.ref;
 
       // Determine if operation was successful
       const success = !error;

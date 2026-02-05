@@ -567,15 +567,16 @@ export class DefaultTemplatesService implements OnModuleInit {
 
     for (const template of defaultTemplates) {
       try {
-        let existing = await this.tasksService.findServiceTemplate(
-          template.serviceKind,
-          template.frequency
+        let existing = (await this.tasksService.findAllServiceTemplates()).find(
+          (t) => t.serviceKind === template.serviceKind && t.frequency === template.frequency
         );
 
         if (!existing) {
           const legacyKinds = getLegacyKinds(template.serviceKind, template.frequency);
           for (const legacyKind of legacyKinds) {
-            existing = await this.tasksService.findServiceTemplate(legacyKind, template.frequency);
+            existing = (await this.tasksService.findAllServiceTemplates()).find(
+              (t) => t.serviceKind === legacyKind && t.frequency === template.frequency
+            );
             if (existing) break;
           }
         }

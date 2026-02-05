@@ -1,0 +1,10 @@
+{
+  "id": "f88f569f-8169-41b6-a534-037dd43665c9",
+  "userId": "local-dev-super-admin",
+  "token": "local-dev-access-d6035dc2-92d6-4e58-b0ee-6b0adff40d27",
+  "refreshToken": "local-dev-refresh-86ef2c08-7b6c-4b86-9fb8-310e235304f0",
+  "expiresAt": "2026-02-11T17:20:33.035Z",
+  "rememberMe": false,
+  "createdAt": "2026-02-04T17:20:33.035Z",
+  "lastUsedAt": "2026-02-04T17:20:33.035Z"
+}

@@ -9,6 +9,7 @@ import { User } from './modules/auth/entities/user.entity';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
+  logger.log(`ENV LOADED FROM: ${process.cwd()}`);
   
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],

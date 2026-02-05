@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statutory Accounts - AUTRUFUS LIMITED</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --brand-primary: #6D28D9;
+            --brand-muted: #EDE9FE;
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --border-subtle: rgba(2,6,23,0.12);
+        }
+
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.4;
+            margin: 0;
+            padding: 32mm 14mm 25mm;
+            color: var(--text-primary);
+            background: #fff;
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+        }
+
+        p {
+            margin: 6px 0;
+        }
+
+        ul {
+            margin: 6px 0 6px 18px;
+            padding: 0;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        /* Cover */
+        .cover {
+            text-align: center;
+            margin-top: 60mm;
+        }
+
+        .cover h1 {
+            color: var(--brand-primary);
+            font-size: 22pt;
+            margin-bottom: 12px;
+        }
+
+        .cover .meta {
+            font-size: 11pt;
+            color: var(--text-secondary);
+        }
+
+        /* Page heading (static, non-floating) */
+        .page-header {
+            margin-top: 10mm;
+            margin-bottom: 14px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--brand-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .page-header .company {
+            font-weight: 600;
+            color: var(--brand-primary);
+        }
+
+        .page-header .period {
+            font-size: 9.5pt;
+            color: var(--text-secondary);
+        }
+
+        .section {
+            margin: 12px 0;
+            page-break-inside: avoid;
+        }
+
+        .section.page-break {
+            page-break-before: always;
+        }
+
+        .section-title {
+            font-size: 12pt;
+            font-weight: 600;
+            color: var(--brand-primary);
+            margin: 12px 0 8px;
+        }
+
+        .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 20px;
+        }
+
+        /* Notes tables tighter + aligned like TaxCalc */
+        .notes .financial-table th,
+        .notes .financial-table td {
+            padding: 5px 8px;
+        }
+
+        .notes .financial-table th:first-child,
+        .notes .financial-table td:first-child {
+            width: 60%;
+        }
+
+        .notes .financial-table th.amount,
+        .notes .financial-table td.amount {
+            width: 20%;
+            text-align: right;
+        }
+
+        .financial-table th,
+        .financial-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .financial-table th {
+            text-transform: uppercase;
+            font-size: 9pt;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .amount {
+            text-align: right;
+        }
+
+        .subtotal-row {
+            background: var(--brand-muted);
+            font-weight: 600;
+        }
+
+        .total-row {
+            border-top: 1.5px solid var(--brand-primary);
+            font-weight: 700;
+        }
+
+        .indent {
+            padding-left: 18px;
+        }
+
+        .notes h4 {
+            color: var(--brand-primary);
+            margin-top: 16px;
+        }
+
+        .signature-block {
+            margin-top: 6px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .signature-block p {
+            margin: 4px 0;
+        }
+
+        .signature-line {
+            border-bottom: 1.5px solid var(--text-primary);
+            width: 200px;
+            height: 12px;
+        }
+
+        @media print {
+            body { padding: 0; }
+            .page-break { page-break-before: always; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            tr { break-inside: avoid; page-break-inside: avoid; }
+        }
+
+        @media screen {
+            body { background: #f6f5ff; padding: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cover -->
+    <div class="cover">
+        <h1>AUTRUFUS LIMITED</h1>
+        <div class="meta">Company Registration Number: 14662236</div>
+        <div class="meta">Statutory Accounts for the year ended 31/12/2025</div>
+    </div>
+
+    <!-- Company Information -->
+    <div class="section page-break">
+        <div class="page-header">
+            <div class="company">AUTRUFUS LIMITED</div>
+            <div class="period">Year ended 31/12/2025</div>
+        </div>
+        <div class="section-title">Company Information</div>
+        <table class="financial-table">
+            <tr>
+                <th>Company name</th>
+                <td>AUTRUFUS LIMITED</td>
+            </tr>
+            <tr>
+                <th>Company registration number</th>
+                <td>14662236</td>
+            </tr>
+            <tr>
+                <th>Registered office</th>
+                <td>
+                    54 Christie Drive<br>
+                    Huntingdon<br>
+                    PE29 6JN<br>England
+                </td>
+            </tr>
+            <tr>
+                <th>Directors</th>
+                <td>
+                    MARSHALL, Suzanne Karen
+                </td>
+            </tr>
+            <tr>
+                <th>Accounting period</th>
+                <td>01/01/2025 to 31/12/2025</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Directors' Report -->
+    <div class="section page-break">
+        <div class="page-header">
+            <div class="company">AUTRUFUS LIMITED</div>
+            <div class="period">Year ended 31/12/2025</div>
+        </div>
+        <div class="section-title">Directors' Report</div>
+        <p><strong>AUTRUFUS LIMITED</strong><br>Company No. 14662236</p>
+        <p>The directors present their report together with the financial statements for the year ended 31/12/2025.</p>
+        <p><strong>Directors</strong><br>The directors who held office during the year were as follows:</p>
+        <ul>
+            <li>MARSHALL, Suzanne Karen</li>
+        </ul>
+        <p><strong>Statement of Directors' Responsibilities</strong></p>
+        <p>The directors are responsible for preparing the Directors' Report and the financial statements in accordance with applicable law and regulations.</p>
+        <p>Company law requires the directors to prepare financial statements for each financial year. Under that law the directors have elected to prepare the financial statements in accordance with United Kingdom Generally Accepted Accounting Practice (United Kingdom Accounting Standards and applicable law).</p>
+        <p>Under company law the directors must not approve the financial statements unless they are satisfied that they give a true and fair view of the state of affairs of the company and of the profit or loss of the company for that period.</p>
+        <p>In preparing the financial statements the directors are required to:</p>
+        <ul>
+            <li>Select suitable accounting policies and then apply them consistently;</li>
+            <li>Make judgements and accounting estimates that are reasonable and prudent;</li>
+            <li>Prepare the financial statements on the going concern basis unless it is inappropriate to presume that the company will continue in business.</li>
+        </ul>
+        <p>The directors are responsible for keeping adequate accounting records that are sufficient to show and explain the company's transactions and disclose with reasonable accuracy at any time the financial position of the company and enable them to ensure that the financial statements comply with the Companies Act 2006.</p>
+        <p>They are also responsible for safeguarding the assets of the company and hence for taking reasonable steps for the prevention and detection of fraud and other irregularities.</p>
+        <p>The directors are responsible for the maintenance and integrity of the corporate and financial information included on the company's website. Legislation in the United Kingdom governing the preparation and dissemination of financial statements may differ from legislation in other jurisdictions.</p>
+        <p><strong>Small Company Rules</strong><br>This report has been prepared in accordance with the special provisions relating to companies subject to the small companies' regime within Part 15 of the Companies Act 2006.</p>
+        <div class="signature-block">
+        <p>On behalf of the board</p>
+        <p><strong>MARSHALL, Suzanne Karen</strong><br>Director<br>05/02/2026</p>
+        </div>
+    </div>
+
+    <!-- Accountants' Report -->
+    <div class="section page-break">
+        <div class="page-header">
+            <div class="company">AUTRUFUS LIMITED</div>
+            <div class="period">Year ended 31/12/2025</div>
+        </div>
+        <div class="section-title">Accountants' Report</div>
+        <p>In accordance with the engagement letter, and in order to assist the directors to fulfil their duties under the Companies Act 2006, we have compiled the financial statements of the company from the accounting records and information and explanations provided to us.</p>
+        <p>This report is made to the directors in accordance with the terms of our engagement. Our work has been undertaken to prepare for approval by the directors the financial statements that we have been engaged to compile, to report to the directors that we have done so, and to state those matters that we have agreed to state to them in this report and for no other purpose.</p>
+        <p>To the fullest extent permitted by law, we do not accept or assume responsibility to anyone other than the company and the company's directors for our work or for this report.</p>
+        <p>You have acknowledged on the balance sheet your duty to ensure that the company has kept proper accounting records and to prepare financial statements that give a true and fair view under the Companies Act 2006. You consider that the company is exempt from the statutory requirement for an audit for the year.</p>
+        <p>We have not been instructed to carry out an audit of the financial statements. For this reason, we have not verified the accuracy or completeness of the accounting records or information and explanations provided to us and do not, therefore, express any opinion on the financial statements.</p>
+        <p><strong>Signed</strong></p>
+        <p><strong>MDJ Practice</strong><br>
+            
+            05/02/2026
+        </p>
+    </div>
+
+    <!-- Profit and Loss -->
+    <div class="section page-break">
+        <div class="page-header">
+            <div class="company">AUTRUFUS LIMITED</div>
+            <div class="period">Year ended 31/12/2025</div>
+        </div>
+        <div class="section-title">Profit and Loss Account</div>
+        <table class="financial-table">
+            <thead>
+                <tr>
+                    <td></td>
+                    <td class="amount">31/12/2025</td>
+                    <td class="amount">31/12/2024</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="amount">£</td>
+                    <td class="amount">£</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Turnover</td>
+                    <td class="amount">£100,000</td>
+                    <td class="amount">£100,000</td>
+                </tr>
+                <tr>
+                    <td>Cost of sales</td>
+                    <td class="amount">(£5,000)</td>
+                    <td class="amount">(£5,000)</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td>Gross profit</td>
+                    <td class="amount">£95,000</td>
+                    <td class="amount">£95,000</td>
+                </tr>
+                <tr>
+                    <td>Administrative expenses</td>
+                    <td class="amount">(£46,000)</td>
+                    <td class="amount">(£46,000)</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td>Operating profit</td>
+                    <td class="amount">£50,000</td>
+                    <td class="amount">£50,000</td>
+                </tr>
+                <tr>
+                    <td>Interest payable</td>
+                    <td class="amount">(£0)</td>
+                    <td class="amount">(£0)</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td>Profit before taxation</td>
+                    <td class="amount">£50,000</td>
+                    <td class="amount">£50,000</td>
+                </tr>
+                <tr>
+                    <td>Tax on profit</td>
+                    <td class="amount">(£9,500)</td>
+                    <td class="amount">(£9,500)</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Profit for the financial year</td>
+                    <td class="amount">£40,500</td>
+                    <td class="amount">£40,500</td>
+                </tr>
+                <tr>
+                    <td>Dividends declared</td>
+                    <td class="amount">(£40,500)</td>
+                    <td class="amount">(£40,500)</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td>Retained profit for the financial year</td>
+                    <td class="amount">£0</td>
+                    <td class="amount">£0</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Balance Sheet -->
+    <div class="section page-break">
+        <div class="page-header">
+            <div class="company">AUTRUFUS LIMITED</div>
+            <div class="period">Year ended 31/12/2025</div>
+        </div>
+        <div class="section-title">Balance Sheet</div>
+        <table class="financial-table">
+            <thead>
+                <tr>
+                    <td></td>
+                    <td class="amount">31/12/2025</td>
+                    <td class="amount">31/12/2024</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="amount">£</td>
+                    <td class="amount">£</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Fixed assets</strong></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="indent">Tangible assets</td>
+                    <td class="amount">£9,000</td>
+                    <td class="amount">£10,000</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td>Total fixed assets</td>
+                    <td class="amount">£9,000</td>
+                    <td class="amount">£10,000</td>
+                </tr>
+                <tr>
+                    <td><strong>Current assets</strong></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="indent">Stocks</td>
+                    <td class="amount">£0</td>
+                    <td class="amount">£0</td>
+                </tr>
+                <tr>
+                    <td class="indent">Debtors</td>
+                    <td class="amount">£10,000</td>
+                    <td class="amount">£10,000</td>
+                </tr>
+                <tr>
+                    <td class="indent">Cash at bank and in hand</td>
+                    <td class="amount">£5,000</td>
+                    <td class="amount">£5,000</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td>Total current assets</td>
+                    <td class="amount">£16,000</td>
+                    <td class="amount">£16,000</td>
+                </tr>
+                <tr>
+                    <td><strong>Creditors: amounts falling due within one year</strong></td>
+                    <td class="amount">(£24,999)</td>
+                    <td class="amount">(£25,999)</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td><strong>Net current assets / (liabilities)</strong></td>
+                    <td class="amount">£8,999</td>
+                    <td class="amount">£9,999</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td><strong>Total assets less current liabilities</strong></td>
+                    <td class="amount">£15,999</td>
+                    <td class="amount">£15,999</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Net assets</td>
+                    <td class="amount">£1</td>
+                    <td class="amount">£1</td>
+                </tr>
+                <tr>
+                    <td><strong>Capital and reserves</strong></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="indent">Called up share capital</td>
+                    <td class="amount">£1</td>
+                    <td class="amount">£1</td>
+                </tr>
+                <tr>
+                    <td class="indent">Profit and loss account</td>
+                    <td class="amount">£0</td>
+                    <td class="amount">£0</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Shareholders' funds</td>
+                    <td class="amount">£1</td>
+                    <td class="amount">£1</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="notes">For the year ended 31/12/2025 the company was entitled to exemption from audit under section 477 of the Companies Act 2006 relating to small companies.</p>
+        <p class="notes">The members have not required the company to obtain an audit in accordance with section 476 of the Companies Act 2006.</p>
+        <p class="notes">The directors acknowledge their responsibilities for complying with the requirements of the Companies Act 2006 with respect to accounting records and the preparation of accounts.</p>
+        <p class="notes">These accounts have been prepared in accordance with the provisions applicable to companies subject to the small companies' regime.</p>
+
+        <div class="signature-block">
+        <p class="notes">On behalf of the board</p>
+        <div style="margin-top: 8px;">
+            <div class="signature-line"></div>
+            <p><strong>MARSHALL, Suzanne Karen</strong></p>
+            <p>Director</p>
+            <p>05/02/2026</p>
+        </div>
+        </div>
+
+        <p class="notes" style="margin-top: 10px;">The notes on the following pages form part of these financial statements.</p>
+    </div>
+
+    <!-- Notes -->
+    <div class="section page-break notes">
+        <div class="page-header">
+            <div class="company">AUTRUFUS LIMITED</div>
+            <div class="period">Year ended 31/12/2025</div>
+        </div>
+        <div class="section-title">Notes to the Accounts</div>
+        <h4>1. General information</h4>
+        <p>AUTRUFUS LIMITED is a private company limited by shares, incorporated in England and Wales. The registered office is 54 Christie Drive, Huntingdon, PE29 6JN.</p>
+
+        <h4>2. Accounting policies</h4>
+        <p><strong>Basis of preparation</strong><br>These accounts have been prepared under the historical cost convention and in accordance with applicable UK accounting standards.</p>
+
+        <p><strong>Going concern:</strong> The accounts have been prepared on a going concern basis.</p>
+
+        <p><strong>Turnover</strong><br>Turnover represents the amounts derived from the provision of goods and services falling within the company&#x27;s ordinary activities, after deduction of trade discounts, VAT and other sales related taxes.</p>
+
+        <p><strong>Tangible fixed assets and depreciation</strong><br>Depreciation is provided on a STRAIGHT_LINE basis.</p>
+
+        <h4>3. Share capital</h4>
+        <p>1 Ordinary shares shares of £1 each.</p>
+
+
+        <h4>5. Tangible assets</h4>
+        <table class="financial-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="amount">Office Equipment</th>
+                    <th class="amount">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                            Cost b/fwd
+                    </td>
+                    <td class="amount">£10,000</td>
+                    <td class="amount">£10,000</td>
+                </tr>
+                <tr>
+                    <td>
+                            Additions
+                    </td>
+                    <td class="amount">£0</td>
+                    <td class="amount">£0</td>
+                </tr>
+                <tr>
+                    <td>
+                            Disposals
+                    </td>
+                    <td class="amount">£0</td>
+                    <td class="amount">£0</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td>
+                            Cost c/fwd
+                    </td>
+                    <td class="amount">£10,000</td>
+                    <td class="amount">£10,000</td>
+                </tr>
+                <tr>
+                    <td>
+                            Depreciation b/fwd
+                    </td>
+                    <td class="amount">£0</td>
+                    <td class="amount">£0</td>
+                </tr>
+                <tr>
+                    <td>
+                            Depreciation charge
+                    </td>
+                    <td class="amount">£1,000</td>
+                    <td class="amount">£1,000</td>
+                </tr>
+                <tr>
+                    <td>
+                            Depreciation on disposals
+                    </td>
+                    <td class="amount">£0</td>
+                    <td class="amount">£0</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td>
+                            Depreciation c/fwd
+                    </td>
+                    <td class="amount">£1,000</td>
+                    <td class="amount">£1,000</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td>
+                          Net book value (2025)
+                    </td>
+                    <td class="amount">£9,000</td>
+                    <td class="amount">£9,000</td>
+                </tr>
+                <tr>
+                    <td>
+                            Net book value (2024)
+                    </td>
+                    <td class="amount">£10,000</td>
+                    <td class="amount">£10,000</td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <h4>7. Audit Exemption</h4>
+        <p>
+            The company is entitled to exemption from audit under
+            
+            section 477 of the Companies Act 2006 relating to small companies
+            .
+        </p>
+
+    </div>
+
+    <!-- Directors' Approval -->
+    <div class="section page-break">
+        <div class="page-header">
+            <div class="company">AUTRUFUS LIMITED</div>
+            <div class="period">Year ended 31/12/2025</div>
+        </div>
+        <div class="section-title">Directors' Approval</div>
+        <p>Approved and authorised for issue on 05/02/2026.</p>
+        <p><strong>MARSHALL, Suzanne Karen</strong><br>Director</p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "id": "task_1770243277759_06fip4x",
+  "clientId": "4P001",
+  "serviceId": "service_1770243206810_h2iwni339",
+  "title": "Client review and approval",
+  "description": "Send draft accounts to client for review and approval",
+  "status": "OPEN",
+  "priority": "MEDIUM",
+  "tags": [
+    "client-review",
+    "approval",
+    "auto-generated"
+  ],
+  "createdAt": "2026-02-04T22:14:37.759Z",
+  "updatedAt": "2026-02-04T22:14:37.759Z"
+}

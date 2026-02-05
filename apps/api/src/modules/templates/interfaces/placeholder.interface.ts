@@ -10,7 +10,7 @@ export interface PlaceholderContext {
 export interface ClientPlaceholderData {
   // Client basic info
   clientName: string;
-  clientReference: string;
+  clientIdentifier: string;
   clientType: 'COMPANY' | 'INDIVIDUAL' | 'SOLE_TRADER' | 'PARTNERSHIP' | 'LLP';
   
   // Company specific

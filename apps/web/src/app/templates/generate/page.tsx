@@ -48,7 +48,6 @@ interface Template {
 
 interface Client {
   id: string;
-  ref: string;
   name: string;
   type: ClientType;
   mainEmail?: string;
@@ -254,7 +253,7 @@ export default function GenerateLetterPage() {
       return (
         !needle ||
         c.name.toLowerCase().includes(needle) ||
-        (c.ref ?? '').toLowerCase().includes(needle) ||
+        (c.registeredNumber ?? c.id ?? '').toLowerCase().includes(needle) ||
         (c.mainEmail ?? '').toLowerCase().includes(needle)
       );
     });
@@ -301,9 +300,9 @@ export default function GenerateLetterPage() {
             key === 'name' || key === 'clientname' || key === 'client_name') {
           value = client.name;
         }
-        // Client reference variations
+        // Client identifier variations
         else if (key.includes('ref') || key.includes('reference') || key === 'client_ref') {
-          value = client.ref || '';
+          value = client.registeredNumber || client.id || '';
         }
         // Company name (same as client name for companies)
         else if (key.includes('company') && key.includes('name')) {
@@ -374,7 +373,7 @@ export default function GenerateLetterPage() {
                 break;
               case 'ref':
               case 'reference':
-                value = client.ref;
+                value = client.registeredNumber || client.id;
                 break;
               case 'email':
               case 'mainemail':
@@ -618,7 +617,7 @@ export default function GenerateLetterPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${selectedClient?.ref}-${selectedTemplate?.name}-${new Date().toISOString().slice(0, 10)}.${format.toLowerCase()}`;
+      a.download = `${selectedClient?.registeredNumber || selectedClient?.id}-${selectedTemplate?.name}-${new Date().toISOString().slice(0, 10)}.${format.toLowerCase()}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -1011,7 +1010,7 @@ export default function GenerateLetterPage() {
           <div className="card-mdj" style={{ marginBottom: '1rem' }}>
             <input
               aria-label="Search clients"
-              placeholder="Search by name, reference, or email..."
+              placeholder="Search by name, identifier, or email..."
               value={clientSearch}
               onChange={(e) => setClientSearch(e.target.value)}
               className="mdj-input"
@@ -1059,7 +1058,7 @@ export default function GenerateLetterPage() {
                   >
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                        <span className="mdj-ref">{client.ref}</span>
+                        <span className="mdj-ref">{client.registeredNumber || client.id}</span>
                         <span style={{ fontWeight: 600, fontSize: '1.05rem' }}>{client.name}</span>
                         <span className="mdj-badge mdj-badge-soft">{client.type}</span>
                       </div>
@@ -1188,7 +1187,7 @@ export default function GenerateLetterPage() {
               <div>
                 <label className="mdj-label">Client</label>
                 <div style={{ fontWeight: 600 }}>
-                  {selectedClient.ref} - {selectedClient.name}
+                  {selectedClient.registeredNumber || selectedClient.id} - {selectedClient.name}
                 </div>
               </div>
               {selectedService && (
@@ -1354,7 +1353,7 @@ export default function GenerateLetterPage() {
               <div>
                 <label className="mdj-label">Client</label>
                 <div style={{ fontWeight: 600 }}>
-                  {selectedClient.ref} - {selectedClient.name}
+                  {selectedClient.registeredNumber || selectedClient.id} - {selectedClient.name}
                 </div>
               </div>
               {selectedService && (

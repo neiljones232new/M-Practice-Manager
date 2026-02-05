@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { CompaniesHouseService } from './companies-house.service';
 import { CompaniesHouseController } from './companies-house.controller';
-import { FileStorageModule } from '../file-storage/file-storage.module';
 import { ClientsModule } from '../clients/clients.module';
 import { FilingsModule } from '../filings/filings.module';
 import { IntegrationsModule } from '../integrations/integrations.module';
@@ -15,7 +14,6 @@ import { ServicesModule } from '../services/services.module';
     HttpModule,
     ConfigModule,
     PrismaModule,
-    FileStorageModule,
     ClientsModule,
     FilingsModule,
     IntegrationsModule,

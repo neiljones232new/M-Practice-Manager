@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
-import { FileStorageService } from '../file-storage/file-storage.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePortfolioDto, UpdatePortfolioDto, MergePortfoliosDto } from './dto';
 
 export interface Portfolio {
@@ -14,94 +14,116 @@ export interface Portfolio {
 
 @Injectable()
 export class PortfoliosService {
-  constructor(private fileStorage: FileStorageService) {}
+  constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<Portfolio[]> {
-    let portfolios: Portfolio[] = [];
+    let portfolios = await (this.prisma as any).portfolio.findMany({
+      orderBy: { code: 'asc' },
+    });
 
-    try {
-      portfolios = await this.fileStorage.readJson<Portfolio[]>('config', 'portfolios');
-    } catch (error) {
-      if (error.message.includes('not found')) {
-        portfolios = await this.initializeDefaultPortfolios();
-      } else {
-        throw error;
-      }
+    if (!portfolios.length) {
+      await (this.prisma as any).portfolio.create({
+        data: {
+          code: 1,
+          name: 'Main Portfolio',
+          description: 'Default client portfolio',
+        },
+      });
+      portfolios = await (this.prisma as any).portfolio.findMany({
+        orderBy: { code: 'asc' },
+      });
     }
 
-    return this.syncPortfoliosWithClients(portfolios || []);
+    const counts = await (this.prisma as any).client.groupBy({
+      by: ['portfolioCode'],
+      _count: { _all: true },
+    });
+    const countMap = new Map<number, number>(
+      counts.map((c: any) => [c.portfolioCode, c._count._all])
+    );
+
+    return portfolios.map((p: any) => ({
+      ...p,
+      enabled: true,
+      clientCount: countMap.get(p.code) ?? 0,
+    }));
   }
 
   async findOne(code: number): Promise<Portfolio> {
-    const portfolios = await this.findAll();
-    const portfolio = portfolios.find(p => p.code === code);
-    
-    if (!portfolio) {
-      throw new NotFoundException(`Portfolio with code ${code} not found`);
-    }
-    
-    return portfolio;
+    const portfolio = await (this.prisma as any).portfolio.findUnique({ where: { code } });
+    if (!portfolio) throw new NotFoundException(`Portfolio with code ${code} not found`);
+
+    const clientCount = await (this.prisma as any).client.count({
+      where: { portfolioCode: code },
+    });
+
+    return { ...portfolio, enabled: true, clientCount };
   }
 
   async create(createPortfolioDto: CreatePortfolioDto): Promise<Portfolio> {
-    const portfolios = await this.findAll();
-    
-    // Check if code already exists
-    if (createPortfolioDto.code && portfolios.some(p => p.code === createPortfolioDto.code)) {
-      throw new BadRequestException(`Portfolio with code ${createPortfolioDto.code} already exists`);
+    if (createPortfolioDto.code) {
+      const existing = await (this.prisma as any).portfolio.findUnique({
+        where: { code: createPortfolioDto.code },
+      });
+      if (existing) {
+        throw new BadRequestException(`Portfolio with code ${createPortfolioDto.code} already exists`);
+      }
     }
-    
-    // Generate next code if not provided
-    const code = createPortfolioDto.code || Math.max(...portfolios.map(p => p.code), 0) + 1;
-    
-    const newPortfolio: Portfolio = {
-      code,
-      name: createPortfolioDto.name,
-      description: createPortfolioDto.description,
-      enabled: true,
-      clientCount: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    
-    portfolios.push(newPortfolio);
-    await this.fileStorage.writeJson('config', 'portfolios', portfolios);
-    
-    return newPortfolio;
+
+    let code = createPortfolioDto.code;
+    if (!code) {
+      const latest = await (this.prisma as any).portfolio.findFirst({
+        orderBy: { code: 'desc' },
+      });
+      code = (latest?.code ?? 0) + 1;
+    }
+
+    const created = await (this.prisma as any).portfolio.create({
+      data: {
+        code,
+        name: createPortfolioDto.name,
+        description: createPortfolioDto.description,
+      },
+    });
+
+    return { ...created, enabled: true, clientCount: 0 };
   }
 
   async update(code: number, updatePortfolioDto: UpdatePortfolioDto): Promise<Portfolio> {
-    const portfolios = await this.findAll();
-    const index = portfolios.findIndex(p => p.code === code);
-    
-    if (index === -1) {
+    const existing = await (this.prisma as any).portfolio.findUnique({ where: { code } });
+    if (!existing) {
       throw new NotFoundException(`Portfolio with code ${code} not found`);
     }
-    
-    portfolios[index] = {
-      ...portfolios[index],
-      ...updatePortfolioDto,
-      updatedAt: new Date(),
-    };
-    
-    await this.fileStorage.writeJson('config', 'portfolios', portfolios);
-    return portfolios[index];
+
+    const updated = await (this.prisma as any).portfolio.update({
+      where: { code },
+      data: {
+        name: updatePortfolioDto.name ?? existing.name,
+        description: updatePortfolioDto.description ?? existing.description,
+      },
+    });
+
+    const clientCount = await (this.prisma as any).client.count({
+      where: { portfolioCode: code },
+    });
+
+    return { ...updated, enabled: true, clientCount };
   }
 
   async remove(code: number): Promise<void> {
-    const portfolios = await this.findAll();
-    const portfolio = portfolios.find(p => p.code === code);
-    
-    if (!portfolio) {
+    const existing = await (this.prisma as any).portfolio.findUnique({ where: { code } });
+    if (!existing) {
       throw new NotFoundException(`Portfolio with code ${code} not found`);
     }
-    
-    if (portfolio.clientCount > 0) {
+
+    const clientCount = await (this.prisma as any).client.count({
+      where: { portfolioCode: code },
+    });
+    if (clientCount > 0) {
       throw new BadRequestException('Cannot delete portfolio with existing clients');
     }
-    
-    const filteredPortfolios = portfolios.filter(p => p.code !== code);
-    await this.fileStorage.writeJson('config', 'portfolios', filteredPortfolios);
+
+    await (this.prisma as any).portfolio.delete({ where: { code } });
   }
 
   async getStats(): Promise<{
@@ -109,142 +131,82 @@ export class PortfoliosService {
     totalClients: number;
     avgClientsPerPortfolio: number;
   }> {
-    const portfolios = await this.findAll();
-    const totalClients = portfolios.reduce((sum, p) => sum + p.clientCount, 0);
-    
+    const [totalPortfolios, totalClients] = await Promise.all([
+      (this.prisma as any).portfolio.count(),
+      (this.prisma as any).client.count(),
+    ]);
+
     return {
-      totalPortfolios: portfolios.length,
+      totalPortfolios,
       totalClients,
-      avgClientsPerPortfolio: portfolios.length > 0 ? Math.round(totalClients / portfolios.length) : 0,
+      avgClientsPerPortfolio:
+        totalPortfolios > 0 ? Math.round(totalClients / totalPortfolios) : 0,
     };
   }
 
   async merge(mergeDto: MergePortfoliosDto): Promise<Portfolio> {
-    const portfolios = await this.findAll();
-    
-    // Validate source portfolios exist
-    const sourcePortfolios = portfolios.filter(p => mergeDto.sourcePortfolioCodes.includes(p.code));
-    if (sourcePortfolios.length !== mergeDto.sourcePortfolioCodes.length) {
+    const sourceCodes = mergeDto.sourcePortfolioCodes;
+    const sourcePortfolios = await (this.prisma as any).portfolio.findMany({
+      where: { code: { in: sourceCodes } },
+    });
+    if (sourcePortfolios.length !== sourceCodes.length) {
       throw new BadRequestException('One or more source portfolios not found');
     }
-    
-    let targetPortfolio: Portfolio;
-    
+
+    let targetPortfolio: any;
+
     if (mergeDto.targetPortfolioCode) {
-      // Merge into existing portfolio
-      targetPortfolio = portfolios.find(p => p.code === mergeDto.targetPortfolioCode);
+      targetPortfolio = await (this.prisma as any).portfolio.findUnique({
+        where: { code: mergeDto.targetPortfolioCode },
+      });
       if (!targetPortfolio) {
         throw new NotFoundException(`Target portfolio with code ${mergeDto.targetPortfolioCode} not found`);
       }
     } else if (mergeDto.newPortfolioName) {
-      // Create new portfolio
-      const newCode = Math.max(...portfolios.map(p => p.code), 0) + 1;
-      targetPortfolio = {
-        code: newCode,
-        name: mergeDto.newPortfolioName,
-        description: 'Merged portfolio',
-        enabled: true,
-        clientCount: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      portfolios.push(targetPortfolio);
+      const latest = await (this.prisma as any).portfolio.findFirst({
+        orderBy: { code: 'desc' },
+      });
+      const newCode = (latest?.code ?? 0) + 1;
+      targetPortfolio = await (this.prisma as any).portfolio.create({
+        data: {
+          code: newCode,
+          name: mergeDto.newPortfolioName,
+          description: 'Merged portfolio',
+        },
+      });
     } else {
       throw new BadRequestException('Either targetPortfolioCode or newPortfolioName must be provided');
     }
-    
-    // Calculate total client count
-    const totalClients = sourcePortfolios.reduce((sum, p) => sum + p.clientCount, 0);
-    targetPortfolio.clientCount += totalClients;
-    targetPortfolio.updatedAt = new Date();
-    
-    // Remove source portfolios
-    const remainingPortfolios = portfolios.filter(p => !mergeDto.sourcePortfolioCodes.includes(p.code));
-    
-    await this.fileStorage.writeJson('config', 'portfolios', remainingPortfolios);
-    return targetPortfolio;
+
+    await (this.prisma as any).$transaction([
+      (this.prisma as any).client.updateMany({
+        where: { portfolioCode: { in: sourceCodes } },
+        data: { portfolioCode: targetPortfolio.code },
+      }),
+      (this.prisma as any).portfolio.deleteMany({
+        where: { code: { in: sourceCodes, not: targetPortfolio.code } },
+      }),
+    ]);
+
+    const clientCount = await (this.prisma as any).client.count({
+      where: { portfolioCode: targetPortfolio.code },
+    });
+
+    return { ...targetPortfolio, enabled: true, clientCount };
   }
 
-  private async initializeDefaultPortfolios(): Promise<Portfolio[]> {
-    const defaultPortfolios: Portfolio[] = [
-      {
-        code: 1,
-        name: 'Main Portfolio',
-        description: 'Default client portfolio',
-        enabled: true,
-        clientCount: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ];
-    
-    await this.fileStorage.writeJson('config', 'portfolios', defaultPortfolios);
-    return defaultPortfolios;
-  }
+  async getClientsInPortfolio(code: number, page: number, limit: number) {
+    const total = await (this.prisma as any).client.count({
+      where: { portfolioCode: code },
+    });
+    const totalPages = limit > 0 ? Math.ceil(total / limit) : 1;
+    const clients = await (this.prisma as any).client.findMany({
+      where: { portfolioCode: code },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    });
 
-  private async syncPortfoliosWithClients(existing: Portfolio[]): Promise<Portfolio[]> {
-    const portfolios = [...existing];
-    const counts = new Map<number, number>();
-    const now = new Date();
-
-    const clientFiles = await this.fileStorage.listAllClientFiles();
-    for (const entry of clientFiles) {
-      counts.set(entry.portfolioCode, entry.files.length);
-    }
-
-    let changed = false;
-
-    for (const [code, clientCount] of counts.entries()) {
-      const found = portfolios.find(p => p.code === code);
-      if (!found) {
-        portfolios.push({
-          code,
-          name: `Portfolio ${code}`,
-          description: 'Imported from existing client data',
-          enabled: true,
-          clientCount,
-          createdAt: now,
-          updatedAt: now,
-        });
-        changed = true;
-        continue;
-      }
-
-      if (!found.createdAt) {
-        found.createdAt = now;
-        changed = true;
-      }
-
-      if (found.clientCount !== clientCount) {
-        found.clientCount = clientCount;
-        found.updatedAt = now;
-        changed = true;
-      }
-    }
-
-    for (const portfolio of portfolios) {
-      const currentCount = counts.get(portfolio.code) ?? 0;
-      if (portfolio.clientCount !== currentCount) {
-        portfolio.clientCount = currentCount;
-        portfolio.updatedAt = now;
-        changed = true;
-      }
-      if (portfolio.enabled === undefined) {
-        portfolio.enabled = true;
-        changed = true;
-      }
-      if (!portfolio.createdAt) {
-        portfolio.createdAt = now;
-        changed = true;
-      }
-    }
-
-    portfolios.sort((a, b) => a.code - b.code);
-
-    if (changed) {
-      await this.fileStorage.writeJson('config', 'portfolios', portfolios);
-    }
-
-    return portfolios;
+    return { clients, total, page, limit, totalPages };
   }
 }

@@ -1,0 +1,14 @@
+{
+  "id": "C177024356931605v8jupg1",
+  "clientId": "client_1770243569247_rw3rgg4h3",
+  "type": "ANNUAL_ACCOUNTS",
+  "description": "Annual Accounts Filing",
+  "dueDate": "2026-11-06T00:00:00.000Z",
+  "status": "PENDING",
+  "source": "COMPANIES_HOUSE",
+  "reference": "16234691",
+  "period": "2026-02-28",
+  "createdAt": "2026-02-04T22:19:29.316Z",
+  "updatedAt": "2026-02-04T22:20:13.787Z",
+  "serviceId": "service_1770243569327_xoeljfgan"
+}

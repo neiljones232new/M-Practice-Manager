@@ -9,7 +9,6 @@ import { ServicesModule } from '../services/services.module';
 import { IntegrationsModule } from '../integrations/integrations.module';
 import { DashboardModule } from '../dashboard/dashboard.module';
 import { FilingsModule } from '../filings/filings.module'; // ✅ add this
-import { DatabaseModule } from '../database/database.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { DatabaseModule } from '../database/database.module';
     forwardRef(() => DashboardModule),
     forwardRef(() => FilingsModule), // ✅ prevents circular dependency later
     IntegrationsModule,
-    DatabaseModule,
   ],
   controllers: [TasksController],
   providers: [TasksService, DefaultTemplatesService, StandaloneTaskTemplatesService],       

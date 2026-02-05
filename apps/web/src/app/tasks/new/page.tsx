@@ -142,7 +142,7 @@ export default function NewTaskPage() {
 
   const clientOptions = clients.map(client => ({
     value: client.id,
-    label: `${client.ref} - ${client.name}`,
+    label: `${client.registeredNumber || client.id} - ${client.name}`,
   }));
 
   const serviceOptions = [

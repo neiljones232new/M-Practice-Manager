@@ -10,13 +10,9 @@ import { ServicesService } from '../services/services.service';
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { AuditService } from '../audit/audit.service';
 import * as crypto from 'crypto';
-import * as archiver from 'archiver';
 import {
   GeneratedLetter,
   GenerateLetterDto,
-  BulkGenerateLetterDto,
-  BulkGenerationResult,
-  BulkGenerationItem,
   LetterFilters,
   LetterStatus,
   LetterDownloadResult,
@@ -53,7 +49,7 @@ export class LetterGenerationService {
       // Step 1: Retrieve template
       const template = await this.templatesService.getTemplate(dto.templateId);
       
-      if (!template.isActive) {
+      if (template.isActive === false) {
         this.errorHandler.handleTemplateInactive(dto.templateId, template.name);
       }
 
@@ -140,7 +136,7 @@ export class LetterGenerationService {
           primaryDoc.buffer,
           template,
           client.name,
-          client.ref,
+          client.id,
           dto.serviceId,
           primaryDoc.format,
           userId,
@@ -152,7 +148,7 @@ export class LetterGenerationService {
       const generatedLetter = await this.createGeneratedLetterRecord(
         template,
         client.name,
-        client.ref,
+        client.id,
         serviceName,
         dto.serviceId,
         documentId,
@@ -221,125 +217,6 @@ export class LetterGenerationService {
   }
 
   /**
-   * Generate letters in bulk for multiple clients
-   * Requirements: 7.1, 7.2, 7.3
-   */
-  async bulkGenerateLetter(
-    dto: BulkGenerateLetterDto,
-    userId: string,
-  ): Promise<BulkGenerationResult> {
-    try {
-      this.logger.log(
-        `Starting bulk letter generation: template=${dto.templateId}, clients=${dto.clientIds.length}`,
-      );
-
-      const results: BulkGenerationItem[] = [];
-      const successfulLetters: GeneratedLetter[] = [];
-      let successCount = 0;
-      let failureCount = 0;
-
-      // Get template for naming
-      const template = await this.templatesService.getTemplate(dto.templateId);
-
-      // Process each client sequentially
-      for (const clientId of dto.clientIds) {
-        try {
-          // Get client name for logging
-          const client = await this.clientsService.findOne(clientId);
-          const clientName = client?.name || clientId;
-
-          // Generate letter for this client
-          const generateDto: GenerateLetterDto = {
-            templateId: dto.templateId,
-            clientId,
-            serviceId: dto.serviceId,
-            placeholderValues: dto.placeholderValues,
-            outputFormats: dto.outputFormats || ['PDF'],
-            autoSave: true,
-          };
-
-          const generatedLetter = await this.generateLetter(generateDto, userId);
-
-          results.push({
-            clientId,
-            clientName,
-            success: true,
-            letterId: generatedLetter.id,
-          });
-
-          successfulLetters.push(generatedLetter);
-          successCount++;
-          this.logger.log(`Bulk generation success for client: ${clientName}`);
-        } catch (error) {
-          results.push({
-            clientId,
-            clientName: clientId,
-            success: false,
-            error: error.message,
-          });
-
-          failureCount++;
-          this.logger.warn(`Bulk generation failed for client ${clientId}: ${error.message}`);
-        }
-      }
-
-      // Generate ZIP file if there are successful generations
-      let zipFileId: string | undefined;
-      if (successfulLetters.length > 0) {
-        try {
-          zipFileId = await this.createBulkLettersZip(
-            successfulLetters,
-            template.name,
-            dto.outputFormats || ['PDF'],
-            userId,
-          );
-          this.logger.log(`ZIP file created: ${zipFileId}`);
-        } catch (error) {
-          this.logger.error(`Failed to create ZIP file: ${error.message}`, error.stack);
-          // Don't fail the entire operation if ZIP creation fails
-        }
-      }
-
-      // Generate summary
-      const summary = `Bulk generation completed: ${successCount} successful, ${failureCount} failed out of ${dto.clientIds.length} total`;
-
-      this.logger.log(summary);
-
-      // Audit log bulk generation
-      await this.auditService.logEvent({
-        actor: userId,
-        actorType: 'USER',
-        action: 'BULK_GENERATE_LETTERS',
-        entity: 'LETTER',
-        entityRef: `${template.name} - ${dto.clientIds.length} clients`,
-        metadata: {
-          templateId: dto.templateId,
-          templateName: template.name,
-          totalRequested: dto.clientIds.length,
-          successCount,
-          failureCount,
-          zipFileId,
-          clientIds: dto.clientIds,
-        },
-        severity: 'MEDIUM',
-        category: 'DATA',
-      });
-
-      return {
-        totalRequested: dto.clientIds.length,
-        successCount,
-        failureCount,
-        results,
-        zipFileId,
-        summary,
-      };
-    } catch (error) {
-      this.logger.error(`Bulk letter generation failed: ${error.message}`, error.stack);
-      throw error;
-    }
-  }
-
-  /**
    * Get all generated letters with optional filters
    * Requirements: 5.1, 5.2
    */
@@ -355,7 +232,7 @@ export class LetterGenerationService {
 
       const resolvedClient = filters.clientId ? await this.clientsService.findOne(filters.clientId) : null;
       const acceptableClientIds = filters.clientId
-        ? new Set([filters.clientId, resolvedClient?.id, resolvedClient?.ref].filter(Boolean).map(String))
+        ? new Set([filters.clientId, resolvedClient?.id, resolvedClient?.registeredNumber].filter(Boolean).map(String))
         : null;
 
       // Apply filters
@@ -471,48 +348,6 @@ export class LetterGenerationService {
   }
 
   /**
-   * Download bulk generated letters as a ZIP file
-   * Requirements: 8.4
-   */
-  async downloadBulkLettersZip(zipFileId: string): Promise<LetterDownloadResult> {
-    try {
-      this.logger.log(`Downloading bulk letters ZIP: ${zipFileId}`);
-
-      // Get the ZIP file from storage
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      const storagePath = process.env.STORAGE_PATH || '../../storage';
-      const zipDir = path.join(storagePath, 'bulk-letters-zip');
-      const zipPath = path.join(zipDir, zipFileId);
-
-      // Check if file exists
-      const { existsSync } = await import('fs');
-      if (!existsSync(zipPath)) {
-        this.errorHandler.handleZipFileNotFound(zipFileId);
-      }
-
-      // Read the ZIP file
-      const zipBuffer = await fs.readFile(zipPath);
-
-      // Generate filename
-      const timestamp = new Date().toISOString().split('T')[0];
-      const filename = `bulk_letters_${timestamp}.zip`;
-
-      return {
-        buffer: zipBuffer,
-        filename,
-        mimeType: 'application/zip',
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      this.logger.error(`Failed to download bulk letters ZIP: ${error.message}`, error.stack);
-      this.errorHandler.handleGenericError('downloading bulk ZIP', error as Error, { zipFileId });
-    }
-  }
-
-  /**
    * Save generated document to Documents module
    * Requirements: 4.1, 4.2, 4.3, 4.4
    * @private
@@ -539,17 +374,8 @@ export class LetterGenerationService {
         mimeType,
         size: buffer.length,
         clientId,
-        serviceId,
-        category: DocumentCategory.CORRESPONDENCE,
-        tags: [
-          'letter',
-          'generated',
-          template.category.toLowerCase(),
-          template.name.toLowerCase().replace(/\s+/g, '-'),
-          new Date().getFullYear().toString(),
-        ],
-        description: `Generated letter from template: ${template.name}`,
-        uploadedBy: userId,
+        category: DocumentCategory.REPORTS,
+        uploadedById: userId,
       };
 
       const result = await this.documentsService.uploadDocument(buffer, createDocumentDto);
@@ -821,106 +647,7 @@ export class LetterGenerationService {
   }
 
   /**
-   * Create a ZIP file containing multiple generated letters
-   * Requirements: 8.4
-   * @private
-   */
-  private async createBulkLettersZip(
-    letters: GeneratedLetter[],
-    templateName: string,
-    formats: ('PDF' | 'DOCX')[],
-    userId: string,
-  ): Promise<string> {
-    try {
-      this.logger.log(`Creating ZIP file for ${letters.length} letters`);
-
-      // Create a unique ID for the ZIP file
-      const zipFileId = `bulk_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.zip`;
-
-      // Ensure storage directory exists
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      const { existsSync } = await import('fs');
-      const storagePath = process.env.STORAGE_PATH || '../../storage';
-      const zipDir = path.join(storagePath, 'bulk-letters-zip');
-      
-      if (!existsSync(zipDir)) {
-        await fs.mkdir(zipDir, { recursive: true });
-      }
-
-      const zipPath = path.join(zipDir, zipFileId);
-
-      // Create archiver instance
-      const archive = archiver('zip', {
-        zlib: { level: 9 }, // Maximum compression
-      });
-
-      // Create a write stream for the ZIP file
-      const { createWriteStream } = await import('fs');
-      const output = createWriteStream(zipPath);
-
-      // Pipe archive to the file
-      archive.pipe(output);
-
-      // Handle archive errors
-      archive.on('error', (err) => {
-        throw err;
-      });
-
-      // Add each letter's documents to the ZIP
-      for (const letter of letters) {
-        if (!letter.documentId) {
-          this.logger.warn(`Letter ${letter.id} has no document, skipping`);
-          continue;
-        }
-
-        try {
-          // Get the document file
-          const { buffer } = await this.documentsService.getDocumentFile(letter.documentId);
-
-          // Generate a descriptive filename
-          // Format: ClientName_TemplateName_Date.pdf
-          const timestamp = new Date(letter.generatedAt).toISOString().split('T')[0];
-          const sanitizedClientName = this.sanitizeFilename(letter.clientName);
-          const sanitizedTemplateName = this.sanitizeFilename(letter.templateName);
-          
-          // Determine file extension from the document
-          const extension = formats.includes('PDF') ? 'pdf' : 'docx';
-          const filename = `${sanitizedClientName}_${sanitizedTemplateName}_${timestamp}.${extension}`;
-
-          // Add file to archive
-          archive.append(buffer, { name: filename });
-          
-          this.logger.debug(`Added ${filename} to ZIP`);
-        } catch (error) {
-          this.logger.warn(`Failed to add letter ${letter.id} to ZIP: ${error.message}`);
-          // Continue with other files
-        }
-      }
-
-      // Finalize the archive
-      await archive.finalize();
-
-      // Wait for the output stream to finish
-      await new Promise<void>((resolve, reject) => {
-        output.on('close', () => resolve());
-        output.on('error', reject);
-      });
-
-      // Get file size
-      const stats = await fs.stat(zipPath);
-
-      this.logger.log(`ZIP file created and saved: ${zipFileId}, size: ${stats.size} bytes`);
-
-      return zipFileId;
-    } catch (error) {
-      this.logger.error(`Failed to create bulk letters ZIP: ${error.message}`, error.stack);
-      throw error;
-    }
-  }
-
-  /**
-   * Sanitize filename to remove invalid characters
+   * Build template values from placeholder resolution
    * @private
    */
   private buildTemplateValues(placeholders: Record<string, any>, showMissing = false): Record<string, any> {
@@ -962,10 +689,4 @@ export class LetterGenerationService {
     }
   }
 
-  private sanitizeFilename(filename: string): string {
-    return filename
-      .replace(/[^a-zA-Z0-9\s\-_]/g, '') // Remove invalid characters
-      .replace(/\s+/g, '_') // Replace spaces with underscores
-      .substring(0, 50); // Limit length
-  }
 }

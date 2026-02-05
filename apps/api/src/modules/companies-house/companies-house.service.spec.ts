@@ -36,20 +36,37 @@ describe('CompaniesHouseService', () => {
   const mockApiKey = 'test-api-key';
   
   const mockCompanySearchResult: CompanySearchResult = {
+    kind: 'searchresults#company',
     company_number: '12345678',
     title: 'TEST COMPANY LIMITED',
     company_status: 'active',
     company_type: 'ltd',
     date_of_creation: '2020-01-01',
+    address: {
+      address_line_1: '123 Test Street',
+      locality: 'London',
+      postal_code: 'SW1A 1AA',
+      country: 'United Kingdom',
+    },
     address_snippet: '123 Test Street, London, SW1A 1AA',
+    links: {
+      self: '/company/12345678',
+    },
   };
 
   const mockCompanyDetails: CompanyDetails = {
     company_number: '12345678',
     company_name: 'TEST COMPANY LIMITED',
+    type: 'ltd',
+    can_file: true,
+    links: {
+      self: '/company/12345678',
+      filing_history: '/company/12345678/filing-history',
+      officers: '/company/12345678/officers',
+      charges: '/company/12345678/charges',
+    },
     company_status: 'active',
     company_type: 'ltd',
-    type: 'ltd',
     date_of_creation: '2020-01-01',
     registered_office_address: {
       address_line_1: '123 Test Street',
@@ -81,9 +98,19 @@ describe('CompaniesHouseService', () => {
       postal_code: 'SW1A 2BB',
       country: 'United Kingdom',
     },
+    links: {
+      self: '/company/12345678/officers/abc',
+      officer: {
+        appointments: '/officers/abc/appointments',
+      },
+    },
   };
 
   const mockFilingHistory: FilingHistory = {
+    etag: 'etag-123',
+    items_per_page: 2,
+    kind: 'filing-history',
+    start_index: 0,
     total_count: 2,
     items: [
       {
@@ -166,7 +193,7 @@ describe('CompaniesHouseService', () => {
 
     const mockClientsService = {
       create: jest.fn(),
-      findByRef: jest.fn(),
+      findByIdentifier: jest.fn(),
       update: jest.fn(),
     };
 
@@ -654,7 +681,7 @@ describe('CompaniesHouseService', () => {
       };
 
       httpService.get.mockReturnValue(of(companyDetailsResponse));
-      clientsService.findByRef.mockResolvedValue(mockClient);
+      clientsService.findByIdentifier.mockResolvedValue(mockClient);
       clientsService.update.mockResolvedValue({
         ...mockClient,
         name: 'TEST COMPANY LIMITED',
@@ -677,7 +704,7 @@ describe('CompaniesHouseService', () => {
 
       await service.syncCompanyData('1A001');
 
-      expect(clientsService.findByRef).toHaveBeenCalledWith('1A001');
+      expect(clientsService.findByIdentifier).toHaveBeenCalledWith('1A001');
       expect(clientsService.update).toHaveBeenCalledWith('1A001', {
         name: 'TEST COMPANY LIMITED',
         status: 'ACTIVE',
@@ -699,7 +726,7 @@ describe('CompaniesHouseService', () => {
         registeredNumber: undefined,
       };
 
-      clientsService.findByRef.mockResolvedValue(clientWithoutRegNumber);
+      clientsService.findByIdentifier.mockResolvedValue(clientWithoutRegNumber);
 
       await expect(service.syncCompanyData('1A001')).rejects.toThrow(
         'Client does not have a registered company number'
@@ -729,7 +756,7 @@ describe('CompaniesHouseService', () => {
       };
 
       httpService.get.mockReturnValue(of(companyDetailsResponse));
-      clientsService.findByRef.mockResolvedValue(mockClient);
+      clientsService.findByIdentifier.mockResolvedValue(mockClient);
       clientsService.update.mockResolvedValue(mockClient);
       servicesService.findByClient.mockResolvedValue([]);
       complianceService.getComplianceItemsByClient.mockResolvedValue([existingComplianceItem]);

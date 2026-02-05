@@ -4,13 +4,13 @@
   "firstName": "Neil",
   "lastName": "Jones",
   "passwordHash": "$2a$12$7/.CyygnHszChvoguz5qEuyetFcRNKqhjEFbRXxynWoRsE4YQWFYa",
-  "role": "STAFF",
+  "role": "SUPER_ADMIN",
   "portfolios": [
-    1
+    "*"
   ],
   "isActive": true,
   "emailVerified": false,
   "createdAt": "2026-01-26T17:37:47.048Z",
-  "updatedAt": "2026-01-30T22:52:16.646Z",
-  "lastLoginAt": "2026-01-30T22:52:16.646Z"
+  "updatedAt": "2026-02-05T02:32:28.975Z",
+  "lastLoginAt": "2026-02-05T02:32:28.975Z"
 }

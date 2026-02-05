@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../generated/prisma';
+import { withAccelerate } from '@prisma/extension-accelerate';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -9,6 +10,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     super({
       log: ['query', 'info', 'warn', 'error'],
     });
+    const url = process.env.DATABASE_URL || '';
+    if (url.startsWith('prisma+postgres')) {
+      return this.$extends(withAccelerate()) as this;
+    }
+    return this;
   }
 
   async onModuleInit() {
@@ -17,7 +23,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       this.logger.log('Connected to database');
     } catch (error) {
       this.logger.warn('Database connection failed - using file-based storage only');
-      this.logger.warn('To enable database features, ensure PostgreSQL is running on localhost:5432');
+      this.logger.warn('Ensure DATABASE_URL is set and reachable to enable database features.');
       // Don't throw error - allow app to run with file-based storage
     }
   }

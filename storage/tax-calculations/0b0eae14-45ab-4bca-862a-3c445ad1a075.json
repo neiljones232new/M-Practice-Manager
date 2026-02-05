@@ -1,0 +1,74 @@
+{
+  "id": "0b0eae14-45ab-4bca-862a-3c445ad1a075",
+  "clientId": "1B001",
+  "calculationType": "CORPORATION_TAX",
+  "taxYear": "2024-25",
+  "parameters": {
+    "clientId": "1B001",
+    "profit": 50000,
+    "taxYear": "2025-26",
+    "accountingPeriodEndYear": 2025,
+    "revenue": 0,
+    "expenses": 0,
+    "pensionContributions": 0,
+    "salaryExpense": 0,
+    "employerNIC": 0,
+    "totalExpenses": 0,
+    "profitBeforeTax": 50000,
+    "taxableProfit": 50000,
+    "amountType": "profit",
+    "accountingPeriodStart": "2024-04-01",
+    "accountingPeriodEnd": "2025-03-31"
+  },
+  "amountType": "profit",
+  "accountingPeriodStart": "2024-04-01",
+  "accountingPeriodEnd": "2025-03-31",
+  "totalTaxLiability": 9500,
+  "totalTakeHome": 40500,
+  "estimatedSavings": 0,
+  "report": {
+    "calculationId": "0b0eae14-45ab-4bca-862a-3c445ad1a075",
+    "clientId": "1B001",
+    "calculationType": "corporationTax",
+    "inputs": {
+      "companyProfitBeforeTax": 50000,
+      "expenses": 0,
+      "salaryExpense": 0,
+      "employerNIC": 0,
+      "taxYear": "2024-25",
+      "yearEndDate": "2025-03-31"
+    },
+    "results": {
+      "company": {
+        "profitBeforeTax": 50000,
+        "salaryExpense": 0,
+        "employerNIC": 0,
+        "taxableProfit": 50000,
+        "corporationTax": 9500,
+        "dividendsPaid": 0,
+        "netCompanyCashAfterTax": 40500
+      }
+    },
+    "reportSummary": {}
+  },
+  "result": {
+    "summary": {
+      "grossIncome": 50000,
+      "totalTax": 9500,
+      "netIncome": 40500,
+      "effectiveTaxRate": 0.19
+    },
+    "breakdown": {
+      "incomeTax": 0,
+      "employeeNI": 0,
+      "employerNI": 0,
+      "nationalInsurance": 0,
+      "corporationTax": 9500,
+      "dividendTax": 0,
+      "totalTax": 9500
+    }
+  },
+  "recommendations": [],
+  "calculatedAt": "2026-02-05T14:00:26.518Z",
+  "calculatedBy": "system"
+}

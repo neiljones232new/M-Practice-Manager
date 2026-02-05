@@ -1,21 +1,19 @@
 import { Injectable, Logger, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
-import { FileStorageService } from '../../file-storage/file-storage.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { ClientParty, CreateClientPartyDto, UpdateClientPartyDto, CreatePersonDto, Address } from '../interfaces/client.interface';
-import { ReferenceGeneratorService } from './reference-generator.service';
 import { PersonService } from './person.service';
 import { ClientsService } from '../clients.service';
 
 @Injectable()
 export class ClientPartyService {
   private readonly logger = new Logger(ClientPartyService.name);
-  private readonly allowedRoles: ClientParty['role'][] = ['DIRECTOR', 'SHAREHOLDER', 'PARTNER', 'MEMBER', 'OWNER', 'UBO', 'SECRETARY', 'CONTACT'];
+  private readonly allowedRoles: string[] = ['DIRECTOR', 'SHAREHOLDER', 'PARTNER', 'MEMBER', 'OWNER', 'UBO', 'SECRETARY', 'CONTACT'];
 
-  private parsePartyRole(role?: ClientParty['role'] | string): ClientParty['role'] {
-    const normalized = (role || 'CONTACT').toString().toUpperCase().trim();
-    if (this.allowedRoles.includes(normalized as ClientParty['role'])) {
-      return normalized as ClientParty['role'];
-    }
-    return 'CONTACT';
+  private parsePartyRole(role?: string): string | undefined {
+    if (!role) return undefined;
+    const normalized = role.toString().toUpperCase().trim();
+    if (this.allowedRoles.includes(normalized)) return normalized;
+    return role;
   }
 
   private parseOptionalDate(value?: Date | string): Date | undefined {
@@ -25,57 +23,31 @@ export class ClientPartyService {
   }
 
   constructor(
-    private fileStorage: FileStorageService,
-    private referenceGenerator: ReferenceGeneratorService,
+    private prisma: PrismaService,
     private personService: PersonService,
     @Inject(forwardRef(() => ClientsService))
     private clientsService: ClientsService,
   ) {}
 
-  // --- Helpers for idempotent imports from external sources (e.g. Companies House) ---
-
   private normalizeName(name?: string) {
-    return (name || '').replace(/[^\w\s]/g, '').trim().toLowerCase();
+    return (name || '').replace(/[\W_]+/g, ' ').trim().toLowerCase();
   }
 
-  /**
-   * Find a client-party by an external source mapping stored on the party (metadata.__sources)
-   */
   async findByClientAndSourceId(clientId: string, source: string, sourceId: string): Promise<ClientParty | null> {
-    type ClientPartyRecord = ClientParty & { metadata?: { __sources?: Record<string, string> } };
-    const parties = await this.fileStorage.searchFiles<ClientPartyRecord>('client-parties', (party) => {
-      if (!party || party.clientId !== clientId) return false;
-      const md = party.metadata;
-      return md && md.__sources && md.__sources[source] === sourceId;
-    });
-    return parties[0] || null;
+    const partyRef = `${source}:${sourceId}`;
+    return (this.prisma as any).clientParty.findFirst({ where: { clientId, partyRef } });
   }
 
-  /**
-   * Best-effort fallback: find party by matching the linked person's name (normalized)
-   */
   async findByClientAndName(clientId: string, name?: string): Promise<ClientParty | null> {
     if (!name) return null;
     const normalized = this.normalizeName(name);
-    const parties = await this.fileStorage.searchFiles<ClientParty>('client-parties', (p) => p.clientId === clientId);
-
-    for (const p of parties) {
-      try {
-        const person = await this.personService.findOne(p.personId);
-        if (!person) continue;
-        if (this.normalizeName(person.fullName) === normalized) return p;
-      } catch (err) {
-        // ignore and continue
-      }
-    }
-    return null;
+    const parties = await (this.prisma as any).clientParty.findMany({
+      where: { clientId },
+      include: { person: true },
+    });
+    return parties.find((p: any) => this.normalizeName(p.person?.fullName) === normalized) || null;
   }
 
-  /**
-   * Upsert a client-party from an external source (Companies House).
-   * - Ensures we do not create duplicate parties for the same external officer id
-   * - If the linked person doesn't exist, attempts to find by email or create a new person
-   */
   async upsertFromExternal({
     clientId,
     source,
@@ -87,7 +59,7 @@ export class ClientPartyService {
     sourceId: string;
     payload: Partial<{
       name?: string;
-      role?: ClientParty['role'] | string;
+      role?: string;
       mainEmail?: string;
       mainPhone?: string;
       address?: Address;
@@ -96,70 +68,46 @@ export class ClientPartyService {
       personId?: string;
     }>;
   }): Promise<{ party: ClientParty; created: boolean }> {
-    // 1) try explicit source id mapping on party
     let existing = await this.findByClientAndSourceId(clientId, source, sourceId);
 
-    // 2) fallback: match by person name
     if (!existing && payload.name) {
       existing = await this.findByClientAndName(clientId, payload.name);
     }
 
     if (existing) {
-      // merge sensible fields and update
       const updateData: UpdateClientPartyDto = {
         role: payload.role ? this.parsePartyRole(payload.role) : existing.role,
         ownershipPercent: payload.ownershipPercent ?? existing.ownershipPercent,
         appointedAt: this.parseOptionalDate(payload.appointedAt) || existing.appointedAt,
-        primaryContact: payload.mainEmail || payload.mainPhone ? existing.primaryContact : existing.primaryContact,
+        primaryContact: existing.primaryContact,
+        partyRef: existing.partyRef || `${source}:${sourceId}`,
       };
 
       const updated = await this.update(existing.id, updateData);
-
-      // ensure metadata mapping exists
-      const refreshed: ClientParty & { metadata?: { __sources?: Record<string, string> } } = { ...updated };
-      refreshed.metadata = refreshed.metadata || {};
-      refreshed.metadata.__sources = refreshed.metadata.__sources || {};
-      refreshed.metadata.__sources[source] = sourceId;
-      const clientRef = await this.resolveClientRef(refreshed.clientId);
-      await this.fileStorage.writeJson('client-parties', refreshed.id, refreshed, undefined, clientRef);
-
-      return { party: refreshed as ClientParty, created: false };
+      return { party: updated as ClientParty, created: false };
     }
 
-    // Need to create person (or find existing one)
     let personId = payload.personId;
-    if (!personId) {
-      // try by email
-      if (payload.mainEmail) {
-        const byEmail = await this.personService.findByEmail(payload.mainEmail);
-        if (byEmail) personId = byEmail.id;
-      }
+    if (!personId && payload.mainEmail) {
+      const byEmail = await this.personService.findByEmail(payload.mainEmail);
+      if (byEmail) personId = byEmail.id;
     }
 
     if (!personId) {
-      // create a new person from payload.name if available
       if (!payload.name) {
         throw new BadRequestException('Cannot create client party without a person name or personId');
       }
 
-      const parts = payload.name.trim().split(/\s+/);
-      const firstName = parts.shift() || payload.name;
-      const lastName = parts.join(' ') || '';
-
       const createPersonDto: CreatePersonDto = {
-        firstName,
-        lastName: lastName || ' ',
+        fullName: payload.name,
         email: payload.mainEmail,
         phone: payload.mainPhone,
-        address: payload.address,
       };
 
-      const resolvedClientRef = await this.resolveClientRef(clientId);
-      const createdPerson = await this.personService.create(resolvedClientRef, createPersonDto);
+      const createdPerson = await this.personService.create(createPersonDto);
       personId = createdPerson.id;
     }
 
-    // Build create DTO for client-party
     const createClientPartyDto: CreateClientPartyDto = {
       clientId,
       personId,
@@ -167,102 +115,73 @@ export class ClientPartyService {
       ownershipPercent: payload.ownershipPercent,
       appointedAt: this.parseOptionalDate(payload.appointedAt),
       primaryContact: false,
+      partyRef: `${source}:${sourceId}`,
     };
 
     const createdParty = await this.create(createClientPartyDto);
-
-    // write metadata mapping into created party
-    const createdRecord: ClientParty & { metadata?: { __sources?: Record<string, string> } } = { ...createdParty };
-    createdRecord.metadata = createdRecord.metadata || {};
-    createdRecord.metadata.__sources = createdRecord.metadata.__sources || {};
-    createdRecord.metadata.__sources[source] = sourceId;
-      const clientRef = await this.resolveClientRef(createdRecord.clientId);
-      await this.fileStorage.writeJson('client-parties', createdRecord.id, createdRecord, undefined, clientRef);
-
-    return { party: createdRecord, created: true };
+    return { party: createdParty, created: true };
   }
 
   async create(createClientPartyDto: CreateClientPartyDto): Promise<ClientParty> {
-    // Validate that client and person exist
     await this.validateClientExists(createClientPartyDto.clientId);
-    await this.validatePersonExists(createClientPartyDto.personId);
-
-    // Check for existing relationship
-    const existingRelationship = await this.findByClientAndPerson(
-      createClientPartyDto.clientId,
-      createClientPartyDto.personId,
-      createClientPartyDto.role
-    );
-
-    if (existingRelationship) {
-      throw new BadRequestException(
-        `Person is already associated with this client in the role of ${createClientPartyDto.role}`
-      );
+    if (createClientPartyDto.personId) {
+      await this.validatePersonExists(createClientPartyDto.personId);
     }
 
-    const id = this.generateId();
-    const suffixLetter = await this.referenceGenerator.generateSuffixLetter(
-      createClientPartyDto.clientId,
-      createClientPartyDto.personId
-    );
+    if (createClientPartyDto.personId) {
+      const existingRelationship = await this.findByClientAndPerson(
+        createClientPartyDto.clientId,
+        createClientPartyDto.personId,
+        createClientPartyDto.role
+      );
 
-    const clientParty: ClientParty = {
-      id,
-      clientId: createClientPartyDto.clientId,
-      personId: createClientPartyDto.personId,
-      role: createClientPartyDto.role,
-      ownershipPercent: createClientPartyDto.ownershipPercent,
-      appointedAt: createClientPartyDto.appointedAt || new Date(),
-      primaryContact: createClientPartyDto.primaryContact || false,
-      suffixLetter,
-    };
+      if (existingRelationship) {
+        throw new BadRequestException(
+          `Person is already associated with this client in the role of ${createClientPartyDto.role}`
+        );
+      }
+    }
 
-    // Store the client-party relationship
-    const clientRef = await this.resolveClientRef(clientParty.clientId);
-    await this.fileStorage.writeJson('client-parties', id, clientParty, undefined, clientRef);
-    
-    // Update client's parties array
-    await this.updateClientParties(createClientPartyDto.clientId, id, 'add');
+    const suffixLetter = createClientPartyDto.suffixLetter || (await this.generateSuffixLetter(createClientPartyDto.clientId));
 
-    this.logger.log(`Created client-party relationship: ${id} (${createClientPartyDto.role})`);
+    const created = await (this.prisma as any).clientParty.create({
+      data: {
+        clientId: createClientPartyDto.clientId,
+        personId: createClientPartyDto.personId,
+        role: createClientPartyDto.role ? this.parsePartyRole(createClientPartyDto.role) : undefined,
+        ownershipPercent: createClientPartyDto.ownershipPercent,
+        appointedAt: createClientPartyDto.appointedAt,
+        resignedAt: createClientPartyDto.resignedAt,
+        primaryContact: createClientPartyDto.primaryContact ?? false,
+        suffixLetter,
+        partyRef: createClientPartyDto.partyRef,
+      },
+    });
 
-    return clientParty;
+    this.logger.log(`Created client-party: ${created.id}`);
+    return created;
   }
 
   async findAll(): Promise<ClientParty[]> {
-    return this.fileStorage.searchFiles<ClientParty>('client-parties', () => true);
+    return (this.prisma as any).clientParty.findMany({ orderBy: { createdAt: 'desc' } });
   }
 
   async findOne(id: string): Promise<ClientParty | null> {
-    return this.fileStorage.readJson<ClientParty>('client-parties', id);
-  }
-
-  async findByClient(clientId: string): Promise<ClientParty[]> {
-    return this.fileStorage.searchFiles<ClientParty>('client-parties', 
-      (party) => party.clientId === clientId
-    );
-  }
-
-  async findByPerson(personId: string): Promise<ClientParty[]> {
-    return this.fileStorage.searchFiles<ClientParty>('client-parties', 
-      (party) => party.personId === personId
-    );
+    return (this.prisma as any).clientParty.findUnique({ where: { id } });
   }
 
   async findByClientAndPerson(clientId: string, personId: string, role?: string): Promise<ClientParty | null> {
-    const parties = await this.fileStorage.searchFiles<ClientParty>('client-parties', 
-      (party) => party.clientId === clientId && 
-                 party.personId === personId && 
-                 (!role || party.role === role)
-    );
-    return parties[0] || null;
+    return (this.prisma as any).clientParty.findFirst({
+      where: {
+        clientId,
+        personId,
+        ...(role ? { role } : {}),
+      },
+    });
   }
 
-  async findPrimaryContact(clientId: string): Promise<ClientParty | null> {
-    const parties = await this.fileStorage.searchFiles<ClientParty>('client-parties', 
-      (party) => party.clientId === clientId && party.primaryContact === true
-    );
-    return parties[0] || null;
+  async findByClient(clientId: string): Promise<ClientParty[]> {
+    return (this.prisma as any).clientParty.findMany({ where: { clientId } });
   }
 
   async update(id: string, updateClientPartyDto: UpdateClientPartyDto): Promise<ClientParty> {
@@ -271,82 +190,32 @@ export class ClientPartyService {
       throw new NotFoundException(`Client-party relationship with ID ${id} not found`);
     }
 
-    // If changing primary contact status, ensure only one primary contact per client
-    if (updateClientPartyDto.primaryContact === true) {
-      await this.clearPrimaryContact(existing.clientId, id);
-    }
+    const updated = await (this.prisma as any).clientParty.update({
+      where: { id },
+      data: {
+        role: updateClientPartyDto.role ? this.parsePartyRole(updateClientPartyDto.role) : undefined,
+        ownershipPercent: updateClientPartyDto.ownershipPercent,
+        appointedAt: updateClientPartyDto.appointedAt,
+        resignedAt: updateClientPartyDto.resignedAt,
+        primaryContact: updateClientPartyDto.primaryContact,
+        suffixLetter: updateClientPartyDto.suffixLetter,
+        partyRef: updateClientPartyDto.partyRef,
+      },
+    });
 
-    const updatedClientParty: ClientParty = {
-      ...existing,
-      ...updateClientPartyDto,
-      id: existing.id, // Ensure ID cannot be changed
-      clientId: existing.clientId, // Ensure client ID cannot be changed
-      personId: existing.personId, // Ensure person ID cannot be changed
-    };
-
-      const clientRef = await this.resolveClientRef(updatedClientParty.clientId);
-      await this.fileStorage.writeJson('client-parties', id, updatedClientParty, undefined, clientRef);
-    this.logger.log(`Updated client-party relationship: ${id}`);
-
-    return updatedClientParty;
+    this.logger.log(`Updated client-party: ${updated.id}`);
+    return updated;
   }
 
   async delete(id: string): Promise<boolean> {
     const existing = await this.findOne(id);
-    if (!existing) {
-      return false;
-    }
-
-    await this.fileStorage.deleteJson('client-parties', id);
-    
-    // Update client's parties array
-    await this.updateClientParties(existing.clientId, id, 'remove');
-
-    this.logger.log(`Deleted client-party relationship: ${id}`);
-
+    if (!existing) return false;
+    await (this.prisma as any).clientParty.delete({ where: { id } });
+    this.logger.log(`Deleted client-party: ${existing.id}`);
     return true;
   }
 
-  async resign(id: string, resignationDate?: Date): Promise<ClientParty> {
-    const existing = await this.findOne(id);
-    if (!existing) {
-      throw new NotFoundException(`Client-party relationship with ID ${id} not found`);
-    }
-
-    const updatedClientParty: ClientParty = {
-      ...existing,
-      resignedAt: resignationDate || new Date(),
-    };
-
-    const clientRef = await this.resolveClientRef(existing.clientId);
-    await this.fileStorage.writeJson('client-parties', id, updatedClientParty, undefined, clientRef);
-    this.logger.log(`Resigned client-party relationship: ${id}`);
-
-    return updatedClientParty;
-  }
-
-  async getOwnershipSummary(clientId: string): Promise<{
-    totalOwnership: number;
-    parties: Array<{ personId: string; role: string; ownershipPercent: number; suffixLetter: string }>;
-  }> {
-    const parties = await this.findByClient(clientId);
-    const ownershipParties = parties.filter(party => party.ownershipPercent !== undefined && party.ownershipPercent !== null);
-    
-    const totalOwnership = ownershipParties.reduce((sum, party) => sum + (party.ownershipPercent || 0), 0);
-    
-    return {
-      totalOwnership,
-      parties: ownershipParties.map(party => ({
-        personId: party.personId,
-        role: party.role,
-        ownershipPercent: party.ownershipPercent || 0,
-        suffixLetter: party.suffixLetter,
-      })),
-    };
-  }
-
   private async validateClientExists(clientId: string): Promise<void> {
-    // Check if the client exists using ClientsService
     const client = await this.clientsService.findOne(clientId);
     if (!client) {
       throw new NotFoundException(`Client with ID ${clientId} not found`);
@@ -360,39 +229,17 @@ export class ClientPartyService {
     }
   }
 
-  private async clearPrimaryContact(clientId: string, excludeId: string): Promise<void> {
-    const existingPrimaryContacts = await this.fileStorage.searchFiles<ClientParty>('client-parties', 
-      (party) => party.clientId === clientId && party.primaryContact === true && party.id !== excludeId
-    );
-
-    for (const contact of existingPrimaryContacts) {
-      const updated = { ...contact, primaryContact: false };
-      const clientRef = await this.resolveClientRef(contact.clientId);
-      await this.fileStorage.writeJson('client-parties', contact.id, updated, undefined, clientRef);
+  private async generateSuffixLetter(clientId: string): Promise<string> {
+    const existing = await (this.prisma as any).clientParty.findMany({
+      where: { clientId },
+      select: { suffixLetter: true },
+    });
+    const used = new Set((existing || []).map((p: any) => p.suffixLetter).filter(Boolean));
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (let i = 0; i < alphabet.length; i++) {
+      const letter = alphabet[i];
+      if (!used.has(letter)) return letter;
     }
-  }
-
-  private async updateClientParties(clientId: string, partyId: string, action: 'add' | 'remove'): Promise<void> {
-    // Use ClientsService to keep a single source of truth for client.party arrays
-    try {
-      if (action === 'add') {
-        await this.clientsService.addParty(clientId, partyId);
-      } else {
-        await this.clientsService.removeParty(clientId, partyId);
-      }
-    } catch (err) {
-      // Log and rethrow unexpected errors; callers will handle NotFoundException where appropriate
-      this.logger.warn(`Failed to ${action} party ${partyId} for client ${clientId}: ${err?.message || err}`);
-      throw err;
-    }
-  }
-
-  private generateId(): string {
-    return `client_party_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  private async resolveClientRef(clientId: string): Promise<string> {
-    const client = await this.clientsService.findOne(clientId);
-    return client?.ref || clientId;
+    return 'AA';
   }
 }

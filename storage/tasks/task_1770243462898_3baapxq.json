@@ -1,0 +1,17 @@
+{
+  "id": "task_1770243462898_3baapxq",
+  "clientId": "4M001",
+  "serviceId": "service_1770225712526_dch3koe55",
+  "title": "Client review and approval",
+  "description": "Send draft accounts to client for review and approval",
+  "dueDate": "2026-09-16T00:00:00.000Z",
+  "status": "OPEN",
+  "priority": "MEDIUM",
+  "tags": [
+    "client-review",
+    "approval",
+    "auto-generated"
+  ],
+  "createdAt": "2026-02-04T22:17:42.898Z",
+  "updatedAt": "2026-02-04T22:17:42.898Z"
+}

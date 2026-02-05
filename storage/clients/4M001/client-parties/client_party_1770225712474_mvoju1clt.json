@@ -1,0 +1,14 @@
+{
+  "id": "client_party_1770225712474_mvoju1clt",
+  "clientId": "client_1770225712413_7invtumus",
+  "personId": "4M001A",
+  "role": "DIRECTOR",
+  "appointedAt": "2025-09-29T00:00:00.000Z",
+  "primaryContact": false,
+  "suffixLetter": "A",
+  "metadata": {
+    "__sources": {
+      "CH_OFFICER": "/officers/UTd7kz5UJsmQ-BFmV0iBBx_hQ50/appointments"
+    }
+  }
+}

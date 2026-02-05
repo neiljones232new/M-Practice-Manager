@@ -1,13 +1,18 @@
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELLED';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
 export interface Task {
   id: string;
-  clientId: string;
-  serviceId?: string;
   title: string;
+  clientId?: string;
+  serviceId?: string;
   description?: string;
   dueDate?: Date;
+  assigneeId?: string;
   assignee?: string;
-  status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  creatorId?: string;
+  status: TaskStatus;
+  priority: TaskPriority;
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -16,9 +21,9 @@ export interface Task {
 export interface TaskFilters {
   clientId?: string;
   serviceId?: string;
-  assignee?: string;
-  status?: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  assigneeId?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
   dueBefore?: Date;
   dueAfter?: Date;
   portfolioCode?: number;
@@ -28,14 +33,15 @@ export interface TaskFilters {
 }
 
 export interface CreateTaskDto {
-  clientId: string;
-  serviceId?: string;
   title: string;
+  clientId?: string;
+  serviceId?: string;
   description?: string;
   dueDate?: Date;
-  assignee?: string;
-  status?: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  assigneeId?: string;
+  creatorId?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
   tags?: string[];
 }
 
@@ -43,9 +49,10 @@ export interface UpdateTaskDto {
   title?: string;
   description?: string;
   dueDate?: Date;
-  assignee?: string;
-  status?: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  assigneeId?: string;
+  creatorId?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
   tags?: string[];
 }
 
@@ -70,9 +77,9 @@ export interface TaskTemplate {
   title: string;
   description?: string;
   daysBeforeDue: number; // How many days before service due date to create task
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  priority: TaskPriority;
   tags: string[];
-  assignee?: string;
+  assigneeId?: string;
 }
 
 export interface CreateServiceTemplateDto {
@@ -93,13 +100,12 @@ export interface UpdateServiceTemplateDto {
   taskTemplates?: Omit<TaskTemplate, 'id'>[];
 }
 
-// Standalone Task Template Interfaces
 export interface StandaloneTaskTemplate {
   id: string;
   title: string;
   description: string;
   category: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  priority: TaskPriority;
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -109,7 +115,7 @@ export interface CreateStandaloneTaskTemplateDto {
   title: string;
   description: string;
   category: string;
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  priority?: TaskPriority;
   tags?: string[];
 }
 
@@ -117,11 +123,10 @@ export interface UpdateStandaloneTaskTemplateDto {
   title?: string;
   description?: string;
   category?: string;
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  priority?: TaskPriority;
   tags?: string[];
 }
 
-// Task Template Categories
 export const TASK_TEMPLATE_CATEGORIES = [
   'Client Communication',
   'Billing & Credit Control',

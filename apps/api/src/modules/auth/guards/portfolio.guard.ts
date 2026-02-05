@@ -51,16 +51,7 @@ export class PortfolioGuard implements CanActivate {
       return parseInt(request.body.portfolioCode);
     }
     
-    // 4. From client reference (extract portfolio from client ref like "1A001")
-    const clientRef = request.params?.ref || request.body?.ref || request.query?.ref;
-    if (clientRef && typeof clientRef === 'string') {
-      const match = clientRef.match(/^(\d+)/);
-      if (match) {
-        return parseInt(match[1]);
-      }
-    }
-    
-    // 5. From client ID in body or params (would need to look up client)
+    // 4. From client ID in body or params (would require lookup)
     // This would require additional database lookup, implement if needed
     
     return null;

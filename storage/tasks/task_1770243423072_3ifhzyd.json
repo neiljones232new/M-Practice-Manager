@@ -1,0 +1,16 @@
+{
+  "id": "task_1770243423072_3ifhzyd",
+  "clientId": "4M001",
+  "serviceId": "service_1770225712532_vfvegp6iz",
+  "title": "File confirmation statement",
+  "description": "Submit CS01 form to Companies House.",
+  "dueDate": "2026-09-23T00:00:00.000Z",
+  "status": "OPEN",
+  "priority": "URGENT",
+  "tags": [
+    "filing",
+    "auto-generated"
+  ],
+  "createdAt": "2026-02-04T22:17:03.072Z",
+  "updatedAt": "2026-02-04T22:17:03.072Z"
+}

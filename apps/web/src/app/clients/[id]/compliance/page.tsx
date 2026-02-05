@@ -40,12 +40,11 @@ interface Document {
   originalName?: string;
   mimeType?: string;
   category?: string;
-  uploadedAt?: string;
+  createdAt?: string;
 }
 
 type Client = {
   id: string;
-  ref?: string;
   name: string;
   registeredNumber?: string;
   accountsNextDue?: string;
@@ -1250,7 +1249,7 @@ export default function ClientCompliancePage() {
                   <tr key={doc.id}>
                     <td>{doc.filename || doc.originalName || doc.id}</td>
                     <td>{doc.category || '—'}</td>
-                    <td>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString('en-GB') : '—'}</td>
+                    <td>{doc.createdAt ? new Date(doc.createdAt).toLocaleDateString('en-GB') : '—'}</td>
                     <td style={{ textAlign: 'right' }}>
                       <button className="btn-outline-gold btn-xs" onClick={() => handleDocumentDownload(doc, true)} style={{ marginRight: 6 }}>
                         Preview

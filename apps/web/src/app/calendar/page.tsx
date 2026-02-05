@@ -31,7 +31,7 @@ interface CalendarEvent {
   start: string; // ISO
   end?: string; // ISO
   location?: string;
-  clientRef?: string;
+  clientIdentifier?: string;
   clientName?: string;
   clientId?: string;
   createdAt?: string;
@@ -46,7 +46,8 @@ const defaultNewEvent: Omit<CalendarEvent, 'id'> = {
   start: new Date().toISOString().slice(0, 16),
   end: '',
   location: '',
-  clientRef: '',
+  clientIdentifier: '',
+  clientId: '',
   type: 'OTHER',
 };
 
@@ -104,7 +105,9 @@ function EventDetailCard({ event }: { event: CalendarEvent }) {
             </span>
           </span>
         )}
-        {event.clientRef && <span className="chip mono">Client: {event.clientRef}</span>}
+        {event.clientIdentifier && (
+          <span className="chip mono">Client: {event.clientIdentifier}</span>
+        )}
       </div>
 
       <div className="space-y-3 text-sm">
@@ -166,7 +169,7 @@ export default function CalendarPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Task 3: Import and use useClientData hook (Requirement 2.1)
-  const { fetchClientByRef } = useClientData();
+  const { fetchClientByIdentifier, fetchClientById } = useClientData();
 
   useEffect(() => {
     loadEvents();
@@ -225,7 +228,6 @@ export default function CalendarPage() {
   }
 
   // Task 8: Transform frontend event data to backend format
-  // Task 9: Update to include clientId if available (Requirement 7.1, 7.2)
   function transformToBackend(event: CalendarEvent) {
     return {
       title: event.title,
@@ -234,16 +236,12 @@ export default function CalendarPage() {
       endDate: event.end || undefined,
       type: event.type ? event.type.toUpperCase() : undefined,
       location: event.location || undefined,
-      // Task 9: Include clientId if available, fallback to clientRef (Requirement 7.1)
-      clientId: event.clientId || event.clientRef || undefined,
-      // Task 9: Include clientName to persist with event (Requirement 7.1)
-      clientName: event.clientName || undefined,
+      clientId: event.clientId || undefined,
       status: event.status ? event.status.toUpperCase() : undefined,
     };
   }
 
   // Task 8: Transform backend event data to frontend format
-  // Task 9: Update to preserve clientName, clientId, and clientRef (Requirement 7.2, 7.3)
   function transformFromBackend(backendEvent: any): CalendarEvent {
     return {
       id: backendEvent.id,
@@ -254,8 +252,7 @@ export default function CalendarPage() {
       type: backendEvent.type ? (backendEvent.type.toUpperCase() as CalendarType) : null,
       status: backendEvent.status ? (backendEvent.status.toLowerCase() as CalendarStatus) : 'scheduled',
       location: backendEvent.location,
-      // Task 9: Preserve all three client fields (Requirement 7.3)
-      clientRef: backendEvent.clientRef || backendEvent.clientId,
+      clientIdentifier: backendEvent.clientIdentifier,
       clientName: backendEvent.clientName,
       clientId: backendEvent.clientId,
       createdAt: backendEvent.createdAt,
@@ -371,7 +368,7 @@ export default function CalendarPage() {
 
       // Task 3: Enhance calendar events with client names (Requirements 1.3, 2.1, 7.3)
       // Task 8: Add error handling for client data loading (Requirements 8.1, 8.5)
-      // Process calendar events and fetch client names for events with clientRef but no clientName
+      // Process calendar events and fetch client names for events with clientId/identifier but no clientName
       const calendarEvents: CalendarEvent[] = await Promise.all(
         (calendarData || []).map(async (e) => {
           // Handle events that already have clientName (skip fetch)
@@ -382,35 +379,43 @@ export default function CalendarPage() {
             };
           }
           
-          // Handle events with clientRef but no clientName (fetch client data)
-          if (e.clientRef && !e.clientName) {
+          // Handle events with clientId or clientIdentifier but no clientName (fetch client data)
+          if ((e.clientId || e.clientIdentifier) && !e.clientName) {
             try {
-              const client = await fetchClientByRef(e.clientRef);
+              const client = e.clientId
+                ? await fetchClientById(e.clientId)
+                : await fetchClientByIdentifier(e.clientIdentifier as string);
               
               // Requirement 8.1: Handle client not found scenario
               if (!client) {
                 // Show "Not Found" indicator for missing clients
-                console.warn(`Client not found for ref ${e.clientRef}`);
+                const missingKey = e.clientIdentifier || e.clientId;
+                console.warn(`Client not found for ${missingKey}`);
                 return {
                   ...e,
-                  clientName: `${e.clientRef} (Not Found)`,
+                  clientIdentifier: e.clientIdentifier || e.clientId,
+                  clientName: `${missingKey} (Not Found)`,
                   type: (e.type as CalendarType) || 'OTHER',
                 };
               }
               
               return {
                 ...e,
+                clientIdentifier: client.identifier,
+                clientId: client.id,
                 clientName: client.name,
                 type: (e.type as CalendarType) || 'OTHER',
               };
             } catch (err) {
               // Requirement 8.5: Graceful degradation - calendar loads even if client fetch fails
               // Requirement 8.4: Error logging for debugging
-              console.error(`Failed to fetch client for ref ${e.clientRef}:`, err);
+              const failedKey = e.clientIdentifier || e.clientId;
+              console.error(`Failed to fetch client for ${failedKey}:`, err);
               // Return event with reference only if fetch fails
               return {
                 ...e,
-                clientName: `${e.clientRef} (Error)`,
+                clientIdentifier: e.clientIdentifier || e.clientId,
+                clientName: `${failedKey} (Error)`,
                 type: (e.type as CalendarType) || 'OTHER',
               };
             }
@@ -436,7 +441,8 @@ export default function CalendarPage() {
           end: undefined,
           location: task.clientName || '',
           clientName: task.clientName || '', // Preserve existing clientName from task
-          clientRef: task.clientRef || '',
+          clientIdentifier: task.clientIdentifier || '',
+          clientId: task.clientId,
           type: 'TASK',
         }),
       );
@@ -460,7 +466,8 @@ export default function CalendarPage() {
         e.title.toLowerCase().includes(q) ||
         (e.description ?? '').toLowerCase().includes(q) ||
         (e.location ?? '').toLowerCase().includes(q) ||
-        (e.clientRef ?? '').toLowerCase().includes(q);
+        (e.clientName ?? '').toLowerCase().includes(q) ||
+        (e.clientIdentifier ?? '').toLowerCase().includes(q);
       return matchesStatus && matchesQuery;
     });
   }, [events, statusFilter, search]);
@@ -917,11 +924,11 @@ export default function CalendarPage() {
                 <div>
                   <label className="label">Client</label>
                   <ClientSelect
-                    value={editedEvent.clientRef || ''}
-                    onChange={(clientRef, clientName, clientId) => {
+                    value={editedEvent.clientId || editedEvent.clientIdentifier || ''}
+                    onChange={(clientIdentifier, clientName, clientId) => {
                       setEditedEvent(prev => ({
                         ...prev!,
-                        clientRef,
+                        clientIdentifier,
                         clientName,
                         clientId,
                       }));
@@ -934,9 +941,9 @@ export default function CalendarPage() {
                   {editedEvent.clientName && (
                     <div className="client-selected-info">
                       Selected: <span className="client-selected-name">{editedEvent.clientName}</span>
-                      {editedEvent.clientRef && (
+                      {editedEvent.clientIdentifier && (
                         <span className="client-selected-ref">
-                          ({editedEvent.clientRef})
+                          ({editedEvent.clientIdentifier})
                         </span>
                       )}
                     </div>
@@ -1099,7 +1106,7 @@ export default function CalendarPage() {
                   {/* Task 5: Enhanced client information display (Requirements 1.2, 3.1, 3.2, 3.3, 3.5) */}
                   {/* Task 8: Handle client not found display (Requirement 8.1) */}
                   {/* Task 10: Use CSS classes for consistent styling (Requirements 3.4, 4.5) */}
-                  {(selectedEvent.clientRef || selectedEvent.clientName) && (
+                  {(selectedEvent.clientIdentifier || selectedEvent.clientName) && (
                     <div className="client-info-section">
                       <label className="client-info-label">Client</label>
                       <div className="client-info-content">
@@ -1121,28 +1128,28 @@ export default function CalendarPage() {
                               <>
                                 {/* Make client name a clickable link to client detail page (Requirement 3.5) */}
                                 <Link 
-                                  href={`/clients/${selectedEvent.clientRef || selectedEvent.id}`}
+                                  href={`/clients/${selectedEvent.clientId || selectedEvent.clientIdentifier || selectedEvent.id}`}
                                   className="client-name-link client-info-primary"
                                 >
                                   {selectedEvent.clientName}
                                 </Link>
                                 {/* Show client reference in parentheses after name (Requirement 3.2) */}
-                                {selectedEvent.clientRef && (
+                                {selectedEvent.clientIdentifier && (
                                   <span className="client-ref-display">
-                                    ({selectedEvent.clientRef})
+                                    ({selectedEvent.clientIdentifier})
                                   </span>
                                 )}
                               </>
                             )}
                           </>
                         ) : (
-                          /* Handle events with only clientRef - show reference with label (Requirement 3.3) */
+                          /* Handle events with only client identifier - show reference with label (Requirement 3.3) */
                           <div className="client-ref-only">
                             <span className="client-ref-label">
                               Reference:
                             </span>
                             <span className="client-ref-value">
-                              {selectedEvent.clientRef}
+                              {selectedEvent.clientIdentifier}
                             </span>
                           </div>
                         )}
@@ -1387,11 +1394,11 @@ export default function CalendarPage() {
               <div>
                 <label className="label">Client</label>
                 <ClientSelect
-                  value={newEvent.clientRef || ''}
-                  onChange={(clientRef, clientName, clientId) => {
+                  value={newEvent.clientId || newEvent.clientIdentifier || ''}
+                  onChange={(clientIdentifier, clientName, clientId) => {
                     setNewEvent((p) => ({
                       ...p,
-                      clientRef,
+                      clientIdentifier,
                       clientName,
                       clientId,
                     }));
@@ -1404,9 +1411,9 @@ export default function CalendarPage() {
                 {newEvent.clientName && (
                   <div className="client-selected-info">
                     Selected: <span className="client-selected-name">{newEvent.clientName}</span>
-                    {newEvent.clientRef && (
+                    {newEvent.clientIdentifier && (
                       <span className="client-selected-ref">
-                        ({newEvent.clientRef})
+                        ({newEvent.clientIdentifier})
                       </span>
                     )}
                   </div>

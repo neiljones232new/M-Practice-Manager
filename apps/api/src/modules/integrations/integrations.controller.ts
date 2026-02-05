@@ -13,7 +13,7 @@ import {
   SetMetadata,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { EncryptionService } from './services/encryption.service'; // if you already have thisimport { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IntegrationConfigService } from './services/integration-config.service';
 import { IntegrationHealthService } from './services/integration-health.service';
 import { IntegrationMonitoringService } from './services/integration-monitoring.service';
@@ -26,7 +26,6 @@ import {
   PracticeSettings,
   UpdatePracticeSettingsDto,
 } from './interfaces/integration.interface';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);

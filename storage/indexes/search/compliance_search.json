@@ -224,6 +224,48 @@
         ],
         "score": 2.25,
         "lastUpdated": "2026-01-30T20:53:18.810Z"
+      },
+      "C17702432068020azgg4yc7": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:14:01.554Z"
+      },
+      "C1770243206805k9o5gkru6": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:14:01.562Z"
+      },
+      "C177022571250698wylkshf": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:19:57.554Z"
+      },
+      "C1770225712513dgpqo3azs": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:19:57.580Z"
+      },
+      "C177024356931605v8jupg1": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:20:13.790Z"
+      },
+      "C1770243569320a1ni417zg": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:20:13.800Z"
       }
     }
   },
@@ -452,6 +494,48 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T20:53:18.810Z"
+      },
+      "C17702432068020azgg4yc7": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:14:01.554Z"
+      },
+      "C1770243206805k9o5gkru6": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:14:01.562Z"
+      },
+      "C177022571250698wylkshf": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:57.554Z"
+      },
+      "C1770225712513dgpqo3azs": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:57.580Z"
+      },
+      "C177024356931605v8jupg1": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:20:13.790Z"
+      },
+      "C1770243569320a1ni417zg": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:20:13.800Z"
       }
     }
   },
@@ -579,6 +663,27 @@
         ],
         "score": 4.5,
         "lastUpdated": "2026-01-30T20:53:18.810Z"
+      },
+      "C17702432068020azgg4yc7": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-02-04T22:14:01.554Z"
+      },
+      "C177022571250698wylkshf": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-02-04T22:19:57.554Z"
+      },
+      "C177024356931605v8jupg1": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-02-04T22:20:13.790Z"
       }
     }
   },
@@ -695,6 +800,27 @@
         ],
         "score": 2.25,
         "lastUpdated": "2026-01-30T20:53:18.810Z"
+      },
+      "C17702432068020azgg4yc7": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:14:01.554Z"
+      },
+      "C177022571250698wylkshf": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:19:57.554Z"
+      },
+      "C177024356931605v8jupg1": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:20:13.790Z"
       }
     }
   },
@@ -811,6 +937,27 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T20:53:18.810Z"
+      },
+      "C17702432068020azgg4yc7": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:14:01.554Z"
+      },
+      "C177022571250698wylkshf": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:57.554Z"
+      },
+      "C177024356931605v8jupg1": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:20:13.790Z"
       }
     }
   },
@@ -938,6 +1085,27 @@
         ],
         "score": 4.5,
         "lastUpdated": "2026-01-30T20:52:58.645Z"
+      },
+      "C1770243206805k9o5gkru6": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-02-04T22:14:01.562Z"
+      },
+      "C1770225712513dgpqo3azs": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-02-04T22:19:57.580Z"
+      },
+      "C1770243569320a1ni417zg": {
+        "fields": [
+          "description"
+        ],
+        "score": 4.5,
+        "lastUpdated": "2026-02-04T22:20:13.800Z"
       }
     }
   },
@@ -1054,6 +1222,27 @@
         ],
         "score": 2.25,
         "lastUpdated": "2026-01-30T20:52:58.645Z"
+      },
+      "C1770243206805k9o5gkru6": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:14:01.562Z"
+      },
+      "C1770225712513dgpqo3azs": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:19:57.580Z"
+      },
+      "C1770243569320a1ni417zg": {
+        "fields": [
+          "description"
+        ],
+        "score": 2.25,
+        "lastUpdated": "2026-02-04T22:20:13.800Z"
       }
     }
   },
@@ -1170,6 +1359,27 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T20:52:58.645Z"
+      },
+      "C1770243206805k9o5gkru6": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:14:01.562Z"
+      },
+      "C1770225712513dgpqo3azs": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:57.580Z"
+      },
+      "C1770243569320a1ni417zg": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:20:13.800Z"
       }
     }
   },
@@ -1500,6 +1710,72 @@
         ],
         "score": 6,
         "lastUpdated": "2026-01-30T20:53:18.810Z"
+      }
+    }
+  },
+  "c17702432068020azgg4yc7": {
+    "compliance": {
+      "C17702432068020azgg4yc7": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:14:01.554Z"
+      }
+    }
+  },
+  "c1770243206805k9o5gkru6": {
+    "compliance": {
+      "C1770243206805k9o5gkru6": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:14:01.562Z"
+      }
+    }
+  },
+  "c177022571250698wylkshf": {
+    "compliance": {
+      "C177022571250698wylkshf": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:19:57.554Z"
+      }
+    }
+  },
+  "c1770225712513dgpqo3azs": {
+    "compliance": {
+      "C1770225712513dgpqo3azs": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:19:57.580Z"
+      }
+    }
+  },
+  "c177024356931605v8jupg1": {
+    "compliance": {
+      "C177024356931605v8jupg1": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:20:13.790Z"
+      }
+    }
+  },
+  "c1770243569320a1ni417zg": {
+    "compliance": {
+      "C1770243569320a1ni417zg": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:20:13.800Z"
       }
     }
   }

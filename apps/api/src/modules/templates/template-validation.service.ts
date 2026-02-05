@@ -3,7 +3,6 @@ import {
   CreateTemplateDto,
   UpdateTemplateDto,
   GenerateLetterDto,
-  BulkGenerateLetterDto,
   TemplatePlaceholder,
   PlaceholderType,
 } from './interfaces';
@@ -51,12 +50,12 @@ export class TemplateValidationService {
       errors.push('Template category is required');
     }
 
-    if (!dto.fileName || dto.fileName.trim().length === 0) {
-      errors.push('Template file name is required');
+    if (!dto.type) {
+      errors.push('Template type is required');
     }
 
-    if (!dto.fileFormat || (dto.fileFormat !== 'DOCX' && dto.fileFormat !== 'MD')) {
-      errors.push('Template file format must be either DOCX or MD');
+    if (!dto.content || dto.content.trim().length === 0) {
+      errors.push('Template content is required');
     }
 
     // Validate name length
@@ -170,52 +169,6 @@ export class TemplateValidationService {
     if (errors.length > 0) {
       throw new BadRequestException({
         message: 'Letter generation validation failed',
-        errors,
-      });
-    }
-  }
-
-  /**
-   * Validate BulkGenerateLetterDto
-   * Requirements: 3.3, 2.4
-   */
-  validateBulkGenerateLetter(dto: BulkGenerateLetterDto): void {
-    const errors: string[] = [];
-
-    // Validate required fields
-    if (!dto.templateId || dto.templateId.trim().length === 0) {
-      errors.push('Template ID is required');
-    }
-
-    if (!dto.clientIds || !Array.isArray(dto.clientIds)) {
-      errors.push('Client IDs must be an array');
-    } else if (dto.clientIds.length === 0) {
-      errors.push('At least one client ID is required');
-    } else if (dto.clientIds.length > 100) {
-      errors.push('Cannot generate letters for more than 100 clients at once');
-    }
-
-    // Validate output formats if provided
-    if (dto.outputFormats) {
-      if (!Array.isArray(dto.outputFormats)) {
-        errors.push('Output formats must be an array');
-      } else {
-        for (const format of dto.outputFormats) {
-          if (format !== 'PDF' && format !== 'DOCX') {
-            errors.push(`Invalid output format: ${format}. Must be PDF or DOCX`);
-          }
-        }
-      }
-    }
-
-    // Sanitize placeholder values
-    if (dto.placeholderValues) {
-      dto.placeholderValues = this.sanitizePlaceholderValues(dto.placeholderValues);
-    }
-
-    if (errors.length > 0) {
-      throw new BadRequestException({
-        message: 'Bulk letter generation validation failed',
         errors,
       });
     }

@@ -1,5 +1,5 @@
 {
-  "id": "client_1769799017587_xuh1euo6h",
+  "id": "client_1770243206705_94juejhl4",
   "ref": "4P001",
   "name": "PB FULFILMENT LIMITED",
   "type": "COMPANY",
@@ -12,17 +12,22 @@
     "postcode": "OL7 0QN",
     "country": "England"
   },
-  "parties": [],
+  "parties": [
+    "client_party_1770243206757_lq8i7z8xu",
+    "client_party_1770243206774_f2b61re6q",
+    "client_party_1770243206786_0e9912qjf",
+    "client_party_1770243206793_ybz5sa4kb"
+  ],
   "services": [
-    "service_1769799017713_iq0ar2xlw",
-    "service_1769799017721_knkhlynjs",
-    "service_1769799017727_3bqqty73j",
-    "service_1769799017734_s8g91b8eg"
+    "service_1770243206810_h2iwni339",
+    "service_1770243206816_2t49sxvyx",
+    "service_1770243206821_xqykg244n",
+    "service_1770243206826_kntf58hck"
   ],
   "tasks": [],
   "documents": [],
-  "createdAt": "2026-01-30T18:50:17.588Z",
-  "updatedAt": "2026-01-30T20:53:18.786Z",
+  "createdAt": "2026-02-04T22:13:26.706Z",
+  "updatedAt": "2026-02-04T22:14:01.535Z",
   "accountsAccountingReferenceDay": 31,
   "accountsAccountingReferenceMonth": 3,
   "incorporationDate": "2019-02-27T00:00:00.000Z",

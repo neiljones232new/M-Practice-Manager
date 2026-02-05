@@ -1,0 +1,14 @@
+{
+  "id": "client_party_1770243569298_3edht98uk",
+  "clientId": "client_1770243569247_rw3rgg4h3",
+  "personId": "4M002A",
+  "role": "DIRECTOR",
+  "appointedAt": "2025-02-06T00:00:00.000Z",
+  "primaryContact": true,
+  "suffixLetter": "A",
+  "metadata": {
+    "__sources": {
+      "CH_OFFICER": "/officers/UTd7kz5UJsmQ-BFmV0iBBx_hQ50/appointments"
+    }
+  }
+}

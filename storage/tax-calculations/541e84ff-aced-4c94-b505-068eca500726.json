@@ -1,0 +1,868 @@
+{
+  "id": "541e84ff-aced-4c94-b505-068eca500726",
+  "clientId": "fcb85281-8f71-4fc2-b667-d77bafeede96",
+  "calculationType": "SALARY_OPTIMIZATION",
+  "taxYear": "2025-26",
+  "parameters": {
+    "clientId": "fcb85281-8f71-4fc2-b667-d77bafeede96",
+    "availableProfit": 78000,
+    "taxYear": "2025-26",
+    "minSalary": 0,
+    "maxSalary": 15000,
+    "salaryIncrement": 2500,
+    "currentSalary": 12570,
+    "otherIncome": 0,
+    "personalAllowanceUsed": 0,
+    "dividendAllowanceUsed": 0,
+    "considerEmployerNI": true,
+    "amountType": "targetTakeHome"
+  },
+  "amountType": "targetTakeHome",
+  "optimizedSalary": 0,
+  "optimizedDividend": 61080,
+  "totalTakeHome": 54176.625,
+  "totalTaxLiability": 23823.375,
+  "estimatedSavings": 0,
+  "report": {
+    "calculationId": "541e84ff-aced-4c94-b505-068eca500726",
+    "clientId": "fcb85281-8f71-4fc2-b667-d77bafeede96",
+    "calculationType": "salaryDividendOptimisation",
+    "inputs": {
+      "salaryGross": 0,
+      "benefits": 0,
+      "otherIncome": 0,
+      "dividends": 61080,
+      "personalTaxYear": "2025-26",
+      "companyProfitBeforeTax": 78000,
+      "salaryExpense": 0,
+      "employerNIC": 0,
+      "taxYear": "2025-26",
+      "dividendsPaid": 61080
+    },
+    "results": {
+      "personal": {
+        "totalGrossIncome": 61080,
+        "taxableIncome": 48010,
+        "incomeTaxByBand": {
+          "basicRate": 0,
+          "higherRate": 0,
+          "additionalRate": 0
+        },
+        "dividendTaxByBand": {
+          "basicRate": 3255,
+          "higherRate": 3648.3750000000005,
+          "additionalRate": 0
+        },
+        "nationalInsurance": {
+          "employeeNIC": 0,
+          "employerNIC": 0
+        },
+        "personalAllowance": 12570,
+        "dividendAllowance": 500,
+        "totalTax": 6903.375,
+        "netTakeHome": 54176.625
+      },
+      "company": {
+        "profitBeforeTax": 78000,
+        "salaryExpense": 0,
+        "employerNIC": 0,
+        "taxableProfit": 78000,
+        "corporationTax": 16920,
+        "dividendsPaid": 61080,
+        "netCompanyCashAfterTax": 0
+      },
+      "optimisation": {
+        "optimalSalary": 0,
+        "optimalDividends": 61080,
+        "takeHomeOptimised": 54176.625,
+        "effectiveTaxRate": 0.3054278846153846,
+        "totalTaxAndNI": 23823.375,
+        "netTakeHome": 54176.625
+      },
+      "scenarioComparison": [
+        {
+          "scenarioName": "Salary £12,570",
+          "company": {
+            "availableProfit": 78000,
+            "salary": 12570,
+            "employerNI": 1135.5,
+            "taxableProfit": 64294.5,
+            "corporationTax": 13288.0425,
+            "dividendPool": 51006.457500000004
+          },
+          "personal": {
+            "salary": 12570,
+            "dividends": 51006.457500000004,
+            "otherIncome": 0,
+            "incomeTax": 0,
+            "employeeNI": 0,
+            "dividendTax": 7745.929406250002,
+            "totalPersonalTax": 7745.929406250002,
+            "netPersonalIncome": 55830.52809375
+          },
+          "summary": {
+            "totalTaxAndNI": 22169.47190625,
+            "netTakeHome": 55830.52809375,
+            "effectiveRate": 0.2842239987980769
+          }
+        },
+        {
+          "scenarioName": "Salary £12,500",
+          "company": {
+            "availableProfit": 78000,
+            "salary": 12500,
+            "employerNI": 1125,
+            "taxableProfit": 64375,
+            "corporationTax": 13309.375,
+            "dividendPool": 51065.625
+          },
+          "personal": {
+            "salary": 12500,
+            "dividends": 51065.625,
+            "otherIncome": 0,
+            "incomeTax": 0,
+            "employeeNI": 0,
+            "dividendTax": 7742.2734375,
+            "totalPersonalTax": 7742.2734375,
+            "netPersonalIncome": 55823.3515625
+          },
+          "summary": {
+            "totalTaxAndNI": 22176.6484375,
+            "netTakeHome": 55823.3515625,
+            "effectiveRate": 0.28431600560897435
+          }
+        },
+        {
+          "scenarioName": "Salary £10,000",
+          "company": {
+            "availableProfit": 78000,
+            "salary": 10000,
+            "employerNI": 750,
+            "taxableProfit": 67250,
+            "corporationTax": 14071.25,
+            "dividendPool": 53178.75
+          },
+          "personal": {
+            "salary": 10000,
+            "dividends": 53178.75,
+            "otherIncome": 0,
+            "incomeTax": 0,
+            "employeeNI": 0,
+            "dividendTax": 7611.703125,
+            "totalPersonalTax": 7611.703125,
+            "netPersonalIncome": 55567.046875
+          },
+          "summary": {
+            "totalTaxAndNI": 22432.953125,
+            "netTakeHome": 55567.046875,
+            "effectiveRate": 0.28760196314102565
+          }
+        },
+        {
+          "scenarioName": "Salary £15,000",
+          "company": {
+            "availableProfit": 78000,
+            "salary": 15000,
+            "employerNI": 1500,
+            "taxableProfit": 61500,
+            "corporationTax": 12547.5,
+            "dividendPool": 48952.5
+          },
+          "personal": {
+            "salary": 15000,
+            "dividends": 48952.5,
+            "otherIncome": 0,
+            "incomeTax": 486,
+            "employeeNI": 291.59999999999997,
+            "dividendTax": 7660.21875,
+            "totalPersonalTax": 8437.81875,
+            "netPersonalIncome": 55514.68125
+          },
+          "summary": {
+            "totalTaxAndNI": 22485.31875,
+            "netTakeHome": 55514.68125,
+            "effectiveRate": 0.2882733173076923
+          }
+        },
+        {
+          "scenarioName": "Salary £7,500",
+          "company": {
+            "availableProfit": 78000,
+            "salary": 7500,
+            "employerNI": 375,
+            "taxableProfit": 70125,
+            "corporationTax": 14833.125,
+            "dividendPool": 55291.875
+          },
+          "personal": {
+            "salary": 7500,
+            "dividends": 55291.875,
+            "otherIncome": 0,
+            "incomeTax": 0,
+            "employeeNI": 0,
+            "dividendTax": 7481.1328125,
+            "totalPersonalTax": 7481.1328125,
+            "netPersonalIncome": 55310.7421875
+          },
+          "summary": {
+            "totalTaxAndNI": 22689.2578125,
+            "netTakeHome": 55310.7421875,
+            "effectiveRate": 0.29088792067307695
+          }
+        },
+        {
+          "scenarioName": "Salary £5,000",
+          "company": {
+            "availableProfit": 78000,
+            "salary": 5000,
+            "employerNI": 0,
+            "taxableProfit": 73000,
+            "corporationTax": 15595,
+            "dividendPool": 57405
+          },
+          "personal": {
+            "salary": 5000,
+            "dividends": 57405,
+            "otherIncome": 0,
+            "incomeTax": 0,
+            "employeeNI": 0,
+            "dividendTax": 7350.5625,
+            "totalPersonalTax": 7350.5625,
+            "netPersonalIncome": 55054.4375
+          },
+          "summary": {
+            "totalTaxAndNI": 22945.5625,
+            "netTakeHome": 55054.4375,
+            "effectiveRate": 0.2941738782051282
+          }
+        },
+        {
+          "scenarioName": "Salary £2,500",
+          "company": {
+            "availableProfit": 78000,
+            "salary": 2500,
+            "employerNI": 0,
+            "taxableProfit": 75500,
+            "corporationTax": 16257.5,
+            "dividendPool": 59242.5
+          },
+          "personal": {
+            "salary": 2500,
+            "dividends": 59242.5,
+            "otherIncome": 0,
+            "incomeTax": 0,
+            "employeeNI": 0,
+            "dividendTax": 7126.96875,
+            "totalPersonalTax": 7126.96875,
+            "netPersonalIncome": 54615.53125
+          },
+          "summary": {
+            "totalTaxAndNI": 23384.46875,
+            "netTakeHome": 54615.53125,
+            "effectiveRate": 0.2998008814102564
+          }
+        },
+        {
+          "scenarioName": "Salary £0",
+          "company": {
+            "availableProfit": 78000,
+            "salary": 0,
+            "employerNI": 0,
+            "taxableProfit": 78000,
+            "corporationTax": 16920,
+            "dividendPool": 61080
+          },
+          "personal": {
+            "salary": 0,
+            "dividends": 61080,
+            "otherIncome": 0,
+            "incomeTax": 0,
+            "employeeNI": 0,
+            "dividendTax": 6903.375,
+            "totalPersonalTax": 6903.375,
+            "netPersonalIncome": 54176.625
+          },
+          "summary": {
+            "totalTaxAndNI": 23823.375,
+            "netTakeHome": 54176.625,
+            "effectiveRate": 0.3054278846153846
+          }
+        }
+      ]
+    },
+    "reportSummary": {}
+  },
+  "scenarios": [
+    {
+      "salary": 12570,
+      "dividend": 51006.457500000004,
+      "incomeTax": 0,
+      "employeeNI": 0,
+      "employerNI": 1135.5,
+      "corporationTax": 13288.0425,
+      "dividendTax": 7745.929406250002,
+      "totalTax": 22169.47190625,
+      "takeHome": 55830.52809375,
+      "effectiveRate": 0.2842239987980769,
+      "netCost": 26993.5425,
+      "personalNetIncome": 55830.52809375,
+      "companyNetProfit": 51006.457500000004,
+      "amountType": "targetTakeHome"
+    },
+    {
+      "salary": 12500,
+      "dividend": 51065.625,
+      "incomeTax": 0,
+      "employeeNI": 0,
+      "employerNI": 1125,
+      "corporationTax": 13309.375,
+      "dividendTax": 7742.2734375,
+      "totalTax": 22176.6484375,
+      "takeHome": 55823.3515625,
+      "effectiveRate": 0.28431600560897435,
+      "netCost": 26934.375,
+      "personalNetIncome": 55823.3515625,
+      "companyNetProfit": 51065.625,
+      "amountType": "targetTakeHome"
+    },
+    {
+      "salary": 10000,
+      "dividend": 53178.75,
+      "incomeTax": 0,
+      "employeeNI": 0,
+      "employerNI": 750,
+      "corporationTax": 14071.25,
+      "dividendTax": 7611.703125,
+      "totalTax": 22432.953125,
+      "takeHome": 55567.046875,
+      "effectiveRate": 0.28760196314102565,
+      "netCost": 24821.25,
+      "personalNetIncome": 55567.046875,
+      "companyNetProfit": 53178.75,
+      "amountType": "targetTakeHome"
+    },
+    {
+      "salary": 15000,
+      "dividend": 48952.5,
+      "incomeTax": 486,
+      "employeeNI": 291.59999999999997,
+      "employerNI": 1500,
+      "corporationTax": 12547.5,
+      "dividendTax": 7660.21875,
+      "totalTax": 22485.31875,
+      "takeHome": 55514.68125,
+      "effectiveRate": 0.2882733173076923,
+      "netCost": 29047.5,
+      "personalNetIncome": 55514.68125,
+      "companyNetProfit": 48952.5,
+      "amountType": "targetTakeHome"
+    },
+    {
+      "salary": 7500,
+      "dividend": 55291.875,
+      "incomeTax": 0,
+      "employeeNI": 0,
+      "employerNI": 375,
+      "corporationTax": 14833.125,
+      "dividendTax": 7481.1328125,
+      "totalTax": 22689.2578125,
+      "takeHome": 55310.7421875,
+      "effectiveRate": 0.29088792067307695,
+      "netCost": 22708.125,
+      "personalNetIncome": 55310.7421875,
+      "companyNetProfit": 55291.875,
+      "amountType": "targetTakeHome"
+    },
+    {
+      "salary": 5000,
+      "dividend": 57405,
+      "incomeTax": 0,
+      "employeeNI": 0,
+      "employerNI": 0,
+      "corporationTax": 15595,
+      "dividendTax": 7350.5625,
+      "totalTax": 22945.5625,
+      "takeHome": 55054.4375,
+      "effectiveRate": 0.2941738782051282,
+      "netCost": 20595,
+      "personalNetIncome": 55054.4375,
+      "companyNetProfit": 57405,
+      "amountType": "targetTakeHome"
+    },
+    {
+      "salary": 2500,
+      "dividend": 59242.5,
+      "incomeTax": 0,
+      "employeeNI": 0,
+      "employerNI": 0,
+      "corporationTax": 16257.5,
+      "dividendTax": 7126.96875,
+      "totalTax": 23384.46875,
+      "takeHome": 54615.53125,
+      "effectiveRate": 0.2998008814102564,
+      "netCost": 18757.5,
+      "personalNetIncome": 54615.53125,
+      "companyNetProfit": 59242.5,
+      "amountType": "targetTakeHome"
+    },
+    {
+      "salary": 0,
+      "dividend": 61080,
+      "incomeTax": 0,
+      "employeeNI": 0,
+      "employerNI": 0,
+      "corporationTax": 16920,
+      "dividendTax": 6903.375,
+      "totalTax": 23823.375,
+      "takeHome": 54176.625,
+      "effectiveRate": 0.3054278846153846,
+      "netCost": 16920,
+      "personalNetIncome": 54176.625,
+      "companyNetProfit": 61080,
+      "amountType": "targetTakeHome"
+    }
+  ],
+  "result": {
+    "summary": {
+      "grossIncome": 63576.457500000004,
+      "totalTax": 22169.47190625,
+      "netIncome": 55830.52809375,
+      "effectiveTaxRate": 0.2842239987980769
+    },
+    "breakdown": {
+      "incomeTax": 0,
+      "nationalInsurance": 1135.5,
+      "corporationTax": 13288.0425,
+      "dividendTax": 7745.929406250002
+    },
+    "scenarios": [
+      {
+        "salary": 12570,
+        "dividend": 51006.457500000004,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "employerNI": 1135.5,
+        "corporationTax": 13288.0425,
+        "dividendTax": 7745.929406250002,
+        "totalTax": 22169.47190625,
+        "takeHome": 55830.52809375,
+        "effectiveRate": 0.2842239987980769,
+        "netCost": 26993.5425,
+        "personalNetIncome": 55830.52809375,
+        "companyNetProfit": 51006.457500000004,
+        "amountType": "targetTakeHome"
+      },
+      {
+        "salary": 12500,
+        "dividend": 51065.625,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "employerNI": 1125,
+        "corporationTax": 13309.375,
+        "dividendTax": 7742.2734375,
+        "totalTax": 22176.6484375,
+        "takeHome": 55823.3515625,
+        "effectiveRate": 0.28431600560897435,
+        "netCost": 26934.375,
+        "personalNetIncome": 55823.3515625,
+        "companyNetProfit": 51065.625,
+        "amountType": "targetTakeHome"
+      },
+      {
+        "salary": 10000,
+        "dividend": 53178.75,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "employerNI": 750,
+        "corporationTax": 14071.25,
+        "dividendTax": 7611.703125,
+        "totalTax": 22432.953125,
+        "takeHome": 55567.046875,
+        "effectiveRate": 0.28760196314102565,
+        "netCost": 24821.25,
+        "personalNetIncome": 55567.046875,
+        "companyNetProfit": 53178.75,
+        "amountType": "targetTakeHome"
+      },
+      {
+        "salary": 15000,
+        "dividend": 48952.5,
+        "incomeTax": 486,
+        "employeeNI": 291.59999999999997,
+        "employerNI": 1500,
+        "corporationTax": 12547.5,
+        "dividendTax": 7660.21875,
+        "totalTax": 22485.31875,
+        "takeHome": 55514.68125,
+        "effectiveRate": 0.2882733173076923,
+        "netCost": 29047.5,
+        "personalNetIncome": 55514.68125,
+        "companyNetProfit": 48952.5,
+        "amountType": "targetTakeHome"
+      },
+      {
+        "salary": 7500,
+        "dividend": 55291.875,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "employerNI": 375,
+        "corporationTax": 14833.125,
+        "dividendTax": 7481.1328125,
+        "totalTax": 22689.2578125,
+        "takeHome": 55310.7421875,
+        "effectiveRate": 0.29088792067307695,
+        "netCost": 22708.125,
+        "personalNetIncome": 55310.7421875,
+        "companyNetProfit": 55291.875,
+        "amountType": "targetTakeHome"
+      },
+      {
+        "salary": 5000,
+        "dividend": 57405,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "employerNI": 0,
+        "corporationTax": 15595,
+        "dividendTax": 7350.5625,
+        "totalTax": 22945.5625,
+        "takeHome": 55054.4375,
+        "effectiveRate": 0.2941738782051282,
+        "netCost": 20595,
+        "personalNetIncome": 55054.4375,
+        "companyNetProfit": 57405,
+        "amountType": "targetTakeHome"
+      },
+      {
+        "salary": 2500,
+        "dividend": 59242.5,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "employerNI": 0,
+        "corporationTax": 16257.5,
+        "dividendTax": 7126.96875,
+        "totalTax": 23384.46875,
+        "takeHome": 54615.53125,
+        "effectiveRate": 0.2998008814102564,
+        "netCost": 18757.5,
+        "personalNetIncome": 54615.53125,
+        "companyNetProfit": 59242.5,
+        "amountType": "targetTakeHome"
+      },
+      {
+        "salary": 0,
+        "dividend": 61080,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "employerNI": 0,
+        "corporationTax": 16920,
+        "dividendTax": 6903.375,
+        "totalTax": 23823.375,
+        "takeHome": 54176.625,
+        "effectiveRate": 0.3054278846153846,
+        "netCost": 16920,
+        "personalNetIncome": 54176.625,
+        "companyNetProfit": 61080,
+        "amountType": "targetTakeHome"
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "type": "PENSION_CONTRIBUTION",
+      "priority": "MEDIUM",
+      "title": "Pension Contribution Opportunity",
+      "description": "Consider pension contributions up to £6,357.646 to reduce tax liability and build retirement savings.",
+      "potentialSaving": 2543.0583000000006,
+      "actionRequired": "Review pension contribution options with pension provider"
+    },
+    {
+      "type": "OPTIMIZATION",
+      "priority": "MEDIUM",
+      "title": "Corporation Tax Marginal Relief",
+      "description": "Company profits fall within marginal relief band. Consider timing of income and expenses to optimize corporation tax.",
+      "actionRequired": "Review timing of income recognition and expense claims"
+    },
+    {
+      "type": "COMPLIANCE",
+      "priority": "MEDIUM",
+      "title": "Corporation Tax Return",
+      "description": "Salary and dividend changes will affect corporation tax calculations and CT600 preparation.",
+      "actionRequired": "Review CT600 preparation with accountant",
+      "deadline": "2026-12-31T00:00:00.000Z"
+    },
+    {
+      "type": "COMPLIANCE",
+      "priority": "MEDIUM",
+      "title": "Self Assessment Requirements",
+      "description": "Dividend income above the allowance requires Self Assessment registration and filing.",
+      "actionRequired": "Ensure Self Assessment registration and prepare SA100",
+      "deadline": "2027-01-31T00:00:00.000Z"
+    },
+    {
+      "type": "PLANNING",
+      "priority": "MEDIUM",
+      "title": "Business Structure Review",
+      "description": "High tax liability suggests potential benefits from reviewing business structure and incorporation alternatives.",
+      "actionRequired": "Consult with tax advisor on business structure optimization"
+    },
+    {
+      "type": "PLANNING",
+      "priority": "LOW",
+      "title": "Multi-Year Tax Planning",
+      "description": "Consider spreading income across tax years to optimize overall tax efficiency.",
+      "actionRequired": "Review multi-year income and tax planning strategy"
+    }
+  ],
+  "calculatedAt": "2026-02-05T13:51:36.034Z",
+  "calculatedBy": "system",
+  "scenarioResults": [
+    {
+      "input": {
+        "availableProfit": 78000,
+        "salary": 12570,
+        "taxYear": "2025-26",
+        "personal": {
+          "otherIncome": 0
+        }
+      },
+      "company": {
+        "salary": 12570,
+        "employerNI": 1135.5,
+        "taxableProfit": 64294.5,
+        "corporationTax": 13288.0425,
+        "profitAfterTax": 51006.457500000004,
+        "dividendPool": 51006.457500000004
+      },
+      "personal": {
+        "salary": 12570,
+        "dividends": 51006.457500000004,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "dividendTax": 7745.929406250002,
+        "totalPersonalTax": 7745.929406250002,
+        "netPersonalCash": 55830.52809375
+      },
+      "summary": {
+        "totalTax": 22169.47190625,
+        "effectiveTaxRate": 0.2842239987980769
+      }
+    },
+    {
+      "input": {
+        "availableProfit": 78000,
+        "salary": 12500,
+        "taxYear": "2025-26",
+        "personal": {
+          "otherIncome": 0
+        }
+      },
+      "company": {
+        "salary": 12500,
+        "employerNI": 1125,
+        "taxableProfit": 64375,
+        "corporationTax": 13309.375,
+        "profitAfterTax": 51065.625,
+        "dividendPool": 51065.625
+      },
+      "personal": {
+        "salary": 12500,
+        "dividends": 51065.625,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "dividendTax": 7742.2734375,
+        "totalPersonalTax": 7742.2734375,
+        "netPersonalCash": 55823.3515625
+      },
+      "summary": {
+        "totalTax": 22176.6484375,
+        "effectiveTaxRate": 0.28431600560897435
+      }
+    },
+    {
+      "input": {
+        "availableProfit": 78000,
+        "salary": 10000,
+        "taxYear": "2025-26",
+        "personal": {
+          "otherIncome": 0
+        }
+      },
+      "company": {
+        "salary": 10000,
+        "employerNI": 750,
+        "taxableProfit": 67250,
+        "corporationTax": 14071.25,
+        "profitAfterTax": 53178.75,
+        "dividendPool": 53178.75
+      },
+      "personal": {
+        "salary": 10000,
+        "dividends": 53178.75,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "dividendTax": 7611.703125,
+        "totalPersonalTax": 7611.703125,
+        "netPersonalCash": 55567.046875
+      },
+      "summary": {
+        "totalTax": 22432.953125,
+        "effectiveTaxRate": 0.28760196314102565
+      }
+    },
+    {
+      "input": {
+        "availableProfit": 78000,
+        "salary": 15000,
+        "taxYear": "2025-26",
+        "personal": {
+          "otherIncome": 0
+        }
+      },
+      "company": {
+        "salary": 15000,
+        "employerNI": 1500,
+        "taxableProfit": 61500,
+        "corporationTax": 12547.5,
+        "profitAfterTax": 48952.5,
+        "dividendPool": 48952.5
+      },
+      "personal": {
+        "salary": 15000,
+        "dividends": 48952.5,
+        "incomeTax": 486,
+        "employeeNI": 291.59999999999997,
+        "dividendTax": 7660.21875,
+        "totalPersonalTax": 8437.81875,
+        "netPersonalCash": 55514.68125
+      },
+      "summary": {
+        "totalTax": 22485.31875,
+        "effectiveTaxRate": 0.2882733173076923
+      }
+    },
+    {
+      "input": {
+        "availableProfit": 78000,
+        "salary": 7500,
+        "taxYear": "2025-26",
+        "personal": {
+          "otherIncome": 0
+        }
+      },
+      "company": {
+        "salary": 7500,
+        "employerNI": 375,
+        "taxableProfit": 70125,
+        "corporationTax": 14833.125,
+        "profitAfterTax": 55291.875,
+        "dividendPool": 55291.875
+      },
+      "personal": {
+        "salary": 7500,
+        "dividends": 55291.875,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "dividendTax": 7481.1328125,
+        "totalPersonalTax": 7481.1328125,
+        "netPersonalCash": 55310.7421875
+      },
+      "summary": {
+        "totalTax": 22689.2578125,
+        "effectiveTaxRate": 0.29088792067307695
+      }
+    },
+    {
+      "input": {
+        "availableProfit": 78000,
+        "salary": 5000,
+        "taxYear": "2025-26",
+        "personal": {
+          "otherIncome": 0
+        }
+      },
+      "company": {
+        "salary": 5000,
+        "employerNI": 0,
+        "taxableProfit": 73000,
+        "corporationTax": 15595,
+        "profitAfterTax": 57405,
+        "dividendPool": 57405
+      },
+      "personal": {
+        "salary": 5000,
+        "dividends": 57405,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "dividendTax": 7350.5625,
+        "totalPersonalTax": 7350.5625,
+        "netPersonalCash": 55054.4375
+      },
+      "summary": {
+        "totalTax": 22945.5625,
+        "effectiveTaxRate": 0.2941738782051282
+      }
+    },
+    {
+      "input": {
+        "availableProfit": 78000,
+        "salary": 2500,
+        "taxYear": "2025-26",
+        "personal": {
+          "otherIncome": 0
+        }
+      },
+      "company": {
+        "salary": 2500,
+        "employerNI": 0,
+        "taxableProfit": 75500,
+        "corporationTax": 16257.5,
+        "profitAfterTax": 59242.5,
+        "dividendPool": 59242.5
+      },
+      "personal": {
+        "salary": 2500,
+        "dividends": 59242.5,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "dividendTax": 7126.96875,
+        "totalPersonalTax": 7126.96875,
+        "netPersonalCash": 54615.53125
+      },
+      "summary": {
+        "totalTax": 23384.46875,
+        "effectiveTaxRate": 0.2998008814102564
+      }
+    },
+    {
+      "input": {
+        "availableProfit": 78000,
+        "salary": 0,
+        "taxYear": "2025-26",
+        "personal": {
+          "otherIncome": 0
+        }
+      },
+      "company": {
+        "salary": 0,
+        "employerNI": 0,
+        "taxableProfit": 78000,
+        "corporationTax": 16920,
+        "profitAfterTax": 61080,
+        "dividendPool": 61080
+      },
+      "personal": {
+        "salary": 0,
+        "dividends": 61080,
+        "incomeTax": 0,
+        "employeeNI": 0,
+        "dividendTax": 6903.375,
+        "totalPersonalTax": 6903.375,
+        "netPersonalCash": 54176.625
+      },
+      "summary": {
+        "totalTax": 23823.375,
+        "effectiveTaxRate": 0.3054278846153846
+      }
+    }
+  ]
+}

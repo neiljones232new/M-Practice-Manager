@@ -1,5 +1,4 @@
-import { Client as ClientNode } from '../interfaces/client.interface';
-import { Client as DbClient } from '../../database/interfaces/database.interface';
+import { Client as ClientNode, ClientProfile as ClientProfileNode } from '../interfaces/client.interface';
 
 export interface ClientProfileSubset {
   mainContactName?: string;
@@ -171,11 +170,12 @@ export function evaluateServiceEligibility(
 
 export function buildClientContext(
   node: ClientNode,
-  dbClient?: DbClient | null
+  profileInput?: Partial<ClientProfileNode> | ClientProfileSubset | null
 ): ClientContext {
+  const profileSource = (profileInput || {}) as Record<string, any>;
   const getValue = <T,>(key: keyof ClientProfileSubset & string): T | undefined => {
-    const dbVal = (dbClient as any)?.[key];
-    if (dbVal !== null && dbVal !== undefined) return dbVal as T;
+    const profileVal = profileSource?.[key];
+    if (profileVal !== null && profileVal !== undefined) return profileVal as T;
     const nodeVal = (node as any)?.[key];
     return nodeVal !== undefined ? (nodeVal as T) : undefined;
   };

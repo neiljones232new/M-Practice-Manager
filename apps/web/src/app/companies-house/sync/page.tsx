@@ -34,23 +34,23 @@ export default function CompaniesHouseSyncPage() {
     }
   };
 
-  const handleSync = async (clientRef: string) => {
-    setSyncingClients(prev => new Set(prev).add(clientRef));
+  const handleSync = async (clientId: string) => {
+    setSyncingClients(prev => new Set(prev).add(clientId));
     setError(null);
     setSuccessMessage(null);
 
     try {
-      await api.post<{ message?: string }>(`/companies-house/sync/${clientRef}`);
-      setSuccessMessage(`Successfully synced data for client ${clientRef}`);
+      await api.post<{ message?: string }>(`/companies-house/sync/${clientId}`);
+      setSuccessMessage(`Successfully synced data for client ${clientId}`);
       
       // Reload the client data to show updated information
       await loadCompanyClients();
     } catch (err: any) {
-      setError(err.message || `Failed to sync client ${clientRef}`);
+      setError(err.message || `Failed to sync client ${clientId}`);
     } finally {
       setSyncingClients(prev => {
         const newSet = new Set(prev);
-        newSet.delete(clientRef);
+        newSet.delete(clientId);
         return newSet;
       });
     }
@@ -60,9 +60,9 @@ export default function CompaniesHouseSyncPage() {
     const companyClients = clients.filter(client => client.node.registeredNumber);
     
     for (const client of companyClients) {
-      if (!client.node.ref) continue;
-      if (!syncingClients.has(client.node.ref)) {
-        await handleSync(client.node.ref);
+      if (!client.node.id) continue;
+      if (!syncingClients.has(client.node.id)) {
+        await handleSync(client.node.id);
         // Add a small delay between syncs to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
@@ -211,7 +211,7 @@ export default function CompaniesHouseSyncPage() {
                       <tr key={client.node.id}>
                         <td>
                           <div className="font-medium">{client.node.name}</div>
-                          <div className="text-sm text-gray-500">{client.node.ref ?? '—'}</div>
+                          <div className="text-sm text-gray-500">{client.node.registeredNumber || client.node.id || '—'}</div>
                         </td>
                         <td className="font-mono">{client.node.registeredNumber}</td>
                         <td>
@@ -229,16 +229,16 @@ export default function CompaniesHouseSyncPage() {
                           <div className="flex gap-2">
                             <button
                               className="mdj-button mdj-button-secondary mdj-button-sm"
-                              onClick={() => client.node.ref && handleSync(client.node.ref)}
-                              disabled={!client.node.ref || syncingClients.has(client.node.ref)}
+                              onClick={() => client.node.id && handleSync(client.node.id)}
+                              disabled={!client.node.id || syncingClients.has(client.node.id)}
                             >
-                              {client.node.ref && syncingClients.has(client.node.ref) ? (
+                              {client.node.id && syncingClients.has(client.node.id) ? (
                                 <>
                                   <div className="mdj-loader mdj-loader-xs"></div>
                                   Syncing...
                                 </>
                               ) : (
-                                client.node.ref ? 'Sync' : 'No ref'
+                                client.node.id ? 'Sync' : 'No client'
                               )}
                             </button>
                             <a

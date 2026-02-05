@@ -25,8 +25,8 @@ interface CalendarEvent {
 
 interface Client {
   id: string;
-  ref: string;
   name: string;
+  registeredNumber?: string | null;
 }
 
 interface Task {
@@ -360,7 +360,7 @@ export default function CalendarEventDetailPage() {
                       className="text-lg font-medium hover:underline"
                       style={{ color: 'var(--gold)' }}
                     >
-                      {client.ref}
+                      {client.registeredNumber || client.id}
                     </button>
                     <div className="text-gray-600">{client.name}</div>
                   </div>

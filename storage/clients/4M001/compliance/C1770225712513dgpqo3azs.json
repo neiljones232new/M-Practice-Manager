@@ -1,0 +1,12 @@
+{
+  "id": "C1770225712513dgpqo3azs",
+  "clientId": "client_1770225712413_7invtumus",
+  "type": "CONFIRMATION_STATEMENT",
+  "description": "Confirmation Statement Filing",
+  "dueDate": "2026-10-12T00:00:00.000Z",
+  "status": "PENDING",
+  "source": "COMPANIES_HOUSE",
+  "reference": "16749233",
+  "createdAt": "2026-02-04T17:21:52.513Z",
+  "updatedAt": "2026-02-04T22:19:57.572Z"
+}

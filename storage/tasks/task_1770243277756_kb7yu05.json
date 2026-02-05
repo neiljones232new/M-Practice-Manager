@@ -1,0 +1,16 @@
+{
+  "id": "task_1770243277756_kb7yu05",
+  "clientId": "4P001",
+  "serviceId": "service_1770243206810_h2iwni339",
+  "title": "Review and prepare accounts",
+  "description": "Review client records and prepare annual accounts",
+  "status": "OPEN",
+  "priority": "HIGH",
+  "tags": [
+    "preparation",
+    "accounts",
+    "auto-generated"
+  ],
+  "createdAt": "2026-02-04T22:14:37.756Z",
+  "updatedAt": "2026-02-04T22:14:37.756Z"
+}

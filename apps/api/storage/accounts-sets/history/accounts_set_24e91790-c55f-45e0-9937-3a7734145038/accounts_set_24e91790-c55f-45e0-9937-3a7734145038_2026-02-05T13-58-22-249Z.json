@@ -1,0 +1,316 @@
+{
+  "id": "24e91790-c55f-45e0-9937-3a7734145038",
+  "clientId": "1B001",
+  "companyNumber": "14662236",
+  "framework": "SMALL_FRS102_1A",
+  "status": "DRAFT",
+  "period": {
+    "startDate": "2025-01-01",
+    "endDate": "2025-12-31",
+    "isFirstYear": false
+  },
+  "sections": {
+    "companyPeriod": {
+      "framework": "SMALL_FRS102_1A",
+      "company": {
+        "name": "AUTRUFUS LIMITED",
+        "companyNumber": "14662236",
+        "registeredOffice": {
+          "line1": "54 Christie Drive",
+          "line2": "",
+          "town": "Huntingdon",
+          "county": "",
+          "postcode": "PE29 6JN",
+          "country": "England"
+        },
+        "directors": [
+          {
+            "name": "MARSHALL, Suzanne Karen"
+          }
+        ]
+      },
+      "period": {
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "isFirstYear": false
+      }
+    },
+    "profitAndLoss": {
+      "lines": {
+        "turnover": 100000,
+        "costOfSales": 5000,
+        "otherIncome": 1000,
+        "adminExpenses": 20000,
+        "wages": 12570,
+        "rent": 1000,
+        "motor": 5000,
+        "professionalFees": 2000,
+        "otherExpenses": 5430,
+        "interestPayable": 0,
+        "taxCharge": 9500,
+        "dividendsDeclared": 40500
+      },
+      "comparatives": {
+        "priorYearLines": {
+          "turnover": 100000,
+          "costOfSales": 5000,
+          "otherIncome": 1000,
+          "adminExpenses": 20000,
+          "wages": 12570,
+          "rent": 1000,
+          "motor": 5000,
+          "professionalFees": 2000,
+          "otherExpenses": 5430,
+          "interestPayable": 0,
+          "taxCharge": 9500,
+          "dividendsDeclared": 40500
+        }
+      }
+    },
+    "balanceSheet": {
+      "assets": {
+        "fixedAssets": {
+          "tangibleFixedAssets": 9000,
+          "intangibleAssets": 0,
+          "investments": 0
+        },
+        "currentAssets": {
+          "stock": 0,
+          "debtors": 10000,
+          "cash": 5000,
+          "prepayments": 1000
+        }
+      },
+      "liabilities": {
+        "creditorsWithinOneYear": {
+          "tradeCreditors": 2000,
+          "taxes": 9500,
+          "accrualsDeferredIncome": 2000,
+          "directorsLoan": 6499,
+          "otherCreditors": 5000
+        },
+        "creditorsAfterOneYear": {
+          "loans": 0,
+          "other": 0
+        }
+      },
+      "equity": {
+        "shareCapital": 1,
+        "retainedEarnings": 0,
+        "otherReserves": 0
+      },
+      "comparatives": {
+        "prior": {
+          "assets": {
+            "fixedAssets": {
+              "tangibleFixedAssets": 10000,
+              "intangibleAssets": 0,
+              "investments": 0
+            },
+            "currentAssets": {
+              "stock": 0,
+              "debtors": 10000,
+              "cash": 5000,
+              "prepayments": 1000
+            }
+          },
+          "liabilities": {
+            "creditorsWithinOneYear": {
+              "tradeCreditors": 2000,
+              "taxes": 9500,
+              "accrualsDeferredIncome": 2000,
+              "directorsLoan": 7499,
+              "otherCreditors": 5000
+            },
+            "creditorsAfterOneYear": {
+              "loans": 0,
+              "other": 0
+            }
+          },
+          "equity": {
+            "shareCapital": 1,
+            "retainedEarnings": 0,
+            "otherReserves": 0
+          }
+        }
+      }
+    },
+    "frameworkDisclosures": {
+      "framework": "SMALL_FRS102_1A",
+      "auditExemption": {
+        "isAuditExempt": true,
+        "exemptionStatementKey": "CA2006_S477_SMALL"
+      },
+      "includePLInClientPack": true,
+      "includeDirectorsReport": true,
+      "includeAccountantsReport": true
+    },
+    "accountingPolicies": {
+      "basisOfPreparation": "These accounts have been prepared under the historical cost convention and in accordance with applicable UK accounting standards.",
+      "goingConcern": {
+        "isGoingConcern": true,
+        "noteText": ""
+      },
+      "turnoverPolicyText": "Turnover represents the amounts derived from the provision of goods and services falling within the company's ordinary activities, after deduction of trade discounts, VAT and other sales related taxes.",
+      "tangibleFixedAssets": {
+        "hasAssets": true,
+        "depreciationMethod": "STRAIGHT_LINE",
+        "rates": [
+          {
+            "category": "Office Equipment",
+            "ratePercent": 20
+          }
+        ]
+      }
+    },
+    "notes": {
+      "countryOfIncorporation": "England and Wales",
+      "shareCapital": {
+        "shareClass": "Ordinary shares",
+        "numberOfShares": 1,
+        "nominalValue": 1,
+        "currency": "GBP"
+      },
+      "principalActivity": "",
+      "employees": {
+        "include": false,
+        "averageEmployees": 0
+      },
+      "tangibleAssets": {
+        "columns": [
+          "Office Equipment",
+          "Total"
+        ],
+        "rows": [
+          {
+            "label": "Cost b/fwd",
+            "values": [
+              10000,
+              10000
+            ]
+          },
+          {
+            "label": "Additions",
+            "values": [
+              0,
+              0
+            ]
+          },
+          {
+            "label": "Disposals",
+            "values": [
+              0,
+              0
+            ]
+          },
+          {
+            "label": "Cost c/fwd",
+            "values": [
+              10000,
+              10000
+            ]
+          },
+          {
+            "label": "Depreciation b/fwd",
+            "values": [
+              0,
+              0
+            ]
+          },
+          {
+            "label": "Depreciation charge",
+            "values": [
+              1000,
+              1000
+            ]
+          },
+          {
+            "label": "Depreciation on disposals",
+            "values": [
+              0,
+              0
+            ]
+          },
+          {
+            "label": "Depreciation c/fwd",
+            "values": [
+              1000,
+              1000
+            ]
+          },
+          {
+            "label": "Net book value (current)",
+            "values": [
+              9000,
+              9000
+            ]
+          },
+          {
+            "label": "Net book value (prior)",
+            "values": [
+              100,
+              100
+            ]
+          }
+        ]
+      },
+      "additionalNotes": []
+    }
+  },
+  "validation": {
+    "errors": [],
+    "warnings": [],
+    "isBalanced": true
+  },
+  "outputs": {
+    "htmlUrl": null,
+    "pdfUrl": null
+  },
+  "createdAt": "2026-02-05T13:52:38.293Z",
+  "updatedAt": "2026-02-05T13:58:22.090Z",
+  "createdBy": "local-dev-super-admin",
+  "lastEditedBy": "local-dev-super-admin",
+  "calculations": {
+    "profitAndLoss": {
+      "grossProfit": 95000,
+      "operatingProfit": 50000,
+      "profitBeforeTax": 50000,
+      "profitAfterTax": 40500,
+      "totalIncome": 96000,
+      "totalExpenses": 46000
+    },
+    "balanceSheet": {
+      "totalFixedAssets": 9000,
+      "totalCurrentAssets": 16000,
+      "totalAssets": 25000,
+      "totalCurrentLiabilities": 24999,
+      "totalLongTermLiabilities": 0,
+      "totalLiabilities": 24999,
+      "totalEquity": 1,
+      "netAssets": 1
+    }
+  },
+  "ratios": {
+    "currentRatio": 0.6400256010240409,
+    "quickRatio": 0.6400256010240409,
+    "debtToEquityRatio": 24999,
+    "returnOnAssets": 162,
+    "returnOnEquity": 4050000,
+    "grossProfitMargin": 95,
+    "netProfitMargin": 40.5
+  },
+  "percentageChanges": {
+    "turnover": 0,
+    "costOfSales": 0,
+    "otherIncome": 0,
+    "adminExpenses": 0,
+    "wages": 0,
+    "rent": 0,
+    "motor": 0,
+    "professionalFees": 0,
+    "otherExpenses": 0,
+    "interestPayable": 0,
+    "taxCharge": 0,
+    "dividendsDeclared": 0
+  }
+}

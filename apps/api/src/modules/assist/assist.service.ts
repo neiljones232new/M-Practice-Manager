@@ -14,7 +14,7 @@ import { QueryTemplatesService, QueryTemplate, QuickAction } from './query-templ
 import { IntegrationConfigService } from '../integrations/services/integration-config.service';
 
 export interface AssistContext {
-  clientRef?: string;
+  clientId?: string;
   portfolioCode?: number;
   userId?: string;
   includeClients?: boolean;
@@ -311,7 +311,7 @@ export class AssistService implements OnModuleInit {
           return !hasLastMadeUpTo && !hasARD;
         })
         .map((client: any) => ({
-          ref: client.ref || '—',
+          identifier: client.registeredNumber || client.id || '—',
           name: client.name || 'Unnamed client',
         }));
 
@@ -321,7 +321,7 @@ export class AssistService implements OnModuleInit {
 
       const lines = missing
         .slice(0, 50)
-        .map((client: any) => `- ${client.name} (${client.ref})`)
+        .map((client: any) => `- ${client.name} (${client.registeredNumber || client.id || '—'})`)
         .join('\n');
 
       return `Clients missing year end data (${missing.length}):\n${lines}\n\nUpdate the year end (accounts last made up to or accounting reference day/month) for these clients.`;
@@ -335,7 +335,7 @@ export class AssistService implements OnModuleInit {
       const missing = contextData.clients
         .filter((client: any) => !client.accountsLastMadeUpTo)
         .map((client: any) => ({
-          ref: client.ref || '—',
+          identifier: client.registeredNumber || client.id || '—',
           name: client.name || 'Unnamed client',
         }));
 
@@ -345,7 +345,7 @@ export class AssistService implements OnModuleInit {
 
       const lines = missing
         .slice(0, 50)
-        .map((client: any) => `- ${client.name} (${client.ref})`)
+        .map((client: any) => `- ${client.name} (${client.registeredNumber || client.id || '—'})`)
         .join('\n');
 
       return `Clients missing accountsLastMadeUpTo (${missing.length}):\n${lines}\n\nUpdate accountsLastMadeUpTo for these clients.`;
@@ -364,7 +364,7 @@ export class AssistService implements OnModuleInit {
           return !primary && !client.mainEmail && !client.mainPhone;
         })
         .map((client: any) => ({
-          ref: client.ref || '—',
+          identifier: client.registeredNumber || client.id || '—',
           name: client.name || 'Unnamed client',
         }));
 
@@ -374,7 +374,7 @@ export class AssistService implements OnModuleInit {
 
       const lines = missing
         .slice(0, 50)
-        .map((client: any) => `- ${client.name} (${client.ref})`)
+        .map((client: any) => `- ${client.name} (${client.registeredNumber || client.id || '—'})`)
         .join('\n');
 
       return `Clients missing a main contact (${missing.length}):\n${lines}\n\nSet a primary contact or add a main email/phone for these clients.`;
@@ -437,15 +437,15 @@ export class AssistService implements OnModuleInit {
 
   // --- High-level helpers (unchanged from your version) ---
 
-  async getClientSummary(clientRef: string): Promise<string> {
+  async getClientSummary(clientId: string): Promise<string> {
     const context: AssistContext = {
-      clientRef,
+      clientId,
       includeClients: true,
       includeServices: true,
       includeTasks: true,
       includeCompliance: true,
     };
-    const prompt = `Provide a comprehensive summary of client ${clientRef} including their services, recent tasks, compliance status, and any recommendations.`;
+    const prompt = `Provide a comprehensive summary of client ${clientId} including their services, recent tasks, compliance status, and any recommendations.`;
     return this.processQuery(prompt, context);
   }
 
@@ -497,7 +497,7 @@ export class AssistService implements OnModuleInit {
       contextData.pageContext = context.pageContext;
     }
 
-    const includeClients = context.includeClients || !!context.clientRef;
+    const includeClients = context.includeClients || !!context.clientId;
     const includeServices = context.includeServices || includeClients;
 
     try {
@@ -505,8 +505,10 @@ export class AssistService implements OnModuleInit {
         const filters: any = {};
         if (context.portfolioCode) filters.portfolioCode = context.portfolioCode;
 
-        if (context.clientRef) {
-          const client = await this.clientsService.findByRef(context.clientRef);
+        if (context.clientId) {
+          const client =
+            (await this.clientsService.findOne(context.clientId)) ||
+            (await this.clientsService.findByIdentifier(context.clientId));
           contextData.client = client;
         } else {
           const clients = await this.clientsService.findAll(filters);
@@ -516,8 +518,8 @@ export class AssistService implements OnModuleInit {
 
       if (context.includeTasks) {
         const taskFilters: any = {};
-        if (context.userId) taskFilters.assignee = context.userId;
-        if (context.clientRef) taskFilters.clientRef = context.clientRef;
+        if (context.userId) taskFilters.assigneeId = context.userId;
+        if (context.clientId) taskFilters.clientId = context.clientId;
         if (context.dateRange) taskFilters.dueDateRange = context.dateRange;
 
         const tasks = await this.tasksService.findAll(taskFilters);
@@ -526,7 +528,7 @@ export class AssistService implements OnModuleInit {
 
       if (includeServices) {
         const serviceFilters: any = {};
-        if (context.clientRef) serviceFilters.clientRef = context.clientRef;
+        if (context.clientId) serviceFilters.clientId = context.clientId;
 
         const services = await this.servicesService.findAll(serviceFilters);
         contextData.services = services.slice(0, 100);
@@ -534,7 +536,7 @@ export class AssistService implements OnModuleInit {
 
       if (context.includeCompliance) {
         const complianceFilters: any = {};
-        if (context.clientRef) complianceFilters.clientRef = context.clientRef;
+        if (context.clientId) complianceFilters.clientId = context.clientId;
         if (context.dateRange) complianceFilters.dueDateRange = context.dateRange;
 
         const compliance = await this.complianceService.findAll(complianceFilters);
@@ -601,7 +603,7 @@ RESPONSE FORMAT:
         const client = contextData.client;
         return `CLIENT SUMMARY (Offline Mode)
         
-Client: ${client.name} (${client.ref})
+Client: ${client.name} (${client.registeredNumber || client.id})
 Type: ${client.type}
 Status: ${client.status}
 Services: ${contextData.services?.length || 0} active services
@@ -737,7 +739,7 @@ For intelligent prioritization, please configure your OpenAI API key in settings
       includeCompliance: template.category === 'compliance' || template.category === 'deadline',
     };
 
-    if (context.clientRef) assistContext.clientRef = context.clientRef;
+    if (context.clientId) assistContext.clientId = context.clientId;
     if (context.portfolioCode) assistContext.portfolioCode = context.portfolioCode;
     if (context.userId) assistContext.userId = context.userId;
 
@@ -760,11 +762,11 @@ For intelligent prioritization, please configure your OpenAI API key in settings
     return this.queryTemplatesService.searchTemplates(query);
   }
 
-  async getContextualTemplates(context: { clientRef?: string; userId?: string }): Promise<QueryTemplate[]> {
+  async getContextualTemplates(context: { clientId?: string; userId?: string }): Promise<QueryTemplate[]> {
     const contextInfo: any = {};
     try {
       if (context.userId) {
-        const userTasks = await this.tasksService.findAll({ assignee: context.userId });
+        const userTasks = await this.tasksService.findAll({ assigneeId: context.userId });
         contextInfo.hasOverdueTasks = userTasks.some(
           (task) => new Date(task.dueDate) < new Date() && task.status !== 'COMPLETED',
         );
@@ -776,7 +778,7 @@ For intelligent prioritization, please configure your OpenAI API key in settings
       });
       contextInfo.hasUpcomingDeadlines = upcomingDeadlines.length > 0;
 
-      if (context.clientRef) contextInfo.clientRef = context.clientRef;
+      if (context.clientId) contextInfo.clientId = context.clientId;
     } catch (error) {
       this.logger.warn('Error gathering contextual information:', error);
     }

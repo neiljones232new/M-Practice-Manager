@@ -9,7 +9,7 @@ describe('Reports API (e2e)', () => {
   let app: INestApplication;
   let testDataDir: string;
   let authToken: string;
-  let testClientRef: string;
+  let testClientId: string;
 
   beforeAll(async () => {
     testDataDir = path.join(__dirname, 'test-data-reports');
@@ -35,6 +35,7 @@ describe('Reports API (e2e)', () => {
     authToken = authResponse.body.access_token;
 
     const clientData = {
+      id: 'client-report-1',
       name: 'Test Report Company Ltd',
       type: 'COMPANY',
       portfolioCode: 1,
@@ -55,10 +56,10 @@ describe('Reports API (e2e)', () => {
       .send(clientData);
 
     if (clientResponse.status === 201) {
-      testClientRef = clientResponse.body.ref;
+      testClientId = clientResponse.body.id;
     } else {
-      // Fallback: use a test client ref
-      testClientRef = 'test-client-1';
+      // Fallback: use a test client id
+      testClientId = 'test-client-1';
     }
   });
 
@@ -72,7 +73,7 @@ describe('Reports API (e2e)', () => {
   describe('GET /documents/reports/client/:id/html', () => {
     it('should generate HTML report', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/html`)
+        .get(`/documents/reports/client/${testClientId}/html`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
@@ -83,7 +84,7 @@ describe('Reports API (e2e)', () => {
 
     it('should include services with option', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/html?includeServices=true`)
+        .get(`/documents/reports/client/${testClientId}/html?includeServices=true`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
@@ -101,7 +102,7 @@ describe('Reports API (e2e)', () => {
   describe('GET /documents/reports/client/:id/preview', () => {
     it('should return HTML with inline disposition', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/preview`)
+        .get(`/documents/reports/client/${testClientId}/preview`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
@@ -112,7 +113,7 @@ describe('Reports API (e2e)', () => {
 
     it('should support query options', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/preview?includeServices=true`)
+        .get(`/documents/reports/client/${testClientId}/preview?includeServices=true`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
@@ -131,7 +132,7 @@ describe('Reports API (e2e)', () => {
     it('should generate PDF report', async () => {
       try {
         const response = await request(app.getHttpServer())
-          .post(`/documents/reports/client/${testClientRef}`)
+          .post(`/documents/reports/client/${testClientId}`)
           .set('Authorization', `Bearer ${authToken}`)
           .send({ includeServices: true });
 
@@ -145,7 +146,7 @@ describe('Reports API (e2e)', () => {
         } else {
           // If PDF generation fails (e.g., Puppeteer not installed), verify HTML works
           const htmlResponse = await request(app.getHttpServer())
-            .get(`/documents/reports/client/${testClientRef}/html`)
+            .get(`/documents/reports/client/${testClientId}/html`)
             .set('Authorization', `Bearer ${authToken}`)
             .expect(200);
           
@@ -154,7 +155,7 @@ describe('Reports API (e2e)', () => {
       } catch (error) {
         // Fallback to HTML if PDF fails
         const htmlResponse = await request(app.getHttpServer())
-          .get(`/documents/reports/client/${testClientRef}/html`)
+          .get(`/documents/reports/client/${testClientId}/html`)
           .set('Authorization', `Bearer ${authToken}`)
           .expect(200);
         
@@ -175,7 +176,7 @@ describe('Reports API (e2e)', () => {
   describe('Report Options', () => {
     it('should handle multiple options', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/html?includeServices=true&includeParties=true`)
+        .get(`/documents/reports/client/${testClientId}/html?includeServices=true&includeParties=true`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
@@ -184,7 +185,7 @@ describe('Reports API (e2e)', () => {
 
     it('should handle includeCompaniesHouseData option', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/html?includeCompaniesHouseData=true`)
+        .get(`/documents/reports/client/${testClientId}/html?includeCompaniesHouseData=true`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
@@ -202,7 +203,7 @@ describe('Reports API (e2e)', () => {
 
     it('should require authentication', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/documents/reports/client/${testClientRef}/html`);
+        .get(`/documents/reports/client/${testClientId}/html`);
 
       expect([401]).toContain(response.status);
     });

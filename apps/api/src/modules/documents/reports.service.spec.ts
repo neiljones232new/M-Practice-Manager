@@ -15,7 +15,6 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
 
   const mockClient = {
     id: 'client-1',
-    ref: '1A001',
     name: 'Test Client Ltd',
     type: 'COMPANY' as const,
     status: 'ACTIVE' as const,
@@ -65,7 +64,6 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
     ],
     node: {
       id: 'client-1',
-      ref: '1A001',
       name: 'Test Client Ltd',
       type: 'COMPANY' as const,
       status: 'ACTIVE' as const,
@@ -144,25 +142,30 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
       originalName: 'Annual Accounts 2023.pdf',
       category: 'ACCOUNTS',
       size: 1024000,
-      uploadedAt: '2024-01-15T10:00:00Z',
-      tags: ['accounts', '2023'],
+      createdAt: '2024-01-15T10:00:00Z',
     },
     {
       id: 'doc-2',
       originalName: 'VAT Return Q1.pdf',
-      category: 'VAT',
+      category: 'TAX',
       size: 512000,
-      uploadedAt: '2024-02-01T14:30:00Z',
-      tags: ['vat', 'q1'],
+      createdAt: '2024-02-01T14:30:00Z',
     },
   ];
 
   const mockCompaniesHouseData = {
     company_number: '12345678',
     company_name: 'TEST CLIENT LIMITED',
+    type: 'ltd',
+    can_file: true,
+    links: {
+      self: '/company/12345678',
+      filing_history: '/company/12345678/filing-history',
+      officers: '/company/12345678/officers',
+      charges: '/company/12345678/charges',
+    },
     company_status: 'active',
     company_type: 'ltd',
-    type: 'ltd',
     date_of_creation: '2020-01-01',
     sic_codes: ['62020', '70229'],
     registered_office_address: {
@@ -189,6 +192,10 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
   ];
 
   const mockFilingHistory = {
+    etag: 'etag-123',
+    items_per_page: 2,
+    kind: 'filing-history',
+    start_index: 0,
     total_count: 2,
     items: [
       {
@@ -599,8 +606,7 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
         originalName: `Document ${i}.pdf`,
         category: 'OTHER',
         size: 1024,
-        uploadedAt: '2024-01-01T00:00:00Z',
-        tags: ['test'],
+        createdAt: '2024-01-01T00:00:00Z',
       }));
 
       const documentsSection = (service as any).createDocumentsSection(manyDocuments);
@@ -736,7 +742,7 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
         const templateData = (service as any).transformDataForTemplate(reportData);
 
         expect(templateData.companyName).toBe('Test Client Ltd');
-        expect(templateData.clientRef).toBe('1A001');
+        expect(templateData.clientIdentifier).toBe('12345678');
         expect(templateData.companyNumber).toBe('12345678');
         expect(templateData.companyType).toBe('COMPANY');
         expect(templateData.status).toBe('ACTIVE');
@@ -750,7 +756,7 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
           client: {
             id: 'empty-client',
             name: null,
-            ref: null,
+            registeredNumber: null,
             type: null,
             status: null,
             mainEmail: null,
@@ -765,7 +771,7 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
         const templateData = (service as any).transformDataForTemplate(emptyReportData);
 
         expect(templateData.companyName).toBe('Unknown Company');
-        expect(templateData.clientRef).toBe('N/A');
+        expect(templateData.clientIdentifier).toBe('N/A');
         expect(templateData.companyNumber).toBe('N/A');
         expect(templateData.companyType).toBe('N/A');
         expect(templateData.status).toBe('N/A');
@@ -931,7 +937,7 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
       it('should handle HTML generation with minimal data', async () => {
         const minimalClient = {
           id: 'minimal-client',
-          ref: 'MIN001',
+          registeredNumber: 'MIN001',
           name: 'Minimal Client',
           type: 'COMPANY' as const,
           status: 'ACTIVE' as const,
@@ -945,7 +951,7 @@ describe('ReportsService - PDF Generation and Report Creation', () => {
           updatedAt: new Date(),
           node: {
             id: 'minimal-client',
-            ref: 'MIN001',
+            registeredNumber: 'MIN001',
             name: 'Minimal Client',
             type: 'COMPANY' as const,
             status: 'ACTIVE' as const,

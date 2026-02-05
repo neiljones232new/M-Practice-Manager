@@ -166,7 +166,6 @@ export class CalendarController {
         upcomingEvents: 0,
         overdueEvents: 0,
         eventsByType: {},
-        eventsByStatus: {},
       };
     }
     return this.calendarService.getCalendarSummary(portfolioCode);

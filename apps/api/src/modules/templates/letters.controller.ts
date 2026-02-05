@@ -20,10 +20,8 @@ import { LetterGenerationService } from './letter-generation.service';
 import { TemplateValidationService } from './template-validation.service';
 import {
   GenerateLetterDto,
-  BulkGenerateLetterDto,
   LetterFilters,
   GeneratedLetter,
-  BulkGenerationResult,
 } from './interfaces';
 
 /**
@@ -56,23 +54,6 @@ export class LettersController {
     this.validationService.validateGenerateLetter(dto);
     const userId = (req.user as any)?.id || 'system';
     return this.letterGenerationService.generateLetter(dto, userId);
-  }
-
-  /**
-   * Generate letters in bulk for multiple clients
-   * Requirements: 7.1
-   * Security: Validates and sanitizes all input data, limits bulk operations to 100 clients
-   */
-  @Post('generate/bulk')
-  @HttpCode(HttpStatus.CREATED)
-  async bulkGenerateLetter(
-    @Body() dto: BulkGenerateLetterDto,
-    @Req() req: Request,
-  ): Promise<BulkGenerationResult> {
-    // Validate and sanitize input
-    this.validationService.validateBulkGenerateLetter(dto);
-    const userId = (req.user as any)?.id || 'system';
-    return this.letterGenerationService.bulkGenerateLetter(dto, userId);
   }
 
   /**
@@ -144,26 +125,6 @@ export class LettersController {
   @Get('service/:serviceId')
   async getLettersByService(@Param('serviceId') serviceId: string): Promise<GeneratedLetter[]> {
     return this.letterGenerationService.getLettersByService(serviceId);
-  }
-
-  /**
-   * Download bulk generated letters as a ZIP file
-   * Requirements: 8.4
-   */
-  @Get('bulk/:zipFileId/download')
-  async downloadBulkLettersZip(
-    @Param('zipFileId') zipFileId: string,
-    @Res() res: Response,
-  ): Promise<void> {
-    const result = await this.letterGenerationService.downloadBulkLettersZip(zipFileId);
-
-    // Set response headers
-    res.setHeader('Content-Type', result.mimeType);
-    res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
-    res.setHeader('Content-Length', result.buffer.length);
-
-    // Send the file
-    res.send(result.buffer);
   }
 
   /**

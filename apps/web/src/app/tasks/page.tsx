@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { ExportMenu } from '@/components/mdj-ui/ExportMenu';
 import { MDJTemplateDrawer } from '@/components/mdj-ui';
 import { api } from '@/lib/api';
 
-type TaskStatus = 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELLED';
 type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 interface Task {
@@ -27,7 +27,7 @@ interface Task {
 
 interface TaskWithClient extends Task {
   clientName: string;
-  clientRef: string;
+  clientIdentifier: string;
   portfolioCode: number;
   serviceName?: string;
 }
@@ -37,6 +37,8 @@ export default function TasksPage() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   // Filters
   const [q, setQ] = useState('');
@@ -98,7 +100,7 @@ export default function TasksPage() {
         !needle ||
         t.title.toLowerCase().includes(needle) ||
         (t.clientName ?? '').toLowerCase().includes(needle) ||
-        (t.clientRef ?? '').toLowerCase().includes(needle) ||
+        (t.clientIdentifier ?? '').toLowerCase().includes(needle) ||
         (t.serviceName ?? '').toLowerCase().includes(needle);
 
       const matchesStatus = !status || t.status === status;
@@ -110,6 +112,45 @@ export default function TasksPage() {
       return matchesQ && matchesStatus && matchesPriority && matchesAssignee && matchesPortfolio && matchesClient;
     });
   }, [tasks, q, status, priority, assignee, portfolio, clientFilter]);
+
+  const filteredIds = useMemo(() => filtered.map(t => t.id), [filtered]);
+  const allFilteredSelected = filteredIds.length > 0 && filteredIds.every(id => selectedIds.includes(id));
+  const someFilteredSelected = filteredIds.some(id => selectedIds.includes(id));
+  const selectAllRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = !allFilteredSelected && someFilteredSelected;
+    }
+  }, [allFilteredSelected, someFilteredSelected]);
+
+  const toggleSelectAll = () => {
+    if (allFilteredSelected) {
+      setSelectedIds(prev => prev.filter(id => !filteredIds.includes(id)));
+      return;
+    }
+    setSelectedIds(prev => Array.from(new Set([...prev, ...filteredIds])));
+  };
+
+  const toggleSelectOne = (id: string) => {
+    setSelectedIds(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
+  };
+
+  const bulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`Delete ${selectedIds.length} task(s)? This cannot be undone.`)) return;
+    try {
+      setBulkDeleting(true);
+      await api.post('/tasks/bulk-delete', { ids: selectedIds });
+      const selectedSet = new Set(selectedIds);
+      setTasks(prev => prev.filter(t => !selectedSet.has(t.id)));
+      setSelectedIds(prev => prev.filter(id => !selectedSet.has(id)));
+    } catch (e: any) {
+      alert(e?.message || 'Bulk delete failed');
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
 
   const fmtDate = (d?: string) => (d ? new Date(d).toLocaleDateString('en-GB') : '—');
 
@@ -125,8 +166,9 @@ export default function TasksPage() {
 
   const statusBadge = (s: TaskStatus) => {
     switch (s) {
-      case 'OPEN': return 'badge';
+      case 'TODO': return 'badge';
       case 'IN_PROGRESS': return 'badge warn';
+      case 'REVIEW': return 'badge warn';
       case 'COMPLETED': return 'badge success';
       case 'CANCELLED': return 'badge';
       default: return 'badge';
@@ -221,8 +263,9 @@ export default function TasksPage() {
                 onChange={(e)=>setStatus(e.target.value as TaskStatus | '')}
               >
                 <option value="">All Statuses</option>
-                <option value="OPEN">Open</option>
+                <option value="TODO">To Do</option>
                 <option value="IN_PROGRESS">In Progress</option>
+                <option value="REVIEW">Review</option>
                 <option value="COMPLETED">Completed</option>
                 <option value="CANCELLED">Cancelled</option>
               </select>
@@ -261,6 +304,13 @@ export default function TasksPage() {
         <div className="list-head">
           <h3>Tasks ({filtered.length})</h3>
           <div className="list-head-actions">
+            <button
+              className="btn-outline-gold btn-xs"
+              disabled={selectedIds.length === 0 || bulkDeleting}
+              onClick={bulkDelete}
+            >
+              {bulkDeleting ? 'Deleting…' : `Delete Selected (${selectedIds.length})`}
+            </button>
             <button 
               className={`segment ${status === '' ? 'active' : ''}`}
               onClick={() => setStatus('')}
@@ -268,10 +318,10 @@ export default function TasksPage() {
               All
             </button>
             <button 
-              className={`segment ${status === 'OPEN' ? 'active' : ''}`}
-              onClick={() => setStatus('OPEN')}
+              className={`segment ${status === 'TODO' ? 'active' : ''}`}
+              onClick={() => setStatus('TODO')}
             >
-              Open
+              To Do
             </button>
             <button 
               className={`segment ${status === 'IN_PROGRESS' ? 'active' : ''}`}
@@ -321,6 +371,16 @@ export default function TasksPage() {
             <table className="mdj-table">
               <thead>
                 <tr>
+                  <th style={{ width: '36px' }}>
+                    <input
+                      ref={selectAllRef}
+                      type="checkbox"
+                      checked={allFilteredSelected}
+                      onChange={toggleSelectAll}
+                      aria-label="Select all tasks"
+                      style={{ width: 18, height: 18 }}
+                    />
+                  </th>
                   <th>Title</th>
                   <th>Client</th>
                   <th>Service</th>
@@ -334,6 +394,15 @@ export default function TasksPage() {
               <tbody>
                 {filtered.map(t => (
                   <tr key={t.id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(t.id)}
+                        onChange={() => toggleSelectOne(t.id)}
+                        aria-label={`Select ${t.title}`}
+                        style={{ width: 18, height: 18 }}
+                      />
+                    </td>
                     <td>
                       <span style={{ fontWeight:700 }}>{t.title}</span>
                     </td>

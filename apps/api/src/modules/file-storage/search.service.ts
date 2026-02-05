@@ -39,7 +39,7 @@ interface ClientIndexEntry {
   id: string;
   portfolioCode?: number;
   name?: string;
-  ref?: string;
+  identifier?: string;
   status?: string;
   type?: string;
   updatedAt?: string;
@@ -131,12 +131,12 @@ export class SearchService {
 
   private buildClientIndexEntry(data: any, id: string, portfolioCode?: number): ClientIndexEntry {
     const name = data?.name || data?.companyName || data?.title || '';
-    const ref = data?.ref || '';
+    const identifier = data?.registeredNumber || data?.id || '';
     const status = data?.status || '';
     const type = data?.type || '';
     const searchable = [
       name,
-      ref,
+      identifier,
       data?.registeredNumber,
       data?.mainEmail,
       data?.mainPhone,
@@ -149,7 +149,7 @@ export class SearchService {
       id,
       portfolioCode,
       name,
-      ref,
+      identifier,
       status,
       type,
       updatedAt: data?.updatedAt,
@@ -323,7 +323,7 @@ export class SearchService {
       case 'clients':
         return {
           ...baseFields,
-          ref: data.ref,
+          identifier: data.registeredNumber || data.id,
           registeredNumber: data.registeredNumber,
           mainEmail: data.mainEmail,
           mainPhone: data.mainPhone,
@@ -399,7 +399,7 @@ export class SearchService {
     const fieldWeights = {
       name: 3,
       title: 3,
-      ref: 2.5,
+      identifier: 2.5,
       id: 2,
       email: 2,
       description: 1.5,
@@ -500,7 +500,7 @@ export class SearchService {
             let score = 1;
             if (entry.name?.toLowerCase().startsWith(normalizedQuery)) {
               score = 2;
-            } else if (entry.ref?.toLowerCase().startsWith(normalizedQuery)) {
+            } else if (entry.identifier?.toLowerCase().startsWith(normalizedQuery)) {
               score = 1.5;
             }
             return { entry, score };

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { DatabaseService } from './database.service';
 import {
   Client,
   GeneratedReport,
@@ -7,10 +8,13 @@ import {
   QueryResult,
   TaxCalculationResult,
 } from './interfaces/database.interface';
+import { randomUUID } from 'crypto';
 
 @Injectable()
-export class PrismaDatabaseService {
-  constructor(private readonly prisma: PrismaService) {}
+export class PrismaDatabaseService extends DatabaseService {
+  constructor(private readonly prisma: PrismaService) {
+    super();
+  }
 
   private get clientModel(): any {
     return (this.prisma as any).client;
@@ -47,103 +51,121 @@ export class PrismaDatabaseService {
 
   async getClientByNumber(companyNumber: string): Promise<Client | null> {
     try {
-      const c: any = await this.clientModel.findFirst({ where: { companyNumber } });
+      const c: any = await this.clientModel.findFirst({
+        where: {
+          OR: [{ registeredNumber: companyNumber }, { id: companyNumber }],
+        },
+        include: { clientProfile: true, address: true },
+      });
       if (!c) return null;
+      const profile = c.clientProfile || {};
+      const addressText = c.address
+        ? [
+            c.address.line1,
+            c.address.line2,
+            c.address.city,
+            c.address.county,
+            c.address.postcode,
+            c.address.country,
+          ]
+            .filter(Boolean)
+            .join(', ')
+        : undefined;
       return {
-        companyNumber: c.companyNumber || companyNumber,
+        companyNumber: c.registeredNumber || companyNumber,
         companyName: c.name,
         tradingName: c.tradingName || undefined,
         status: c.status,
         createdAt: c.createdAt || new Date(),
         updatedAt: c.updatedAt || new Date(),
-        companyType: c.companyType || undefined,
-        incorporationDate: c.dateOfCreation ? c.dateOfCreation.toISOString() : undefined,
-        registeredAddress: c.registeredAddress || undefined,
-        corporationTaxUtr: c.corporationTaxUtr || undefined,
-        vatNumber: c.vatNumber || undefined,
-        vatRegistrationDate: c.vatRegistrationDate || undefined,
-        vatScheme: c.vatScheme || undefined,
-        vatStagger: (c.vatStagger as any) || undefined,
-        payeReference: c.payeReference || undefined,
-        payeAccountsOfficeReference: c.payeAccountsOfficeReference || undefined,
-        authenticationCode: c.authenticationCode || undefined,
-        accountsOfficeReference: c.accountsOfficeReference || undefined,
-        employeeCount: c.employeeCount ?? undefined,
-        payrollFrequency: c.payrollFrequency || undefined,
-        payrollPayDay: c.payrollPayDay ?? undefined,
-        payrollPeriodEndDay: c.payrollPeriodEndDay ?? undefined,
-        cisRegistered: c.cisRegistered ?? undefined,
-        cisUtr: c.cisUtr || undefined,
-        mainContactName: c.mainContactName || undefined,
-        contactPosition: c.contactPosition || undefined,
-        telephone: c.telephone || undefined,
-        mobile: c.mobile || undefined,
-        email: c.email || undefined,
-        preferredContactMethod: c.preferredContactMethod || undefined,
-        correspondenceAddress: c.correspondenceAddress || undefined,
-        clientManager: c.clientManager || undefined,
-        partnerResponsible: c.partnerResponsible || undefined,
-        engagementType: c.engagementType || undefined,
-        onboardingDate: c.onboardingDate || undefined,
-        disengagementDate: c.disengagementDate || undefined,
-        engagementLetterSigned: c.engagementLetterSigned ?? undefined,
-        amlCompleted: c.amlCompleted ?? undefined,
-        lifecycleStatus: (c.lifecycleStatus as any) || undefined,
-        onboardingStartedAt: c.onboardingStartedAt || undefined,
-        wentLiveAt: c.wentLiveAt || undefined,
-        ceasedAt: c.ceasedAt || undefined,
-        dormantSince: c.dormantSince || undefined,
-        feeArrangement: c.feeArrangement || undefined,
-        monthlyFee: c.monthlyFee ? Number(c.monthlyFee) : undefined,
-        annualFee: c.annualFee ? Number(c.annualFee) : undefined,
-        accountingPeriodEnd: c.accountingPeriodEnd || undefined,
-        nextAccountsDueDate: c.nextAccountsDueDate || undefined,
-        nextCorporationTaxDueDate: c.nextCorporationTaxDueDate || undefined,
-        statutoryYearEnd: c.statutoryYearEnd || undefined,
-        vatReturnFrequency: c.vatReturnFrequency || undefined,
-        vatQuarter: c.vatQuarter || undefined,
-        vatPeriodStart: c.vatPeriodStart || undefined,
-        vatPeriodEnd: c.vatPeriodEnd || undefined,
-        payrollRtiRequired: c.payrollRtiRequired ?? undefined,
-        businessBankName: c.businessBankName || undefined,
-        accountLastFour: c.accountLastFour || undefined,
-        directDebitInPlace: c.directDebitInPlace ?? undefined,
-        paymentIssues: c.paymentIssues || undefined,
-        notes: c.notes || undefined,
-        specialCircumstances: c.specialCircumstances || undefined,
-        seasonalBusiness: c.seasonalBusiness ?? undefined,
-        dormant: c.dormant ?? undefined,
-        clientRiskRating: c.clientRiskRating || undefined,
-        doNotContact: c.doNotContact ?? undefined,
-        personalUtr: c.personalUtr || undefined,
-        nationalInsuranceNumber: c.nationalInsuranceNumber || undefined,
-        dateOfBirth: c.dateOfBirth || undefined,
-        personalAddress: c.personalAddress || undefined,
-        personalTaxYear: c.personalTaxYear || undefined,
-        selfAssessmentTaxYear: c.selfAssessmentTaxYear || undefined,
-        selfAssessmentRequired: c.selfAssessmentRequired ?? undefined,
-        selfAssessmentFiled: c.selfAssessmentFiled ?? undefined,
-        linkedCompanyNumber: c.linkedCompanyNumber || undefined,
-        directorRole: c.directorRole || undefined,
-        clientType: c.clientType || undefined,
-        companyStatusDetail: c.companyStatusDetail || undefined,
-        jurisdiction: c.jurisdiction || undefined,
-        registeredOfficeFull: c.registeredOfficeFull || undefined,
-        sicCodes: c.sicCodes || undefined,
-        sicDescriptions: c.sicDescriptions || undefined,
-        accountsOverdue: c.accountsOverdue ?? undefined,
-        confirmationStatementOverdue: c.confirmationStatementOverdue ?? undefined,
-        nextAccountsMadeUpTo: c.nextAccountsMadeUpTo || undefined,
-        nextAccountsDueBy: c.nextAccountsDueBy || undefined,
-        lastAccountsMadeUpTo: c.lastAccountsMadeUpTo || undefined,
-        nextConfirmationStatementDate: c.nextConfirmationStatementDate || undefined,
-        confirmationStatementDueBy: c.confirmationStatementDueBy || undefined,
-        lastConfirmationStatementDate: c.lastConfirmationStatementDate || undefined,
-        directorCount: c.directorCount ?? undefined,
-        pscCount: c.pscCount ?? undefined,
-        currentDirectors: c.currentDirectors || undefined,
-        currentPscs: c.currentPscs || undefined,
-        lastChRefresh: c.lastChRefresh || undefined,
+        companyType: profile.companyType || undefined,
+        incorporationDate: c.incorporationDate ? c.incorporationDate.toISOString() : undefined,
+        registeredAddress: profile.registeredAddress || addressText,
+        corporationTaxUtr: profile.corporationTaxUtr || undefined,
+        vatNumber: profile.vatNumber || c.vatNumber || undefined,
+        vatRegistrationDate: profile.vatRegistrationDate || undefined,
+        vatScheme: profile.vatScheme || undefined,
+        vatStagger: (profile.vatStagger as any) || undefined,
+        payeReference: profile.payeReference || c.payeReference || undefined,
+        payeAccountsOfficeReference: profile.payeAccountsOfficeReference || undefined,
+        authenticationCode: profile.authenticationCode || undefined,
+        accountsOfficeReference: profile.accountsOfficeReference || c.accountsOfficeReference || undefined,
+        employeeCount: profile.employeeCount ?? undefined,
+        payrollFrequency: profile.payrollFrequency || undefined,
+        payrollPayDay: profile.payrollPayDay ?? undefined,
+        payrollPeriodEndDay: profile.payrollPeriodEndDay ?? undefined,
+        cisRegistered: profile.cisRegistered ?? undefined,
+        cisUtr: profile.cisUtr || undefined,
+        mainContactName: profile.mainContactName || undefined,
+        contactPosition: profile.contactPosition || undefined,
+        telephone: profile.telephone || undefined,
+        mobile: profile.mobile || undefined,
+        email: profile.email || c.mainEmail || undefined,
+        preferredContactMethod: profile.preferredContactMethod || undefined,
+        correspondenceAddress: profile.correspondenceAddress || undefined,
+        clientManager: profile.clientManager || undefined,
+        partnerResponsible: profile.partnerResponsible || undefined,
+        engagementType: profile.engagementType || undefined,
+        onboardingDate: profile.onboardingDate || undefined,
+        disengagementDate: profile.disengagementDate || undefined,
+        engagementLetterSigned: profile.engagementLetterSigned ?? undefined,
+        amlCompleted: profile.amlCompleted ?? undefined,
+        lifecycleStatus: (profile.lifecycleStatus as any) || undefined,
+        onboardingStartedAt: profile.onboardingStartedAt || undefined,
+        wentLiveAt: profile.wentLiveAt || undefined,
+        ceasedAt: profile.ceasedAt || undefined,
+        dormantSince: profile.dormantSince || undefined,
+        feeArrangement: profile.feeArrangement || undefined,
+        monthlyFee: profile.monthlyFee ? Number(profile.monthlyFee) : undefined,
+        annualFee: profile.annualFee ? Number(profile.annualFee) : undefined,
+        accountingPeriodEnd: profile.accountingPeriodEnd || undefined,
+        nextAccountsDueDate: profile.nextAccountsDueDate || undefined,
+        nextCorporationTaxDueDate: profile.nextCorporationTaxDueDate || undefined,
+        statutoryYearEnd: profile.statutoryYearEnd || undefined,
+        vatReturnFrequency: profile.vatReturnFrequency || undefined,
+        vatQuarter: profile.vatQuarter || undefined,
+        vatPeriodStart: profile.vatPeriodStart || undefined,
+        vatPeriodEnd: profile.vatPeriodEnd || undefined,
+        payrollRtiRequired: profile.payrollRtiRequired ?? undefined,
+        businessBankName: profile.businessBankName || undefined,
+        accountLastFour: profile.accountLastFour || undefined,
+        directDebitInPlace: profile.directDebitInPlace ?? undefined,
+        paymentIssues: profile.paymentIssues || undefined,
+        notes: profile.notes || undefined,
+        specialCircumstances: profile.specialCircumstances || undefined,
+        seasonalBusiness: profile.seasonalBusiness ?? undefined,
+        dormant: profile.dormant ?? undefined,
+        clientRiskRating: profile.clientRiskRating || undefined,
+        doNotContact: profile.doNotContact ?? undefined,
+        personalUtr: profile.personalUtr || undefined,
+        nationalInsuranceNumber: profile.nationalInsuranceNumber || undefined,
+        dateOfBirth: profile.dateOfBirth || undefined,
+        personalAddress: profile.personalAddress || undefined,
+        personalTaxYear: profile.personalTaxYear || undefined,
+        selfAssessmentTaxYear: profile.selfAssessmentTaxYear || undefined,
+        selfAssessmentRequired: profile.selfAssessmentRequired ?? undefined,
+        selfAssessmentFiled: profile.selfAssessmentFiled ?? undefined,
+        linkedCompanyNumber: profile.linkedCompanyNumber || undefined,
+        directorRole: profile.directorRole || undefined,
+        clientType: profile.clientType || undefined,
+        companyStatusDetail: profile.companyStatusDetail || undefined,
+        jurisdiction: profile.jurisdiction || undefined,
+        registeredOfficeFull: profile.registeredOfficeFull || undefined,
+        sicCodes: profile.sicCodes || undefined,
+        sicDescriptions: profile.sicDescriptions || undefined,
+        accountsOverdue: profile.accountsOverdue ?? undefined,
+        confirmationStatementOverdue: profile.confirmationStatementOverdue ?? undefined,
+        nextAccountsMadeUpTo: profile.nextAccountsMadeUpTo || undefined,
+        nextAccountsDueBy: profile.nextAccountsDueBy || undefined,
+        lastAccountsMadeUpTo: profile.lastAccountsMadeUpTo || undefined,
+        nextConfirmationStatementDate: profile.nextConfirmationStatementDate || undefined,
+        confirmationStatementDueBy: profile.confirmationStatementDueBy || undefined,
+        lastConfirmationStatementDate: profile.lastConfirmationStatementDate || undefined,
+        directorCount: profile.directorCount ?? undefined,
+        pscCount: profile.pscCount ?? undefined,
+        currentDirectors: profile.currentDirectors || undefined,
+        currentPscs: profile.currentPscs || undefined,
+        lastChRefresh: profile.lastChRefresh || undefined,
       };
     } catch (_err) {
       return null;
@@ -163,7 +185,7 @@ export class PrismaDatabaseService {
     });
 
     return rows.map((c) => ({
-      companyNumber: c.companyNumber || '',
+      companyNumber: c.registeredNumber || '',
       companyName: c.name,
       tradingName: c.tradingName || undefined,
       status: c.status,
@@ -179,16 +201,144 @@ export class PrismaDatabaseService {
         take: 1000,
       });
 
-      return rows.map((c) => ({
-        companyNumber: c.companyNumber || '',
-        companyName: c.name,
-        tradingName: c.tradingName || undefined,
-        status: c.status,
-        createdAt: c.createdAt,
+    return rows.map((c) => ({
+      companyNumber: c.registeredNumber || '',
+      companyName: c.name,
+      tradingName: c.tradingName || undefined,
+      status: c.status,
+      createdAt: c.createdAt,
         updatedAt: c.updatedAt,
       } as Client));
     } catch (_err) {
       return [];
+    }
+  }
+
+  async addClient(client: Partial<Client>): Promise<OperationResult> {
+    try {
+      const companyNumber = client.companyNumber || '';
+      const id = companyNumber || randomUUID();
+      const name = client.companyName || client.tradingName || 'Unknown Client';
+
+      const status = (client.status || 'ACTIVE').toString().toUpperCase();
+      const type = (client.clientType || client.companyType || 'COMPANY').toString().toUpperCase();
+
+      const portfolio = await (this.prisma as any).portfolio.findFirst({ orderBy: { code: 'asc' } });
+      const portfolioCode = (client as any).portfolioCode ?? portfolio?.code ?? 1;
+
+      await (this.prisma as any).client.create({
+        data: {
+          id,
+          name,
+          status: status === 'INACTIVE' || status === 'ARCHIVED' ? status : 'ACTIVE',
+          type: ['COMPANY', 'INDIVIDUAL', 'SOLE_TRADER', 'PARTNERSHIP', 'LLP'].includes(type) ? type : 'COMPANY',
+          portfolioCode,
+          registeredNumber: companyNumber || undefined,
+          tradingName: client.tradingName || undefined,
+          incorporationDate: client.incorporationDate ? new Date(client.incorporationDate) : undefined,
+          accountsOfficeReference: client.accountsOfficeReference || undefined,
+          payeReference: client.payeReference || undefined,
+          vatNumber: client.vatNumber || undefined,
+          cisUtr: client.cisUtr || undefined,
+          mainEmail: client.email || undefined,
+          mainPhone: client.telephone || client.mobile || undefined,
+          clientProfile: {
+            create: {
+              clientId: id,
+              mainContactName: client.mainContactName || undefined,
+              partnerResponsible: client.partnerResponsible || undefined,
+              clientManager: client.clientManager || undefined,
+              lifecycleStatus: (client.lifecycleStatus as any) || 'ACTIVE',
+              engagementType: client.engagementType || undefined,
+              engagementLetterSigned: client.engagementLetterSigned ?? undefined,
+              onboardingDate: client.onboardingDate ? new Date(client.onboardingDate) : undefined,
+              disengagementDate: client.disengagementDate ? new Date(client.disengagementDate) : undefined,
+              onboardingStartedAt: client.onboardingStartedAt ? new Date(client.onboardingStartedAt) : undefined,
+              wentLiveAt: client.wentLiveAt ? new Date(client.wentLiveAt) : undefined,
+              ceasedAt: client.ceasedAt ? new Date(client.ceasedAt) : undefined,
+              dormantSince: client.dormantSince ? new Date(client.dormantSince) : undefined,
+              accountingPeriodEnd: client.accountingPeriodEnd ? new Date(client.accountingPeriodEnd) : undefined,
+              nextAccountsDueDate: client.nextAccountsDueDate ? new Date(client.nextAccountsDueDate) : undefined,
+              nextCorporationTaxDueDate: client.nextCorporationTaxDueDate ? new Date(client.nextCorporationTaxDueDate) : undefined,
+              statutoryYearEnd: client.statutoryYearEnd ? new Date(client.statutoryYearEnd) : undefined,
+              vatRegistrationDate: client.vatRegistrationDate ? new Date(client.vatRegistrationDate) : undefined,
+              vatPeriodStart: client.vatPeriodStart ? new Date(client.vatPeriodStart) : undefined,
+              vatPeriodEnd: client.vatPeriodEnd ? new Date(client.vatPeriodEnd) : undefined,
+              vatStagger: (client.vatStagger as any) || undefined,
+              payrollPayDay: client.payrollPayDay ?? undefined,
+              payrollPeriodEndDay: client.payrollPeriodEndDay ?? undefined,
+              corporationTaxUtr: client.corporationTaxUtr || undefined,
+              vatNumber: client.vatNumber || undefined,
+              vatScheme: client.vatScheme || undefined,
+              vatReturnFrequency: client.vatReturnFrequency || undefined,
+              vatQuarter: client.vatQuarter || undefined,
+              payeReference: client.payeReference || undefined,
+              payeAccountsOfficeReference: client.payeAccountsOfficeReference || undefined,
+              cisRegistered: client.cisRegistered ?? undefined,
+              cisUtr: client.cisUtr || undefined,
+              personalUtr: client.personalUtr || undefined,
+              nationalInsuranceNumber: client.nationalInsuranceNumber || undefined,
+              dateOfBirth: client.dateOfBirth ? new Date(client.dateOfBirth) : undefined,
+              personalAddress: client.personalAddress || undefined,
+              personalTaxYear: client.personalTaxYear || undefined,
+              selfAssessmentTaxYear: client.selfAssessmentTaxYear || undefined,
+              selfAssessmentRequired: client.selfAssessmentRequired ?? undefined,
+              selfAssessmentFiled: client.selfAssessmentFiled ?? undefined,
+              linkedCompanyNumber: client.linkedCompanyNumber || undefined,
+              directorRole: client.directorRole || undefined,
+              payrollRtiRequired: client.payrollRtiRequired ?? undefined,
+              amlCompleted: client.amlCompleted ?? undefined,
+              clientRiskRating: client.clientRiskRating || undefined,
+              annualFee: client.annualFee ?? undefined,
+              monthlyFee: client.monthlyFee ?? undefined,
+              tradingName: client.tradingName || undefined,
+              companyType: client.companyType || undefined,
+              registeredAddress: client.registeredAddress || undefined,
+              authenticationCode: client.authenticationCode || undefined,
+              employeeCount: client.employeeCount ?? undefined,
+              payrollFrequency: client.payrollFrequency || undefined,
+              contactPosition: client.contactPosition || undefined,
+              telephone: client.telephone || undefined,
+              mobile: client.mobile || undefined,
+              email: client.email || undefined,
+              preferredContactMethod: client.preferredContactMethod || undefined,
+              correspondenceAddress: client.correspondenceAddress || undefined,
+              feeArrangement: client.feeArrangement || undefined,
+              businessBankName: client.businessBankName || undefined,
+              accountLastFour: client.accountLastFour || undefined,
+              directDebitInPlace: client.directDebitInPlace ?? undefined,
+              paymentIssues: client.paymentIssues || undefined,
+              notes: client.notes || undefined,
+              specialCircumstances: client.specialCircumstances || undefined,
+              seasonalBusiness: client.seasonalBusiness ?? undefined,
+              dormant: client.dormant ?? undefined,
+              doNotContact: client.doNotContact ?? undefined,
+              companyStatusDetail: client.companyStatusDetail || undefined,
+              jurisdiction: client.jurisdiction || undefined,
+              registeredOfficeFull: client.registeredOfficeFull || undefined,
+              sicCodes: client.sicCodes || undefined,
+              sicDescriptions: client.sicDescriptions || undefined,
+              accountsOverdue: client.accountsOverdue ?? undefined,
+              confirmationStatementOverdue: client.confirmationStatementOverdue ?? undefined,
+              nextAccountsMadeUpTo: client.nextAccountsMadeUpTo ? new Date(client.nextAccountsMadeUpTo) : undefined,
+              nextAccountsDueBy: client.nextAccountsDueBy ? new Date(client.nextAccountsDueBy) : undefined,
+              lastAccountsMadeUpTo: client.lastAccountsMadeUpTo ? new Date(client.lastAccountsMadeUpTo) : undefined,
+              nextConfirmationStatementDate: client.nextConfirmationStatementDate ? new Date(client.nextConfirmationStatementDate) : undefined,
+              confirmationStatementDueBy: client.confirmationStatementDueBy ? new Date(client.confirmationStatementDueBy) : undefined,
+              lastConfirmationStatementDate: client.lastConfirmationStatementDate ? new Date(client.lastConfirmationStatementDate) : undefined,
+              directorCount: client.directorCount ?? undefined,
+              pscCount: client.pscCount ?? undefined,
+              currentDirectors: client.currentDirectors || undefined,
+              currentPscs: client.currentPscs || undefined,
+              lastChRefresh: client.lastChRefresh ? new Date(client.lastChRefresh) : undefined,
+            },
+          },
+        },
+      });
+
+      return { success: true, message: 'Client added successfully', id };
+    } catch (err: any) {
+      return { success: false, message: err?.message || 'Failed to add client' };
     }
   }
 
@@ -197,23 +347,20 @@ export class PrismaDatabaseService {
       ? await this.clientModel.findFirst({
           where: {
             OR: [
-              { companyNumber: calculation.clientId },
-              { ref: calculation.clientId },
+              { registeredNumber: calculation.clientId },
               { id: calculation.clientId },
             ],
           },
         })
       : null;
 
-    const clientId = resolvedClient?.id || null;
-    const clientRef = resolvedClient?.ref || (calculation.clientId ? String(calculation.clientId) : null);
+    const clientId = resolvedClient?.id || calculation.clientId || null;
 
     await this.taxCalculationModel.upsert({
       where: { id: calculation.id },
       create: {
         id: calculation.id,
         clientId,
-        clientRef,
         companyId: calculation.companyId || null,
         calculationType: calculation.calculationType as any,
         taxYear: calculation.taxYear,
@@ -230,7 +377,6 @@ export class PrismaDatabaseService {
       },
       update: {
         clientId,
-        clientRef,
         companyId: calculation.companyId || null,
         calculationType: calculation.calculationType as any,
         taxYear: calculation.taxYear,
@@ -260,7 +406,7 @@ export class PrismaDatabaseService {
 
     return {
       id: calc.id,
-      clientId: calc.clientRef || calc.clientId || '',
+      clientId: calc.clientId || '',
       companyId: calc.companyId || undefined,
       calculationType: calc.calculationType as any,
       taxYear: calc.taxYear,
@@ -295,13 +441,11 @@ export class PrismaDatabaseService {
   async getClientCalculations(clientId: string, limit = 10): Promise<TaxCalculationResult[]> {
     const resolvedClient = await this.clientModel.findFirst({
       where: {
-        OR: [{ id: clientId }, { ref: clientId }, { companyNumber: clientId }],
+        OR: [{ id: clientId }, { registeredNumber: clientId }],
       },
     });
 
-    const where = resolvedClient
-      ? { OR: [{ clientId: resolvedClient.id }, { clientRef: resolvedClient.ref }] }
-      : { clientRef: clientId };
+    const where = resolvedClient ? { clientId: resolvedClient.id } : { clientId };
 
     const calcs: any[] = await this.taxCalculationModel.findMany({
       where,
@@ -313,24 +457,104 @@ export class PrismaDatabaseService {
     return Promise.all(calcs.map((c) => this.getCalculationById(c.id))).then((rows) => rows.filter(Boolean) as TaxCalculationResult[]);
   }
 
+  async getCalculationHistory(
+    clientId?: string,
+    taxYear?: string,
+    calculationType?: string,
+    limit = 50,
+    offset = 0
+  ): Promise<{ calculations: TaxCalculationResult[]; total: number }> {
+    const resolvedClient = clientId
+      ? await this.clientModel.findFirst({
+          where: { OR: [{ id: clientId }, { registeredNumber: clientId }] },
+        })
+      : null;
+
+    const where: any = {};
+    if (resolvedClient?.id) where.clientId = resolvedClient.id;
+    else if (clientId) where.clientId = clientId;
+    if (taxYear) where.taxYear = taxYear;
+    if (calculationType) where.calculationType = calculationType as any;
+
+    const [total, rows] = await Promise.all([
+      this.taxCalculationModel.count({ where }),
+      this.taxCalculationModel.findMany({
+        where,
+        orderBy: { calculatedAt: 'desc' },
+        skip: offset,
+        take: limit,
+      }),
+    ]);
+
+    const calculations = await Promise.all(
+      rows.map((c: any) => this.getCalculationById(c.id))
+    ).then((list) => list.filter(Boolean) as TaxCalculationResult[]);
+
+    return { calculations, total };
+  }
+
+  async getTaxCalculationStats(clientId?: string): Promise<{
+    totalCalculations: number;
+    calculationsByType: Record<string, number>;
+    calculationsByTaxYear: Record<string, number>;
+    averageSavings: number;
+    totalSavingsIdentified: number;
+    latestCalculation?: TaxCalculationResult;
+    topOptimizations: Array<{ type: string; count: number; averageSaving: number }>;
+  }> {
+    const { calculations, total } = await this.getCalculationHistory(clientId, undefined, undefined, 1000, 0);
+
+    const calculationsByType: Record<string, number> = {};
+    const calculationsByTaxYear: Record<string, number> = {};
+    let totalSavings = 0;
+
+    calculations.forEach((c) => {
+      calculationsByType[c.calculationType] = (calculationsByType[c.calculationType] || 0) + 1;
+      calculationsByTaxYear[c.taxYear] = (calculationsByTaxYear[c.taxYear] || 0) + 1;
+      totalSavings += c.estimatedSavings || 0;
+    });
+
+    const latestCalculation = calculations[0];
+
+    return {
+      totalCalculations: total,
+      calculationsByType,
+      calculationsByTaxYear,
+      averageSavings: total > 0 ? totalSavings / total : 0,
+      totalSavingsIdentified: totalSavings,
+      latestCalculation,
+      topOptimizations: [],
+    };
+  }
+
+  async deleteCalculation(id: string): Promise<{ success: boolean; message: string }> {
+    try {
+      await this.prisma.$transaction([
+        this.taxScenarioModel.deleteMany({ where: { calculationId: id } }),
+        this.taxCalculationModel.delete({ where: { id } }),
+      ]);
+      return { success: true, message: 'Deleted tax calculation' };
+    } catch (err: any) {
+      return { success: false, message: err?.message || 'Failed to delete tax calculation' };
+    }
+  }
+
   async storeReport(report: GeneratedReport): Promise<OperationResult> {
     const resolvedClient = report.clientId
       ? await this.clientModel.findFirst({
           where: {
-            OR: [{ companyNumber: report.clientId }, { ref: report.clientId }, { id: report.clientId }],
+            OR: [{ registeredNumber: report.clientId }, { id: report.clientId }],
           },
         })
       : null;
 
-    const clientId = resolvedClient?.id || null;
-    const clientRef = resolvedClient?.ref || (report.clientId ? String(report.clientId) : null);
+    const clientId = resolvedClient?.id || report.clientId || null;
 
     await this.generatedReportModel.upsert({
       where: { id: report.id },
       create: {
         id: report.id,
         clientId,
-        clientRef,
         calculationId: report.calculationId || null,
         templateId: report.templateId || null,
         title: report.title,
@@ -342,7 +566,6 @@ export class PrismaDatabaseService {
       },
       update: {
         clientId,
-        clientRef,
         calculationId: report.calculationId || null,
         templateId: report.templateId || null,
         title: report.title,
@@ -360,13 +583,11 @@ export class PrismaDatabaseService {
   async getClientReports(clientId: string, limit = 10): Promise<GeneratedReport[]> {
     const resolvedClient = await this.clientModel.findFirst({
       where: {
-        OR: [{ id: clientId }, { ref: clientId }, { companyNumber: clientId }],
+        OR: [{ id: clientId }, { registeredNumber: clientId }],
       },
     });
 
-    const where = resolvedClient
-      ? { OR: [{ clientId: resolvedClient.id }, { clientRef: resolvedClient.ref }] }
-      : { clientRef: clientId };
+    const where = resolvedClient ? { clientId: resolvedClient.id } : { clientId };
 
     const rows: any[] = await this.generatedReportModel.findMany({
       where,
@@ -376,7 +597,7 @@ export class PrismaDatabaseService {
 
     return rows.map((r) => ({
       id: r.id,
-      clientId: r.clientRef || r.clientId || '',
+      clientId: r.clientId || '',
       calculationId: r.calculationId || undefined,
       templateId: r.templateId || '',
       title: r.title,
@@ -393,7 +614,7 @@ export class PrismaDatabaseService {
     if (!r) return null;
     return {
       id: r.id,
-      clientId: r.clientRef || r.clientId || '',
+      clientId: r.clientId || '',
       calculationId: r.calculationId || undefined,
       templateId: r.templateId || '',
       title: r.title,
@@ -423,13 +644,11 @@ export class PrismaDatabaseService {
 
     const resolvedClient = await this.clientModel.findFirst({
       where: {
-        OR: [{ id: clientId }, { ref: clientId }, { companyNumber: clientId }],
+        OR: [{ id: clientId }, { registeredNumber: clientId }],
       },
     });
 
-    const where = resolvedClient
-      ? { OR: [{ clientId: resolvedClient.id }, { clientRef: resolvedClient.ref }] }
-      : { clientRef: clientId };
+    const where = resolvedClient ? { clientId: resolvedClient.id } : { clientId };
 
     const rows: any[] = await this.taxCalculationModel.findMany({
       where,

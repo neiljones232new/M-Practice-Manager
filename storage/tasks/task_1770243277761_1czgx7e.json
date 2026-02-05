@@ -1,0 +1,16 @@
+{
+  "id": "task_1770243277761_1czgx7e",
+  "clientId": "4P001",
+  "serviceId": "service_1770243206810_h2iwni339",
+  "title": "File annual accounts",
+  "description": "File approved annual accounts with Companies House",
+  "status": "OPEN",
+  "priority": "URGENT",
+  "tags": [
+    "filing",
+    "companies-house",
+    "auto-generated"
+  ],
+  "createdAt": "2026-02-04T22:14:37.761Z",
+  "updatedAt": "2026-02-04T22:14:37.761Z"
+}

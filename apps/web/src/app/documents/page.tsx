@@ -1,13 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { api, API_BASE_URL } from '@/lib/api';
 
 type DocCategory =
-  | 'ACCOUNTS' | 'VAT' | 'PAYROLL' | 'CORRESPONDENCE' | 'CONTRACTS'
-  | 'COMPLIANCE' | 'REPORTS' | 'INVOICES' | 'RECEIPTS'
+  | 'TAX' | 'ACCOUNTS' | 'COMPLIANCE' | 'REPORTS' | 'INVOICES' | 'RECEIPTS'
   | 'BANK_STATEMENTS' | 'OTHER';
 
 interface DocumentItem {
@@ -20,10 +18,8 @@ interface DocumentItem {
   serviceId?: string;
   taskId?: string;
   category: DocCategory;
-  tags: string[];
-  description?: string;
   uploadedBy: string;
-  uploadedAt: string;
+  createdAt: string;
   updatedAt: string;
   isArchived: boolean;
 }
@@ -41,12 +37,17 @@ interface Stats {
 }
 
 const CATEGORIES: DocCategory[] = [
-  'ACCOUNTS','VAT','PAYROLL','CORRESPONDENCE','CONTRACTS',
-  'COMPLIANCE','REPORTS','INVOICES','RECEIPTS','BANK_STATEMENTS','OTHER'
+  'TAX','ACCOUNTS','COMPLIANCE','REPORTS','INVOICES','RECEIPTS','BANK_STATEMENTS','OTHER'
 ];
 
 // Build a base URL for endpoints that must bypass the JSON client (file upload/download).
 const API_BASE = API_BASE_URL;
+
+const normalizeDocs = (items: any[]): DocumentItem[] =>
+  items.map((d) => ({
+    ...d,
+    createdAt: d.createdAt || d.uploadedAt || d.updatedAt,
+  }));
 
 export default function DocumentsPage() {
   // Data
@@ -72,8 +73,6 @@ export default function DocumentsPage() {
   const [file, setFile] = useState<File | null>(null);
   const [uploadMeta, setUploadMeta] = useState({
     category: 'OTHER' as DocCategory,
-    tags: '',
-    description: '',
     clientId: '',
     serviceId: '',
     taskId: '',
@@ -95,13 +94,16 @@ export default function DocumentsPage() {
 
         if (!on) return;
 
-        setDocs(Array.isArray(docRes) ? docRes : (((docRes as any)?.data) ?? []));
+        setDocs(normalizeDocs(Array.isArray(docRes) ? docRes : (((docRes as any)?.data) ?? [])));
         setClients(
           (Array.isArray(cliRes) ? cliRes : [])
             .map((c: any) => c.node ?? c)
             .map((c: any) => ({ id: c.id, name: c.name }))
         );
         const statsVal = (stRes as any)?.data ?? stRes ?? null;
+        if (statsVal?.recentUploads) {
+          statsVal.recentUploads = normalizeDocs(statsVal.recentUploads);
+        }
         setStats(statsVal as any);
       } catch (e: any) {
         if (!on) return;
@@ -124,8 +126,6 @@ export default function DocumentsPage() {
       const matchesQ =
         !needle ||
         d.originalName.toLowerCase().includes(needle) ||
-        (d.description ?? '').toLowerCase().includes(needle) ||
-        d.tags.some(t => t.toLowerCase().includes(needle)) ||
         d.category.toLowerCase().includes(needle);
 
       const matchesClient = !clientId || d.clientId === clientId;
@@ -159,10 +159,6 @@ export default function DocumentsPage() {
       const fd = new FormData();
       fd.append('file', file);
       fd.append('category', uploadMeta.category);
-      fd.append('tags', JSON.stringify(
-        uploadMeta.tags.split(',').map(t => t.trim()).filter(Boolean)
-      ));
-      fd.append('description', uploadMeta.description);
       if (uploadMeta.clientId) fd.append('clientId', uploadMeta.clientId);
       if (uploadMeta.serviceId) fd.append('serviceId', uploadMeta.serviceId);
       if (uploadMeta.taskId) fd.append('taskId', uploadMeta.taskId);
@@ -182,14 +178,17 @@ export default function DocumentsPage() {
         api.get('/documents'),
         api.get('/documents/stats').catch(() => null),
       ]);
-      setDocs(Array.isArray(docRes) ? docRes : (((docRes as any)?.data) ?? []));
+      setDocs(normalizeDocs(Array.isArray(docRes) ? docRes : (((docRes as any)?.data) ?? [])));
       const statsVal2 = (stRes as any)?.data ?? stRes ?? null;
+      if (statsVal2?.recentUploads) {
+        statsVal2.recentUploads = normalizeDocs(statsVal2.recentUploads);
+      }
       setStats(statsVal2 as any);
 
       // Reset modal
       setShowUpload(false);
       setFile(null);
-      setUploadMeta({ category: 'OTHER', tags: '', description: '', clientId: '', serviceId: '', taskId: '' });
+      setUploadMeta({ category: 'OTHER', clientId: '', serviceId: '', taskId: '' });
     } catch (e: any) {
       setErr(e?.message || 'Upload failed');
     }
@@ -240,7 +239,7 @@ export default function DocumentsPage() {
 
       // Refresh documents
       const docRes = await api.get('/documents');
-      setDocs(Array.isArray(docRes) ? docRes : (((docRes as any)?.data) ?? []));
+      setDocs(normalizeDocs(Array.isArray(docRes) ? docRes : (((docRes as any)?.data) ?? [])));
       setSelected([]);
     } catch (e: any) {
       setErr(e?.message || 'Bulk action failed');
@@ -280,7 +279,7 @@ export default function DocumentsPage() {
           <div className="card-mdj">
             <div style={{ fontSize:'2rem', fontWeight:800, color:'var(--text-dark)' }}>
               {(stats.recentUploads ?? []).filter(d =>
-                new Date(d.uploadedAt).getMonth() === new Date().getMonth()
+                new Date(d.createdAt).getMonth() === new Date().getMonth()
               ).length}
             </div>
             <div className="mdj-sub">This Month</div>
@@ -300,7 +299,7 @@ export default function DocumentsPage() {
         >
           <input
             className="mdj-input"
-            placeholder="Search by name, category, tag or description…"
+            placeholder="Search by name or category…"
             value={q}
             onChange={(e)=>setQ(e.target.value)}
           />
@@ -364,7 +363,7 @@ export default function DocumentsPage() {
                 try {
                   setLoading(true); setErr(null);
                   const data = await api.get('/documents');
-                  setDocs(Array.isArray(data) ? data : (((data as any)?.data) ?? []));
+                  setDocs(normalizeDocs(Array.isArray(data) ? data : (((data as any)?.data) ?? [])));
                 } catch (e:any) {
                   setErr(e?.message || 'Failed to load documents');
                 } finally {
@@ -412,25 +411,12 @@ export default function DocumentsPage() {
                     <td>
                       <div style={{ display:'grid', gap:'2px' }}>
                         <strong>{d.originalName}</strong>
-                        {d.description && (
-                          <span style={{ fontSize:'.85rem', color:'var(--text-muted)' }}>{d.description}</span>
-                        )}
-                        {d.tags.length > 0 && (
-                          <div style={{ display:'flex', gap:4, flexWrap:'wrap' }}>
-                            {d.tags.slice(0,3).map(t=>(
-                              <span key={t} className="mdj-badge mdj-badge-soft">{t}</span>
-                            ))}
-                            {d.tags.length > 3 && (
-                              <span className="mdj-badge mdj-badge-soft">+{d.tags.length - 3}</span>
-                            )}
-                          </div>
-                        )}
                       </div>
                     </td>
                     <td><span className="mdj-badge mdj-badge-soft">{d.category}</span></td>
                     <td>{clientName(d.clientId)}</td>
                     <td>{fmtSize(d.size)}</td>
-                    <td>{fmtDate(d.uploadedAt)}</td>
+                    <td>{fmtDate(d.createdAt)}</td>
                     <td className="right">
                       <button className="btn-outline-gold btn-xs" onClick={()=>preview(d.id)}>Preview</button>{' '}
                       <button className="btn-outline-gold btn-xs" onClick={()=>download(d.id)}>Download</button>
@@ -482,27 +468,6 @@ export default function DocumentsPage() {
                   <option value="">—</option>
                   {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
-              </div>
-
-              <div style={{ gridColumn:'1 / -1' }}>
-                <label className="mdj-sub" style={{ display:'block', marginBottom:6 }}>Tags (comma-separated)</label>
-                <input
-                  className="mdj-input"
-                  placeholder="invoice, 2025, important"
-                  value={uploadMeta.tags}
-                  onChange={(e)=>setUploadMeta({...uploadMeta, tags: e.target.value})}
-                />
-              </div>
-
-              <div style={{ gridColumn:'1 / -1' }}>
-                <label className="mdj-sub" style={{ display:'block', marginBottom:6 }}>Description</label>
-                <textarea
-                    className="mdj-input"
-                    rows={3}
-                    style={{ resize:'vertical' }}
-                    value={uploadMeta.description}
-                    onChange={(e)=>setUploadMeta({...uploadMeta, description: e.target.value})}
-                />
               </div>
             </div>
 

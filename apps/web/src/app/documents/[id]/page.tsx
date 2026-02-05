@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import MDJShell from '@/components/mdj-ui/MDJShell';
-import { apiClient, api, API_BASE_URL } from '@/lib/api';
+import { api, API_BASE_URL } from '@/lib/api';
 import type { ClientContext } from '@/lib/types';
 
 interface Document {
@@ -16,27 +16,22 @@ interface Document {
   serviceId?: string;
   taskId?: string;
   category: string;
-  tags: string[];
-  description?: string;
   uploadedBy: string;
-  uploadedAt: string;
+  createdAt: string;
   updatedAt: string;
   isArchived: boolean;
   metadata?: any;
 }
 
 const DOCUMENT_CATEGORIES = [
+  'TAX',
   'ACCOUNTS',
-  'VAT',
-  'PAYROLL',
-  'CORRESPONDENCE',
-  'CONTRACTS',
   'COMPLIANCE',
   'REPORTS',
   'INVOICES',
   'RECEIPTS',
   'BANK_STATEMENTS',
-  'OTHER'
+  'OTHER',
 ];
 
 export default function DocumentDetailPage() {
@@ -50,8 +45,6 @@ export default function DocumentDetailPage() {
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({
     category: '',
-    tags: '',
-    description: '',
     clientId: '',
     serviceId: '',
     taskId: ''
@@ -75,8 +68,6 @@ export default function DocumentDetailPage() {
       // Initialize edit data
       setEditData({
         category: docData.category,
-        tags: docData.tags.join(', '),
-        description: docData.description || '',
         clientId: docData.clientId || '',
         serviceId: docData.serviceId || '',
         taskId: docData.taskId || ''
@@ -117,8 +108,6 @@ export default function DocumentDetailPage() {
     try {
       const updateData = {
         category: editData.category,
-        tags: editData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        description: editData.description,
         clientId: editData.clientId || undefined,
         serviceId: editData.serviceId || undefined,
         taskId: editData.taskId || undefined
@@ -247,7 +236,7 @@ export default function DocumentDetailPage() {
             </div>
             <h1 className="text-2xl font-bold text-white">{document.originalName}</h1>
             <p className="text-gray-400 mt-1">
-              {formatFileSize(document.size)} • {document.mimeType} • Uploaded {formatDate(document.uploadedAt)}
+              {formatFileSize(document.size)} • {document.mimeType} • Created {formatDate(document.createdAt)}
             </p>
           </div>
           <div className="flex space-x-2">
@@ -397,27 +386,6 @@ export default function DocumentDetailPage() {
                     </div>
                   )}
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Tags</label>
-                    <input
-                      type="text"
-                      value={editData.tags}
-                      onChange={(e) => setEditData({ ...editData, tags: e.target.value })}
-                      placeholder="tag1, tag2, tag3"
-                      className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
-                    <textarea
-                      value={editData.description}
-                      onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                      rows={3}
-                      className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                    />
-                  </div>
-
                   <div className="flex space-x-2">
                     <button
                       onClick={handleSave}
@@ -457,30 +425,6 @@ export default function DocumentDetailPage() {
                       <dd className="text-sm text-white mt-1">
                         {getServiceName(document.serviceId)}
                       </dd>
-                    </div>
-                  )}
-
-                  <div>
-                    <dt className="text-sm font-medium text-gray-400">Tags</dt>
-                    <dd className="text-sm text-white mt-1">
-                      {document.tags.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {document.tags.map(tag => (
-                            <span key={tag} className="inline-block bg-gray-600 text-xs text-gray-300 px-2 py-1 rounded">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        'No tags'
-                      )}
-                    </dd>
-                  </div>
-
-                  {document.description && (
-                    <div>
-                      <dt className="text-sm font-medium text-gray-400">Description</dt>
-                      <dd className="text-sm text-white mt-1">{document.description}</dd>
                     </div>
                   )}
 

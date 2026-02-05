@@ -270,13 +270,13 @@ export class DashboardService {
       const weekAhead = new Date();
       weekAhead.setDate(weekAhead.getDate() + 7);
 
-      // Get tasks due this week (both OPEN and IN_PROGRESS)
+      // Get tasks due this week (both TODO and IN_PROGRESS)
       const [openTasks, inProgressTasks] = await Promise.all([
         this.tasksService.findAll({
           portfolioCode,
           dueAfter: now,
           dueBefore: weekAhead,
-          status: 'OPEN'
+          status: 'TODO'
         }),
         this.tasksService.findAll({
           portfolioCode,
@@ -346,12 +346,12 @@ export class DashboardService {
     try {
       const now = new Date();
 
-      // Get overdue tasks (both OPEN and IN_PROGRESS)
+      // Get overdue tasks (both TODO and IN_PROGRESS)
       const [overdueOpen, overdueInProgress] = await Promise.all([
         this.tasksService.findAll({
           portfolioCode,
           dueBefore: now,
-          status: 'OPEN'
+          status: 'TODO'
         }),
         this.tasksService.findAll({
           portfolioCode,
@@ -563,7 +563,7 @@ export class DashboardService {
 
   async generateClientListReport(portfolioCode?: number): Promise<{
     clients: Array<{
-      ref: string;
+      clientIdentifier: string;
       name: string;
       type: string;
       status: string;
@@ -600,16 +600,16 @@ export class DashboardService {
 
           const totalAnnualFees = clientServices.reduce((sum, service) => sum + (service.annualized || 0), 0);
           const activeServices = clientServices.filter(s => s.status === 'ACTIVE').length;
-          const openTasks = clientTasks.filter(t => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length;
+          const openTasks = clientTasks.filter(t => t.status === 'TODO' || t.status === 'IN_PROGRESS').length;
           const overdueTasks = clientTasks.filter(t => 
-            t.dueDate && new Date(t.dueDate) < new Date() && (t.status === 'OPEN' || t.status === 'IN_PROGRESS')
+            t.dueDate && new Date(t.dueDate) < new Date() && (t.status === 'TODO' || t.status === 'IN_PROGRESS')
           ).length;
           const overdueCompliance = clientCompliance.filter(c => 
             c.dueDate && new Date(c.dueDate) < new Date() && c.status === 'PENDING'
           ).length;
 
           return {
-            ref: client.ref,
+            clientIdentifier: client.registeredNumber || client.id,
             name: client.name,
             type: client.type,
             status: client.status,
@@ -659,7 +659,7 @@ export class DashboardService {
     items: Array<{
       id: string;
       clientName: string;
-      clientRef: string;
+      clientIdentifier: string;
       type: string;
       dueDate: Date;
       status: string;
@@ -699,7 +699,7 @@ export class DashboardService {
         return {
           id: item.id,
           clientName: client?.name || 'Unknown Client',
-          clientRef: client?.ref || 'N/A',
+          clientIdentifier: client?.registeredNumber || client?.id || 'N/A',
           type: item.type,
           dueDate: item.dueDate,
           status: item.status,

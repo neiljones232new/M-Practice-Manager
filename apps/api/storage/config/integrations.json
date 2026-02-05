@@ -10,9 +10,9 @@
     },
     "status": "ERROR",
     "createdAt": "2026-01-08T23:56:05.439Z",
-    "updatedAt": "2026-01-31T22:12:20.298Z",
+    "updatedAt": "2026-02-01T01:42:20.447Z",
     "apiKey": "${OPENAI_API_KEY}",
-    "lastTested": "2026-01-31T22:12:20.298Z",
+    "lastTested": "2026-02-01T01:42:20.447Z",
     "lastError": "HTTP 401: {\n  \"error\": {\n    \"message\": \"Incorrect API key provided: ${OPENAI*****KEY}. You can find your API key at https://platform.openai.com/account/api-keys.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": null,\n    \"code\": \"invalid_api_key\"\n  }\n}"
   },
   {
@@ -28,8 +28,8 @@
     },
     "status": "ERROR",
     "createdAt": "2026-01-08T23:56:05.439Z",
-    "updatedAt": "2026-01-31T22:12:20.503Z",
-    "lastTested": "2026-01-31T22:12:20.503Z",
+    "updatedAt": "2026-02-01T01:42:20.597Z",
+    "lastTested": "2026-02-01T01:42:20.597Z",
     "apiKey": "${OPENAI_API_KEY}",
     "lastError": "HTTP 400: {\"error\":\"Invalid Authorization header\",\"type\":\"ch:service\"}"
   },

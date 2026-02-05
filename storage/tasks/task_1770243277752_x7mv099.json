@@ -1,0 +1,16 @@
+{
+  "id": "task_1770243277752_x7mv099",
+  "clientId": "4P001",
+  "serviceId": "service_1770243206810_h2iwni339",
+  "title": "Request client records",
+  "description": "Contact client to request annual accounting records and supporting documents",
+  "status": "OPEN",
+  "priority": "HIGH",
+  "tags": [
+    "preparation",
+    "client-contact",
+    "auto-generated"
+  ],
+  "createdAt": "2026-02-04T22:14:37.752Z",
+  "updatedAt": "2026-02-04T22:14:37.752Z"
+}

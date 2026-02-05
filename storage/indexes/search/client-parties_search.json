@@ -1,1 +1,68 @@
-{}
+{
+  "client_party_1770225712474_mvoju1clt": {
+    "client-parties": {
+      "client_party_1770225712474_mvoju1clt": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T17:21:52.487Z"
+      }
+    }
+  },
+  "client_party_1770243206757_lq8i7z8xu": {
+    "client-parties": {
+      "client_party_1770243206757_lq8i7z8xu": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:13:26.768Z"
+      }
+    }
+  },
+  "client_party_1770243206774_f2b61re6q": {
+    "client-parties": {
+      "client_party_1770243206774_f2b61re6q": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:13:26.781Z"
+      }
+    }
+  },
+  "client_party_1770243206786_0e9912qjf": {
+    "client-parties": {
+      "client_party_1770243206786_0e9912qjf": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:13:26.790Z"
+      }
+    }
+  },
+  "client_party_1770243206793_ybz5sa4kb": {
+    "client-parties": {
+      "client_party_1770243206793_ybz5sa4kb": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:13:26.798Z"
+      }
+    }
+  },
+  "client_party_1770243569298_3edht98uk": {
+    "client-parties": {
+      "client_party_1770243569298_3edht98uk": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:22:52.918Z"
+      }
+    }
+  }
+}

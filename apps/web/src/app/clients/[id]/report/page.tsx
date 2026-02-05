@@ -88,7 +88,7 @@ export default function ClientReportPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `client-report-${client?.ref || id}-${new Date().toISOString().split('T')[0]}.pdf`;
+      a.download = `client-report-${client?.registeredNumber || client?.id || id}-${new Date().toISOString().split('T')[0]}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -147,7 +147,7 @@ export default function ClientReportPage() {
   return (
     <MDJShell 
       pageTitle={client?.name || 'Client Report'} 
-      pageSubtitle={client?.ref || ''}
+      pageSubtitle={client?.registeredNumber || client?.id || ''}
       showBack 
       backHref={`/clients/${id}`} 
       backLabel="Back to Client"

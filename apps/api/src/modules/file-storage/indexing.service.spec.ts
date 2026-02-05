@@ -11,9 +11,9 @@ describe('IndexingService', () => {
   let filterService: jest.Mocked<FilterService>;
 
   const mockClients = [
-    { id: 'client-1', name: 'ABC Company Ltd', type: 'COMPANY', status: 'ACTIVE', ref: '1A001' },
-    { id: 'client-2', name: 'XYZ Partnership', type: 'PARTNERSHIP', status: 'ACTIVE', ref: '1A002' },
-    { id: 'client-3', name: 'John Smith', type: 'INDIVIDUAL', status: 'INACTIVE', ref: '1A003' }
+    { id: 'client-1', name: 'ABC Company Ltd', type: 'COMPANY', status: 'ACTIVE', registeredNumber: '1A001' },
+    { id: 'client-2', name: 'XYZ Partnership', type: 'PARTNERSHIP', status: 'ACTIVE', registeredNumber: '1A002' },
+    { id: 'client-3', name: 'John Smith', type: 'INDIVIDUAL', status: 'INACTIVE', registeredNumber: '1A003' }
   ];
 
   const mockTasks = [

@@ -37,8 +37,8 @@ interface UpdateCalendarEventDto {
 
 interface Client {
   id: string;
-  ref: string;
   name: string;
+  registeredNumber?: string | null;
   portfolioCode: number;
 }
 
@@ -269,7 +269,7 @@ export default function EditCalendarEventPage() {
 
   const clientOptions = clients.map(client => ({
     value: client.id,
-    label: `${client.ref} - ${client.name}`,
+    label: `${client.registeredNumber || client.id} - ${client.name}`,
   }));
 
   const taskOptions = tasks.map(task => ({

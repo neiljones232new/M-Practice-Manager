@@ -441,7 +441,7 @@ export default function TaskDetailPage() {
                     className="text-left hover:underline"
                   >
                     <div className="font-mono text-sm" style={{ color: 'var(--gold)' }}>
-                      {client.ref}
+                      {client.registeredNumber || client.id}
                     </div>
                     <div className="font-medium">{client.name}</div>
                     <div className="text-xs" style={{ color: 'var(--dim-light)' }}>

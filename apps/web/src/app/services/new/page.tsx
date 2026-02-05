@@ -175,7 +175,7 @@ export default function NewServicePage() {
 
   const clientOptions = clients.map(client => ({
     value: client.id,
-    label: `${client.ref} - ${client.name}`,
+    label: `${client.registeredNumber || client.id} - ${client.name}`,
   }));
 
   const serviceTypeOptions = COMMON_SERVICE_TYPES.map(type => ({

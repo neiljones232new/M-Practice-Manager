@@ -125,19 +125,19 @@ export class TemplateParserService {
         });
       }
 
-      if (!template.fileName || template.fileName.trim() === '') {
+      if (!template.type) {
         errors.push({
-          field: 'fileName',
-          message: 'Template file name is required',
+          field: 'type',
+          message: 'Template type is required',
           code: 'REQUIRED_FIELD',
         });
       }
 
-      if (!template.fileFormat || !['DOCX', 'MD'].includes(template.fileFormat)) {
+      if (!template.content || template.content.trim() === '') {
         errors.push({
-          field: 'fileFormat',
-          message: 'Template file format must be DOCX or MD',
-          code: 'INVALID_FORMAT',
+          field: 'content',
+          message: 'Template content is required',
+          code: 'REQUIRED_FIELD',
         });
       }
 

@@ -14,6 +14,24 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T18:50:17.735Z"
+      },
+      "service_1770225712526_dch3koe55": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:17:36.207Z"
+      }
+    }
+  },
+  "120": {
+    "services": {
+      "service_1770243206826_kntf58hck": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.826Z"
       }
     }
   },
@@ -25,6 +43,17 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T16:29:53.490Z"
+      }
+    }
+  },
+  "349": {
+    "services": {
+      "service_1770243206821_xqykg244n": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.821Z"
       }
     }
   },
@@ -71,6 +100,13 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T18:50:17.728Z"
+      },
+      "service_1770243569342_o07aigq7r": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.343Z"
       }
     }
   },
@@ -85,6 +121,17 @@
       }
     }
   },
+  "750": {
+    "services": {
+      "service_1770243569327_xoeljfgan": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.329Z"
+      }
+    }
+  },
   "1000": {
     "services": {
       "service_1769737480190_cq16ll9gs": {
@@ -93,6 +140,17 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T01:44:40.193Z"
+      }
+    }
+  },
+  "1750": {
+    "services": {
+      "service_1770243206810_h2iwni339": {
+        "fields": [
+          "fee"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.811Z"
       }
     }
   },
@@ -199,6 +257,76 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T18:50:17.735Z"
+      },
+      "service_1770243206810_h2iwni339": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.811Z"
+      },
+      "service_1770243206816_2t49sxvyx": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.817Z"
+      },
+      "service_1770243206821_xqykg244n": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.821Z"
+      },
+      "service_1770243206826_kntf58hck": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.826Z"
+      },
+      "service_1770225712532_vfvegp6iz": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:16:59.323Z"
+      },
+      "service_1770225712526_dch3koe55": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:17:36.207Z"
+      },
+      "service_1770243569327_xoeljfgan": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.329Z"
+      },
+      "service_1770243569335_6me2kgggo": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.336Z"
+      },
+      "service_1770243569342_o07aigq7r": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.343Z"
+      },
+      "service_1770243569349_obzuweisc": {
+        "fields": [
+          "status"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.350Z"
       }
     }
   },
@@ -290,6 +418,65 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T18:50:17.728Z"
+      },
+      "service_1770243206810_h2iwni339": {
+        "fields": [
+          "type",
+          "frequency"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:13:26.811Z"
+      },
+      "service_1770243206816_2t49sxvyx": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.817Z"
+      },
+      "service_1770243206821_xqykg244n": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.821Z"
+      },
+      "service_1770225712532_vfvegp6iz": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:16:59.323Z"
+      },
+      "service_1770225712526_dch3koe55": {
+        "fields": [
+          "type",
+          "frequency"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:17:36.207Z"
+      },
+      "service_1770243569327_xoeljfgan": {
+        "fields": [
+          "type",
+          "frequency"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:19:29.329Z"
+      },
+      "service_1770243569335_6me2kgggo": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.336Z"
+      },
+      "service_1770243569342_o07aigq7r": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.343Z"
       }
     }
   },
@@ -337,6 +524,27 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T18:50:17.721Z"
+      },
+      "service_1770243206816_2t49sxvyx": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.817Z"
+      },
+      "service_1770225712532_vfvegp6iz": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:16:59.323Z"
+      },
+      "service_1770243569335_6me2kgggo": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.336Z"
       }
     }
   },
@@ -355,6 +563,27 @@
         ],
         "score": 1.5,
         "lastUpdated": "2026-01-30T18:50:17.721Z"
+      },
+      "service_1770243206816_2t49sxvyx": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:13:26.817Z"
+      },
+      "service_1770225712532_vfvegp6iz": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:16:59.323Z"
+      },
+      "service_1770243569335_6me2kgggo": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:19:29.336Z"
       }
     }
   },
@@ -391,6 +620,27 @@
         ],
         "score": 1.5,
         "lastUpdated": "2026-01-30T18:50:17.714Z"
+      },
+      "service_1770243206810_h2iwni339": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:13:26.811Z"
+      },
+      "service_1770225712526_dch3koe55": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:17:36.207Z"
+      },
+      "service_1770243569327_xoeljfgan": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:19:29.329Z"
       }
     }
   },
@@ -427,6 +677,20 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T18:50:17.728Z"
+      },
+      "service_1770243206821_xqykg244n": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.821Z"
+      },
+      "service_1770243569342_o07aigq7r": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.343Z"
       }
     }
   },
@@ -480,6 +744,20 @@
         ],
         "score": 1.5,
         "lastUpdated": "2026-01-30T18:50:17.728Z"
+      },
+      "service_1770243206821_xqykg244n": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:13:26.821Z"
+      },
+      "service_1770243569342_o07aigq7r": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:19:29.343Z"
       }
     }
   },
@@ -533,6 +811,20 @@
         ],
         "score": 1.5,
         "lastUpdated": "2026-01-30T18:50:17.728Z"
+      },
+      "service_1770243206821_xqykg244n": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:13:26.821Z"
+      },
+      "service_1770243569342_o07aigq7r": {
+        "fields": [
+          "type"
+        ],
+        "score": 1.5,
+        "lastUpdated": "2026-02-04T22:19:29.343Z"
       }
     }
   },
@@ -811,6 +1103,34 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T18:50:17.735Z"
+      },
+      "service_1770243206810_h2iwni339": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.811Z"
+      },
+      "service_1770243206816_2t49sxvyx": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.817Z"
+      },
+      "service_1770243206821_xqykg244n": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.821Z"
+      },
+      "service_1770243206826_kntf58hck": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.826Z"
       }
     }
   },
@@ -855,6 +1175,20 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T18:50:17.735Z"
+      },
+      "service_1770243206826_kntf58hck": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.826Z"
+      },
+      "service_1770243569349_obzuweisc": {
+        "fields": [
+          "type"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.350Z"
       }
     }
   },
@@ -866,6 +1200,180 @@
         ],
         "score": 3,
         "lastUpdated": "2026-01-30T18:50:17.735Z"
+      },
+      "service_1770243206826_kntf58hck": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:13:26.826Z"
+      },
+      "service_1770243569349_obzuweisc": {
+        "fields": [
+          "frequency"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.350Z"
+      }
+    }
+  },
+  "4m001": {
+    "services": {
+      "service_1770225712532_vfvegp6iz": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:16:59.323Z"
+      },
+      "service_1770225712526_dch3koe55": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:17:36.207Z"
+      }
+    }
+  },
+  "service_1770243206810_h2iwni339": {
+    "services": {
+      "service_1770243206810_h2iwni339": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:13:26.811Z"
+      }
+    }
+  },
+  "service_1770243206816_2t49sxvyx": {
+    "services": {
+      "service_1770243206816_2t49sxvyx": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:13:26.817Z"
+      }
+    }
+  },
+  "service_1770243206821_xqykg244n": {
+    "services": {
+      "service_1770243206821_xqykg244n": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:13:26.821Z"
+      }
+    }
+  },
+  "service_1770243206826_kntf58hck": {
+    "services": {
+      "service_1770243206826_kntf58hck": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:13:26.826Z"
+      }
+    }
+  },
+  "service_1770225712532_vfvegp6iz": {
+    "services": {
+      "service_1770225712532_vfvegp6iz": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:16:59.323Z"
+      }
+    }
+  },
+  "service_1770225712526_dch3koe55": {
+    "services": {
+      "service_1770225712526_dch3koe55": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:17:36.207Z"
+      }
+    }
+  },
+  "service_1770243569327_xoeljfgan": {
+    "services": {
+      "service_1770243569327_xoeljfgan": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:19:29.329Z"
+      }
+    }
+  },
+  "4m002": {
+    "services": {
+      "service_1770243569327_xoeljfgan": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.329Z"
+      },
+      "service_1770243569335_6me2kgggo": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.336Z"
+      },
+      "service_1770243569342_o07aigq7r": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.343Z"
+      },
+      "service_1770243569349_obzuweisc": {
+        "fields": [
+          "clientId"
+        ],
+        "score": 3,
+        "lastUpdated": "2026-02-04T22:19:29.350Z"
+      }
+    }
+  },
+  "service_1770243569335_6me2kgggo": {
+    "services": {
+      "service_1770243569335_6me2kgggo": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:19:29.336Z"
+      }
+    }
+  },
+  "service_1770243569342_o07aigq7r": {
+    "services": {
+      "service_1770243569342_o07aigq7r": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:19:29.343Z"
+      }
+    }
+  },
+  "service_1770243569349_obzuweisc": {
+    "services": {
+      "service_1770243569349_obzuweisc": {
+        "fields": [
+          "id"
+        ],
+        "score": 6,
+        "lastUpdated": "2026-02-04T22:19:29.350Z"
       }
     }
   }

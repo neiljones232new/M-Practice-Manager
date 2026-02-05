@@ -157,29 +157,29 @@ export class ComplianceController {
   @Post(':id/create-task')
   async createTaskFromComplianceItem(
     @Param('id') id: string,
-    @Body() body: { assignee?: string },
+    @Body() body: { assigneeId?: string },
   ): Promise<{ taskId: string }> {
     this.logger.log(`Creating task from compliance item ${id}`);
-    const taskId = await this.complianceService.createTaskFromComplianceItem(id, body.assignee);
+    const taskId = await this.complianceService.createTaskFromComplianceItem(id, body.assigneeId);
     return { taskId };
   }
 
   @Post('create-overdue-tasks')
   async createTasksForOverdueCompliance(
-    @Body() body: { assignee?: string },
+    @Body() body: { assigneeId?: string },
   ): Promise<{ taskIds: string[] }> {
     this.logger.log('Creating tasks for overdue compliance items');
-    const taskIds = await this.complianceService.createTasksForOverdueCompliance(body.assignee);
+    const taskIds = await this.complianceService.createTasksForOverdueCompliance(body.assigneeId);
     return { taskIds };
   }
 
   @Post('create-upcoming-tasks')
   async createTasksForUpcomingCompliance(
-    @Body() body: { daysAhead?: number; assignee?: string },
+    @Body() body: { daysAhead?: number; assigneeId?: string },
   ): Promise<{ taskIds: string[] }> {
     const daysAhead = body.daysAhead || 30;
     this.logger.log(`Creating tasks for upcoming compliance items (${daysAhead} days ahead)`);
-    const taskIds = await this.complianceService.createTasksForUpcomingCompliance(daysAhead, body.assignee);
+    const taskIds = await this.complianceService.createTasksForUpcomingCompliance(daysAhead, body.assigneeId);
     return { taskIds };
   }
 

@@ -1,0 +1,13 @@
+{
+  "id": "service_1770225712526_dch3koe55",
+  "clientId": "4M001",
+  "kind": "Annual Accounts",
+  "frequency": "ANNUAL",
+  "fee": 100,
+  "annualized": 100,
+  "status": "ACTIVE",
+  "createdAt": "2026-02-04T17:21:52.526Z",
+  "updatedAt": "2026-02-04T22:17:36.204Z",
+  "nextDue": "2026-09-30T00:00:00.000Z",
+  "description": ""
+}

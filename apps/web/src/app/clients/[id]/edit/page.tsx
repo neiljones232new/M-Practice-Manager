@@ -170,7 +170,7 @@ function ClientFormSection({
 export default function EditClientPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
-  const clientRef = params?.id as string;
+  const clientId = params?.id as string;
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -186,7 +186,7 @@ export default function EditClientPage() {
   const riskRatingOptions = ['Low', 'Medium', 'High', 'Not assessed'];
 
   useEffect(() => {
-    if (!clientRef) return;
+    if (!clientId) return;
     let on = true;
     (async () => {
       try {
@@ -196,7 +196,7 @@ export default function EditClientPage() {
         if (on) {
           setStaffOptions(Array.isArray(staff) ? staff : []);
         }
-        const data = await api.get<ClientContextWithParties>(`/clients/${clientRef}/with-parties`);
+        const data = await api.get<ClientContextWithParties>(`/clients/${clientId}/with-parties`);
         if (!on) return;
         setContext(data);
 
@@ -303,7 +303,7 @@ export default function EditClientPage() {
     return () => {
       on = false;
     };
-  }, [clientRef]);
+  }, [clientId]);
 
   const staffSelectOptions = useMemo(() => {
     const base = (staffOptions || [])
@@ -320,7 +320,10 @@ export default function EditClientPage() {
   const profileMeta = useMemo(() => {
     if (!context?.node) return '';
     const node = context.node;
-    const parts = [node.ref ? `Ref ${node.ref}` : '', node.portfolioCode ? `Portfolio ${node.portfolioCode}` : ''];
+    const parts = [
+      node.registeredNumber || node.id ? `ID ${node.registeredNumber || node.id}` : '',
+      node.portfolioCode ? `Portfolio ${node.portfolioCode}` : '',
+    ];
     return parts.filter(Boolean).join(' · ');
   }, [context?.node]);
 
@@ -420,18 +423,18 @@ export default function EditClientPage() {
         clientType: normalizeText(form.clientType),
       };
 
-      await api.put(`/clients/${context.node.ref}`, nodePayload);
-      await api.put(`/clients/${context.node.ref}/profile`, profilePayload);
+      await api.put(`/clients/${context.node.id}`, nodePayload);
+      await api.put(`/clients/${context.node.id}/profile`, profilePayload);
       try {
         const bc = new BroadcastChannel('mdj');
         bc.postMessage({ topic: 'clients:changed' });
-        bc.postMessage({ topic: 'client:updated', clientId: context.node.ref });
+        bc.postMessage({ topic: 'client:updated', clientId: context.node.id });
         bc.close();
       } catch {
         // ignore broadcast issues
       }
       setMessage('Client updated.');
-      setTimeout(() => router.push(`/clients/${context.node.ref}?updated=${Date.now()}`), 600);
+      setTimeout(() => router.push(`/clients/${context.node.id}?updated=${Date.now()}`), 600);
     } catch (e: any) {
       setError(e?.message || 'Failed to update client');
     } finally {
@@ -444,7 +447,7 @@ export default function EditClientPage() {
       pageTitle="Edit Client"
       pageSubtitle={context?.node?.name || 'Client details'}
       actions={[
-        { label: 'Back to Client', href: `/clients/${clientRef}`, variant: 'outline' },
+        { label: 'Back to Client', href: `/clients/${clientId}`, variant: 'outline' },
       ]}
     >
       <hr className="mdj-gold-rule" />

@@ -1,0 +1,95 @@
+{
+  "id": "bef11619-93bd-43ae-b1ec-ef4ff2a81a0e",
+  "clientId": "fcb85281-8f71-4fc2-b667-d77bafeede96",
+  "calculationType": "INCOME_TAX",
+  "taxYear": "2025-26",
+  "parameters": {
+    "salary": 12570,
+    "dividends": 40500,
+    "otherIncome": 0,
+    "pensionContributions": 0,
+    "amountType": "salary"
+  },
+  "amountType": "salary",
+  "totalTakeHome": 48870,
+  "totalTaxLiability": 4200,
+  "report": {
+    "calculationId": "bef11619-93bd-43ae-b1ec-ef4ff2a81a0e",
+    "clientId": "fcb85281-8f71-4fc2-b667-d77bafeede96",
+    "calculationType": "personalTax",
+    "inputs": {
+      "salaryGross": 12570,
+      "benefits": 0,
+      "otherIncome": 0,
+      "dividends": 40500,
+      "personalTaxYear": "2025-26",
+      "companyProfitBeforeTax": 0,
+      "salaryExpense": 12570,
+      "employerNIC": 0,
+      "taxYear": "2025-26",
+      "dividendsPaid": 40500
+    },
+    "results": {
+      "personal": {
+        "totalGrossIncome": 53070,
+        "taxableIncome": 40000,
+        "incomeTaxByBand": {
+          "basicRate": 0,
+          "higherRate": 0,
+          "additionalRate": 0
+        },
+        "dividendTaxByBand": {
+          "basicRate": 3255,
+          "higherRate": 945.0000000000001,
+          "additionalRate": 0
+        },
+        "nationalInsurance": {
+          "employeeNIC": 0,
+          "employerNIC": 0
+        },
+        "personalAllowance": 12570,
+        "dividendAllowance": 500,
+        "totalTax": 4200,
+        "netTakeHome": 48870
+      },
+      "company": {
+        "profitBeforeTax": 0,
+        "salaryExpense": 12570,
+        "employerNIC": 0,
+        "taxableProfit": -12570,
+        "corporationTax": 0,
+        "dividendsPaid": 40500,
+        "netCompanyCashAfterTax": -53070
+      },
+      "optimisation": {
+        "optimalSalary": 12570,
+        "optimalDividends": 40500,
+        "takeHomeOptimised": 48870,
+        "effectiveTaxRate": 0.0791407574901074,
+        "totalTaxAndNI": 4200,
+        "netTakeHome": 48870
+      }
+    },
+    "reportSummary": {}
+  },
+  "result": {
+    "summary": {
+      "grossIncome": 53070,
+      "totalTax": 4200,
+      "netIncome": 48870,
+      "effectiveTaxRate": 0.0791407574901074
+    },
+    "breakdown": {
+      "incomeTax": 0,
+      "employeeNI": 0,
+      "employerNI": 0,
+      "nationalInsurance": 0,
+      "corporationTax": 0,
+      "dividendTax": 4200,
+      "totalTax": 4200
+    }
+  },
+  "recommendations": [],
+  "calculatedAt": "2026-02-05T14:01:10.252Z",
+  "calculatedBy": "system"
+}

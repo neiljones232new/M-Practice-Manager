@@ -142,8 +142,9 @@ export class ServicesController {
     // Calculate summary statistics
     const summary = {
       totalTasks: tasks.length,
-      openTasks: tasks.filter(t => t.status === 'OPEN').length,
+      openTasks: tasks.filter(t => t.status === 'TODO').length,
       inProgressTasks: tasks.filter(t => t.status === 'IN_PROGRESS').length,
+      reviewTasks: tasks.filter(t => t.status === 'REVIEW').length,
       completedTasks: tasks.filter(t => t.status === 'COMPLETED').length,
       cancelledTasks: tasks.filter(t => t.status === 'CANCELLED').length,
       overdueTasks: tasks.filter(t => 
@@ -228,14 +229,14 @@ export class ServicesController {
   async exportCSV(@Request() req: any, @Query() filters: ServiceFilters): Promise<string> {
     if (this.isDemoUser(req)) {
       const headers = [
-        'Client Ref','Client','Service','Frequency','Fee','Annual','Status','Next Due','Portfolio'
+        'Client Identifier','Client','Service','Frequency','Fee','Annual','Status','Next Due','Portfolio'
       ];
       return headers.join(',') + '\n';
     }
     const practice = await this.configService.getPracticeSettings();
     const items = await this.servicesService.getServicesWithClientDetails(filters);
     const headers = [
-      'Client Ref','Client','Service','Frequency','Fee','Annual','Status','Next Due','Portfolio'
+      'Client Identifier','Client','Service','Frequency','Fee','Annual','Status','Next Due','Portfolio'
     ];
     const esc = (v: any) => {
       if (v === null || v === undefined) return '';
@@ -246,7 +247,7 @@ export class ServicesController {
     const rows = [headers.join(',')];
     for (const s of items) {
       rows.push([
-        s.clientRef,
+        s.clientIdentifier,
         s.clientName,
         s.kind,
         s.frequency,
@@ -269,10 +270,10 @@ export class ServicesController {
       const ExcelJS = require('exceljs');
       const wb = new ExcelJS.Workbook();
       const ws = wb.addWorksheet('Services');
-      ws.addRow(['Client Ref','Client','Service','Frequency','Fee','Annual','Status','Next Due','Portfolio']);
+      ws.addRow(['Client Identifier','Client','Service','Frequency','Fee','Annual','Status','Next Due','Portfolio']);
       for (const s of items) {
         ws.addRow([
-          s.clientRef,
+          s.clientIdentifier,
           s.clientName,
           s.kind,
           s.frequency,
@@ -288,11 +289,11 @@ export class ServicesController {
       res.setHeader('Content-Disposition', `attachment; filename="services-${new Date().toISOString().slice(0,10)}.xlsx"`);
       res.send(Buffer.from(buffer));
     } catch (e) {
-      const headers = ['Client Ref','Client','Service','Frequency','Fee','Annual','Status','Next Due','Portfolio'];
+      const headers = ['Client Identifier','Client','Service','Frequency','Fee','Annual','Status','Next Due','Portfolio'];
       const cell = (v: any) => `<Cell><Data ss:Type=\"String\">${String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</Data></Cell>`;
       const rows = items.map(s =>
         `<Row>${[
-          s.clientRef,
+          s.clientIdentifier,
           s.clientName,
           s.kind,
           s.frequency,
@@ -318,9 +319,9 @@ export class ServicesController {
   async exportPDF(@Query() filters: ServiceFilters): Promise<Buffer> {
     const items = await this.servicesService.getServicesWithClientDetails(filters);
     const body = [
-      [{ text: 'Client Ref', bold: true }, { text: 'Client', bold: true }, { text: 'Service', bold: true }, { text: 'Frequency', bold: true }, { text: 'Fee', bold: true }, { text: 'Annual', bold: true }, { text: 'Status', bold: true }, { text: 'Next Due', bold: true }],
+      [{ text: 'Client Identifier', bold: true }, { text: 'Client', bold: true }, { text: 'Service', bold: true }, { text: 'Frequency', bold: true }, { text: 'Fee', bold: true }, { text: 'Annual', bold: true }, { text: 'Status', bold: true }, { text: 'Next Due', bold: true }],
       ...items.map(s => [
-        s.clientRef,
+        s.clientIdentifier,
         s.clientName,
         s.kind,
         s.frequency,

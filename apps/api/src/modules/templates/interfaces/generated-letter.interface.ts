@@ -33,14 +33,6 @@ export interface GenerateLetterDto {
   autoSave?: boolean;
 }
 
-export interface BulkGenerateLetterDto {
-  templateId: string;
-  clientIds: string[];
-  serviceId?: string;
-  placeholderValues?: Record<string, any>;
-  outputFormats?: ('PDF' | 'DOCX')[];
-}
-
 export interface LetterFilters {
   clientId?: string;
   serviceId?: string;
@@ -50,23 +42,6 @@ export interface LetterFilters {
   dateFrom?: Date;
   dateTo?: Date;
   search?: string;
-}
-
-export interface BulkGenerationResult {
-  totalRequested: number;
-  successCount: number;
-  failureCount: number;
-  results: BulkGenerationItem[];
-  zipFileId?: string;
-  summary: string;
-}
-
-export interface BulkGenerationItem {
-  clientId: string;
-  clientName: string;
-  success: boolean;
-  letterId?: string;
-  error?: string;
 }
 
 export interface LetterDownloadResult {

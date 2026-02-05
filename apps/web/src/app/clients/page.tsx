@@ -15,7 +15,7 @@ export default function ClientsPage() {
 
   // filters - load from localStorage on mount
   const [filters, setFilters] = useState<Record<string, string>>({
-    ref: '',
+    identifier: '',
     name: '',
     registeredNumber: '',
     utrNumber: '',
@@ -30,11 +30,13 @@ export default function ClientsPage() {
     type: '',
     portfolio: '',
   });
-  const [sortField, setSortField] = useState<'name' | 'status' | 'portfolio' | 'ref'>(() => {
+  const [sortField, setSortField] = useState<'name' | 'status' | 'portfolio' | 'identifier'>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('clients_sort_field') as any) || 'ref';
+      const stored = localStorage.getItem('clients_sort_field') as any;
+      if (stored === 'ref') return 'identifier';
+      return stored || 'identifier';
     }
-    return 'ref';
+    return 'identifier';
   });
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>(() => {
     if (typeof window !== 'undefined') {
@@ -48,7 +50,7 @@ export default function ClientsPage() {
   const [perPage, setPerPage] = useState<number>(10);
   const [showCustomize, setShowCustomize] = useState(false);
   const defaultColumnIds = [
-    'ref',
+    'identifier',
     'name',
     'registeredNumber',
     'utrNumber',
@@ -70,7 +72,9 @@ export default function ClientsPage() {
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.map((id: string) => (id === 'ref' ? 'identifier' : id));
+          }
         } catch {}
       }
     }
@@ -172,7 +176,9 @@ export default function ClientsPage() {
     return base.filter(ctx => {
       const node = ctx.node;
       const profile = ctx.profile;
-      const matchesRef = !filters.ref || getText(node.ref).includes(filters.ref.toLowerCase());
+      const matchesIdentifier =
+        !filters.identifier ||
+        getText(node.id).includes(filters.identifier.toLowerCase());
       const matchesName = !filters.name || getText(node.name).includes(filters.name.toLowerCase());
       const matchesCompanyNo =
         !filters.registeredNumber ||
@@ -205,7 +211,7 @@ export default function ClientsPage() {
       const matchesType = !filters.type || node.type === filters.type;
       const matchesPortfolio = !filters.portfolio || String(node.portfolioCode || '') === filters.portfolio;
       return (
-        matchesRef &&
+        matchesIdentifier &&
         matchesName &&
         matchesCompanyNo &&
         matchesUtr &&
@@ -240,8 +246,8 @@ export default function ClientsPage() {
         case 'portfolio':
           result = (aNode.portfolioCode ?? 0) - (bNode.portfolioCode ?? 0);
           break;
-        case 'ref':
-          result = (aNode.ref ?? '').localeCompare(bNode.ref ?? '');
+        case 'identifier':
+          result = (aNode.registeredNumber || aNode.id || '').localeCompare(bNode.registeredNumber || bNode.id || '');
           break;
       }
       return sortDir === 'asc' ? result : -result;
@@ -275,7 +281,7 @@ export default function ClientsPage() {
 
   const handleClear = () => {
     setFilters({
-      ref: '',
+      identifier: '',
       name: '',
       registeredNumber: '',
       utrNumber: '',
@@ -290,7 +296,7 @@ export default function ClientsPage() {
       type: '',
       portfolio: '',
     });
-    setSortField('ref');
+    setSortField('identifier');
     setSortDir('asc');
   };
 
@@ -300,9 +306,9 @@ export default function ClientsPage() {
 
   const columnDefs = [
     {
-      id: 'ref',
-      label: 'Reference',
-      render: (c: ClientRow) => <span className="mdj-ref">{c.node.ref ?? '—'}</span>,
+      id: 'identifier',
+      label: 'Identifier',
+      render: (c: ClientRow) => <span className="mdj-ref">{c.node.id || '—'}</span>,
     },
     {
       id: 'name',
@@ -316,7 +322,7 @@ export default function ClientsPage() {
         const highRisk = Boolean(risk && String(risk).toLowerCase().includes('high'));
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Link className="mdj-link" href={`/clients/${c.node.ref}`} title="View client">
+            <Link className="mdj-link" href={`/clients/${c.node.id}`} title="View client">
               {c.node.name}
             </Link>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -684,7 +690,7 @@ export default function ClientsPage() {
               sorted.map((c) => (
                 <Link key={c.node.id} href={`/clients/${c.node.id}`} className="client-card">
                   <div className="client-card-head">
-                    <span className="client-ref">{c.node.ref ?? '—'}</span>
+                    <span className="client-ref">{c.node.registeredNumber || c.node.id || '—'}</span>
                     <span
                       className={`mdj-badge ${
                         c.node.status === 'ACTIVE'

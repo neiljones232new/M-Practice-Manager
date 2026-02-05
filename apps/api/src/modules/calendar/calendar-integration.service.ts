@@ -46,7 +46,6 @@ export class CalendarIntegrationService {
         clientId: task.clientId,
         taskId: task.id,
         type: 'DEADLINE',
-        status: 'SCHEDULED',
       };
 
       const calendarEvent = await this.calendarService.createEvent(eventData);
@@ -94,7 +93,6 @@ export class CalendarIntegrationService {
         allDay: true,
         clientId: complianceItem.clientId,
         type: 'FILING',
-        status: 'SCHEDULED',
       };
 
       const calendarEvent = await this.calendarService.createEvent(eventData);
@@ -137,7 +135,6 @@ export class CalendarIntegrationService {
         description: task.description ? `Task: ${task.description}` : undefined,
         startDate: new Date(task.dueDate),
         endDate: new Date(task.dueDate),
-        status: task.status === 'COMPLETED' ? 'COMPLETED' as const : 'SCHEDULED' as const,
       };
 
       await this.calendarService.updateEvent(event.id, updateData);
@@ -186,7 +183,6 @@ export class CalendarIntegrationService {
         description: `Compliance filing for ${complianceItem.type}${complianceItem.period ? ` (${complianceItem.period})` : ''}\nCompliance ID: ${complianceItem.id}`,
         startDate: new Date(complianceItem.dueDate),
         endDate: new Date(complianceItem.dueDate),
-        status: complianceItem.status === 'FILED' ? 'COMPLETED' as const : 'SCHEDULED' as const,
       };
 
       await this.calendarService.updateEvent(matchingEvent.id, updateData);
@@ -278,14 +274,11 @@ export class CalendarIntegrationService {
     startDate: Date;
     endDate: Date;
     clientId?: string;
-    location?: string;
-    attendees?: string[];
   }): Promise<void> {
     try {
       const eventData: CreateCalendarEventDto = {
         ...data,
         type: 'APPOINTMENT',
-        status: 'SCHEDULED',
         allDay: false,
       };
 
@@ -305,14 +298,11 @@ export class CalendarIntegrationService {
     startDate: Date;
     endDate: Date;
     clientId?: string;
-    location?: string;
-    attendees?: string[];
   }): Promise<void> {
     try {
       const eventData: CreateCalendarEventDto = {
         ...data,
         type: 'MEETING',
-        status: 'SCHEDULED',
         allDay: false,
       };
 

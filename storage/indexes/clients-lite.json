@@ -1,35 +1,35 @@
 [
   {
-    "id": "4P001A",
-    "portfolioCode": 4,
-    "name": "SEYMOUR, Steven",
-    "ref": "4P001A",
-    "status": "ACTIVE",
-    "type": "INDIVIDUAL",
-    "updatedAt": "2026-01-30T20:51:49.740Z",
-    "createdAt": "2026-01-30T18:50:17.640Z",
-    "searchText": "seymour, steven 4p001a alexandria drive ashton-under-lyne ol7 0qn england active individual"
-  },
-  {
-    "id": "1M001",
-    "portfolioCode": 1,
-    "name": "MDJ CONSULTANTS LTD",
-    "ref": "1M001",
-    "status": "ACTIVE",
-    "type": "COMPANY",
-    "updatedAt": "2026-01-30T20:52:58.619Z",
-    "createdAt": "2026-01-30T16:29:53.376Z",
-    "searchText": "mdj consultants ltd 1m001 15110513 neil@mdjteam.co.uk 07713697615 canal view 8b slate lane audenshaw manchester  m34 5gw england active company"
-  },
-  {
     "id": "4P001",
     "portfolioCode": 4,
     "name": "PB FULFILMENT LIMITED",
     "ref": "4P001",
     "status": "ACTIVE",
     "type": "COMPANY",
-    "updatedAt": "2026-01-30T20:53:18.786Z",
-    "createdAt": "2026-01-30T18:50:17.588Z",
+    "updatedAt": "2026-02-04T22:14:01.535Z",
+    "createdAt": "2026-02-04T22:13:26.706Z",
     "searchText": "pb fulfilment limited 4p001 11849491 unit 8 alexandria drive  ashton-under-lyne  ol7 0qn england active company"
+  },
+  {
+    "id": "4M001",
+    "portfolioCode": 4,
+    "name": "MIAMY LTD",
+    "ref": "4M001",
+    "status": "ACTIVE",
+    "type": "COMPANY",
+    "updatedAt": "2026-02-04T22:19:57.535Z",
+    "createdAt": "2026-02-04T17:21:52.415Z",
+    "searchText": "miamy ltd 4m001 16749233 unit 8 alexandria drive  ashton under lyne  ol7 0qn united kingdom active company"
+  },
+  {
+    "id": "4M002",
+    "portfolioCode": 4,
+    "name": "MIAMY GROUP LTD",
+    "ref": "4M002",
+    "status": "ACTIVE",
+    "type": "COMPANY",
+    "updatedAt": "2026-02-04T22:22:19.104Z",
+    "createdAt": "2026-02-04T22:19:29.248Z",
+    "searchText": "miamy group ltd 4m002 16234691 steve@miamy.co.uk unit 8 alexandria drive ashton under lyne ol7 0qn united kingdom active company"
   }
 ]

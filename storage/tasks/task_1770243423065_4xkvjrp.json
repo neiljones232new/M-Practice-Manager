@@ -1,0 +1,17 @@
+{
+  "id": "task_1770243423065_4xkvjrp",
+  "clientId": "4M001",
+  "serviceId": "service_1770225712532_vfvegp6iz",
+  "title": "Prepare confirmation statement",
+  "description": "Draft annual confirmation statement for company.",
+  "dueDate": "2026-08-29T00:00:00.000Z",
+  "status": "OPEN",
+  "priority": "HIGH",
+  "tags": [
+    "companies-house",
+    "preparation",
+    "auto-generated"
+  ],
+  "createdAt": "2026-02-04T22:17:03.065Z",
+  "updatedAt": "2026-02-04T22:17:03.065Z"
+}

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../apps/api/generated/prisma';
 
 const DRY_RUN = process.env.DRY_RUN === '1' || process.env.DRY_RUN === 'true' || process.env.DRY_RUN === undefined;
 const BATCH_SIZE = Number(process.env.BATCH_SIZE || 500);

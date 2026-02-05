@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import * as fs from 'fs';
-import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -35,13 +33,7 @@ import { InternalController } from './modules/internal/internal.controller';
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath:
-        process.env.NODE_ENV === 'production'
-          ? (fs.existsSync('.env.prod') ? '.env.prod' : fs.existsSync('env.prod') ? 'env.prod' : '.env')
-          : [
-              path.resolve(__dirname, '../.env.local'),
-              path.resolve(__dirname, '../.env'),
-            ],
+      envFilePath: `${process.cwd()}/.env`,
       cache: true,
     }),
 

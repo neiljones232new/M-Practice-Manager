@@ -1,0 +1,16 @@
+{
+  "id": "task_1770243423068_t2a4zs1",
+  "clientId": "4M001",
+  "serviceId": "service_1770225712532_vfvegp6iz",
+  "title": "Client approval of confirmation",
+  "description": "Send confirmation statement to client for approval.",
+  "dueDate": "2026-09-14T00:00:00.000Z",
+  "status": "OPEN",
+  "priority": "MEDIUM",
+  "tags": [
+    "client-review",
+    "auto-generated"
+  ],
+  "createdAt": "2026-02-04T22:17:03.068Z",
+  "updatedAt": "2026-02-04T22:17:03.068Z"
+}

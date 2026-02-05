@@ -7,7 +7,7 @@ import type { Client } from '@/lib/types';
  */
 export interface ClientData {
   id: string;
-  ref: string;
+  identifier: string;
   name: string;
   type: string;
   portfolioCode: number | null;
@@ -20,7 +20,7 @@ export interface UseClientDataReturn {
   clients: Map<string, ClientData>;
   loading: boolean;
   error: string | null;
-  fetchClientByRef: (ref: string) => Promise<ClientData | null>;
+  fetchClientByIdentifier: (identifier: string) => Promise<ClientData | null>;
   fetchClientById: (id: string) => Promise<ClientData | null>;
   searchClients: (query: string) => Promise<ClientData[]>;
 }
@@ -44,7 +44,7 @@ export function useClientData(): UseClientDataReturn {
   const toClientData = useCallback((client: Client): ClientData => {
     return {
       id: client.id,
-      ref: client.ref || '',
+      identifier: client.registeredNumber || client.id,
       name: client.name,
       type: client.type,
       portfolioCode: client.portfolioCode || null,
@@ -52,7 +52,7 @@ export function useClientData(): UseClientDataReturn {
   }, []);
 
   /**
-   * Fetch client by reference (e.g., "1A001")
+   * Fetch client by identifier (registered number or ID)
    * Checks cache first before making API call
    * 
    * Requirement 2.1: Fetch client details for events with client references
@@ -61,14 +61,14 @@ export function useClientData(): UseClientDataReturn {
    * Requirement 8.2: Handle network errors
    * Requirement 8.4: Add error logging for debugging
    */
-  const fetchClientByRef = useCallback(async (ref: string): Promise<ClientData | null> => {
-    if (!ref?.trim()) return null;
+  const fetchClientByIdentifier = useCallback(async (identifier: string): Promise<ClientData | null> => {
+    if (!identifier?.trim()) return null;
 
-    // Check cache first - search by reference
-    const cached = Array.from(clients.values()).find(c => c.ref === ref);
+    // Check cache first - search by identifier
+    const cached = Array.from(clients.values()).find(c => c.identifier === identifier);
     if (cached) {
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[useClientData] Cache hit for ref: ${ref}`);
+        console.log(`[useClientData] Cache hit for identifier: ${identifier}`);
       }
       return cached;
     }
@@ -77,9 +77,9 @@ export function useClientData(): UseClientDataReturn {
     setError(null);
     
     try {
-      // API call to get client by ref
-      // The backend supports both UUID and reference in the same endpoint
-      const client = await api.get<Client>(`/clients/${ref}`);
+      // API call to get client by identifier
+      // The backend supports UUID or registered number in the same endpoint
+      const client = await api.get<Client>(`/clients/${identifier}`);
       
       const clientData = toClientData(client);
       
@@ -87,7 +87,7 @@ export function useClientData(): UseClientDataReturn {
       setClients(prev => new Map(prev).set(clientData.id, clientData));
       
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[useClientData] Fetched and cached client by ref: ${ref}`);
+        console.log(`[useClientData] Fetched and cached client by identifier: ${identifier}`);
       }
       
       return clientData;
@@ -98,13 +98,13 @@ export function useClientData(): UseClientDataReturn {
       
       // Requirement 8.1: Distinguish between "not found" and other errors
       if (errorStatus === 404) {
-        const notFoundMessage = `Client not found: ${ref}`;
+        const notFoundMessage = `Client not found: ${identifier}`;
         setError(notFoundMessage);
         console.warn(`[useClientData] ${notFoundMessage}`);
       } else {
         // Requirement 8.2: Handle network errors
         setError(errorMessage);
-        console.error(`[useClientData] Error fetching client by ref ${ref}:`, {
+        console.error(`[useClientData] Error fetching client by identifier ${identifier}:`, {
           message: errorMessage,
           status: errorStatus,
           error: err
@@ -240,7 +240,7 @@ export function useClientData(): UseClientDataReturn {
     clients,
     loading,
     error,
-    fetchClientByRef,
+    fetchClientByIdentifier,
     fetchClientById,
     searchClients,
   };

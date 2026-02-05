@@ -65,10 +65,11 @@ describe('Complete User Journey (e2e)', () => {
   });
 
   describe('Client Management Workflow', () => {
-    let clientRef: string;
+    let clientId: string;
 
     it('should create a new client', async () => {
       const clientData = {
+        id: 'client-journey-1',
         name: 'Test Company Ltd',
         type: 'COMPANY',
         portfolioCode: 1,
@@ -88,19 +89,19 @@ describe('Complete User Journey (e2e)', () => {
         .send(clientData)
         .expect(201);
 
-      expect(response.body).toHaveProperty('ref');
+      expect(response.body).toHaveProperty('id');
       expect(response.body.name).toBe(clientData.name);
       expect(response.body.type).toBe(clientData.type);
-      clientRef = response.body.ref;
+      clientId = response.body.id;
     });
 
     it('should retrieve the created client', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/clients/${clientRef}`)
+        .get(`/clients/${clientId}`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body.ref).toBe(clientRef);
+      expect(response.body.id).toBe(clientId);
       expect(response.body.name).toBe('Test Company Ltd');
     });
 
@@ -112,7 +113,7 @@ describe('Complete User Journey (e2e)', () => {
 
       expect(Array.isArray(response.body)).toBe(true);
       expect(response.body.length).toBeGreaterThan(0);
-      expect(response.body.some(client => client.ref === clientRef)).toBe(true);
+      expect(response.body.some(client => client.id === clientId)).toBe(true);
     });
 
     it('should update client information', async () => {
@@ -122,7 +123,7 @@ describe('Complete User Journey (e2e)', () => {
       };
 
       const response = await request(app.getHttpServer())
-        .put(`/clients/${clientRef}`)
+        .put(`/clients/${clientId}`)
         .set('Authorization', `Bearer ${authToken}`)
         .send(updateData)
         .expect(200);
@@ -133,12 +134,13 @@ describe('Complete User Journey (e2e)', () => {
   });
 
   describe('Service Management Workflow', () => {
-    let clientRef: string;
+    let clientId: string;
     let serviceId: string;
 
     beforeAll(async () => {
       // Create a client for service testing
       const clientData = {
+        id: 'client-journey-service-1',
         name: 'Service Test Company',
         type: 'COMPANY',
         portfolioCode: 1
@@ -149,12 +151,12 @@ describe('Complete User Journey (e2e)', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .send(clientData);
 
-      clientRef = clientResponse.body.ref;
+      clientId = clientResponse.body.id;
     });
 
     it('should create a service for a client', async () => {
       const serviceData = {
-        clientRef,
+        clientId,
         kind: 'Annual Accounts',
         frequency: 'ANNUAL',
         fee: 1200,
@@ -168,7 +170,7 @@ describe('Complete User Journey (e2e)', () => {
         .expect(201);
 
       expect(response.body).toHaveProperty('id');
-      expect(response.body.clientRef).toBe(clientRef);
+      expect(response.body.clientId).toBe(clientId);
       expect(response.body.kind).toBe(serviceData.kind);
       expect(response.body.annualized).toBe(1200);
       serviceId = response.body.id;
@@ -176,7 +178,7 @@ describe('Complete User Journey (e2e)', () => {
 
     it('should retrieve services for a client', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/services?clientRef=${clientRef}`)
+        .get(`/services?clientId=${clientId}`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
@@ -204,12 +206,13 @@ describe('Complete User Journey (e2e)', () => {
   });
 
   describe('Task Management Workflow', () => {
-    let clientRef: string;
+    let clientId: string;
     let taskId: string;
 
     beforeAll(async () => {
       // Create a client for task testing
       const clientData = {
+        id: 'client-journey-task-1',
         name: 'Task Test Company',
         type: 'COMPANY',
         portfolioCode: 1
@@ -220,12 +223,12 @@ describe('Complete User Journey (e2e)', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .send(clientData);
 
-      clientRef = clientResponse.body.ref;
+      clientId = clientResponse.body.id;
     });
 
     it('should create a task', async () => {
       const taskData = {
-        clientRef,
+        clientId,
         title: 'Prepare annual accounts',
         description: 'Prepare and review annual accounts for filing',
         dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
@@ -325,14 +328,14 @@ describe('Complete User Journey (e2e)', () => {
 
       // Verify all services reference valid clients
       for (const service of services) {
-        const clientExists = clients.some(client => client.ref === service.clientRef);
+        const clientExists = clients.some(client => client.id === service.clientId);
         expect(clientExists).toBe(true);
       }
 
       // Verify all tasks reference valid clients
       for (const task of tasks) {
-        if (task.clientRef) {
-          const clientExists = clients.some(client => client.ref === task.clientRef);
+        if (task.clientId) {
+          const clientExists = clients.some(client => client.id === task.clientId);
           expect(clientExists).toBe(true);
         }
       }

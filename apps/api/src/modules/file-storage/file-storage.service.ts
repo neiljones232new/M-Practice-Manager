@@ -141,15 +141,15 @@ export class FileStorageService {
     return this.clientScopedCategories.has(category);
   }
 
-  private getClientScopedDirectory(clientRef: string, category: string): string {
-    return path.join(this.storagePath, 'clients', clientRef, category);
+  private getClientScopedDirectory(clientId: string, category: string): string {
+    return path.join(this.storagePath, 'clients', clientId, category);
   }
 
-  private getClientScopedFilePathFromRef(clientRef: string, category: string, id: string): string {
-    return path.join(this.getClientScopedDirectory(clientRef, category), `${id}.json`);
+  private getClientScopedFilePathFromId(clientId: string, category: string, id: string): string {
+    return path.join(this.getClientScopedDirectory(clientId, category), `${id}.json`);
   }
 
-  private async locateClientScopedFile(category: string, id: string): Promise<{ clientRef: string; filePath: string } | null> {
+  private async locateClientScopedFile(category: string, id: string): Promise<{ clientId: string; filePath: string } | null> {
     if (!existsSync(path.join(this.storagePath, 'clients'))) {
       return null;
     }
@@ -161,7 +161,7 @@ export class FileStorageService {
       }
       const candidate = path.join(this.getClientScopedDirectory(entry.name, category), `${id}.json`);
       if (existsSync(candidate)) {
-        return { clientRef: entry.name, filePath: candidate };
+        return { clientId: entry.name, filePath: candidate };
       }
     }
 
@@ -169,14 +169,14 @@ export class FileStorageService {
   }
 
   private async getClientScopedFilePath(category: string, id: string): Promise<string | null> {
-    const cachedRef = this.clientScopedMap.get(id);
-    if (cachedRef) {
-      return this.getClientScopedFilePathFromRef(cachedRef, category, id);
+    const cachedClientId = this.clientScopedMap.get(id);
+    if (cachedClientId) {
+      return this.getClientScopedFilePathFromId(cachedClientId, category, id);
     }
 
     const located = await this.locateClientScopedFile(category, id);
     if (located) {
-      this.clientScopedMap.set(id, located.clientRef);
+      this.clientScopedMap.set(id, located.clientId);
       return located.filePath;
     }
 
@@ -192,8 +192,8 @@ export class FileStorageService {
     const entries = await fs.readdir(clientsDir, { withFileTypes: true });
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
-      const clientRef = entry.name;
-      const clientPath = path.join(clientsDir, clientRef);
+      const clientId = entry.name;
+      const clientPath = path.join(clientsDir, clientId);
       for (const category of this.clientScopedCategories) {
         const categoryDir = path.join(clientPath, category);
         if (!existsSync(categoryDir)) continue;
@@ -201,7 +201,7 @@ export class FileStorageService {
         for (const file of files) {
           if (!file.endsWith('.json')) continue;
           const resourceId = file.replace(/\\.json$/, '');
-          this.clientScopedMap.set(resourceId, clientRef);
+          this.clientScopedMap.set(resourceId, clientId);
         }
       }
     }
@@ -257,19 +257,19 @@ export class FileStorageService {
       && typeof payload.tag === 'string';
   }
 
-  async writeJson<T>(category: string, id: string, data: T, portfolioCode?: number, clientRef?: string): Promise<void> {
+  async writeJson<T>(category: string, id: string, data: T, portfolioCode?: number, clientId?: string): Promise<void> {
     const lockKey = `${category}/${id}`;
     
     try {
       await this.acquireLock(lockKey);
       let filePath: string;
       if (this.isClientScopedCategory(category)) {
-        if (!clientRef) {
-          throw new Error(`Missing clientRef for scoped category ${category}`);
+        if (!clientId) {
+          throw new Error(`Missing clientId for scoped category ${category}`);
         }
-        await this.ensureDirectory(this.getClientScopedDirectory(clientRef, category));
-        filePath = this.getClientScopedFilePathFromRef(clientRef, category, id);
-        this.clientScopedMap.set(id, clientRef);
+        await this.ensureDirectory(this.getClientScopedDirectory(clientId, category));
+        filePath = this.getClientScopedFilePathFromId(clientId, category, id);
+        this.clientScopedMap.set(id, clientId);
       } else {
         filePath = this.getFilePath(category, id, portfolioCode);
         await this.ensureDirectory(path.dirname(filePath));
@@ -365,7 +365,7 @@ export class FileStorageService {
       const jsonContent = this.decryptIfNeeded(parsed);
       const data = JSON.parse(jsonContent) as T;
       if (category === 'clients' && portfolioCode) {
-        const dataPortfolio = this.resolveClientPortfolioCode(data as any, id);
+        const dataPortfolio = this.resolveClientPortfolioCode(data as any);
         if (dataPortfolio === null || dataPortfolio !== portfolioCode) {
           return null;
         }
@@ -487,7 +487,7 @@ export class FileStorageService {
       const filtered: string[] = [];
       for (const ref of allRefs) {
         const data = await this.readJson<any>('clients', ref);
-        const dataPortfolio = this.resolveClientPortfolioCode(data, ref);
+        const dataPortfolio = this.resolveClientPortfolioCode(data);
         if (data && dataPortfolio !== null && dataPortfolio === portfolioCode) {
           filtered.push(ref);
         }
@@ -511,7 +511,7 @@ export class FileStorageService {
           if (!data) {
             continue;
           }
-          const portfolioCode = this.resolveClientPortfolioCode(data, ref);
+          const portfolioCode = this.resolveClientPortfolioCode(data);
           if (portfolioCode === null) {
             continue;
           }
@@ -676,57 +676,50 @@ export class FileStorageService {
     return path.join(this.storagePath, category, `${id}.json`);
   }
 
-  private getClientDirectory(clientRef: string): string {
-    return path.join(this.storagePath, 'clients', clientRef);
+  private getClientDirectory(clientId: string): string {
+    return path.join(this.storagePath, 'clients', clientId);
   }
 
-  private getClientFilePath(clientRef: string): string {
-    return path.join(this.getClientDirectory(clientRef), 'client.json');
+  private getClientFilePath(clientId: string): string {
+    return path.join(this.getClientDirectory(clientId), 'client.json');
   }
 
-  private getLegacyClientFilePath(clientRef: string, portfolioCode?: number): string {
+  private getLegacyClientFilePath(clientId: string, portfolioCode?: number): string {
     if (portfolioCode) {
-      return path.join(this.storagePath, 'clients', `portfolio-${portfolioCode}`, `${clientRef}.json`);
+      return path.join(this.storagePath, 'clients', `portfolio-${portfolioCode}`, `${clientId}.json`);
     }
-    return path.join(this.storagePath, 'clients', `${clientRef}.json`);
+    return path.join(this.storagePath, 'clients', `${clientId}.json`);
   }
 
-  private resolveClientPortfolioCode(data: any, fallbackRef?: string): number | null {
+  private resolveClientPortfolioCode(data: any): number | null {
     const direct = Number(data?.portfolioCode);
     if (Number.isFinite(direct)) {
       return direct;
     }
-
-    const ref = String(data?.ref || fallbackRef || '');
-    const match = ref.match(/^(\d+)/);
-    if (!match) {
-      return null;
-    }
-    const parsed = Number(match[1]);
-    return Number.isFinite(parsed) ? parsed : null;
+    return null;
   }
 
-  private resolveClientReadPath(clientRef: string, portfolioCode?: number): string | null {
-    const primaryPath = this.getClientFilePath(clientRef);
+  private resolveClientReadPath(clientId: string, portfolioCode?: number): string | null {
+    const primaryPath = this.getClientFilePath(clientId);
     if (existsSync(primaryPath)) {
       return primaryPath;
     }
 
     if (portfolioCode) {
-      const legacyPortfolioPath = this.getLegacyClientFilePath(clientRef, portfolioCode);
+      const legacyPortfolioPath = this.getLegacyClientFilePath(clientId, portfolioCode);
       if (existsSync(legacyPortfolioPath)) {
         return legacyPortfolioPath;
       }
     }
 
-    const legacyRootPath = this.getLegacyClientFilePath(clientRef);
+    const legacyRootPath = this.getLegacyClientFilePath(clientId);
     if (existsSync(legacyRootPath)) {
       return legacyRootPath;
     }
 
     if (!portfolioCode) {
       for (let i = 1; i <= 10; i++) {
-        const legacyPath = this.getLegacyClientFilePath(clientRef, i);
+        const legacyPath = this.getLegacyClientFilePath(clientId, i);
         if (existsSync(legacyPath)) {
           return legacyPath;
         }
@@ -736,12 +729,12 @@ export class FileStorageService {
     return null;
   }
 
-  private getClientDeletePaths(clientRef: string): string[] {
+  private getClientDeletePaths(clientId: string): string[] {
     const paths = new Set<string>();
-    paths.add(this.getClientFilePath(clientRef));
-    paths.add(this.getLegacyClientFilePath(clientRef));
+    paths.add(this.getClientFilePath(clientId));
+    paths.add(this.getLegacyClientFilePath(clientId));
     for (let i = 1; i <= 10; i++) {
-      paths.add(this.getLegacyClientFilePath(clientRef, i));
+      paths.add(this.getLegacyClientFilePath(clientId, i));
     }
 
     return Array.from(paths);

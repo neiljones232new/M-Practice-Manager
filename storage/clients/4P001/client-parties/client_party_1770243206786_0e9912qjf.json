@@ -1,0 +1,14 @@
+{
+  "id": "client_party_1770243206786_0e9912qjf",
+  "clientId": "client_1770243206705_94juejhl4",
+  "personId": "4P001C",
+  "role": "DIRECTOR",
+  "appointedAt": "2020-03-25T00:00:00.000Z",
+  "primaryContact": false,
+  "suffixLetter": "A",
+  "metadata": {
+    "__sources": {
+      "CH_OFFICER": "/officers/dbXgsqUJ3Y8bcqhCpsGjPoN7Dxw/appointments"
+    }
+  }
+}

@@ -388,11 +388,11 @@ export default function ServiceDetailPage() {
   }
 
   return (
-    <MDJShell pageTitle={`Service: ${service.kind}`} pageSubtitle={client ? `${client.ref} - ${client.name}` : ''} showBack backHref="/services" backLabel="Back to Services" breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Services', href: '/services' }, { label: service.kind }]}>
+    <MDJShell pageTitle={`Service: ${service.kind}`} pageSubtitle={client ? `${client.registeredNumber || client.id} - ${client.name}` : ''} showBack backHref="/services" backLabel="Back to Services" breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Services', href: '/services' }, { label: service.kind }]}>
       <div className="page-content space-y-6">
         <MDJSection
           title={`Service: ${service.kind}`}
-          subtitle={client ? `${client.ref} - ${client.name}` : 'Loading client...'}
+          subtitle={client ? `${client.registeredNumber || client.id} - ${client.name}` : 'Loading client...'}
           actions={
             <div className="flex gap-2">
               <ExportMenu onPDF={() => window.print()} />
@@ -606,7 +606,7 @@ export default function ServiceDetailPage() {
                       className="text-lg font-mono hover:underline"
                       style={{ color: 'var(--brand-primary)' }}
                     >
-                      {client.ref}
+                      {client.registeredNumber || client.id}
                     </button>
                   </div>
                   <div>

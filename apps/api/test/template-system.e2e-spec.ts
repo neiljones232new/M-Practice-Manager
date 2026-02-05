@@ -251,11 +251,12 @@ describe('Template System Integration (e2e)', () => {
   });
 
   describe('Task Creation from Templates', () => {
-    let clientRef: string;
+    let clientId: string;
 
     beforeEach(async () => {
       // Create a test client for each test
       const clientData = {
+        id: 'client-template-task-1',
         name: 'Template Test Company',
         type: 'COMPANY',
         portfolioCode: 1,
@@ -267,7 +268,7 @@ describe('Template System Integration (e2e)', () => {
         .send(clientData)
         .expect(201);
 
-      clientRef = clientResponse.body.ref;
+      clientId = clientResponse.body.id;
     });
 
     it('should create task with pre-populated data from standalone template', async () => {
@@ -281,7 +282,7 @@ describe('Template System Integration (e2e)', () => {
 
       // Create task using template data
       const taskData = {
-        clientRef,
+        clientId,
         title: template.title,
         description: template.description,
         priority: template.priority,
@@ -312,7 +313,7 @@ describe('Template System Integration (e2e)', () => {
 
       // Create task with modified template data
       const taskData = {
-        clientRef,
+        clientId,
         title: `${template.title} - Modified`,
         description: `${template.description} - Custom notes`,
         priority: 'HIGH', // Different from template

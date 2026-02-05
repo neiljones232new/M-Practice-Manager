@@ -76,16 +76,8 @@ export class PortfoliosController {
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 50;
-    
-    // For now, return empty clients list - this would be implemented
-    // when the client management system is integrated
-    return {
-      clients: [],
-      total: 0,
-      page: pageNum,
-      limit: limitNum,
-      totalPages: 0
-    };
+
+    return this.portfoliosService.getClientsInPortfolio(code, pageNum, limitNum);
   }
 
   @Post()

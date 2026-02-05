@@ -1,0 +1,16 @@
+{
+  "id": "4P001C",
+  "ref": "4P001C",
+  "firstName": "COOPER,",
+  "lastName": "Joe",
+  "fullName": "COOPER, Joe",
+  "address": {
+    "line1": "St. Petersgate",
+    "city": "Stockport",
+    "county": "Cheshire",
+    "postcode": "SK1 1EB",
+    "country": "United Kingdom"
+  },
+  "createdAt": "2026-02-04T22:13:26.783Z",
+  "updatedAt": "2026-02-04T22:13:26.783Z"
+}

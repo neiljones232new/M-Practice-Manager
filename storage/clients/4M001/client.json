@@ -1,0 +1,31 @@
+{
+  "id": "client_1770225712413_7invtumus",
+  "ref": "4M001",
+  "name": "MIAMY LTD",
+  "type": "COMPANY",
+  "portfolioCode": 4,
+  "status": "ACTIVE",
+  "registeredNumber": "16749233",
+  "address": {
+    "line1": "Unit 8 Alexandria Drive",
+    "city": "Ashton Under Lyne",
+    "postcode": "OL7 0QN",
+    "country": "United Kingdom"
+  },
+  "parties": [
+    "client_party_1770225712474_mvoju1clt"
+  ],
+  "services": [
+    "service_1770225712526_dch3koe55",
+    "service_1770225712532_vfvegp6iz"
+  ],
+  "tasks": [],
+  "documents": [],
+  "createdAt": "2026-02-04T17:21:52.415Z",
+  "updatedAt": "2026-02-04T22:19:57.535Z",
+  "accountsAccountingReferenceDay": 31,
+  "accountsAccountingReferenceMonth": 3,
+  "incorporationDate": "2025-09-29T00:00:00.000Z",
+  "accountsNextDue": "2027-06-29T00:00:00.000Z",
+  "confirmationNextDue": "2026-10-12T00:00:00.000Z"
+}
