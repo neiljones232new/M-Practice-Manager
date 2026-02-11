@@ -241,21 +241,44 @@ export default function LettersSearchPage() {
 
   return (
     <MDJShell
-      pageTitle="Letter Search"
-      pageSubtitle="Search and manage all generated client letters"
+      pageTitle="Letters"
+      pageSubtitle="Generate new letters from templates and search previously generated letters"
       showBack
       backHref="/dashboard"
       backLabel="Back to Dashboard"
       breadcrumbs={[
         { label: 'Dashboard', href: '/dashboard' },
-        { label: 'Letter Search' },
+        { label: 'Letters' },
       ]}
       actions={[
         { label: 'Refresh', onClick: fetchLetters, variant: 'outline' },
-        { label: 'Templates', href: '/templates', variant: 'outline' },
-        { label: 'Generate Letter', href: '/templates/generate', variant: 'primary' },
       ]}
     >
+      {/* Templates Section - Show available templates */}
+      <div className="card-mdj" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3 style={{ margin: 0 }}>Available Letter Templates</h3>
+          <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+            Select a template to generate a new client letter
+          </span>
+        </div>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontSize: '0.9rem' }}>
+          Templates will auto-populate with client data from the database.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+          {/* Template cards will be loaded here */}
+          <TemplateCards router={router} />
+        </div>
+      </div>
+
+      {/* Previously Generated Letters Section */}
+      <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
+        <h3 style={{ margin: 0, marginBottom: '0.5rem' }}>Previously Generated Letters</h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+          Search and manage letters that have already been generated for clients.
+        </p>
+      </div>
+
       {/* Search and Filters */}
       <div className="card-mdj" style={{ marginBottom: '1rem' }}>
         <div style={{ display: 'grid', gap: '1rem' }}>
@@ -499,5 +522,139 @@ export default function LettersSearchPage() {
         )}
       </div>
     </MDJShell>
+  );
+}
+
+// Template Cards Component
+function TemplateCards({ router }: { router: any }) {
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const data = await api.get('/templates');
+        const activeTemplates = Array.isArray(data) ? data.filter((t: any) => t.isActive !== false) : [];
+        // Show only first 6 templates
+        setTemplates(activeTemplates.slice(0, 6));
+      } catch (e) {
+        console.error('Failed to load templates', e);
+        setTemplates([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadTemplates();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ gridColumn: '1 / -1', padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+        Loading templates...
+      </div>
+    );
+  }
+
+  if (templates.length === 0) {
+    return (
+      <div style={{ gridColumn: '1 / -1', padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+        No templates available. Visit the Templates page to create one.
+      </div>
+    );
+  }
+
+  const categoryColors: Record<string, string> = {
+    TAX: '#8B5CF6',
+    HMRC: '#EF4444',
+    VAT: '#10B981',
+    COMPLIANCE: '#F59E0B',
+    GENERAL: '#6B7280',
+    ENGAGEMENT: '#3B82F6',
+    CLIENT: '#EC4899',
+    REPORTS: '#06B6D4',
+    COMMERCIAL: '#F97316',
+  };
+
+  return (
+    <>
+      {templates.map((template) => (
+        <div
+          key={template.id}
+          style={{
+            padding: '1.25rem',
+            border: '1px solid var(--border-color)',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            backgroundColor: 'white',
+          }}
+          onClick={() => router.push(`/templates/generate?templateId=${template.id}`)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '';
+            e.currentTarget.style.transform = '';
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '0.75rem' }}>
+            <div
+              style={{
+                width: '4px',
+                height: '40px',
+                backgroundColor: categoryColors[template.category] || '#6B7280',
+                borderRadius: '2px',
+                flexShrink: 0,
+              }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h4 style={{ margin: 0, marginBottom: '0.25rem', fontSize: '1rem', fontWeight: 600 }}>
+                {template.name}
+              </h4>
+              <span
+                className="mdj-badge"
+                style={{
+                  fontSize: '0.75rem',
+                  backgroundColor: `${categoryColors[template.category] || '#6B7280'}20`,
+                  color: categoryColors[template.category] || '#6B7280',
+                }}
+              >
+                {template.category}
+              </span>
+            </div>
+          </div>
+          <p
+            style={{
+              fontSize: '0.875rem',
+              color: 'var(--text-muted)',
+              marginBottom: '0.75rem',
+              lineHeight: '1.4',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {template.description}
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
+            <span style={{ color: 'var(--text-muted)' }}>
+              {(template.placeholders || []).length} fields
+            </span>
+            <button
+              type="button"
+              className="btn-gold btn-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/templates/generate?templateId=${template.id}`);
+              }}
+            >
+              Generate →
+            </button>
+          </div>
+        </div>
+      ))}
+    </>
   );
 }

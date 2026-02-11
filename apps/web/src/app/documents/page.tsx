@@ -310,7 +310,7 @@ export default function DocumentsPage() {
             aria-label="Category"
           >
             <option value="">All Categories</option>
-            {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
+            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
           <select
             className="mdj-select"
@@ -328,8 +328,8 @@ export default function DocumentsPage() {
             aria-label="Archived"
           >
             <option value="">All Documents</option>
-            <option value="false">Active</option>
-            <option value="true">Archived</option>
+            <option key="false" value="false">Active</option>
+            <option key="true" value="true">Archived</option>
           </select>
         </div>
       </div>
