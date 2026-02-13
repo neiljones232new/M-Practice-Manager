@@ -1,6 +1,5 @@
 import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { FileStorageService } from '../file-storage/file-storage.service';
 import { TaxRatesService } from './services/tax-rates.service';
 import { TaxCalculationPersistenceService } from './services/tax-calculation-persistence.service';
 import { TaxRecommendationService } from './services/tax-recommendation.service';
@@ -19,6 +18,7 @@ import {
   ScenarioResult,
 } from './interfaces/tax-calculation.interface';
 import { Client } from '../clients/interfaces/client.interface';
+import { ClientsService } from '../clients/clients.service';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -46,7 +46,7 @@ export class EnhancedTaxCalculationsService {
 
   constructor(
     private databaseService: DatabaseService,
-    private fileStorageService: FileStorageService,
+    private clientsService: ClientsService,
     private taxRatesService: TaxRatesService,
     private persistenceService: TaxCalculationPersistenceService,
     private recommendationService: TaxRecommendationService,
@@ -671,8 +671,7 @@ export class EnhancedTaxCalculationsService {
   }
 
   private async findClientById(clientId: string): Promise<Client | null> {
-    const matches = await this.fileStorageService.searchFiles<Client>('clients', (client) => client.id === clientId);
-    return matches.length > 0 ? matches[0] : null;
+    return this.clientsService.findByIdentifier(clientId);
   }
 
   private deriveAccountingPeriod(input: {

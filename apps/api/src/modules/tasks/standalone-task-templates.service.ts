@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit, NotFoundException } from '@nestjs/common';
-import { FileStorageService } from '../file-storage/file-storage.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { 
   StandaloneTaskTemplate, 
   CreateStandaloneTaskTemplateDto,
@@ -11,7 +11,7 @@ import {
 export class StandaloneTaskTemplatesService implements OnModuleInit {
   private readonly logger = new Logger(StandaloneTaskTemplatesService.name);
 
-  constructor(private fileStorage: FileStorageService) {}
+  constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
     await this.initializeDefaultTemplates();
@@ -21,32 +21,26 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
    * Retrieve all standalone task templates
    */
   async findAll(): Promise<StandaloneTaskTemplate[]> {
-    return this.fileStorage.searchFiles<StandaloneTaskTemplate>(
-      'task-templates',
-      () => true
-    );
+    return (this.prisma as any).standaloneTaskTemplate.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   /**
    * Filter templates by category
    */
   async findByCategory(category: string): Promise<StandaloneTaskTemplate[]> {
-    return this.fileStorage.searchFiles<StandaloneTaskTemplate>(
-      'task-templates',
-      (template) => template.category === category
-    );
+    return (this.prisma as any).standaloneTaskTemplate.findMany({
+      where: { category },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   /**
    * Get a single template by ID
    */
   async findOne(id: string): Promise<StandaloneTaskTemplate | null> {
-    try {
-      return await this.fileStorage.readJson<StandaloneTaskTemplate>('task-templates', id);
-    } catch (error) {
-      this.logger.warn(`Failed to read template ${id}:`, error);
-      return null;
-    }
+    return (this.prisma as any).standaloneTaskTemplate.findUnique({ where: { id } });
   }
 
   /**
@@ -67,7 +61,7 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
       updatedAt: now,
     };
 
-    await this.fileStorage.writeJson('task-templates', id, template);
+    await (this.prisma as any).standaloneTaskTemplate.create({ data: template });
     this.logger.log(`Created standalone task template: ${template.title} (${template.id})`);
 
     return template;
@@ -90,7 +84,17 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
       updatedAt: new Date(),
     };
 
-    await this.fileStorage.writeJson('task-templates', id, updated);
+    await (this.prisma as any).standaloneTaskTemplate.update({
+      where: { id },
+      data: {
+        title: updated.title,
+        description: updated.description,
+        category: updated.category,
+        priority: updated.priority,
+        tags: updated.tags,
+        updatedAt: updated.updatedAt,
+      },
+    });
     this.logger.log(`Updated standalone task template: ${updated.title} (${updated.id})`);
 
     return updated;
@@ -105,7 +109,7 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
       return false;
     }
 
-    await this.fileStorage.deleteJson('task-templates', id);
+    await (this.prisma as any).standaloneTaskTemplate.delete({ where: { id } });
     this.logger.log(`Deleted standalone task template: ${existing.title} (${existing.id})`);
 
     return true;
@@ -414,10 +418,10 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
     for (const template of defaultTemplates) {
       try {
         // Check if template already exists by title to avoid duplicates
-        const existing = await this.fileStorage.searchFiles<StandaloneTaskTemplate>(
-          'task-templates',
-          (t) => t.title === template.title
-        );
+        const existing = await (this.prisma as any).standaloneTaskTemplate.findMany({
+          where: { title: template.title },
+          take: 1,
+        });
 
         if (existing.length === 0) {
           await this.create(template);

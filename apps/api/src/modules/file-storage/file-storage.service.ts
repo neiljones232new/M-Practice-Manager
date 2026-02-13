@@ -51,13 +51,34 @@ export class FileStorageService {
     private configService: ConfigService,
     private readonly encryptionService: EncryptionService,
   ) {
-    this.storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
+    this.storagePath = this.resolveStoragePath();
     this.backupPath = path.join(this.storagePath, 'backups');
     this.snapshotPath = path.join(this.storagePath, 'snapshots');
     this.indexPath = path.join(this.storagePath, 'indexes');
     this.lockPath = path.join(this.storagePath, '.locks');
     this.encryptAtRest = this.resolveEncryptionSetting();
     this.initializeStorage();
+  }
+
+  private resolveStoragePath(): string {
+    const configured = this.configService.get<string>('STORAGE_PATH');
+    const repoRoot = this.findRepositoryRoot();
+    if (configured) {
+      return path.isAbsolute(configured) ? configured : path.resolve(repoRoot, configured);
+    }
+    return path.join(repoRoot, 'storage');
+  }
+
+  private findRepositoryRoot(): string {
+    let cursor = __dirname;
+    const root = path.parse(cursor).root;
+    while (cursor !== root) {
+      if (existsSync(path.join(cursor, 'apps')) && existsSync(path.join(cursor, 'storage'))) {
+        return cursor;
+      }
+      cursor = path.dirname(cursor);
+    }
+    return process.cwd();
   }
 
   setSearchService(searchService: any): void {

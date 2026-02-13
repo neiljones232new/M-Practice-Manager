@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ComplianceService } from './compliance.service';
-import { FileStorageService } from '../file-storage/file-storage.service';
+import { TasksService } from '../tasks/tasks.service';
 
 @Injectable()
 export class ComplianceTaskIntegrationService {
@@ -9,7 +9,7 @@ export class ComplianceTaskIntegrationService {
 
   constructor(
     private readonly complianceService: ComplianceService,
-    private readonly fileStorageService: FileStorageService,
+    private readonly tasksService: TasksService,
   ) {}
 
   /**
@@ -62,14 +62,10 @@ export class ComplianceTaskIntegrationService {
           for (const task of relatedTasks) {
             if (task.status === 'TODO' || task.status === 'IN_PROGRESS') {
               if (task.priority !== 'URGENT') {
-                const updatedTask = {
-                  ...task,
+                await this.tasksService.update(task.id, {
                   priority: 'URGENT',
                   tags: [...(task.tags || []), 'escalated', 'overdue-compliance'],
-                  updatedAt: new Date(),
-                };
-                
-                await this.fileStorageService.writeJson('tasks', task.id, updatedTask);
+                });
                 this.logger.log(`Escalated task ${task.id} to URGENT priority due to overdue compliance`);
               }
             }

@@ -6,7 +6,7 @@ import MDJShell from '@/components/mdj-ui/MDJShell';
 import { api, API_BASE_URL } from '@/lib/api';
 
 // Types
-type TemplateCategory = 'TAX' | 'HMRC' | 'VAT' | 'COMPLIANCE' | 'GENERAL' | 'ENGAGEMENT' | 'CLIENT';
+type TemplateCategory = 'TAX' | 'HMRC' | 'VAT' | 'COMPLIANCE' | 'GENERAL' | 'ENGAGEMENT' | 'CLIENT' | 'REPORTS' | 'COMMERCIAL';
 type PlaceholderType = 'TEXT' | 'DATE' | 'CURRENCY' | 'NUMBER' | 'EMAIL' | 'PHONE' | 'ADDRESS' | 'LIST' | 'CONDITIONAL';
 type PlaceholderSource = 'CLIENT' | 'SERVICE' | 'USER' | 'MANUAL' | 'SYSTEM';
 type ClientType = 'COMPANY' | 'INDIVIDUAL' | 'SOLE_TRADER' | 'PARTNERSHIP' | 'LLP';
@@ -88,6 +88,8 @@ const CATEGORY_LABELS: Record<TemplateCategory, string> = {
   GENERAL: 'General',
   ENGAGEMENT: 'Engagement',
   CLIENT: 'Client',
+  REPORTS: 'Reports',
+  COMMERCIAL: 'Commercial',
 };
 
 const CATEGORY_COLORS: Record<TemplateCategory, string> = {
@@ -98,12 +100,16 @@ const CATEGORY_COLORS: Record<TemplateCategory, string> = {
   GENERAL: '#6B7280',
   ENGAGEMENT: '#3B82F6',
   CLIENT: '#EC4899',
+  REPORTS: '#4F46E5',
+  COMMERCIAL: '#0EA5E9',
 };
 
 export default function GenerateLetterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedTemplateId = searchParams?.get('templateId');
+  const preselectedClientId = searchParams?.get('clientId');
+  const preselectedServiceId = searchParams?.get('serviceId');
 
   // Wizard state
   const [currentStep, setCurrentStep] = useState<WizardStep>('template');
@@ -124,6 +130,7 @@ export default function GenerateLetterPage() {
   // Template selection filters
   const [templateSearch, setTemplateSearch] = useState('');
   const [templateCategory, setTemplateCategory] = useState<TemplateCategory | ''>('');
+  const [accountancyOnly, setAccountancyOnly] = useState(true);
 
   // Client selection filters
   const [clientSearch, setClientSearch] = useState('');
@@ -187,6 +194,19 @@ export default function GenerateLetterPage() {
     }
   }, [currentStep, clients.length]);
 
+  // Auto-select client when arriving with query params from Letters page.
+  useEffect(() => {
+    if (!preselectedClientId || !selectedTemplate || clients.length === 0 || selectedClient) return;
+    const matchedClient = clients.find(
+      (c) => c.id === preselectedClientId || c.registeredNumber === preselectedClientId
+    );
+    if (!matchedClient) return;
+
+    setSelectedClient(matchedClient);
+    setCurrentStep('placeholders');
+    autoPopulatePlaceholders(selectedTemplate, matchedClient, null);
+  }, [preselectedClientId, clients, selectedTemplate, selectedClient]);
+
   // Load services when client is selected
   useEffect(() => {
     if (selectedClient) {
@@ -195,6 +215,12 @@ export default function GenerateLetterPage() {
           const data = await api.get(`/services?clientId=${selectedClient.id}`);
           const clientServices = Array.isArray(data) ? data : [];
           setServices(clientServices);
+          if (preselectedServiceId) {
+            const matched = clientServices.find((s: Service) => s.id === preselectedServiceId);
+            if (matched) {
+              setSelectedService(matched);
+            }
+          }
         } catch (e: any) {
           console.error('Failed to load services', e);
           setServices([]);
@@ -218,10 +244,12 @@ export default function GenerateLetterPage() {
         (t.metadata?.tags || []).some((tag) => tag.toLowerCase().includes(needle));
 
       const matchesCategory = !templateCategory || t.category === templateCategory;
+      const tags = (t.metadata?.tags || []).map((tag) => String(tag).toLowerCase());
+      const matchesAccountancy = !accountancyOnly || tags.includes('accountancy');
 
-      return matchesSearch && matchesCategory;
+      return matchesSearch && matchesCategory && matchesAccountancy;
     });
-  }, [templates, templateSearch, templateCategory]);
+  }, [templates, templateSearch, templateCategory, accountancyOnly]);
 
   // Group templates by category
   const groupedTemplates = useMemo(() => {
@@ -233,6 +261,8 @@ export default function GenerateLetterPage() {
       GENERAL: [],
       ENGAGEMENT: [],
       CLIENT: [],
+      REPORTS: [],
+      COMMERCIAL: [],
     };
 
     // Ensure filteredTemplates is always an array
@@ -458,6 +488,11 @@ export default function GenerateLetterPage() {
   const handleSelectService = (service: Service | null) => {
     setSelectedService(service);
   };
+
+  useEffect(() => {
+    if (!selectedTemplate || !selectedClient) return;
+    autoPopulatePlaceholders(selectedTemplate, selectedClient, selectedService);
+  }, [selectedService, selectedTemplate, selectedClient]);
 
   // Navigate between steps
   const goToStep = (step: WizardStep) => {
@@ -803,6 +838,17 @@ export default function GenerateLetterPage() {
         <div>
           {/* Template Selection Filters */}
           <div className="card-mdj" style={{ marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', gap: 12, flexWrap: 'wrap' }}>
+              <div className="mdj-sub">Accountancy templates are enabled by default for faster letter generation.</div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input
+                  type="checkbox"
+                  checked={accountancyOnly}
+                  onChange={(e) => setAccountancyOnly(e.target.checked)}
+                />
+                <span className="mdj-sub">Accountancy only</span>
+              </label>
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.75rem' }}>
               <input
                 aria-label="Search templates"
@@ -840,7 +886,7 @@ export default function GenerateLetterPage() {
           ) : filteredTemplates.length === 0 ? (
             <div className="card-mdj">
               <p style={{ color: 'var(--text-muted)', padding: '1rem' }}>
-                No templates found. {templateSearch || templateCategory ? 'Try adjusting your filters.' : ''}
+                No templates found. {templateSearch || templateCategory || accountancyOnly ? 'Try adjusting your filters.' : ''}
               </p>
             </div>
           ) : (

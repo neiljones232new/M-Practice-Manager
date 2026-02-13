@@ -124,6 +124,53 @@ export class DashboardService {
     private readonly calendarService: CalendarService,
   ) {}
 
+  private emptyKpis(): DashboardKPIs {
+    return {
+      clients: {
+        total: 0,
+        active: 0,
+        inactive: 0,
+        newThisMonth: 0,
+        trend: { monthOverMonth: 0, direction: 'neutral' },
+      },
+      services: {
+        total: 0,
+        active: 0,
+        totalAnnualFees: 0,
+        averageFeePerClient: 0,
+        serviceBreakdown: {},
+        trend: { revenueChange: 0, direction: 'neutral' },
+      },
+      tasks: {
+        total: 0,
+        open: 0,
+        inProgress: 0,
+        completed: 0,
+        overdue: 0,
+        dueThisWeek: 0,
+        completionRate: 0,
+        trend: { completionRateChange: 0, direction: 'neutral' },
+      },
+      compliance: {
+        total: 0,
+        pending: 0,
+        overdue: 0,
+        dueThisMonth: 0,
+        filed: 0,
+        complianceRate: 0,
+        trend: { complianceRateChange: 0, direction: 'neutral' },
+      },
+      calendar: {
+        totalEvents: 0,
+        upcomingEvents: 0,
+        eventsThisWeek: 0,
+        meetingsThisWeek: 0,
+      },
+      lastUpdated: new Date(),
+      refreshInterval: this.CACHE_TTL / 1000,
+    };
+  }
+
   async getDashboardKPIs(portfolioCode?: number, forceRefresh = false): Promise<DashboardKPIs> {
     try {
       const cacheKey = `kpis_${portfolioCode || 'all'}`;
@@ -148,16 +195,52 @@ export class DashboardService {
         calendarSummary,
         services
       ] = await Promise.all([
-        this.clientsService.findAll({ portfolioCode }),
-        this.servicesService.getServiceSummary(portfolioCode),
-        this.tasksService.getTaskSummary(portfolioCode),
-        this.complianceService.getComplianceStatistics(portfolioCode),
-        this.calendarService.getCalendarSummary(portfolioCode),
-        this.servicesService.findAll({ portfolioCode })
+        this.clientsService.findAll({ portfolioCode }).catch((err) => {
+          this.logger.warn(`Dashboard KPIs fallback: clients query failed (${err?.message || err})`);
+          return [];
+        }),
+        this.servicesService.getServiceSummary(portfolioCode).catch((err) => {
+          this.logger.warn(`Dashboard KPIs fallback: services summary failed (${err?.message || err})`);
+          return {
+            totalServices: 0,
+            activeServices: 0,
+            totalAnnualFees: 0,
+            servicesByType: {},
+            averageFee: 0,
+          };
+        }),
+        this.tasksService.getTaskSummary(portfolioCode).catch((err) => {
+          this.logger.warn(`Dashboard KPIs fallback: tasks summary failed (${err?.message || err})`);
+          return {
+            totalTasks: 0,
+            openTasks: 0,
+            inProgressTasks: 0,
+            completedTasks: 0,
+            overdueTasks: 0,
+            dueSoonTasks: 0,
+            tasksByPriority: {},
+            tasksByStatus: {},
+          };
+        }),
+        this.complianceService.getComplianceStatistics(portfolioCode).catch((err) => {
+          this.logger.warn(`Dashboard KPIs fallback: compliance stats failed (${err?.message || err})`);
+          return { total: 0, pending: 0, overdue: 0, dueThisMonth: 0, filed: 0 };
+        }),
+        this.calendarService.getCalendarSummary(portfolioCode).catch((err) => {
+          this.logger.warn(`Dashboard KPIs fallback: calendar summary failed (${err?.message || err})`);
+          return { totalEvents: 0, upcomingEvents: 0, eventsByType: {} };
+        }),
+        this.servicesService.findAll({ portfolioCode }).catch((err) => {
+          this.logger.warn(`Dashboard KPIs fallback: services list failed (${err?.message || err})`);
+          return [];
+        })
       ]);
 
       // Get historical data for trend analysis
-      const historicalData = await this.getHistoricalKPIs(portfolioCode);
+      const historicalData = await this.getHistoricalKPIs(portfolioCode).catch((err) => {
+        this.logger.warn(`Dashboard KPIs fallback: historical KPI load failed (${err?.message || err})`);
+        return null;
+      });
 
       // Calculate client metrics
       const now = new Date();
@@ -192,7 +275,10 @@ export class DashboardService {
       // Get week-ahead events
       const weekAhead = new Date();
       weekAhead.setDate(weekAhead.getDate() + 7);
-      const eventsThisWeek = await this.calendarService.getEventsByDateRange(now, weekAhead);
+      const eventsThisWeek = await this.calendarService.getEventsByDateRange(now, weekAhead).catch((err) => {
+        this.logger.warn(`Dashboard KPIs fallback: events-by-date failed (${err?.message || err})`);
+        return [];
+      });
       const meetingsThisWeek = eventsThisWeek.filter(e => e.type === 'MEETING').length;
 
       // Calculate trends
@@ -260,7 +346,7 @@ export class DashboardService {
       return kpis;
     } catch (error) {
       this.logger.error('Error calculating dashboard KPIs:', error);
-      throw error;
+      return this.emptyKpis();
     }
   }
 

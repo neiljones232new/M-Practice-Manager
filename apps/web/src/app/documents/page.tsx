@@ -256,6 +256,7 @@ export default function DocumentsPage() {
       backLabel="Back to Dashboard"
       breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Documents' }]}
       actions={[
+        { label: 'Open Report Builder', href: '/documents/reports', variant: 'outline' },
         { label: 'Upload Document', onClick: () => setShowUpload(true), variant: 'primary' },
       ]}
     >

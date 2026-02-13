@@ -31,6 +31,7 @@ const nav: NavItem[] = [
   { href: '/companies-house', label: 'CH Search',   icon: <span>🏢</span> },
   { href: '/tasks',           label: 'Tasks',       icon: <span>✓</span> },
   { href: '/documents',       label: 'Documents',   icon: <span>📄</span> },
+  { href: '/documents/reports', label: 'Report Builder', icon: <span>📑</span> },
   { href: '/audit',           label: 'Audit',       icon: <span>🔍</span> },
   { href: '/calendar',        label: 'Calendar',    icon: <span>📅</span> },
   { href: '/people',          label: 'People',      icon: <span>👤</span> },

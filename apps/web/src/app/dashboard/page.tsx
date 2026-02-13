@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import MDJShell from '@/components/mdj-ui/MDJShell';
 import { ExportMenu } from '@/components/mdj-ui/ExportMenu';
-import { api } from '@/lib/api';
+import { api, API_BASE_URL } from '@/lib/api';
 
 interface Trend {
   direction: 'up' | 'down' | 'neutral';
@@ -298,8 +298,16 @@ export default function DashboardPage() {
         <ExportMenu key="export"
           onPDF={async () => {
             try {
-              const pdfBuffer = await api.get<ArrayBuffer>('/dashboard/export.pdf');
-              const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
+              const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+              const response = await fetch(`${API_BASE_URL}/dashboard/export.pdf`, {
+                method: 'GET',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+              });
+              if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || `HTTP ${response.status}`);
+              }
+              const blob = await response.blob();
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a'); a.href = url; a.download = `dashboard-${new Date().toISOString().slice(0,10)}.pdf`; a.click(); URL.revokeObjectURL(url);
             } catch (e: any) { alert(e?.message || 'PDF export failed'); }

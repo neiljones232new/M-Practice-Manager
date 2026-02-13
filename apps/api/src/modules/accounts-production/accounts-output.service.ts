@@ -22,13 +22,14 @@ export class AccountsOutputService {
     private readonly calculationService: FinancialCalculationService,
     private readonly clientsService: ClientsService,
   ) {
-    const cwd = process.cwd();
-    const repoRoot = cwd.endsWith(path.join('apps', 'api')) ? path.resolve(cwd, '..', '..') : cwd;
+    const repoRoot = this.findRepositoryRoot();
     this.repoRoot = repoRoot;
-    const storagePath = this.configService.get<string>('STORAGE_PATH') || './storage';
-    const resolvedStoragePath = path.isAbsolute(storagePath)
-      ? storagePath
-      : path.resolve(cwd, storagePath);
+    const configuredStoragePath = this.configService.get<string>('STORAGE_PATH');
+    const resolvedStoragePath = configuredStoragePath
+      ? (path.isAbsolute(configuredStoragePath)
+          ? configuredStoragePath
+          : path.resolve(repoRoot, configuredStoragePath))
+      : path.join(repoRoot, 'storage');
     // Use absolute path for outputs to make them easily accessible
     this.outputsPath = path.resolve(resolvedStoragePath, 'outputs');
     this.storageRoot = path.dirname(this.outputsPath);
@@ -63,6 +64,18 @@ export class AccountsOutputService {
     
     this.ensureDirectories();
     this.registerHandlebarsHelpers();
+  }
+
+  private findRepositoryRoot(): string {
+    let cursor = __dirname;
+    const root = path.parse(cursor).root;
+    while (cursor !== root) {
+      if (existsSync(path.join(cursor, 'apps')) && existsSync(path.join(cursor, 'storage'))) {
+        return cursor;
+      }
+      cursor = path.dirname(cursor);
+    }
+    return process.cwd();
   }
 
   private async ensureDirectories(): Promise<void> {

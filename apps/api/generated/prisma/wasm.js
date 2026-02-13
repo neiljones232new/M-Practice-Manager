@@ -247,6 +247,47 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.UserAccessProfileScalarFieldEnum = {
+  userId: 'userId',
+  roleOverride: 'roleOverride',
+  portfolioCodes: 'portfolioCodes',
+  allPortfolios: 'allPortfolios',
+  assignedBy: 'assignedBy',
+  assignedAt: 'assignedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuthCredentialScalarFieldEnum = {
+  userId: 'userId',
+  passwordHash: 'passwordHash',
+  emailVerified: 'emailVerified',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuthSessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  refreshToken: 'refreshToken',
+  expiresAt: 'expiresAt',
+  rememberMe: 'rememberMe',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt',
+  lastUsedAt: 'lastUsedAt'
+};
+
+exports.Prisma.AuthPasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  expiresAt: 'expiresAt',
+  used: 'used',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ClientScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -437,6 +478,41 @@ exports.Prisma.TaskScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ServiceTemplateScalarFieldEnum = {
+  id: 'id',
+  serviceKind: 'serviceKind',
+  frequency: 'frequency',
+  appliesTo: 'appliesTo',
+  complianceImpact: 'complianceImpact',
+  pricingModel: 'pricingModel',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ServiceTemplateTaskScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  title: 'title',
+  description: 'description',
+  daysBeforeDue: 'daysBeforeDue',
+  priority: 'priority',
+  tags: 'tags',
+  assigneeId: 'assigneeId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StandaloneTaskTemplateScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  category: 'category',
+  priority: 'priority',
+  tags: 'tags',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.DocumentScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
@@ -461,6 +537,23 @@ exports.Prisma.TemplateScalarFieldEnum = {
   placeholders: 'placeholders',
   metadata: 'metadata',
   createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TemplateFieldScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  key: 'key',
+  label: 'label',
+  type: 'type',
+  required: 'required',
+  defaultValue: 'defaultValue',
+  format: 'format',
+  source: 'source',
+  sourcePath: 'sourcePath',
+  validation: 'validation',
+  displayOrder: 'displayOrder',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -788,14 +881,22 @@ exports.Prisma.ModelName = {
   Portfolio: 'Portfolio',
   RefBucket: 'RefBucket',
   User: 'User',
+  UserAccessProfile: 'UserAccessProfile',
+  AuthCredential: 'AuthCredential',
+  AuthSession: 'AuthSession',
+  AuthPasswordResetToken: 'AuthPasswordResetToken',
   Client: 'Client',
   ClientProfile: 'ClientProfile',
   Address: 'Address',
   Service: 'Service',
   ComplianceItem: 'ComplianceItem',
   Task: 'Task',
+  ServiceTemplate: 'ServiceTemplate',
+  ServiceTemplateTask: 'ServiceTemplateTask',
+  StandaloneTaskTemplate: 'StandaloneTaskTemplate',
   Document: 'Document',
   Template: 'Template',
+  TemplateField: 'TemplateField',
   Person: 'Person',
   ClientParty: 'ClientParty',
   AccountsSet: 'AccountsSet',

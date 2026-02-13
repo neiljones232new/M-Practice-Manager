@@ -34,6 +34,8 @@ export interface ReportConfig {
   format: 'PDF' | 'HTML';
   includeBranding?: boolean;
   includeCharts?: boolean;
+  includeCoverPage?: boolean;
+  includeContentsPage?: boolean;
 }
 
 export interface PDFOptions {
@@ -50,6 +52,13 @@ export interface PDFResult {
   filePath: string;
   fileSize: number;
   error?: string;
+}
+
+interface ReportBranding {
+  practiceName: string;
+  logoDataUrl: string | null;
+  reportPrimaryColor: string;
+  reportSecondaryColor: string;
 }
 
 @Injectable()
@@ -109,6 +118,8 @@ export class ReportsService {
         createdAt: new Date().toISOString(),
         includeBranding: config.includeBranding !== false,
         includeCharts: config.includeCharts !== false,
+        includeCoverPage: config.includeCoverPage !== false,
+        includeContentsPage: config.includeContentsPage !== false,
       };
 
       let filePath: string;
@@ -193,6 +204,8 @@ export class ReportsService {
         createdAt: new Date().toISOString(),
         includeBranding: config.includeBranding !== false,
         includeCharts: config.includeCharts !== false,
+        includeCoverPage: config.includeCoverPage !== false,
+        includeContentsPage: config.includeContentsPage !== false,
       };
 
       let filePath: string;
@@ -261,6 +274,8 @@ export class ReportsService {
         title: config.title,
         createdAt: new Date().toISOString(),
         includeBranding: config.includeBranding !== false,
+        includeCoverPage: config.includeCoverPage !== false,
+        includeContentsPage: config.includeContentsPage !== false,
       };
 
       let filePath: string;
@@ -538,309 +553,404 @@ export class ReportsService {
    * Generate HTML content for client pack
    */
   private async generateClientPackHTML(data: any): Promise<string> {
-    const { client, calculations, title, createdAt, includeBranding } = data;
+    const { client, calculations, title, createdAt } = data;
     const formatCurrency = (value: number) => `£${value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const formatDate = (date: string | Date) => new Date(date).toLocaleDateString('en-GB');
+    const branding = await this.getPracticeBranding();
+    const period = `Generated ${formatDate(createdAt)}`;
+    const sections: Array<{ title: string; html: string }> = [];
 
-    return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title}</title>
-  <style>
-    ${this.getReportStyles()}
-  </style>
-</head>
-<body>
-  <div class="page">
-    ${includeBranding ? `
-    <div class="header">
-      <h1>M Practice Manager</h1>
-      <p>Professional Client Pack</p>
-    </div>
-    ` : ''}
+    sections.push({
+      title: 'Client Information',
+      html: `
+      <section class="section">
+        ${this.renderPageHeader(client.companyName || 'Client Report', period, branding)}
+        <h2 class="section-title">Client Information</h2>
+        <div class="info-grid">
+          ${this.renderInfoItem('Company Name', client.companyName)}
+          ${this.renderInfoItem('Company Number', client.companyNumber)}
+          ${this.renderInfoItem('Status', client.status)}
+          ${this.renderInfoItem('Client Manager', client.clientManager || 'Not assigned')}
+          ${client.corporationTaxUtr ? this.renderInfoItem('Corporation Tax UTR', client.corporationTaxUtr) : ''}
+          ${client.vatNumber ? this.renderInfoItem('VAT Number', client.vatNumber) : ''}
+          ${client.telephone ? this.renderInfoItem('Telephone', client.telephone) : ''}
+          ${client.email ? this.renderInfoItem('Email', client.email) : ''}
+        </div>
+      </section>
+      `,
+    });
 
-    <div class="section">
-      <h2 class="section-title">Client Information</h2>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Company Name</div>
-          <div class="info-value">${client.companyName}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Company Number</div>
-          <div class="info-value">${client.companyNumber}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Status</div>
-          <div class="info-value">${client.status}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Client Manager</div>
-          <div class="info-value">${client.clientManager || 'Not assigned'}</div>
-        </div>
-        ${client.corporationTaxUtr ? `
-        <div class="info-item">
-          <div class="info-label">Corporation Tax UTR</div>
-          <div class="info-value">${client.corporationTaxUtr}</div>
-        </div>
-        ` : ''}
-        ${client.vatNumber ? `
-        <div class="info-item">
-          <div class="info-label">VAT Number</div>
-          <div class="info-value">${client.vatNumber}</div>
-        </div>
-        ` : ''}
-        ${client.telephone ? `
-        <div class="info-item">
-          <div class="info-label">Telephone</div>
-          <div class="info-value">${client.telephone}</div>
-        </div>
-        ` : ''}
-        ${client.email ? `
-        <div class="info-item">
-          <div class="info-label">Email</div>
-          <div class="info-value">${client.email}</div>
-        </div>
-        ` : ''}
-      </div>
-    </div>
+    if (calculations.length > 0) {
+      sections.push({
+        title: 'Recent Tax Calculations',
+        html: `
+        <section class="section">
+          ${this.renderPageHeader(client.companyName || 'Client Report', period, branding)}
+          <h2 class="section-title">Recent Tax Calculations</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Tax Year</th>
+                <th class="number">Optimized Salary</th>
+                <th class="number">Take Home</th>
+                <th class="number">Tax Liability</th>
+                <th class="number">Estimated Savings</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${calculations.map((calc: TaxCalculationResult) => `
+                <tr>
+                  <td>${formatDate(calc.calculatedAt || new Date())}</td>
+                  <td>${this.escapeHtml((calc.calculationType || '').replace('_', ' '))}</td>
+                  <td>${this.escapeHtml(calc.taxYear || 'N/A')}</td>
+                  <td class="number">${calc.optimizedSalary ? formatCurrency(calc.optimizedSalary) : '-'}</td>
+                  <td class="number">${calc.totalTakeHome ? formatCurrency(calc.totalTakeHome) : '-'}</td>
+                  <td class="number">${calc.totalTaxLiability ? formatCurrency(calc.totalTaxLiability) : '-'}</td>
+                  <td class="number">${calc.estimatedSavings ? formatCurrency(calc.estimatedSavings) : '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </section>
+        `,
+      });
+    }
 
-    ${calculations.length > 0 ? `
-    <div class="section">
-      <h2 class="section-title">Recent Tax Calculations</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Tax Year</th>
-            <th class="number">Optimized Salary</th>
-            <th class="number">Take Home</th>
-            <th class="number">Tax Liability</th>
-            <th class="number">Estimated Savings</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${calculations.map((calc: TaxCalculationResult) => `
-            <tr>
-              <td>${formatDate(calc.calculatedAt || new Date())}</td>
-              <td>${calc.calculationType.replace('_', ' ')}</td>
-              <td>${calc.taxYear}</td>
-              <td class="number">${calc.optimizedSalary ? formatCurrency(calc.optimizedSalary) : '-'}</td>
-              <td class="number">${calc.totalTakeHome ? formatCurrency(calc.totalTakeHome) : '-'}</td>
-              <td class="number">${calc.totalTaxLiability ? formatCurrency(calc.totalTaxLiability) : '-'}</td>
-              <td class="number">${calc.estimatedSavings ? formatCurrency(calc.estimatedSavings) : '-'}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    ` : ''}
+    if (client.registeredAddress) {
+      sections.push({
+        title: 'Registered Address',
+        html: `
+        <section class="section">
+          ${this.renderPageHeader(client.companyName || 'Client Report', period, branding)}
+          <h2 class="section-title">Registered Address</h2>
+          <p>${this.escapeHtml(client.registeredAddress)}</p>
+        </section>
+        `,
+      });
+    }
 
-    ${client.registeredAddress ? `
-    <div class="section">
-      <h2 class="section-title">Registered Address</h2>
-      <p>${client.registeredAddress}</p>
-    </div>
-    ` : ''}
+    if (client.notes) {
+      sections.push({
+        title: 'Notes',
+        html: `
+        <section class="section">
+          ${this.renderPageHeader(client.companyName || 'Client Report', period, branding)}
+          <h2 class="section-title">Notes</h2>
+          <p>${this.escapeHtml(client.notes)}</p>
+        </section>
+        `,
+      });
+    }
 
-    ${client.notes ? `
-    <div class="section">
-      <h2 class="section-title">Notes</h2>
-      <p>${client.notes}</p>
-    </div>
-    ` : ''}
-
-    ${includeBranding ? `
-    <div class="footer">
-      <p>
-        Generated by <strong>M Practice Manager</strong><br>
-        © ${new Date().getFullYear()} M FlowSoft. Professional practice management.
-      </p>
-    </div>
-    ` : ''}
-  </div>
-</body>
-</html>
-    `;
+    return this.renderReportDocument({
+      title,
+      subtitle: 'Professional Client Pack',
+      companyName: client.companyName || 'Client Report',
+      periodLabel: period,
+      sections,
+      branding,
+      includeCoverPage: data.includeCoverPage !== false,
+      includeContentsPage: data.includeContentsPage !== false,
+      footerNote: `Generated by ${branding.practiceName}`,
+    });
   }
 
   /**
    * Generate HTML content for tax strategy report
    */
   private async generateTaxStrategyHTML(data: any): Promise<string> {
-    const { client, calculations, title, createdAt, includeBranding } = data;
+    const { client, calculations, title, createdAt } = data;
     const formatCurrency = (value: number) => `£${value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const formatPercent = (value: number) => `${value.toFixed(2)}%`;
     const formatDate = (date: string | Date) => new Date(date).toLocaleDateString('en-GB');
+    const branding = await this.getPracticeBranding();
+    const period = `Generated ${formatDate(createdAt)}`;
+    const sections: Array<{ title: string; html: string }> = [];
 
-    return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title}</title>
-  <style>
-    ${this.getReportStyles()}
-  </style>
-</head>
-<body>
-  <div class="page">
-    ${includeBranding ? `
-    <div class="header">
-      <h1>M Practice Manager</h1>
-      <p>Tax Strategy Report</p>
-    </div>
-    ` : ''}
-
-    <div class="section">
-      <h2 class="section-title">Client Information</h2>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Company Name</div>
-          <div class="info-value">${client.companyName}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Company Number</div>
-          <div class="info-value">${client.companyNumber}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Report Date</div>
-          <div class="info-value">${formatDate(createdAt)}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Client Manager</div>
-          <div class="info-value">${client.clientManager || 'Not assigned'}</div>
-        </div>
-      </div>
-    </div>
-
-    ${calculations.map((calc: TaxCalculationResult, index: number) => `
-    <div class="section">
-      <h2 class="section-title">Tax Calculation ${index + 1}: ${calc.taxYear}</h2>
-      
-      <div class="calculation-summary">
+    sections.push({
+      title: 'Client Information',
+      html: `
+      <section class="section">
+        ${this.renderPageHeader(client.companyName || 'Tax Strategy Report', period, branding)}
+        <h2 class="section-title">Client Information</h2>
         <div class="info-grid">
-          <div class="info-item">
-            <div class="info-label">Calculation Type</div>
-            <div class="info-value">${calc.calculationType.replace('_', ' ')}</div>
-          </div>
-          <div class="info-item">
-            <div class="info-label">Tax Year</div>
-            <div class="info-value">${calc.taxYear}</div>
-          </div>
-          <div class="info-item">
-            <div class="info-label">Calculated Date</div>
-            <div class="info-value">${formatDate(calc.calculatedAt || new Date())}</div>
-          </div>
-          <div class="info-item">
-            <div class="info-label">Calculated By</div>
-            <div class="info-value">${calc.calculatedBy || 'System'}</div>
-          </div>
+          ${this.renderInfoItem('Company Name', client.companyName)}
+          ${this.renderInfoItem('Company Number', client.companyNumber)}
+          ${this.renderInfoItem('Report Date', formatDate(createdAt))}
+          ${this.renderInfoItem('Client Manager', client.clientManager || 'Not assigned')}
         </div>
-      </div>
+      </section>
+      `,
+    });
 
-      ${calc.optimizedSalary ? `
-      <div class="recommendation">
-        <h3>Recommended Strategy</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <div class="info-label">Optimized Salary</div>
-            <div class="info-value" style="color: #2563eb; font-size: 18px; font-weight: 600;">${formatCurrency(calc.optimizedSalary)}</div>
+    calculations.forEach((calc: TaxCalculationResult, index: number) => {
+      sections.push({
+        title: `Tax Calculation ${index + 1}`,
+        html: `
+        <section class="section">
+          ${this.renderPageHeader(client.companyName || 'Tax Strategy Report', period, branding)}
+          <h2 class="section-title">Tax Calculation ${index + 1}: ${this.escapeHtml(calc.taxYear || '')}</h2>
+          <div class="calculation-summary">
+            <div class="info-grid">
+              ${this.renderInfoItem('Calculation Type', (calc.calculationType || '').replace('_', ' '))}
+              ${this.renderInfoItem('Tax Year', calc.taxYear)}
+              ${this.renderInfoItem('Calculated Date', formatDate(calc.calculatedAt || new Date()))}
+              ${this.renderInfoItem('Calculated By', calc.calculatedBy || 'System')}
+            </div>
           </div>
-          <div class="info-item">
-            <div class="info-label">Optimized Dividend</div>
-            <div class="info-value" style="color: #2563eb; font-size: 18px; font-weight: 600;">${calc.optimizedDividend ? formatCurrency(calc.optimizedDividend) : 'N/A'}</div>
+          ${calc.optimizedSalary ? `
+          <div class="recommendation">
+            <h3>Recommended Strategy</h3>
+            <div class="info-grid">
+              ${this.renderInfoItem('Optimized Salary', formatCurrency(calc.optimizedSalary))}
+              ${this.renderInfoItem('Optimized Dividend', calc.optimizedDividend ? formatCurrency(calc.optimizedDividend) : 'N/A')}
+              ${this.renderInfoItem('Total Take Home', calc.totalTakeHome ? formatCurrency(calc.totalTakeHome) : 'N/A')}
+              ${this.renderInfoItem('Estimated Savings', calc.estimatedSavings ? formatCurrency(calc.estimatedSavings) : 'N/A')}
+            </div>
           </div>
-          <div class="info-item">
-            <div class="info-label">Total Take Home</div>
-            <div class="info-value" style="color: #10b981; font-size: 18px; font-weight: 600;">${calc.totalTakeHome ? formatCurrency(calc.totalTakeHome) : 'N/A'}</div>
-          </div>
-          <div class="info-item">
-            <div class="info-label">Estimated Savings</div>
-            <div class="info-value" style="color: #10b981; font-size: 18px; font-weight: 600;">${calc.estimatedSavings ? formatCurrency(calc.estimatedSavings) : 'N/A'}</div>
-          </div>
-        </div>
-      </div>
-      ` : ''}
+          ` : ''}
+          ${calc.scenarios && calc.scenarios.length > 0 ? `
+          <h3>Scenario Analysis</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th class="number">Salary</th>
+                <th class="number">Dividend</th>
+                <th class="number">Income Tax</th>
+                <th class="number">Employee NI</th>
+                <th class="number">Employer NI</th>
+                <th class="number">Corporation Tax</th>
+                <th class="number">Total Tax</th>
+                <th class="number">Take Home</th>
+                <th class="number">Effective Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${calc.scenarios.map((scenario: any, scenarioIndex: number) => `
+                <tr ${scenarioIndex === 0 ? 'class="highlight"' : ''}>
+                  <td>${this.escapeHtml(scenario.name || `Scenario ${scenarioIndex + 1}`)}</td>
+                  <td class="number">${formatCurrency(scenario.salary || 0)}</td>
+                  <td class="number">${formatCurrency(scenario.dividend || 0)}</td>
+                  <td class="number">${formatCurrency(scenario.incomeTax || 0)}</td>
+                  <td class="number">${formatCurrency(scenario.employeeNI || 0)}</td>
+                  <td class="number">${formatCurrency(scenario.employerNI || 0)}</td>
+                  <td class="number">${formatCurrency(scenario.corporationTax || 0)}</td>
+                  <td class="number">${formatCurrency(scenario.totalTax || 0)}</td>
+                  <td class="number"><strong>${formatCurrency(scenario.takeHome || 0)}</strong></td>
+                  <td class="number">${formatPercent(scenario.effectiveRate || 0)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          ` : ''}
+          ${calc.recommendations && calc.recommendations.length > 0 ? `
+          <h3>Recommendations</h3>
+          <ul>
+            ${calc.recommendations.map((rec: any) => `
+              <li>${this.escapeHtml(typeof rec === 'string' ? rec : rec.description || rec.text || JSON.stringify(rec))}</li>
+            `).join('')}
+          </ul>
+          ` : ''}
+          ${calc.notes ? `
+          <h3>Notes</h3>
+          <p>${this.escapeHtml(calc.notes)}</p>
+          ` : ''}
+        </section>
+        `,
+      });
+    });
 
-      ${calc.scenarios && calc.scenarios.length > 0 ? `
-      <h3>Scenario Analysis</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Scenario</th>
-            <th class="number">Salary</th>
-            <th class="number">Dividend</th>
-            <th class="number">Income Tax</th>
-            <th class="number">Employee NI</th>
-            <th class="number">Employer NI</th>
-            <th class="number">Corporation Tax</th>
-            <th class="number">Total Tax</th>
-            <th class="number">Take Home</th>
-            <th class="number">Effective Rate</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${calc.scenarios.map((scenario: any, scenarioIndex: number) => `
-            <tr ${scenarioIndex === 0 ? 'class="highlight"' : ''}>
-              <td>${scenario.name || `Scenario ${scenarioIndex + 1}`}</td>
-              <td class="number">${formatCurrency(scenario.salary)}</td>
-              <td class="number">${formatCurrency(scenario.dividend || 0)}</td>
-              <td class="number">${formatCurrency(scenario.incomeTax || 0)}</td>
-              <td class="number">${formatCurrency(scenario.employeeNI || 0)}</td>
-              <td class="number">${formatCurrency(scenario.employerNI || 0)}</td>
-              <td class="number">${formatCurrency(scenario.corporationTax || 0)}</td>
-              <td class="number">${formatCurrency(scenario.totalTax || 0)}</td>
-              <td class="number"><strong>${formatCurrency(scenario.takeHome || 0)}</strong></td>
-              <td class="number">${formatPercent(scenario.effectiveRate || 0)}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-      ` : ''}
-
-      ${calc.recommendations && calc.recommendations.length > 0 ? `
-      <h3>Recommendations</h3>
-      <ul>
-        ${calc.recommendations.map((rec: any) => `
-          <li>${typeof rec === 'string' ? rec : rec.description || rec.text || JSON.stringify(rec)}</li>
-        `).join('')}
-      </ul>
-      ` : ''}
-
-      ${calc.notes ? `
-      <h3>Notes</h3>
-      <p>${calc.notes}</p>
-      ` : ''}
-    </div>
-    `).join('')}
-
-    ${includeBranding ? `
-    <div class="footer">
-      <p>
-        Generated by <strong>M Practice Manager</strong><br>
-        Powered by <strong>M Powered™ Tax Engine</strong><br>
-        © ${new Date().getFullYear()} M FlowSoft. Ensuring accurate UK tax calculations.
-      </p>
-    </div>
-    ` : ''}
-  </div>
-</body>
-</html>
-    `;
+    return this.renderReportDocument({
+      title,
+      subtitle: 'Tax Strategy Report',
+      companyName: client.companyName || 'Tax Strategy Report',
+      periodLabel: period,
+      sections,
+      branding,
+      includeCoverPage: data.includeCoverPage !== false,
+      includeContentsPage: data.includeContentsPage !== false,
+      footerNote: `Generated by ${branding.practiceName}`,
+    });
   }
 
   /**
    * Generate HTML content for company profile report
    */
   private async generateCompanyProfileHTML(data: any): Promise<string> {
-    const { client, title, createdAt, includeBranding } = data;
+    const { client, title, createdAt } = data;
     const formatDate = (date: string | Date) => date ? new Date(date).toLocaleDateString('en-GB') : 'N/A';
+    const branding = await this.getPracticeBranding();
+    const period = `Generated ${formatDate(createdAt)}`;
+    const sections: Array<{ title: string; html: string }> = [];
+
+    sections.push({
+      title: 'Company Information',
+      html: `
+      <section class="section">
+        ${this.renderPageHeader(client.companyName || 'Company Profile', period, branding)}
+        <h2 class="section-title">Company Information</h2>
+        <div class="info-grid">
+          ${this.renderInfoItem('Company Name', client.companyName)}
+          ${this.renderInfoItem('Company Number', client.companyNumber)}
+          ${this.renderInfoItem('Status', client.status)}
+          ${this.renderInfoItem('Company Type', client.companyType || 'N/A')}
+          ${this.renderInfoItem('Incorporation Date', formatDate(client.incorporationDate))}
+          ${this.renderInfoItem('Jurisdiction', client.jurisdiction || 'N/A')}
+        </div>
+      </section>
+      `,
+    });
+
+    if (client.registeredAddress) {
+      sections.push({
+        title: 'Registered Address',
+        html: `
+        <section class="section">
+          ${this.renderPageHeader(client.companyName || 'Company Profile', period, branding)}
+          <h2 class="section-title">Registered Address</h2>
+          <p>${this.escapeHtml(client.registeredAddress)}</p>
+        </section>
+        `,
+      });
+    }
+
+    if (client.sicCodes || client.sicDescriptions) {
+      sections.push({
+        title: 'SIC',
+        html: `
+        <section class="section">
+          ${this.renderPageHeader(client.companyName || 'Company Profile', period, branding)}
+          <h2 class="section-title">Standard Industrial Classification (SIC)</h2>
+          ${client.sicCodes ? `<p><strong>SIC Codes:</strong> ${this.escapeHtml(client.sicCodes)}</p>` : ''}
+          ${client.sicDescriptions ? `<p><strong>Descriptions:</strong> ${this.escapeHtml(client.sicDescriptions)}</p>` : ''}
+        </section>
+        `,
+      });
+    }
+
+    sections.push({
+      title: 'Filing Information',
+      html: `
+      <section class="section">
+        ${this.renderPageHeader(client.companyName || 'Company Profile', period, branding)}
+        <h2 class="section-title">Filing Information</h2>
+        <div class="info-grid">
+          ${this.renderInfoItem('Next Accounts Due', formatDate(client.nextAccountsDueBy))}
+          ${this.renderInfoItem('Last Accounts Made Up To', formatDate(client.lastAccountsMadeUpTo))}
+          ${this.renderInfoItem('Confirmation Statement Due', formatDate(client.confirmationStatementDueBy))}
+          ${this.renderInfoItem('Accounts Overdue', client.accountsOverdue ? 'Yes' : 'No')}
+        </div>
+      </section>
+      `,
+    });
+
+    if (client.directorCount || client.pscCount) {
+      sections.push({
+        title: 'Officers & Control',
+        html: `
+        <section class="section">
+          ${this.renderPageHeader(client.companyName || 'Company Profile', period, branding)}
+          <h2 class="section-title">Officers & Control</h2>
+          <div class="info-grid">
+            ${client.directorCount ? this.renderInfoItem('Number of Directors', String(client.directorCount)) : ''}
+            ${client.pscCount ? this.renderInfoItem('Persons with Significant Control', String(client.pscCount)) : ''}
+          </div>
+        </section>
+        `,
+      });
+    }
+
+    sections.push({
+      title: 'Practice Information',
+      html: `
+      <section class="section">
+        ${this.renderPageHeader(client.companyName || 'Company Profile', period, branding)}
+        <h2 class="section-title">Practice Information</h2>
+        <div class="info-grid">
+          ${this.renderInfoItem('Client Manager', client.clientManager || 'Not assigned')}
+          ${this.renderInfoItem('Engagement Type', client.engagementType || 'N/A')}
+          ${this.renderInfoItem('Corporation Tax UTR', client.corporationTaxUtr || 'N/A')}
+          ${this.renderInfoItem('VAT Number', client.vatNumber || 'N/A')}
+          ${this.renderInfoItem('PAYE Reference', client.payeReference || 'N/A')}
+          ${this.renderInfoItem('Contact', client.telephone || client.email || 'N/A')}
+        </div>
+      </section>
+      `,
+    });
+
+    if (client.notes) {
+      sections.push({
+        title: 'Notes',
+        html: `
+        <section class="section">
+          ${this.renderPageHeader(client.companyName || 'Company Profile', period, branding)}
+          <h2 class="section-title">Notes</h2>
+          <p>${this.escapeHtml(client.notes)}</p>
+        </section>
+        `,
+      });
+    }
+
+    sections.push({
+      title: 'Report Information',
+      html: `
+      <section class="section">
+        ${this.renderPageHeader(client.companyName || 'Company Profile', period, branding)}
+        <h2 class="section-title">Report Information</h2>
+        <div class="info-grid">
+          ${this.renderInfoItem('Generated Date', formatDate(createdAt))}
+          ${this.renderInfoItem('Last CH Refresh', formatDate(client.lastChRefresh))}
+        </div>
+      </section>
+      `,
+    });
+
+    return this.renderReportDocument({
+      title,
+      subtitle: 'Company Profile Report',
+      companyName: client.companyName || 'Company Profile',
+      periodLabel: period,
+      sections,
+      branding,
+      includeCoverPage: data.includeCoverPage !== false,
+      includeContentsPage: data.includeContentsPage !== false,
+      footerNote: `Generated by ${branding.practiceName}`,
+    });
+  }
+
+  private async renderReportDocument(input: {
+    title: string;
+    subtitle: string;
+    companyName: string;
+    periodLabel: string;
+    sections: Array<{ title: string; html: string }>;
+    branding: ReportBranding;
+    includeCoverPage: boolean;
+    includeContentsPage: boolean;
+    footerNote: string;
+  }): Promise<string> {
+    const pages: string[] = [];
+    const contentStartPage = 1 + (input.includeCoverPage ? 1 : 0) + (input.includeContentsPage ? 1 : 0);
+
+    if (input.includeCoverPage) {
+      pages.push(this.renderCoverPage(input.title, input.subtitle, input.companyName, input.periodLabel, input.branding));
+    }
+
+    if (input.includeContentsPage) {
+      pages.push(this.renderContentsPage(input.sections.map((s, idx) => ({ label: s.title, page: idx + contentStartPage })), input.branding));
+    }
+
+    pages.push(
+      ...input.sections.map((section, idx) => `
+      <div class="report-page page-break">
+        ${section.html}
+        ${this.renderPageFooter(`Page ${idx + contentStartPage}`, input.footerNote, input.branding)}
+      </div>
+      `),
+    );
 
     return `
 <!DOCTYPE html>
@@ -848,347 +958,279 @@ export class ReportsService {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title}</title>
-  <style>
-    ${this.getReportStyles()}
-  </style>
+  <title>${this.escapeHtml(input.title)}</title>
+  <style>${this.getPremiumReportStyles(input.branding)}</style>
 </head>
 <body>
-  <div class="page">
-    ${includeBranding ? `
-    <div class="header">
-      <h1>M Practice Manager</h1>
-      <p>Company Profile Report</p>
-    </div>
-    ` : ''}
-
-    <div class="section">
-      <h2 class="section-title">Company Information</h2>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Company Name</div>
-          <div class="info-value">${client.companyName}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Company Number</div>
-          <div class="info-value">${client.companyNumber}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Status</div>
-          <div class="info-value">${client.status}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Company Type</div>
-          <div class="info-value">${client.companyType || 'N/A'}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Incorporation Date</div>
-          <div class="info-value">${formatDate(client.incorporationDate)}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Jurisdiction</div>
-          <div class="info-value">${client.jurisdiction || 'N/A'}</div>
-        </div>
-      </div>
-    </div>
-
-    ${client.registeredAddress ? `
-    <div class="section">
-      <h2 class="section-title">Registered Address</h2>
-      <p>${client.registeredAddress}</p>
-    </div>
-    ` : ''}
-
-    ${client.sicCodes || client.sicDescriptions ? `
-    <div class="section">
-      <h2 class="section-title">Standard Industrial Classification (SIC)</h2>
-      ${client.sicCodes ? `<p><strong>SIC Codes:</strong> ${client.sicCodes}</p>` : ''}
-      ${client.sicDescriptions ? `<p><strong>Descriptions:</strong> ${client.sicDescriptions}</p>` : ''}
-    </div>
-    ` : ''}
-
-    <div class="section">
-      <h2 class="section-title">Filing Information</h2>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Next Accounts Due</div>
-          <div class="info-value">${formatDate(client.nextAccountsDueBy)}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Last Accounts Made Up To</div>
-          <div class="info-value">${formatDate(client.lastAccountsMadeUpTo)}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Confirmation Statement Due</div>
-          <div class="info-value">${formatDate(client.confirmationStatementDueBy)}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Accounts Overdue</div>
-          <div class="info-value">${client.accountsOverdue ? 'Yes' : 'No'}</div>
-        </div>
-      </div>
-    </div>
-
-    ${client.directorCount || client.pscCount ? `
-    <div class="section">
-      <h2 class="section-title">Officers & Control</h2>
-      <div class="info-grid">
-        ${client.directorCount ? `
-        <div class="info-item">
-          <div class="info-label">Number of Directors</div>
-          <div class="info-value">${client.directorCount}</div>
-        </div>
-        ` : ''}
-        ${client.pscCount ? `
-        <div class="info-item">
-          <div class="info-label">Persons with Significant Control</div>
-          <div class="info-value">${client.pscCount}</div>
-        </div>
-        ` : ''}
-      </div>
-    </div>
-    ` : ''}
-
-    <div class="section">
-      <h2 class="section-title">Practice Information</h2>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Client Manager</div>
-          <div class="info-value">${client.clientManager || 'Not assigned'}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Engagement Type</div>
-          <div class="info-value">${client.engagementType || 'N/A'}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Corporation Tax UTR</div>
-          <div class="info-value">${client.corporationTaxUtr || 'N/A'}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">VAT Number</div>
-          <div class="info-value">${client.vatNumber || 'N/A'}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">PAYE Reference</div>
-          <div class="info-value">${client.payeReference || 'N/A'}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Contact</div>
-          <div class="info-value">${client.telephone || client.email || 'N/A'}</div>
-        </div>
-      </div>
-    </div>
-
-    ${client.notes ? `
-    <div class="section">
-      <h2 class="section-title">Notes</h2>
-      <p>${client.notes}</p>
-    </div>
-    ` : ''}
-
-    <div class="section">
-      <h2 class="section-title">Report Information</h2>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">Generated Date</div>
-          <div class="info-value">${formatDate(createdAt)}</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">Last CH Refresh</div>
-          <div class="info-value">${formatDate(client.lastChRefresh)}</div>
-        </div>
-      </div>
-    </div>
-
-    ${includeBranding ? `
-    <div class="footer">
-      <p>
-        Generated by <strong>M Practice Manager</strong><br>
-        © ${new Date().getFullYear()} M FlowSoft. Professional practice management.
-      </p>
-    </div>
-    ` : ''}
-  </div>
+${pages.join('\n')}
 </body>
 </html>
     `;
   }
 
-  /**
-   * Get common CSS styles for reports
-   */
-  private getReportStyles(): string {
+  private async getPracticeBranding(): Promise<ReportBranding> {
+    const defaultBranding: ReportBranding = {
+      practiceName: 'M Practice Manager',
+      logoDataUrl: null,
+      reportPrimaryColor: '#6D28D9',
+      reportSecondaryColor: '#A78BFA',
+    };
+
+    try {
+      const storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
+      const configDir = path.join(storagePath, 'config');
+      const settingsPath = path.join(configDir, 'practice-settings.json');
+      const logoPath = path.join(configDir, 'branding-logo.json');
+
+      let practiceName = defaultBranding.practiceName;
+      let reportPrimaryColor = defaultBranding.reportPrimaryColor;
+      let reportSecondaryColor = defaultBranding.reportSecondaryColor;
+      let logoDataUrl: string | null = null;
+
+      if (existsSync(settingsPath)) {
+        const rawSettings = await fs.readFile(settingsPath, 'utf8');
+        const settings = JSON.parse(rawSettings);
+        practiceName = settings?.practiceName || practiceName;
+        reportPrimaryColor = this.normalizeHexColor(settings?.reportPrimaryColor) || reportPrimaryColor;
+        reportSecondaryColor = this.normalizeHexColor(settings?.reportSecondaryColor) || reportSecondaryColor;
+      }
+
+      if (existsSync(logoPath)) {
+        const rawLogo = await fs.readFile(logoPath, 'utf8');
+        const logo = JSON.parse(rawLogo);
+        if (typeof logo?.dataUrl === 'string' && logo.dataUrl.startsWith('data:image')) {
+          logoDataUrl = logo.dataUrl;
+        }
+      }
+
+      return {
+        practiceName,
+        logoDataUrl,
+        reportPrimaryColor,
+        reportSecondaryColor,
+      };
+    } catch (error) {
+      this.logger.warn(`Unable to resolve practice branding, using defaults: ${error instanceof Error ? error.message : 'unknown error'}`);
+      return defaultBranding;
+    }
+  }
+
+  private renderCoverPage(title: string, subtitle: string, companyName: string, periodLabel: string, branding: ReportBranding): string {
     return `
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    <div class="report-page cover-page">
+      <div class="cover-logo">${this.renderLogo(branding, 'cover-logo-image')}</div>
+      <h1>${this.escapeHtml(title)}</h1>
+      <p class="cover-subtitle">${this.escapeHtml(subtitle)}</p>
+      <div class="cover-rule"></div>
+      <p class="cover-company">${this.escapeHtml(companyName)}</p>
+      <p class="cover-period">${this.escapeHtml(periodLabel)}</p>
+    </div>
+    `;
+  }
 
+  private renderContentsPage(items: Array<{ label: string; page: number }>, branding: ReportBranding): string {
+    return `
+    <div class="report-page page-break">
+      <div class="contents-header">Contents</div>
+      <table class="contents-table">
+        <thead>
+          <tr><th>Section</th><th class="number">Page</th></tr>
+        </thead>
+        <tbody>
+          ${items.map((item) => `<tr><td>${this.escapeHtml(item.label)}</td><td class="number">${item.page}</td></tr>`).join('')}
+        </tbody>
+      </table>
+      ${this.renderPageFooter('Contents', `Prepared by ${branding.practiceName}`, branding)}
+    </div>
+    `;
+  }
+
+  private renderPageHeader(companyName: string, periodLabel: string, branding: ReportBranding): string {
+    return `
+    <div class="page-header">
+      <div class="page-header-left">${this.renderLogo(branding, 'header-logo-image')}</div>
+      <div class="page-header-right">
+        <div class="header-company">${this.escapeHtml(companyName)}</div>
+        <div class="header-period">${this.escapeHtml(periodLabel)}</div>
+      </div>
+    </div>
+    `;
+  }
+
+  private renderPageFooter(pageLabel: string, note: string, branding: ReportBranding): string {
+    return `
+    <div class="page-footer">
+      <div>${this.escapeHtml(pageLabel)}</div>
+      <div class="page-footer-center">
+        ${this.renderLogo(branding, 'footer-logo-image')}
+        <span>${this.escapeHtml(note)}</span>
+      </div>
+      <div>${this.escapeHtml(branding.practiceName)}</div>
+    </div>
+    `;
+  }
+
+  private renderLogo(branding: ReportBranding, className: string): string {
+    if (branding.logoDataUrl) {
+      return `<img class="${className}" src="${branding.logoDataUrl}" alt="${this.escapeHtml(branding.practiceName)} logo" />`;
+    }
+    return `<div class="${className} logo-fallback">M</div>`;
+  }
+
+  private renderInfoItem(label: string, value: string): string {
+    return `
+    <div class="info-item">
+      <div class="info-label">${this.escapeHtml(label)}</div>
+      <div class="info-value">${this.escapeHtml(value || 'N/A')}</div>
+    </div>
+    `;
+  }
+
+  private normalizeHexColor(input?: string): string | null {
+    if (!input || typeof input !== 'string') return null;
+    const value = input.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(value)) return value;
+    return null;
+  }
+
+  private escapeHtml(value: string): string {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  private getPremiumReportStyles(branding: ReportBranding): string {
+    return `
+      :root {
+        --brand-primary: ${branding.reportPrimaryColor};
+        --brand-secondary: ${branding.reportSecondaryColor};
+        --brand-light: #f5f3ff;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+      }
+      * { box-sizing: border-box; }
       body {
-        font-family: Arial, Helvetica, sans-serif;
-        color: #1a1a1a;
-        line-height: 1.6;
-        background: white;
+        margin: 0;
+        background: #f8fafc;
+        color: var(--text-dark);
+        font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
       }
-
-      .page {
+      .report-page {
         width: 210mm;
         min-height: 297mm;
-        padding: 20mm;
-        margin: 0 auto;
-        background: white;
+        margin: 10mm auto;
+        padding: 18mm 16mm;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 18px rgba(30, 41, 59, 0.08);
+        position: relative;
       }
-
-      .header {
-        background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
-        color: white;
-        padding: 30px;
-        border-radius: 8px;
-        margin-bottom: 30px;
+      .cover-page {
+        background: linear-gradient(135deg, var(--brand-primary) 0%, #4c1d95 100%);
+        color: #fff;
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
       }
-
-      .header h1 {
-        font-size: 32px;
-        margin-bottom: 10px;
+      .cover-logo-image, .header-logo-image, .footer-logo-image {
+        max-width: 130px;
+        max-height: 72px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
       }
-
-      .header p {
-        font-size: 16px;
-        opacity: 0.9;
+      .footer-logo-image {
+        max-width: 28px;
+        max-height: 20px;
       }
-
-      .section {
-        margin-bottom: 30px;
+      .cover-logo .logo-fallback, .page-header-left .logo-fallback {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        color: var(--brand-primary);
+        font-weight: 800;
       }
-
-      .section-title {
-        font-size: 24px;
-        color: #2563eb;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #e5e7eb;
-      }
-
-      .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-bottom: 20px;
-      }
-
-      .info-item {
-        padding: 15px;
-        background: #f9fafb;
-        border-radius: 6px;
-      }
-
-      .info-label {
-        font-size: 12px;
-        color: #6b7280;
+      .cover-page h1 { margin: 0; font-size: 34px; letter-spacing: 0.05em; }
+      .cover-subtitle { margin: 0; font-size: 18px; opacity: 0.95; }
+      .cover-rule { width: 80px; height: 3px; background: rgba(255,255,255,.4); border-radius: 999px; margin: 8px 0; }
+      .cover-company { font-size: 20px; margin: 0; font-weight: 600; }
+      .cover-period { font-size: 14px; margin: 0; opacity: 0.9; }
+      .contents-header {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--brand-primary);
+        border-bottom: 2px solid var(--brand-primary);
+        margin-bottom: 16px;
+        padding-bottom: 6px;
         text-transform: uppercase;
-        margin-bottom: 5px;
-        font-weight: 600;
       }
-
-      .info-value {
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+        margin-bottom: 18px;
+      }
+      .header-company { font-weight: 700; font-size: 14px; }
+      .header-period { font-size: 12px; color: var(--text-muted); }
+      .section-title {
         font-size: 16px;
-        font-weight: 600;
-        color: #1a1a1a;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--brand-primary);
+        border-bottom: 2px solid var(--brand-primary);
+        padding-bottom: 8px;
+        margin-bottom: 12px;
       }
-
-      .recommendation {
-        background: #dbeafe;
-        border-left: 4px solid #2563eb;
-        padding: 20px;
-        border-radius: 6px;
-        margin-bottom: 30px;
+      .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .info-item { background: #f8fafc; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; }
+      .info-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; }
+      .info-value { font-size: 14px; font-weight: 600; word-break: break-word; }
+      .calculation-summary, .recommendation { margin-bottom: 14px; }
+      .recommendation { border-left: 3px solid var(--brand-primary); background: var(--brand-light); padding: 12px; border-radius: 6px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 8px; margin-bottom: 16px; }
+      th, td { padding: 8px; border-bottom: 1px solid var(--border-color); font-size: 12px; text-align: left; vertical-align: top; }
+      th { color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; }
+      .number { text-align: right; font-variant-numeric: tabular-nums; }
+      .highlight { background: #f5f3ff; }
+      .page-footer {
+        position: absolute;
+        bottom: 10mm;
+        left: 16mm;
+        right: 16mm;
+        border-top: 1px solid var(--border-color);
+        padding-top: 6px;
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-muted);
+        font-size: 11px;
       }
-
-      .recommendation h3 {
-        color: #1e40af;
-        margin-bottom: 15px;
+      .page-footer-center {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
       }
-
-      .calculation-summary {
-        background: #f9fafb;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-        background: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      th, td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-      }
-
-      th {
-        background: #f3f4f6;
-        font-weight: 600;
-        color: #374151;
-        font-size: 14px;
-        border-bottom: 2px solid #2563eb;
-      }
-
-      td {
-        font-size: 14px;
-      }
-
-      .number {
-        text-align: right;
-        font-family: 'Courier New', monospace;
-      }
-
-      .highlight {
-        background: #fef3c7;
-        font-weight: 600;
-      }
-
-      .footer {
-        margin-top: 50px;
-        padding-top: 20px;
-        border-top: 2px solid #e5e7eb;
-        text-align: center;
-        color: #6b7280;
-        font-size: 12px;
-      }
-
-      .footer strong {
-        color: #2563eb;
-      }
-
-      ul {
-        padding-left: 20px;
-        margin-bottom: 15px;
-      }
-
-      li {
-        margin-bottom: 8px;
-      }
-
-      h3 {
-        color: #1e40af;
-        font-size: 18px;
-        margin-top: 20px;
-        margin-bottom: 10px;
-      }
-
+      ul { margin: 8px 0 12px 20px; padding: 0; }
+      li { margin-bottom: 4px; }
+      h3 { font-size: 13px; margin: 8px 0; color: var(--text-dark); }
+      p { margin: 0 0 8px; font-size: 13px; line-height: 1.55; }
+      .page-break { page-break-before: always; }
       @media print {
-        .page {
-          margin: 0;
-          border: none;
-          width: 100%;
-        }
+        body { background: #fff !important; }
+        .report-page { margin: 0; width: 100%; min-height: 297mm; box-shadow: none; border-radius: 0; page-break-after: always; }
       }
     `;
   }

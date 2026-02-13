@@ -375,13 +375,13 @@ export class LetterGenerationService {
         size: buffer.length,
         clientId,
         category: DocumentCategory.REPORTS,
-        uploadedById: userId,
+        uploadedById: userId && userId !== 'system' ? userId : undefined,
       };
 
       const result = await this.documentsService.uploadDocument(buffer, createDocumentDto);
 
       if (!result.success || !result.document) {
-        throw new BadRequestException('Failed to save generated document');
+        throw new BadRequestException(result.error || 'Failed to save generated document');
       }
 
       this.logger.log(`Document saved: ${result.document.id}`);
@@ -550,6 +550,10 @@ export class LetterGenerationService {
    * @private
    */
   private convertToHtmlPreview(content: string, templateName: string): string {
+    if (this.isHtmlTemplate(content)) {
+      return content;
+    }
+
     // Convert markdown-style content to HTML
     let html = content;
 
@@ -644,6 +648,15 @@ export class LetterGenerationService {
 </body>
 </html>
     `.trim();
+  }
+
+  private isHtmlTemplate(content: string): boolean {
+    const trimmed = (content || '').trim().toLowerCase();
+    return (
+      trimmed.startsWith('<!doctype html') ||
+      trimmed.startsWith('<html') ||
+      (trimmed.includes('<body') && trimmed.includes('</body>'))
+    );
   }
 
   /**

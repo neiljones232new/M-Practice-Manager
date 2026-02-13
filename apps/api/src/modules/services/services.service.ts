@@ -26,7 +26,8 @@ export class ServicesService {
   ) {}
 
   async create(createServiceDto: CreateServiceDto): Promise<Service> {
-    const client = await this.clientsService.findOne(createServiceDto.clientId);
+    const resolvedClient = await this.clientsService.findByIdentifier(createServiceDto.clientId);
+    const client = resolvedClient;
     if (!client) {
       throw new NotFoundException(`Client with ID ${createServiceDto.clientId} not found`);
     }
@@ -35,7 +36,7 @@ export class ServicesService {
 
     const service = await (this.prisma as any).service.create({
       data: {
-        clientId: createServiceDto.clientId,
+        clientId: client.id,
         kind: createServiceDto.kind,
         frequency: createServiceDto.frequency,
         fee: createServiceDto.fee,
@@ -53,7 +54,10 @@ export class ServicesService {
   async findAll(filters: ServiceFilters = {}): Promise<Service[]> {
     const where: any = {};
 
-    if (filters.clientId) where.clientId = filters.clientId;
+    if (filters.clientId) {
+      const resolvedClientId = await this.clientsService.resolveClientId(filters.clientId);
+      where.clientId = resolvedClientId || filters.clientId;
+    }
     if (filters.kind) where.kind = { contains: filters.kind, mode: 'insensitive' };
     if (filters.frequency) where.frequency = filters.frequency;
     if (filters.status) where.status = filters.status;
@@ -71,11 +75,14 @@ export class ServicesService {
       ];
     }
 
+    const skip = filters.offset !== undefined ? Number(filters.offset) : 0;
+    const take = filters.limit !== undefined ? Number(filters.limit) : 100;
+
     const rows = await (this.prisma as any).service.findMany({
       where,
       orderBy: { createdAt: 'desc' },
-      skip: filters.offset || 0,
-      take: filters.limit || 100,
+      skip: Number.isFinite(skip) ? skip : 0,
+      take: Number.isFinite(take) ? take : 100,
     });
 
     return rows.map((service: any) => this.normalizeService(service));
@@ -86,8 +93,9 @@ export class ServicesService {
   }
 
   async findByClient(clientId: string): Promise<Array<Service & { eligibility?: { status: 'active' | 'blocked' | 'warning'; reasons: string[]; eligible: boolean } }>> {
+    const resolvedClientId = await this.clientsService.resolveClientId(clientId);
     const services = await (this.prisma as any).service.findMany({
-      where: { clientId },
+      where: { clientId: resolvedClientId || clientId },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -202,7 +210,7 @@ export class ServicesService {
           ...service,
           clientName: client.name,
           clientId: client.id,
-          clientIdentifier: client.id,
+          clientIdentifier: client.registeredNumber || client.id,
           portfolioCode: client.portfolioCode,
         });
       }

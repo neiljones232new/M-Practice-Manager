@@ -1,7 +1,7 @@
-import { Controller, Get, Query, Delete, Request } from '@nestjs/common';
+import { Controller, Get, Query, Delete, Request, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { DashboardService, DashboardKPIs, WeekAheadView, PriorityRecommendations } from './dashboard.service';
-import { Header } from '@nestjs/common';
+import { Response } from 'express';
 
 @ApiTags('Dashboard')
 @Controller('dashboard')
@@ -123,9 +123,11 @@ export class DashboardController {
 
   @Get('export.pdf')
   @ApiOperation({ summary: 'Export dashboard summary as PDF' })
-  @Header('Content-Type', 'application/pdf')
-  @Header('Content-Disposition', `attachment; filename="dashboard-${new Date().toISOString().slice(0,10)}.pdf"`)
-  async exportDashboardPDF(@Request() req: any, @Query('portfolioCode') portfolioCode?: string): Promise<Buffer> {
+  async exportDashboardPDF(
+    @Request() req: any,
+    @Res() res: Response,
+    @Query('portfolioCode') portfolioCode?: string,
+  ): Promise<void> {
     const portfolio = portfolioCode ? parseInt(portfolioCode) : undefined;
     const kpis = this.isDemoUser(req)
       ? await this.getDashboardKPIs(req, portfolioCode)
@@ -198,10 +200,16 @@ export class DashboardController {
       ]}},
     ];
     const docDefinition = { content, styles: { header: { fontSize: 16, bold: true }, sub: { color: '#666' }, section: { bold: true } } };
-    return await new Promise<Buffer>((resolve, reject) => {
+    const buffer = await new Promise<Buffer>((resolve, reject) => {
       const pdfDoc = PdfMake.createPdf(docDefinition);
       pdfDoc.getBuffer((buffer: Buffer) => buffer ? resolve(buffer) : reject(new Error('PDF failed')));
     });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="dashboard-${new Date().toISOString().slice(0, 10)}.pdf"`,
+    );
+    res.send(buffer);
   }
 
   @Get('reports/clients')

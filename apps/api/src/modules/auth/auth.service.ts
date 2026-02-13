@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, ConflictException, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import { FileStorageService } from '../file-storage/file-storage.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { User, UserSession, PasswordResetToken, AuthResponse, JwtPayload } from './entities/user.entity';
 import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto } from './dto/auth.dto';
 
@@ -10,8 +10,41 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
-    private fileStorageService: FileStorageService,
+    private prisma: PrismaService,
   ) {}
+
+  private splitName(fullName?: string | null): { firstName: string; lastName: string } {
+    const trimmed = String(fullName || '').trim();
+    if (!trimmed) return { firstName: 'User', lastName: '' };
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return { firstName: parts[0], lastName: '' };
+    return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
+  }
+
+  private mapDbRoleToAuthRole(role?: string): User['role'] {
+    if (role === 'ADMIN') return 'SUPER_ADMIN';
+    if (role === 'MANAGER') return 'MANAGER';
+    if (role === 'READONLY') return 'READ_ONLY';
+    return 'STAFF';
+  }
+
+  private toAuthUser(user: any, credential?: any): User {
+    const { firstName, lastName } = this.splitName(user?.name);
+    return {
+      id: user.id,
+      email: user.email,
+      firstName,
+      lastName,
+      passwordHash: credential?.passwordHash || '',
+      role: this.mapDbRoleToAuthRole(user.role),
+      portfolios: ['*'],
+      isActive: Boolean(user.isActive),
+      emailVerified: Boolean(credential?.emailVerified),
+      lastLoginAt: user.lastLoginAt || undefined,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const { firstName, lastName, email, password, confirmPassword, agreeToTerms } = registerDto;
@@ -36,27 +69,27 @@ export class AuthService {
     const saltRounds = 12;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // Create user
     const userId = uuidv4();
-    const user: User = {
-      id: userId,
-      email: email.toLowerCase(),
-      firstName,
-      lastName,
-      passwordHash,
-      role: 'SUPER_ADMIN',
-      portfolios: ['*'],
-      isActive: true,
-      emailVerified: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    // Save user to file storage
-    await this.fileStorageService.writeJson('users', userId, user);
-
-    // Create user index entry
-    await this.updateUserIndex(user);
+    const created = await this.prisma.$transaction(async (tx) => {
+      const dbUser = await (tx as any).user.create({
+        data: {
+          id: userId,
+          email: email.toLowerCase(),
+          name: `${firstName} ${lastName}`.trim(),
+          role: 'ADMIN',
+          isActive: true,
+        },
+      });
+      const authCredential = await (tx as any).authCredential.create({
+        data: {
+          userId: dbUser.id,
+          passwordHash,
+          emailVerified: false,
+        },
+      });
+      return { dbUser, authCredential };
+    });
+    const user = this.toAuthUser(created.dbUser, created.authCredential);
 
     this.logger.log(`User registered: ${email}`);
 
@@ -85,16 +118,17 @@ export class AuthService {
     }
 
     // Update last login
-    user.lastLoginAt = new Date();
-    user.updatedAt = new Date();
-    (user as any).role = 'SUPER_ADMIN';
-    (user as any).portfolios = ['*'];
-    await this.fileStorageService.writeJson('users', user.id, user);
+    const updatedDbUser = await (this.prisma as any).user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+      include: { authCredential: true },
+    });
+    const freshUser = this.toAuthUser(updatedDbUser, updatedDbUser.authCredential);
 
     this.logger.log(`User logged in: ${email}`);
 
     // Generate tokens and return auth response
-    return this.generateAuthResponse(user, rememberMe);
+    return this.generateAuthResponse(freshUser, rememberMe);
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
@@ -108,21 +142,17 @@ export class AuthService {
 
     // Generate reset token
     const resetToken = uuidv4();
-    const tokenId = uuidv4();
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours expiry
 
-    const passwordResetToken: PasswordResetToken = {
-      id: tokenId,
-      userId: user.id,
-      token: resetToken,
-      expiresAt,
-      used: false,
-      createdAt: new Date(),
-    };
-
-    // Save reset token
-    await this.fileStorageService.writeJson('password-reset-tokens', tokenId, passwordResetToken);
+    await (this.prisma as any).authPasswordResetToken.create({
+      data: {
+        userId: user.id,
+        token: resetToken,
+        expiresAt,
+        used: false,
+      },
+    });
 
     // TODO: Send email with reset link
     // For now, just log the token (in production, this would be sent via email)
@@ -155,8 +185,11 @@ export class AuthService {
     }
 
     // Find user
-    const user = await this.fileStorageService.readJson<User>('users', resetTokenData.userId);
-    if (!user) {
+    const user = await (this.prisma as any).user.findUnique({
+      where: { id: resetTokenData.userId },
+      include: { authCredential: true },
+    });
+    if (!user || !user.authCredential) {
       throw new NotFoundException('User not found');
     }
 
@@ -165,13 +198,16 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
     // Update user password
-    user.passwordHash = passwordHash;
-    user.updatedAt = new Date();
-    await this.fileStorageService.writeJson('users', user.id, user);
+    await (this.prisma as any).authCredential.update({
+      where: { userId: user.id },
+      data: { passwordHash },
+    });
 
     // Mark token as used
-    resetTokenData.used = true;
-    await this.fileStorageService.writeJson('password-reset-tokens', resetTokenData.id, resetTokenData);
+    await (this.prisma as any).authPasswordResetToken.update({
+      where: { id: resetTokenData.id },
+      data: { used: true },
+    });
 
     // Invalidate all user sessions
     await this.invalidateAllUserSessions(user.id);
@@ -189,13 +225,16 @@ export class AuthService {
     }
 
     // Find user
-    const user = await this.fileStorageService.readJson<User>('users', userId);
-    if (!user) {
+    const user = await (this.prisma as any).user.findUnique({
+      where: { id: userId },
+      include: { authCredential: true },
+    });
+    if (!user || !user.authCredential) {
       throw new NotFoundException('User not found');
     }
 
     // Verify current password
-    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.authCredential.passwordHash);
     if (!isCurrentPasswordValid) {
       throw new UnauthorizedException('Current password is incorrect');
     }
@@ -205,9 +244,10 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(newPassword, saltRounds);
 
     // Update user password
-    user.passwordHash = passwordHash;
-    user.updatedAt = new Date();
-    await this.fileStorageService.writeJson('users', user.id, user);
+    await (this.prisma as any).authCredential.update({
+      where: { userId: user.id },
+      data: { passwordHash },
+    });
 
     // Invalidate all other user sessions (keep current session)
     await this.invalidateAllUserSessions(user.id);
@@ -234,34 +274,40 @@ export class AuthService {
       };
     }
 
-    const user = await this.fileStorageService.readJson<User>('users', payload.sub);
+    const user = await (this.prisma as any).user.findUnique({
+      where: { id: payload.sub },
+      include: { authCredential: true },
+    });
     if (!user || !user.isActive) {
       return null;
     }
 
-    const { passwordHash, ...userWithoutPassword } = user;
+    const authUser = this.toAuthUser(user, user.authCredential);
+    const { passwordHash, ...userWithoutPassword } = authUser;
     return userWithoutPassword;
   }
 
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    const user = {
-      id: 'local-dev-super-admin',
-      email: 'local-dev@example.com',
-      firstName: 'Local',
-      lastName: 'Dev',
-      passwordHash: '',
-      role: 'SUPER_ADMIN',
-      portfolios: ['*'],
-      isActive: true,
-      emailVerified: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as unknown as User;
-
-    return this.generateAuthResponse(user);
+    const session = await (this.prisma as any).authSession.findUnique({
+      where: { refreshToken },
+      include: { user: { include: { authCredential: true } } },
+    });
+    if (!session || !session.user || !session.user.isActive) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+    if (new Date() > new Date(session.expiresAt)) {
+      throw new UnauthorizedException('Refresh token expired');
+    }
+    const user = this.toAuthUser(session.user, session.user.authCredential);
+    return this.generateAuthResponse(user, session.rememberMe);
   }
 
   async logout(userId: string, refreshToken?: string): Promise<{ message: string }> {
+    if (refreshToken) {
+      await (this.prisma as any).authSession.deleteMany({ where: { userId, refreshToken } });
+    } else {
+      await (this.prisma as any).authSession.deleteMany({ where: { userId } });
+    }
     this.logger.log(`User logged out: ${userId}`);
     return { message: 'Logged out successfully' };
   }
@@ -309,7 +355,17 @@ export class AuthService {
       lastUsedAt: new Date(),
     };
 
-    await this.fileStorageService.writeJson('user-sessions', user.id, session);
+    await (this.prisma as any).authSession.create({
+      data: {
+        id: session.id,
+        userId: user.id,
+        token: session.token,
+        refreshToken: session.refreshToken,
+        expiresAt: session.expiresAt,
+        rememberMe: session.rememberMe,
+        lastUsedAt: session.lastUsedAt,
+      },
+    });
 
     const { passwordHash, ...userWithoutPassword } = user;
 
@@ -323,12 +379,12 @@ export class AuthService {
 
   private async findUserByEmail(email: string): Promise<User | null> {
     try {
-      // Search through user files to find by email
-      const users = await this.fileStorageService.searchFiles<User>(
-        'users',
-        (user) => user.email.toLowerCase() === email.toLowerCase()
-      );
-      return users.length > 0 ? users[0] : null;
+      const user = await (this.prisma as any).user.findFirst({
+        where: { email: email.toLowerCase() },
+        include: { authCredential: true },
+      });
+      if (!user) return null;
+      return this.toAuthUser(user, user.authCredential);
     } catch (error) {
       this.logger.error(`Error finding user by email ${email}:`, error);
       return null;
@@ -337,11 +393,18 @@ export class AuthService {
 
   private async findPasswordResetToken(token: string): Promise<PasswordResetToken | null> {
     try {
-      const tokens = await this.fileStorageService.searchFiles<PasswordResetToken>(
-        'password-reset-tokens',
-        (tokenData) => tokenData.token === token
-      );
-      return tokens.length > 0 ? tokens[0] : null;
+      const tokenData = await (this.prisma as any).authPasswordResetToken.findFirst({
+        where: { token },
+      });
+      if (!tokenData) return null;
+      return {
+        id: tokenData.id,
+        userId: tokenData.userId,
+        token: tokenData.token,
+        expiresAt: tokenData.expiresAt,
+        used: tokenData.used,
+        createdAt: tokenData.createdAt,
+      };
     } catch (error) {
       this.logger.error(`Error finding password reset token:`, error);
       return null;
@@ -350,7 +413,23 @@ export class AuthService {
 
   private async readUserSession(userId: string): Promise<UserSession | null> {
     try {
-      return await this.fileStorageService.readJson<UserSession>('user-sessions', userId);
+      const session = await (this.prisma as any).authSession.findFirst({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+      });
+      if (!session) return null;
+      return {
+        id: session.id,
+        userId: session.userId,
+        token: session.token,
+        refreshToken: session.refreshToken,
+        expiresAt: session.expiresAt,
+        rememberMe: session.rememberMe,
+        ipAddress: session.ipAddress || undefined,
+        userAgent: session.userAgent || undefined,
+        createdAt: session.createdAt,
+        lastUsedAt: session.lastUsedAt,
+      };
     } catch (error) {
       this.logger.error(`Error reading session for ${userId}:`, error);
       return null;
@@ -359,25 +438,9 @@ export class AuthService {
 
   private async invalidateAllUserSessions(userId: string): Promise<void> {
     try {
-      await this.fileStorageService.deleteJson('user-sessions', userId);
+      await (this.prisma as any).authSession.deleteMany({ where: { userId } });
     } catch (error) {
       this.logger.error(`Error invalidating user sessions for ${userId}:`, error);
-    }
-  }
-
-  private async updateUserIndex(user: User): Promise<void> {
-    try {
-      // Create or update user index for faster email lookups
-      const userIndex = {
-        id: user.id,
-        email: user.email,
-        isActive: user.isActive,
-        updatedAt: user.updatedAt,
-      };
-
-      await this.fileStorageService.writeJson('indexes/users-by-email', user.email.replace('@', '_at_'), userIndex);
-    } catch (error) {
-      this.logger.error(`Error updating user index for ${user.email}:`, error);
     }
   }
 }

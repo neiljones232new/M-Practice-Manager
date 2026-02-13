@@ -34,6 +34,16 @@ export class CreateReportDto {
   @IsOptional()
   @IsBoolean()
   includeCharts?: boolean;
+
+  @ApiPropertyOptional({ description: 'Include branded cover page', default: true })
+  @IsOptional()
+  @IsBoolean()
+  includeCoverPage?: boolean;
+
+  @ApiPropertyOptional({ description: 'Include contents page', default: true })
+  @IsOptional()
+  @IsBoolean()
+  includeContentsPage?: boolean;
 }
 
 export class ReportResponseDto {

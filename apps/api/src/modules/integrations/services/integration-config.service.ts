@@ -437,6 +437,8 @@ export class IntegrationConfigService {
       practiceName: 'MDJ Practice',
       practiceEmail: 'admin@example.com',
       practicePhone: '',
+      reportPrimaryColor: '#6D28D9',
+      reportSecondaryColor: '#A78BFA',
       defaultPortfolioCode: 1,
       portfolios: [
         {

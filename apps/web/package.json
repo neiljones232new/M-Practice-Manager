@@ -8,7 +8,7 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
-    "dev": "next dev --webpack -p 3000",
+    "dev": "next dev --turbopack -p 3000",
     "build": "next build",
     "postbuild": "mkdir -p .next/standalone/apps/web/.next && cp -R .next/static .next/standalone/apps/web/.next/ && cp -R public .next/standalone/apps/web/",
     "start": "node .next/standalone/apps/web/server.js",

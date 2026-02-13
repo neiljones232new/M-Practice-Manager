@@ -375,36 +375,18 @@ export class ComplianceController {
     sampleFiles: any[];
     errors: string[];
   }> {
-    const errors: string[] = [];
-    const sampleFiles: any[] = [];
-    
     try {
-      const files = await this.complianceService['fileStorageService'].listFiles('compliance');
-      const totalFiles = files.filter(f => f.endsWith('.json')).length;
-      
-      // Read first 3 files directly
-      const filesToRead = files.filter(f => f.endsWith('.json')).slice(0, 3);
-      
-      for (const file of filesToRead) {
-        const id = file.replace('.json', '');
-        try {
-          const item = await this.complianceService['fileStorageService'].readJson('compliance', id);
-          sampleFiles.push(item);
-        } catch (error) {
-          errors.push(`Failed to read ${id}: ${error.message}`);
-        }
-      }
-      
+      const items = await this.complianceService.getAllComplianceItems();
       return {
-        totalFiles,
-        sampleFiles,
-        errors
+        totalFiles: items.length,
+        sampleFiles: items.slice(0, 3),
+        errors: [],
       };
     } catch (error) {
       return {
         totalFiles: 0,
         sampleFiles: [],
-        errors: [error.message]
+        errors: [error.message],
       };
     }
   }
@@ -432,8 +414,8 @@ export class ComplianceController {
     }
   }
 
-  @Get('debug/filesystem')
-  @ApiOperation({ summary: 'Debug file system - check actual directories and files' })
+  @Get('debug/storage')
+  @ApiOperation({ summary: 'Debug compliance storage state (database-backed)' })
   async debugFileSystem(): Promise<{
     storageBasePath: string;
     complianceDir: {
@@ -451,72 +433,27 @@ export class ComplianceController {
     }>;
     errors: string[];
   }> {
-    const errors: string[] = [];
-    const fs = require('fs').promises;
-    const path = require('path');
-    const existsSync = require('fs').existsSync;
-    
     try {
-      // Get the file storage service
-      const fileStorageService = this.complianceService['fileStorageService'];
-      const basePath = fileStorageService['storagePath'] || '../../storage';
-      const compliancePath = path.join(basePath, 'compliance');
-      
-      this.logger.log(`Checking file system at: ${compliancePath}`);
-      
-      // Check if compliance directory exists
-      const complianceDirExists = existsSync(compliancePath);
-      let allFiles: string[] = [];
-      let jsonFiles: string[] = [];
-      let recentFiles: any[] = [];
-      
-      if (complianceDirExists) {
-        try {
-          allFiles = await fs.readdir(compliancePath);
-          jsonFiles = allFiles.filter(f => f.endsWith('.json'));
-          this.logger.log(`Found ${allFiles.length} total files, ${jsonFiles.length} JSON files in compliance directory`);
-          
-          // Only process the first 3 files to avoid timeout
-          const sampleFiles = jsonFiles.slice(0, 3);
-          for (const fileName of sampleFiles) {
-            try {
-              const filePath = path.join(compliancePath, fileName);
-              const stats = await fs.stat(filePath);
-              const content = await fs.readFile(filePath, 'utf8');
-              
-              recentFiles.push({
-                name: fileName,
-                size: stats.size,
-                created: stats.birthtime.toISOString(),
-                content: JSON.parse(content)
-              });
-            } catch (error) {
-              errors.push(`Failed to read file ${fileName}: ${error.message}`);
-            }
-          }
-        } catch (error) {
-          errors.push(`Failed to read compliance directory: ${error.message}`);
-        }
-      } else {
-        errors.push(`Compliance directory does not exist: ${compliancePath}`);
-      }
-      
+      const items = await this.complianceService.getAllComplianceItems();
       return {
-        storageBasePath: basePath,
+        storageBasePath: 'database',
         complianceDir: {
-          exists: complianceDirExists,
-          path: compliancePath,
-          totalFiles: allFiles.length,
-          jsonFiles: jsonFiles.length,
-          sampleFiles: jsonFiles.slice(0, 10) // Just show first 10 file names
+          exists: true,
+          path: 'compliance_items',
+          totalFiles: items.length,
+          jsonFiles: items.length,
+          sampleFiles: items.slice(0, 10).map((i) => i.id),
         },
-        recentFiles,
-        errors
+        recentFiles: items.slice(0, 3).map((item) => ({
+          name: item.id,
+          size: 0,
+          created: item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString(),
+          content: item,
+        })),
+        errors: [],
       };
     } catch (error) {
       this.logger.error('Debug filesystem error:', error);
-      errors.push(`Overall filesystem debug error: ${error.message}`);
-      
       return {
         storageBasePath: 'unknown',
         complianceDir: {
@@ -524,10 +461,10 @@ export class ComplianceController {
           path: 'unknown',
           totalFiles: 0,
           jsonFiles: 0,
-          sampleFiles: []
+          sampleFiles: [],
         },
         recentFiles: [],
-        errors
+        errors: [`Overall storage debug error: ${error.message}`],
       };
     }
   }

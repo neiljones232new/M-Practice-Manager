@@ -592,7 +592,7 @@ export default function ClientDetailsPage() {
       const results = await Promise.all(
         missingIds.map(async (personId) => {
           try {
-            const person = await api.get<Person>(`/clients/people/${personId}`);
+            const person = await api.get<Person>(`/people/${personId}`);
             return { personId, person };
           } catch {
             return { personId, person: null };

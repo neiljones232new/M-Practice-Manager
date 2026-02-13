@@ -88,12 +88,19 @@ class ApiClient {
     const fetchOptions = { ...options };
     delete (fetchOptions as any).suppressErrorLog;
 
+    const token =
+      this.accessToken ||
+      (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(fetchOptions.headers as Record<string, string> | undefined),
     };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
 
-    const config: RequestInit = { ...fetchOptions, headers };
+    const config: RequestInit = { cache: 'no-store', ...fetchOptions, headers };
 
     try {
       if (process.env.NODE_ENV !== 'production') {
@@ -102,8 +109,20 @@ class ApiClient {
 
       const response = await fetch(url, config);
 
-      if (response.status === 401 && retry && endpoint !== '/auth/refresh') {
-        throw new Error('Unauthorized');
+      if (
+        response.status === 401 &&
+        retry &&
+        endpoint !== '/auth/refresh' &&
+        endpoint !== '/auth/login' &&
+        endpoint !== '/auth/register'
+      ) {
+        try {
+          await this.refreshToken();
+          return this.request<T>(endpoint, options, false);
+        } catch {
+          this.clearSession();
+          throw new Error('Unauthorized');
+        }
       }
 
       if (!response.ok) {

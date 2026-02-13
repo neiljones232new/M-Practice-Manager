@@ -38,7 +38,7 @@
     "@nestjs/schedule": "^3.0.4",
     "@nestjs/swagger": "^7.1.17",
     "@nestjs/throttler": "^6.5.0",
-    "@prisma/client": "^5.7.0",
+    "@prisma/client": "^5.22.0",
     "@prisma/extension-accelerate": "^1.2.2",
     "@types/archiver": "^7.0.0",
     "@types/bcrypt": "^6.0.0",

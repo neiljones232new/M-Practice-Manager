@@ -36,15 +36,34 @@ export class AccountsProductionService {
     private readonly auditService: AuditService,
     private readonly clientsService: ClientsService,
   ) {
-    const configuredStoragePath = this.configService.get<string>('STORAGE_PATH') || './storage';
-    const cwd = process.cwd();
-    this.storagePath = path.isAbsolute(configuredStoragePath)
-      ? configuredStoragePath
-      : path.resolve(cwd, configuredStoragePath);
+    this.storagePath = this.resolveStoragePath();
     this.accountsSetsPath = path.join(this.storagePath, 'accounts-sets');
     this.accountsSetsHistoryPath = path.join(this.accountsSetsPath, 'history');
     this.indexPath = path.join(this.storagePath, 'indexes', 'accounts-sets.json');
     this.ensureDirectories();
+  }
+
+  private resolveStoragePath(): string {
+    const configuredStoragePath = this.configService.get<string>('STORAGE_PATH');
+    const repoRoot = this.findRepositoryRoot();
+    if (configuredStoragePath) {
+      return path.isAbsolute(configuredStoragePath)
+        ? configuredStoragePath
+        : path.resolve(repoRoot, configuredStoragePath);
+    }
+    return path.join(repoRoot, 'storage');
+  }
+
+  private findRepositoryRoot(): string {
+    let cursor = __dirname;
+    const root = path.parse(cursor).root;
+    while (cursor !== root) {
+      if (existsSync(path.join(cursor, 'apps')) && existsSync(path.join(cursor, 'storage'))) {
+        return cursor;
+      }
+      cursor = path.dirname(cursor);
+    }
+    return process.cwd();
   }
 
   private async ensureDirectories(): Promise<void> {
@@ -74,10 +93,11 @@ export class AccountsProductionService {
     const now = new Date().toISOString();
 
     // Get client data from clients service
-    const client = await this.clientsService.findOne(createDto.clientId);
+    const client = await this.clientsService.findByIdentifier(createDto.clientId);
     if (!client) {
       throw new NotFoundException(`Client ${createDto.clientId} not found`);
     }
+    createDto.clientId = client.id;
 
     const isSoleTraderClient = client.type === 'SOLE_TRADER' || client.type === 'INDIVIDUAL';
     const resolvedFramework: AccountingFramework = isSoleTraderClient
@@ -326,11 +346,13 @@ export class AccountsProductionService {
 
   async getClientAccountsSets(clientId: string): Promise<AccountsSet[]> {
     try {
+      const resolvedClient = await this.clientsService.findByIdentifier(clientId);
+      const canonicalClientId = resolvedClient?.id || clientId;
       const indexData = await fs.readFile(this.indexPath, 'utf8');
       const index = JSON.parse(indexData) as Array<{ id: string; clientId: string; createdAt: string }>;
       
       const clientAccountsSets = index
-        .filter(item => item.clientId === clientId)
+        .filter(item => item.clientId === canonicalClientId)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
       const accountsSets = await Promise.all(

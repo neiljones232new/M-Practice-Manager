@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ClientsService } from '../clients/clients.service';
 import {
   CalendarEvent,
   CalendarEventFilters,
@@ -11,11 +12,22 @@ import {
 
 @Injectable()
 export class CalendarService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly clientsService: ClientsService,
+  ) {}
 
   async createEvent(data: CreateCalendarEventDto): Promise<CalendarEvent> {
     if (data.endDate && data.startDate >= data.endDate) {
       throw new BadRequestException('Start date must be before end date');
+    }
+
+    if (data.clientId) {
+      const resolvedClient = await this.clientsService.findByIdentifier(data.clientId);
+      if (!resolvedClient) {
+        throw new NotFoundException(`Client with ID ${data.clientId} not found`);
+      }
+      data.clientId = resolvedClient.id;
     }
 
     return (this.prisma as any).calendarEvent.create({
@@ -35,7 +47,10 @@ export class CalendarService {
   async getEvents(filters: CalendarEventFilters = {}): Promise<CalendarEvent[]> {
     const where: any = {};
 
-    if (filters.clientId) where.clientId = filters.clientId;
+    if (filters.clientId) {
+      const resolvedClientId = await this.clientsService.resolveClientId(filters.clientId);
+      where.clientId = resolvedClientId || filters.clientId;
+    }
     if (filters.taskId) where.taskId = filters.taskId;
     if (filters.type) where.type = filters.type;
 
@@ -66,11 +81,14 @@ export class CalendarService {
       ];
     }
 
+    const skip = filters.offset !== undefined ? Number(filters.offset) : 0;
+    const take = filters.limit !== undefined ? Number(filters.limit) : 100;
+
     return (this.prisma as any).calendarEvent.findMany({
       where,
       orderBy: { startDate: 'asc' },
-      skip: filters.offset || 0,
-      take: filters.limit || 100,
+      skip: Number.isFinite(skip) ? skip : 0,
+      take: Number.isFinite(take) ? take : 100,
     });
   }
 

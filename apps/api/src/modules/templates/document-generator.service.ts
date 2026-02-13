@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Template } from './interfaces';
 import { HandlebarsService } from './handlebars.service';
+import { IntegrationConfigService } from '../integrations/services/integration-config.service';
 import PdfPrinter = require('pdfmake');
 import { TDocumentDefinitions, Content, ContentText } from 'pdfmake/interfaces';
 import { 
@@ -31,7 +32,10 @@ interface ListBlock {
 export class DocumentGeneratorService {
   private readonly logger = new Logger(DocumentGeneratorService.name);
 
-  constructor(private readonly handlebarsService: HandlebarsService) {}
+  constructor(
+    private readonly handlebarsService: HandlebarsService,
+    private readonly integrationConfigService: IntegrationConfigService,
+  ) {}
 
   /**
    * Generate PDF from populated template content
@@ -39,8 +43,12 @@ export class DocumentGeneratorService {
    */
   async generatePDF(content: string, template: Template): Promise<Buffer> {
     try {
+      if (this.isHtmlTemplate(content)) {
+        return this.generatePdfFromHtml(content, template);
+      }
+
       // Convert markdown-style content to PDF document definition
-      const docDefinition = this.createPdfDocumentDefinition(content, template);
+      const docDefinition = await this.createPdfDocumentDefinition(content, template);
 
       // Create PDF using pdfmake with built-in fonts
       // Using standard fonts that don't require external font files
@@ -81,6 +89,148 @@ export class DocumentGeneratorService {
       this.logger.error('Failed to generate PDF:', error);
       throw error;
     }
+  }
+
+  private isHtmlTemplate(content: string): boolean {
+    const trimmed = (content || '').trim().toLowerCase();
+    return (
+      trimmed.startsWith('<!doctype html') ||
+      trimmed.startsWith('<html') ||
+      (trimmed.includes('<body') && trimmed.includes('</body>'))
+    );
+  }
+
+  private async generatePdfFromHtml(content: string, template: Template): Promise<Buffer> {
+    let browser: any;
+    try {
+      const puppeteer = await import('puppeteer');
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+
+      const page = await browser.newPage();
+      const settings = await this.integrationConfigService.getPracticeSettings().catch(() => null);
+      const logo = await this.integrationConfigService.getBrandingLogo().catch(() => null);
+      const primary = settings?.reportPrimaryColor || '#0f1f52';
+      const secondary = settings?.reportSecondaryColor || '#6b7280';
+      const practiceName = settings?.practiceName || 'M Practice Manager';
+      const resolvedHtml = this.ensureA4HtmlLayout(content, {
+        practiceName,
+        logo,
+        primary,
+        secondary,
+      }, template.name);
+
+      await page.setContent(resolvedHtml, { waitUntil: 'networkidle0' });
+
+      const pdf = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '16mm',
+          right: '12mm',
+          bottom: '16mm',
+          left: '12mm',
+        },
+      });
+
+      return Buffer.from(pdf);
+    } catch (error) {
+      this.logger.error('Failed to generate HTML-based PDF:', error);
+      throw error;
+    } finally {
+      if (browser) {
+        await browser.close().catch(() => undefined);
+      }
+    }
+  }
+
+  private ensureA4HtmlLayout(
+    html: string,
+    branding: { practiceName: string; logo: string | null; primary: string; secondary: string },
+    templateName: string,
+  ): string {
+    const brandingBlock = `
+      <div class="pm-print-branding">
+        ${
+          branding.logo
+            ? `<img src="${branding.logo}" alt="${branding.practiceName} logo" class="pm-print-logo" />`
+            : `<div class="pm-print-mark">M</div>`
+        }
+        <div class="pm-print-name">${branding.practiceName}</div>
+      </div>
+    `;
+
+    const css = `
+      <style>
+        @page { size: A4; margin: 16mm 12mm 16mm 12mm; }
+        html, body { width: 210mm; min-height: 297mm; }
+        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #111827; }
+        .pm-print-branding {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin: 0 0 10px 0;
+          padding-bottom: 8px;
+          border-bottom: 2px solid ${branding.primary};
+        }
+        .pm-print-logo { width: 46px; height: 46px; object-fit: contain; }
+        .pm-print-mark {
+          width: 46px;
+          height: 46px;
+          border-radius: 999px;
+          display: grid;
+          place-items: center;
+          color: #fff;
+          font-weight: 700;
+          background: ${branding.primary};
+        }
+        .pm-print-name { font-weight: 700; color: ${branding.primary}; font-size: 15px; }
+        .pm-print-footer {
+          margin-top: 18px;
+          padding-top: 8px;
+          border-top: 1px solid ${branding.secondary};
+          color: ${branding.secondary};
+          font-size: 11px;
+          text-align: center;
+        }
+      </style>
+    `;
+
+    const hasHead = /<head[\s\S]*?>/i.test(html);
+    const hasBody = /<body[\s\S]*?>/i.test(html);
+
+    let result = html;
+    if (hasHead) {
+      result = result.replace(/<head[\s\S]*?>/i, (m) => `${m}\n${css}`);
+    } else {
+      result = `<head>${css}</head>${result}`;
+    }
+
+    if (hasBody) {
+      result = result.replace(/<body[\s\S]*?>/i, (m) => `${m}\n${brandingBlock}`);
+      result = result.replace(/<\/body>/i, `<div class="pm-print-footer">${this.escapeHtml(templateName || 'Letter')}</div></body>`);
+    } else {
+      result = `<body>${brandingBlock}${result}<div class="pm-print-footer">${this.escapeHtml(templateName || 'Letter')}</div></body>`;
+    }
+
+    if (!/<html[\s\S]*?>/i.test(result)) {
+      result = `<html>${result}</html>`;
+    }
+    if (!/<!doctype html>/i.test(result)) {
+      result = `<!DOCTYPE html>${result}`;
+    }
+    return result;
+  }
+
+  private escapeHtml(value: string): string {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   /**
@@ -399,27 +549,31 @@ export class DocumentGeneratorService {
    * Create PDF document definition with MDJ branding
    * Requirements: 2.6, 8.1
    */
-  private createPdfDocumentDefinition(content: string, template: Template): TDocumentDefinitions {
+  private async createPdfDocumentDefinition(content: string, template: Template): Promise<TDocumentDefinitions> {
     // Parse content into structured format
     const contentBlocks = this.parseContentForPdf(content);
+    const settings = await this.integrationConfigService.getPracticeSettings().catch(() => null);
+    const practiceName = settings?.practiceName || 'M Practice Manager';
+    const primary = settings?.reportPrimaryColor || '#0f1f52';
+    const secondary = settings?.reportSecondaryColor || '#6b7280';
 
     return {
       pageSize: 'A4',
-      pageMargins: [60, 80, 60, 60],
+      pageMargins: [48, 64, 48, 56],
       header: (currentPage, pageCount) => {
         return {
           columns: [
             {
-              text: 'MDJ Consultants',
+              text: practiceName,
               style: 'header',
               alignment: 'left',
-              margin: [60, 30, 0, 0],
+              margin: [48, 24, 0, 0],
             },
             {
               text: `Page ${currentPage} of ${pageCount}`,
               style: 'pageNumber',
               alignment: 'right',
-              margin: [0, 30, 60, 0],
+              margin: [0, 24, 48, 0],
             },
           ],
         };
@@ -429,50 +583,52 @@ export class DocumentGeneratorService {
           text: `${template.name} - Generated on ${new Date().toLocaleDateString('en-GB')}`,
           style: 'footer',
           alignment: 'center',
-          margin: [0, 0, 0, 20],
+          margin: [0, 0, 0, 16],
         };
       },
       content: contentBlocks,
       styles: {
         header: {
-          fontSize: 14,
+          fontSize: 12,
           bold: true,
-          color: '#1a1a1a',
+          color: primary,
         },
         pageNumber: {
           fontSize: 9,
-          color: '#666666',
+          color: secondary,
         },
         footer: {
           fontSize: 8,
-          color: '#999999',
+          color: secondary,
         },
         title: {
           fontSize: 18,
           bold: true,
-          margin: [0, 0, 0, 10],
+          color: primary,
+          margin: [0, 0, 0, 8],
         },
         heading: {
-          fontSize: 14,
+          fontSize: 13,
           bold: true,
-          margin: [0, 10, 0, 5],
+          color: primary,
+          margin: [0, 8, 0, 4],
         },
         body: {
           fontSize: 11,
-          lineHeight: 1.5,
-          margin: [0, 0, 0, 10],
+          lineHeight: 1.35,
+          margin: [0, 0, 0, 8],
         },
         date: {
           fontSize: 11,
-          margin: [0, 0, 0, 20],
+          margin: [0, 0, 0, 12],
         },
         address: {
           fontSize: 11,
-          margin: [0, 0, 0, 20],
+          margin: [0, 0, 0, 12],
         },
         signature: {
           fontSize: 11,
-          margin: [0, 30, 0, 0],
+          margin: [0, 22, 0, 0],
         },
       },
       defaultStyle: {

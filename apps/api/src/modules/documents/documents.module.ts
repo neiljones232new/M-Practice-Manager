@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { DocumentsController } from './documents.controller';
+import { DocumentsReportsController } from './documents-reports.controller';
 import { DocumentsService } from './documents.service';
 import { ReportsService } from './reports.service';
 import { ClientsModule } from '../clients/clients.module';
@@ -22,7 +23,7 @@ import { FileStorageModule } from '../file-storage/file-storage.module';
       },
     }),
   ],
-  controllers: [DocumentsController],
+  controllers: [DocumentsController, DocumentsReportsController],
   providers: [DocumentsService, ReportsService],
   exports: [DocumentsService, ReportsService],
 })

@@ -9,12 +9,12 @@ import { RolesGuard } from './guards/roles.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
 import { PortfolioGuard } from './guards/portfolio.guard';
 
-import { FileStorageModule } from '../file-storage/file-storage.module';
 import { AuditModule } from '../audit/audit.module';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
   imports: [
-    FileStorageModule,
+    PrismaModule,
     AuditModule,
   ],
 

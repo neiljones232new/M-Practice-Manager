@@ -1,6 +1,5 @@
 import { Injectable, Logger, NotFoundException, Optional, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { FileStorageService } from '../file-storage/file-storage.service';
 import { ClientsService } from '../clients/clients.service';
 import { ServicesService } from '../services/services.service';
 import { IntegrationConfigService } from '../integrations/services/integration-config.service';
@@ -22,7 +21,6 @@ export class TasksService {
 
   constructor(
     private prisma: PrismaService,
-    private fileStorage: FileStorageService,
     @Inject(forwardRef(() => ClientsService))
     private clientsService: ClientsService,
     @Inject(forwardRef(() => ServicesService))
@@ -32,10 +30,11 @@ export class TasksService {
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
     if (createTaskDto.clientId) {
-      const client = await this.clientsService.findOne(createTaskDto.clientId);
+      const client = await this.clientsService.findByIdentifier(createTaskDto.clientId);
       if (!client) {
         throw new NotFoundException(`Client with ID ${createTaskDto.clientId} not found`);
       }
+      createTaskDto.clientId = client.id;
     }
 
     if (createTaskDto.serviceId) {
@@ -67,7 +66,10 @@ export class TasksService {
   async findAll(filters: TaskFilters = {}): Promise<Task[]> {
     const where: any = {};
 
-    if (filters.clientId) where.clientId = filters.clientId;
+    if (filters.clientId) {
+      const resolvedClientId = await this.clientsService.resolveClientId(filters.clientId);
+      where.clientId = resolvedClientId || filters.clientId;
+    }
     if (filters.serviceId) where.serviceId = filters.serviceId;
     if (filters.assigneeId) where.assigneeId = filters.assigneeId;
     if (filters.status) where.status = filters.status;
@@ -92,11 +94,14 @@ export class TasksService {
       ];
     }
 
+    const skip = filters.offset !== undefined ? Number(filters.offset) : 0;
+    const take = filters.limit !== undefined ? Number(filters.limit) : 100;
+
     return (this.prisma as any).task.findMany({
       where,
       orderBy: { createdAt: 'desc' },
-      skip: filters.offset || 0,
-      take: filters.limit || 100,
+      skip: Number.isFinite(skip) ? skip : 0,
+      take: Number.isFinite(take) ? take : 100,
     });
   }
 
@@ -130,8 +135,9 @@ export class TasksService {
   }
 
   async findByClient(clientId: string): Promise<Task[]> {
+    const resolvedClientId = await this.clientsService.resolveClientId(clientId);
     return (this.prisma as any).task.findMany({
-      where: { clientId },
+      where: { clientId: resolvedClientId || clientId },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -435,7 +441,7 @@ export class TasksService {
     return { ...counts, tasksByPriority, tasksByStatus };
   }
 
-  // Service Template operations (kept in file storage)
+  // Service Template operations (Prisma-backed)
   async createServiceTemplate(createDto: CreateServiceTemplateDto): Promise<ServiceTemplate> {
     const id = this.generateId();
     const now = new Date();
@@ -457,18 +463,85 @@ export class TasksService {
       updatedAt: now,
     };
 
-    await this.fileStorage.writeJson('service-templates', id, serviceTemplate);
+    await (this.prisma as any).serviceTemplate.create({
+      data: {
+        id,
+        serviceKind: serviceTemplate.serviceKind,
+        frequency: serviceTemplate.frequency,
+        appliesTo: serviceTemplate.appliesTo || [],
+        complianceImpact: serviceTemplate.complianceImpact ?? false,
+        pricingModel: serviceTemplate.pricingModel || 'per_period',
+        taskTemplates: {
+          create: serviceTemplate.taskTemplates.map((t) => ({
+            id: t.id,
+            title: t.title,
+            description: t.description,
+            daysBeforeDue: t.daysBeforeDue,
+            priority: t.priority,
+            tags: t.tags || [],
+            assigneeId: t.assigneeId,
+          })),
+        },
+      },
+    });
     this.logger.log(`Created service template: ${serviceTemplate.serviceKind} (${serviceTemplate.frequency})`);
 
     return serviceTemplate;
   }
 
   async findAllServiceTemplates(): Promise<ServiceTemplate[]> {
-    return this.fileStorage.searchFiles<ServiceTemplate>('service-templates', () => true);
+    const templates = await (this.prisma as any).serviceTemplate.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { taskTemplates: true },
+    });
+
+    return templates.map((t: any) => ({
+      id: t.id,
+      serviceKind: t.serviceKind,
+      frequency: t.frequency,
+      appliesTo: t.appliesTo || [],
+      complianceImpact: t.complianceImpact,
+      pricingModel: t.pricingModel,
+      taskTemplates: (t.taskTemplates || []).map((tt: any) => ({
+        id: tt.id,
+        title: tt.title,
+        description: tt.description,
+        daysBeforeDue: tt.daysBeforeDue,
+        priority: tt.priority,
+        tags: tt.tags || [],
+        assigneeId: tt.assigneeId || undefined,
+      })),
+      createdAt: t.createdAt,
+      updatedAt: t.updatedAt,
+    }));
   }
 
   async findServiceTemplate(id: string): Promise<ServiceTemplate | null> {
-    return this.fileStorage.readJson<ServiceTemplate>('service-templates', id);
+    const t = await (this.prisma as any).serviceTemplate.findUnique({
+      where: { id },
+      include: { taskTemplates: true },
+    });
+
+    if (!t) return null;
+    return {
+      id: t.id,
+      serviceKind: t.serviceKind,
+      frequency: t.frequency,
+      appliesTo: t.appliesTo || [],
+      complianceImpact: t.complianceImpact,
+      pricingModel: t.pricingModel,
+      taskTemplates: (t.taskTemplates || []).map((tt: any) => ({
+        id: tt.id,
+        title: tt.title,
+        description: tt.description,
+        daysBeforeDue: tt.daysBeforeDue,
+        priority: tt.priority,
+        tags: tt.tags || [],
+        assigneeId: tt.assigneeId || undefined,
+      })),
+      createdAt: t.createdAt,
+      updatedAt: t.updatedAt,
+    };
   }
 
   async getAllServiceTemplates(): Promise<ServiceTemplate[]> {
@@ -490,7 +563,28 @@ export class TasksService {
       updatedAt: new Date(),
     };
 
-    await this.fileStorage.writeJson('service-templates', id, updated);
+    await (this.prisma as any).serviceTemplate.update({
+      where: { id },
+      data: {
+        serviceKind: updated.serviceKind,
+        frequency: updated.frequency,
+        appliesTo: updated.appliesTo || [],
+        complianceImpact: updated.complianceImpact ?? false,
+        pricingModel: updated.pricingModel || 'per_period',
+        taskTemplates: {
+          deleteMany: {},
+          create: updated.taskTemplates.map((t) => ({
+            id: t.id,
+            title: t.title,
+            description: t.description,
+            daysBeforeDue: t.daysBeforeDue,
+            priority: t.priority,
+            tags: t.tags || [],
+            assigneeId: t.assigneeId,
+          })),
+        },
+      },
+    });
     this.logger.log(`Updated service template: ${updated.serviceKind} (${updated.frequency})`);
 
     return updated;
@@ -499,7 +593,7 @@ export class TasksService {
   async deleteServiceTemplate(id: string): Promise<boolean> {
     const existing = await this.findServiceTemplate(id);
     if (!existing) return false;
-    await this.fileStorage.deleteJson('service-templates', id);
+    await (this.prisma as any).serviceTemplate.delete({ where: { id } });
     this.logger.log(`Deleted service template: ${existing.serviceKind} (${existing.frequency})`);
     return true;
   }

@@ -26,6 +26,8 @@ export interface ReportTemplate {
 export interface ReportGenerationOptions {
   includeBranding?: boolean;
   includeCharts?: boolean;
+  includeCoverPage?: boolean;
+  includeContentsPage?: boolean;
   format?: 'A4' | 'Letter';
   orientation?: 'portrait' | 'landscape';
   outputPath?: string;

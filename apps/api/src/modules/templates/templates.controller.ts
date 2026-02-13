@@ -86,15 +86,16 @@ export class TemplatesController {
   async previewTemplate(@Param('id') id: string) {
     const template = await this.templatesService.getTemplate(id);
     const content = await this.templatesService.getTemplateContent(id);
+    const placeholders = Array.isArray(template.placeholders) ? template.placeholders : [];
     
     return {
       template,
       content,
-      placeholders: template.placeholders,
+      placeholders,
       metadata: {
-        totalPlaceholders: template.placeholders.length,
-        requiredPlaceholders: template.placeholders.filter(p => p.required).length,
-        optionalPlaceholders: template.placeholders.filter(p => !p.required).length,
+        totalPlaceholders: placeholders.length,
+        requiredPlaceholders: placeholders.filter((p: any) => p.required).length,
+        optionalPlaceholders: placeholders.filter((p: any) => !p.required).length,
       },
     };
   }

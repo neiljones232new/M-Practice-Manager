@@ -17,9 +17,15 @@ export class ComplianceService {
   ) {}
 
   async createComplianceItem(createDto: CreateComplianceItemDto): Promise<ComplianceItem> {
+    const client = await this.clientsService.findByIdentifier(createDto.clientId);
+    if (!client) {
+      throw new NotFoundException(`Client with ID ${createDto.clientId} not found`);
+    }
+
     const item = await (this.prisma as any).complianceItem.create({
       data: {
         ...createDto,
+        clientId: client.id,
         status: createDto.status || 'PENDING',
       },
     });
@@ -55,8 +61,9 @@ export class ComplianceService {
   }
 
   async getComplianceItemsByClient(clientId: string): Promise<ComplianceItem[]> {
+    const resolvedClientId = await this.clientsService.resolveClientId(clientId);
     return (this.prisma as any).complianceItem.findMany({
-      where: { clientId },
+      where: { clientId: resolvedClientId || clientId },
       orderBy: { dueDate: 'asc' },
     });
   }
@@ -75,7 +82,10 @@ export class ComplianceService {
   } = {}): Promise<ComplianceItem[]> {
     const where: any = {};
 
-    if (filters.clientId) where.clientId = filters.clientId;
+    if (filters.clientId) {
+      const resolvedClientId = await this.clientsService.resolveClientId(filters.clientId);
+      where.clientId = resolvedClientId || filters.clientId;
+    }
     if (filters.serviceId) where.serviceId = filters.serviceId;
     if (filters.status) {
       const statuses = Array.isArray(filters.status) ? filters.status : [filters.status];

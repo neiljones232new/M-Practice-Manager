@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { FileStorageService } from '../file-storage/file-storage.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateStaffDto, StaffRole } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 
@@ -17,7 +17,7 @@ export type Staff = {
 
 @Injectable()
 export class StaffService {
-  constructor(private readonly fileStorage: FileStorageService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   private splitName(fullName: string): { firstName: string; lastName: string } {
     const trimmed = String(fullName || '').trim();
@@ -27,45 +27,7 @@ export class StaffService {
     return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
   }
 
-  private async ensureFirstStaffSeeded(): Promise<void> {
-    const existing = await this.fileStorage.listFiles('staff');
-    if (Array.isArray(existing) && existing.length > 0) return;
-
-    const practiceSettings = await this.fileStorage.readJson<any>('config', 'practice-settings').catch(() => null);
-    const primaryContact = practiceSettings?.primaryContact;
-    const name = String(primaryContact?.name || '').trim();
-    const email = String(primaryContact?.email || '').trim();
-    const phone = String(primaryContact?.phone || '').trim();
-    if (!name) return;
-
-    const seedRef = 'S001';
-    const already = await this.fileStorage.readJson<Staff>('staff', seedRef).catch(() => null);
-    if (already) return;
-
-    const now = new Date();
-    const { firstName, lastName } = this.splitName(name);
-
-    const staff: Staff = {
-      ref: seedRef,
-      firstName,
-      lastName,
-      fullName: this.buildFullName(firstName, lastName),
-      role: StaffRole.PARTNER_DIRECTOR,
-      email: email || undefined,
-      phone: phone || undefined,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    await this.fileStorage.writeJson('staff', seedRef, staff);
-  }
-
   private normalizeEmail(value?: string): string | undefined {
-    const v = value?.trim();
-    return v ? v : undefined;
-  }
-
-  private normalizePhone(value?: string): string | undefined {
     const v = value?.trim();
     return v ? v : undefined;
   }
@@ -74,11 +36,42 @@ export class StaffService {
     return `${String(firstName || '').trim()} ${String(lastName || '').trim()}`.trim();
   }
 
+  private mapToDbRole(role: StaffRole): 'PARTNER' | 'MANAGER' | 'STAFF' {
+    if (role === StaffRole.PARTNER_DIRECTOR) return 'PARTNER';
+    if (role === StaffRole.MANAGER) return 'MANAGER';
+    return 'STAFF';
+  }
+
+  private mapFromDbRole(role?: string): StaffRole {
+    if (role === 'PARTNER') return StaffRole.PARTNER_DIRECTOR;
+    if (role === 'MANAGER') return StaffRole.MANAGER;
+    return StaffRole.STAFF;
+  }
+
+  private toStaff(user: any): Staff {
+    const { firstName, lastName } = this.splitName(user.name || '');
+    return {
+      ref: user.id,
+      firstName,
+      lastName,
+      fullName: this.buildFullName(firstName, lastName),
+      role: this.mapFromDbRole(user.role),
+      email: user.email || undefined,
+      phone: undefined,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
   private async generateStaffRef(): Promise<string> {
-    await this.ensureFirstStaffSeeded();
-    const existing = await this.fileStorage.listFiles('staff');
+    const existing = await (this.prisma as any).user.findMany({
+      where: {
+        id: { startsWith: 'S' },
+      },
+      select: { id: true },
+    });
     const indices = (existing || [])
-      .map((id) => String(id || '').trim())
+      .map((u: any) => String(u?.id || '').trim())
       .filter((ref) => /^S\d{3}$/.test(ref))
       .map((ref) => parseInt(ref.slice(1), 10))
       .filter((n) => Number.isFinite(n))
@@ -94,38 +87,36 @@ export class StaffService {
   }
 
   async create(dto: CreateStaffDto): Promise<Staff> {
-    await this.ensureFirstStaffSeeded();
     const ref = await this.generateStaffRef();
-    const now = new Date();
-
-    const staff: Staff = {
-      ref,
-      firstName: dto.firstName.trim(),
-      lastName: dto.lastName.trim(),
-      fullName: this.buildFullName(dto.firstName, dto.lastName),
-      role: dto.role,
-      email: this.normalizeEmail(dto.email),
-      phone: this.normalizePhone(dto.phone),
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    await this.fileStorage.writeJson('staff', ref, staff);
-    return staff;
+    const email = this.normalizeEmail(dto.email) || `${ref.toLowerCase()}@staff.local`;
+    const created = await (this.prisma as any).user.create({
+      data: {
+        id: ref,
+        email,
+        name: this.buildFullName(dto.firstName, dto.lastName),
+        role: this.mapToDbRole(dto.role),
+        isActive: true,
+      },
+    });
+    return this.toStaff(created);
   }
 
   async findAll(): Promise<Staff[]> {
-    await this.ensureFirstStaffSeeded();
-    return this.fileStorage.searchFiles<Staff>('staff', () => true);
+    const users = await (this.prisma as any).user.findMany({
+      where: {
+        id: { startsWith: 'S' },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+    return users.map((u: any) => this.toStaff(u));
   }
 
   async findOne(ref: string): Promise<Staff> {
-    await this.ensureFirstStaffSeeded();
-    const staff = await this.fileStorage.readJson<Staff>('staff', ref);
-    if (!staff) {
+    const staff = await (this.prisma as any).user.findUnique({ where: { id: ref } });
+    if (!staff || !/^S\d{3}$/.test(staff.id)) {
       throw new NotFoundException(`Staff member ${ref} not found`);
     }
-    return staff;
+    return this.toStaff(staff);
   }
 
   async update(ref: string, dto: UpdateStaffDto): Promise<Staff> {
@@ -134,25 +125,21 @@ export class StaffService {
     const nextFirst = dto.firstName !== undefined ? dto.firstName : existing.firstName;
     const nextLast = dto.lastName !== undefined ? dto.lastName : existing.lastName;
 
-    const updated: Staff = {
-      ...existing,
-      firstName: nextFirst,
-      lastName: nextLast,
-      fullName: this.buildFullName(nextFirst, nextLast),
-      role: dto.role ?? existing.role,
-      email: dto.email !== undefined ? this.normalizeEmail(dto.email) : existing.email,
-      phone: dto.phone !== undefined ? this.normalizePhone(dto.phone) : existing.phone,
-      ref: existing.ref,
-      updatedAt: new Date(),
-    };
-
-    await this.fileStorage.writeJson('staff', existing.ref, updated);
-    return updated;
+    const nextEmail = dto.email !== undefined ? this.normalizeEmail(dto.email) : existing.email;
+    const updated = await (this.prisma as any).user.update({
+      where: { id: existing.ref },
+      data: {
+        name: this.buildFullName(nextFirst, nextLast),
+        role: this.mapToDbRole(dto.role ?? existing.role),
+        ...(nextEmail ? { email: nextEmail } : {}),
+      },
+    });
+    return this.toStaff(updated);
   }
 
   async remove(ref: string): Promise<boolean> {
     await this.findOne(ref);
-    await this.fileStorage.deleteJson('staff', ref);
+    await (this.prisma as any).user.delete({ where: { id: ref } });
     return true;
   }
 }

@@ -528,18 +528,30 @@ export default function LettersSearchPage() {
 // Template Cards Component
 function TemplateCards({ router }: { router: any }) {
   const [templates, setTemplates] = useState<any[]>([]);
+  const [clients, setClients] = useState<any[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadTemplates = async () => {
       try {
-        const data = await api.get('/templates');
-        const activeTemplates = Array.isArray(data) ? data.filter((t: any) => t.isActive !== false) : [];
+        const [templateData, clientsData] = await Promise.all([
+          api.get('/templates'),
+          api.getClients().catch(() => []),
+        ]);
+        const activeTemplates = Array.isArray(templateData)
+          ? templateData.filter((t: any) => t.isActive !== false)
+          : [];
         // Show only first 6 templates
         setTemplates(activeTemplates.slice(0, 6));
+        const normalizedClients = (Array.isArray(clientsData) ? clientsData : [])
+          .map((c: any) => c?.node ?? c)
+          .filter((c: any) => c?.status === 'ACTIVE');
+        setClients(normalizedClients);
       } catch (e) {
         console.error('Failed to load templates', e);
         setTemplates([]);
+        setClients([]);
       } finally {
         setLoading(false);
       }
@@ -577,6 +589,27 @@ function TemplateCards({ router }: { router: any }) {
 
   return (
     <>
+      <div style={{ gridColumn: '1 / -1', display: 'grid', gap: '0.5rem' }}>
+        <label style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+          Select client to auto-populate template fields
+        </label>
+        <select
+          value={selectedClientId}
+          onChange={(e) => setSelectedClientId(e.target.value)}
+          className="mdj-select"
+          style={{ maxWidth: '460px' }}
+        >
+          <option value="">Choose client...</option>
+          {clients.map((client: any) => (
+            <option key={client.id} value={client.id}>
+              {client.name} ({client.registeredNumber || client.id || '—'})
+            </option>
+          ))}
+        </select>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          Generated letters use branded formatting from Settings logo and report colors.
+        </span>
+      </div>
       {templates.map((template) => (
         <div
           key={template.id}
@@ -584,11 +617,14 @@ function TemplateCards({ router }: { router: any }) {
             padding: '1.25rem',
             border: '1px solid var(--border-color)',
             borderRadius: '8px',
-            cursor: 'pointer',
+            cursor: selectedClientId ? 'pointer' : 'not-allowed',
             transition: 'all 0.2s',
-            backgroundColor: 'white',
+            backgroundColor: selectedClientId ? 'white' : 'var(--bg-soft)',
           }}
-          onClick={() => router.push(`/templates/generate?templateId=${template.id}`)}
+          onClick={() => {
+            if (!selectedClientId) return;
+            router.push(`/templates/generate?templateId=${template.id}&clientId=${selectedClientId}`);
+          }}
           onMouseEnter={(e) => {
             e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
             e.currentTarget.style.transform = 'translateY(-2px)';
@@ -645,9 +681,11 @@ function TemplateCards({ router }: { router: any }) {
             <button
               type="button"
               className="btn-gold btn-sm"
+              disabled={!selectedClientId}
               onClick={(e) => {
                 e.stopPropagation();
-                router.push(`/templates/generate?templateId=${template.id}`);
+                if (!selectedClientId) return;
+                router.push(`/templates/generate?templateId=${template.id}&clientId=${selectedClientId}`);
               }}
             >
               Generate →

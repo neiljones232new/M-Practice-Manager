@@ -59,10 +59,10 @@
     "eslint": "^9.39.2"
   },
   "dependencies": {
-    "@prisma/client": "^7.3.0",
-    "@prisma/extension-accelerate": "^3.0.1",
+    "@prisma/client": "^5.22.0",
+    "@prisma/extension-accelerate": "^1.2.2",
     "@swc/helpers": "0.5.18",
-    "prisma": "^7.3.0",
+    "prisma": "^5.22.0",
     "project": "^0.1.6",
     "styled-jsx": "^5.1.7"
   }

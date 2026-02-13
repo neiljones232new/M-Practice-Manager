@@ -32,10 +32,16 @@ export class TemplatesService {
         ];
       }
 
-      return (this.prisma as any).template.findMany({
+      const rows = await (this.prisma as any).template.findMany({
         where,
+        include: {
+          fields: {
+            orderBy: { displayOrder: 'asc' },
+          },
+        },
         orderBy: { updatedAt: 'desc' },
       });
+      return rows.map((row: any) => this.normalizeTemplate(row));
     } catch (error) {
       this.logger.error('Failed to get templates:', error);
       throw error;
@@ -44,11 +50,18 @@ export class TemplatesService {
 
   async getTemplate(id: string): Promise<Template> {
     try {
-      const template = await (this.prisma as any).template.findUnique({ where: { id } });
+      const template = await (this.prisma as any).template.findUnique({
+        where: { id },
+        include: {
+          fields: {
+            orderBy: { displayOrder: 'asc' },
+          },
+        },
+      });
       if (!template) {
         this.errorHandler.handleTemplateNotFound(id);
       }
-      return template;
+      return this.normalizeTemplate(template);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       this.logger.error(`Failed to get template ${id}:`, error);
@@ -58,17 +71,43 @@ export class TemplatesService {
 
   async createTemplate(dto: CreateTemplateDto): Promise<Template> {
     try {
-      const template = await (this.prisma as any).template.create({
-        data: {
-          name: dto.name,
-          description: dto.description,
-          category: dto.category,
-          type: dto.type,
-          content: dto.content,
-          placeholders: dto.placeholders as any,
-          metadata: dto.metadata as any,
-          createdById: dto.createdById,
-        },
+      const template = await (this.prisma as any).$transaction(async (tx: any) => {
+        const created = await tx.template.create({
+          data: {
+            name: dto.name,
+            description: dto.description,
+            category: dto.category,
+            type: dto.type,
+            content: dto.content,
+            placeholders: dto.placeholders as any,
+            metadata: dto.metadata as any,
+            createdById: dto.createdById,
+          },
+        });
+
+        const normalized = this.normalizePlaceholders(dto.placeholders);
+        if (normalized.length > 0) {
+          await tx.templateField.createMany({
+            data: normalized.map((p: any, idx: number) => ({
+              templateId: created.id,
+              key: p.key,
+              label: p.label,
+              type: p.type || 'TEXT',
+              required: !!p.required,
+              defaultValue: p.defaultValue ?? null,
+              format: p.format ?? null,
+              source: p.source ?? null,
+              sourcePath: p.sourcePath ?? null,
+              validation: p.validation ?? null,
+              displayOrder: idx,
+            })),
+          });
+        }
+
+        return tx.template.findUnique({
+          where: { id: created.id },
+          include: { fields: { orderBy: { displayOrder: 'asc' } } },
+        });
       });
 
       this.logger.log(`Created template: ${template.name} (${template.id})`);
@@ -88,7 +127,7 @@ export class TemplatesService {
         category: 'DATA',
       });
 
-      return template;
+      return this.normalizeTemplate(template);
     } catch (error) {
       this.logger.error('Failed to create template:', error);
       this.errorHandler.handleGenericError('creating template', error as Error, { templateName: dto.name });
@@ -99,17 +138,46 @@ export class TemplatesService {
     try {
       await this.getTemplate(id);
 
-      const updatedTemplate = await (this.prisma as any).template.update({
-        where: { id },
-        data: {
-          name: dto.name,
-          description: dto.description,
-          category: dto.category,
-          type: dto.type,
-          content: dto.content,
-          placeholders: dto.placeholders as any,
-          metadata: dto.metadata as any,
-        },
+      const updatedTemplate = await (this.prisma as any).$transaction(async (tx: any) => {
+        const updated = await tx.template.update({
+          where: { id },
+          data: {
+            name: dto.name,
+            description: dto.description,
+            category: dto.category,
+            type: dto.type,
+            content: dto.content,
+            placeholders: dto.placeholders as any,
+            metadata: dto.metadata as any,
+          },
+        });
+
+        if (dto.placeholders) {
+          await tx.templateField.deleteMany({ where: { templateId: id } });
+          const normalized = this.normalizePlaceholders(dto.placeholders);
+          if (normalized.length > 0) {
+            await tx.templateField.createMany({
+              data: normalized.map((p: any, idx: number) => ({
+                templateId: id,
+                key: p.key,
+                label: p.label,
+                type: p.type || 'TEXT',
+                required: !!p.required,
+                defaultValue: p.defaultValue ?? null,
+                format: p.format ?? null,
+                source: p.source ?? null,
+                sourcePath: p.sourcePath ?? null,
+                validation: p.validation ?? null,
+                displayOrder: idx,
+              })),
+            });
+          }
+        }
+
+        return tx.template.findUnique({
+          where: { id: updated.id },
+          include: { fields: { orderBy: { displayOrder: 'asc' } } },
+        });
       });
 
       this.logger.log(`Updated template: ${updatedTemplate.name} (${id})`);
@@ -129,7 +197,7 @@ export class TemplatesService {
         category: 'DATA',
       });
 
-      return updatedTemplate;
+      return this.normalizeTemplate(updatedTemplate);
     } catch (error) {
       this.logger.error(`Failed to update template ${id}:`, error);
       this.errorHandler.handleGenericError('updating template', error as Error, { templateId: id });
@@ -169,5 +237,50 @@ export class TemplatesService {
       throw new BadRequestException('Template content is empty');
     }
     return template.content;
+  }
+
+  private normalizeTemplate(raw: any): Template {
+    const relationalPlaceholders = Array.isArray(raw?.fields)
+      ? raw.fields.map((f: any) => ({
+          key: f.key,
+          label: f.label,
+          type: f.type,
+          required: !!f.required,
+          defaultValue: f.defaultValue ?? undefined,
+          format: f.format ?? undefined,
+          source: f.source ?? undefined,
+          sourcePath: f.sourcePath ?? undefined,
+          validation: f.validation ?? undefined,
+        }))
+      : [];
+    const placeholders = relationalPlaceholders.length > 0
+      ? this.normalizePlaceholders(relationalPlaceholders)
+      : this.normalizePlaceholders(raw?.placeholders);
+    const metadata = (raw?.metadata && typeof raw.metadata === 'object') ? raw.metadata : {};
+    const version = typeof metadata?.version === 'number'
+      ? metadata.version
+      : Number.parseInt(String(metadata?.version ?? '1'), 10) || 1;
+
+    return {
+      ...raw,
+      placeholders,
+      metadata,
+      isActive: raw?.isActive ?? true,
+      version,
+      fileFormat: (raw?.fileFormat || 'MD') as 'DOCX' | 'MD',
+      fileName: raw?.fileName || `${String(raw?.name || 'template').replace(/\s+/g, '-').toLowerCase()}.md`,
+      createdBy: raw?.createdBy || raw?.createdById || 'system',
+    } as Template;
+  }
+
+  private normalizePlaceholders(value: any): any[] {
+    if (!Array.isArray(value)) return [];
+    return value
+      .filter((p) => p && typeof p === 'object')
+      .map((p: any) => ({
+        ...p,
+        type: typeof p.type === 'string' ? p.type.toUpperCase() : p.type,
+        source: typeof p.source === 'string' ? p.source.toUpperCase() : p.source,
+      }));
   }
 }

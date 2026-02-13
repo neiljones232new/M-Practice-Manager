@@ -6,7 +6,7 @@ import { ClientsModule } from '../clients/clients.module';
 import { ServicesModule } from '../services/services.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { DashboardModule } from '../dashboard/dashboard.module';
-import { FileStorageModule } from '../file-storage/file-storage.module';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { FileStorageModule } from '../file-storage/file-storage.module';
     forwardRef(() => ServicesModule),
     forwardRef(() => TasksModule),     // ✅ if compliance creates or updates tasks
     forwardRef(() => DashboardModule), // ✅ allows dashboard↔filings circular reference
-    FileStorageModule,
+    PrismaModule,
   ],
   controllers: [ComplianceController],
   providers: [ComplianceService, ComplianceTaskIntegrationService],

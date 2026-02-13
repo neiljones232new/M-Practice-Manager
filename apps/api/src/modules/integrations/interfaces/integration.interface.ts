@@ -66,6 +66,8 @@ export interface PracticeSettings {
   practicePhone?: string;
   practiceEmail?: string;
   practiceWebsite?: string;
+  reportPrimaryColor?: string;
+  reportSecondaryColor?: string;
   defaultPortfolioCode: number;
   portfolios: Portfolio[];
   systemSettings: {
@@ -95,6 +97,8 @@ export interface CreatePracticeSettingsDto {
   practicePhone?: string;
   practiceEmail?: string;
   practiceWebsite?: string;
+  reportPrimaryColor?: string;
+  reportSecondaryColor?: string;
   defaultPortfolioCode?: number;
   systemSettings?: {
     backupRetentionDays?: number;
@@ -112,6 +116,8 @@ export interface UpdatePracticeSettingsDto {
   practicePhone?: string;
   practiceEmail?: string;
   practiceWebsite?: string;
+  reportPrimaryColor?: string;
+  reportSecondaryColor?: string;
   defaultPortfolioCode?: number;
   systemSettings?: {
     backupRetentionDays?: number;

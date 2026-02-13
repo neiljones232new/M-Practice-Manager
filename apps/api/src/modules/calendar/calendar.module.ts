@@ -4,9 +4,11 @@ import { CalendarService } from './calendar.service';
 import { CalendarIntegrationService } from './calendar-integration.service';
 import { TasksModule } from '../tasks/tasks.module';
 import { FilingsModule } from '../filings/filings.module';
+import { ClientsModule } from '../clients/clients.module';
 
 @Module({
   imports: [
+    forwardRef(() => ClientsModule),
     forwardRef(() => TasksModule),
     forwardRef(() => FilingsModule),
   ],

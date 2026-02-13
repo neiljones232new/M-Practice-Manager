@@ -16,6 +16,17 @@ node_modules/
 dist/
 apps/api/dist/
 .turbo/cache/
+.turbo/cookies/
+.turbo/daemon/
+apps/web/tsconfig.tsbuildinfo
+storage/backups/
+storage/documents/
+storage/generated-letters/
+storage/reports/
+storage/indexes/generated-letters.json
+storage/indexes/search/generated-letters_search.json
+apps/mkdir
+apps/nest
 
 
 # IDE

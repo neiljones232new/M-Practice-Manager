@@ -36,6 +36,7 @@ const navItems = [
   { label: 'CH Search', href: '/companies-house', icon: '🏢' },
   { label: 'Tasks', href: '/tasks', icon: '✓' },
   { label: 'Documents', href: '/documents', icon: '📄' },
+  { label: 'Report Builder', href: '/documents/reports', icon: '📑' },
   { label: 'Letters', href: '/templates', icon: '✉️' },
   { label: 'Audit', href: '/audit', icon: '🔍' },
   { label: 'Calendar', href: '/calendar', icon: '📅' },

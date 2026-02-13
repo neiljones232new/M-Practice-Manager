@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { StaffController } from './staff.controller';
 import { StaffService } from './staff.service';
-import { FileStorageModule } from '../file-storage/file-storage.module';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
-  imports: [FileStorageModule],
+  imports: [PrismaModule],
   controllers: [StaffController],
   providers: [StaffService],
   exports: [StaffService],

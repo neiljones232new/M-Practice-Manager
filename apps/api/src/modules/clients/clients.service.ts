@@ -21,7 +21,17 @@ export class ClientsService {
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
     const portfolioCode = createClientDto.portfolioCode ?? 1;
-    const id = createClientDto.id || await this.generateClientIdentifier(portfolioCode);
+    const providedId = createClientDto.id?.trim().toUpperCase();
+    if (providedId && !/^\d+[A-Z]\d{3}$/.test(providedId)) {
+      throw new BadRequestException('Client ID must match format <portfolio><letter><3 digits>, e.g. 4P001');
+    }
+    if (providedId) {
+      const idPortfolio = Number.parseInt((providedId.match(/^\d+/) || [''])[0], 10);
+      if (Number.isFinite(idPortfolio) && idPortfolio !== portfolioCode) {
+        throw new BadRequestException(`Client ID portfolio prefix ${idPortfolio} must match portfolioCode ${portfolioCode}`);
+      }
+    }
+    const id = providedId || await this.generateClientIdentifier(portfolioCode);
 
     const created = await (this.prisma as any).client.create({
       data: {
@@ -167,30 +177,49 @@ export class ClientsService {
   }
 
   async findAllContexts(filters: ClientFilters = {}): Promise<ClientContext[]> {
-    const where: any = {};
-    if (filters.portfolioCode) where.portfolioCode = filters.portfolioCode;
-    if (filters.status) where.status = filters.status;
-    if (filters.type) where.type = filters.type;
-    if (filters.search) {
-      where.OR = [
-        { name: { contains: filters.search, mode: 'insensitive' } },
-        { registeredNumber: { contains: filters.search, mode: 'insensitive' } },
-        { mainEmail: { contains: filters.search, mode: 'insensitive' } },
-      ];
+    try {
+      const where: any = {};
+      if (filters.portfolioCode) where.portfolioCode = filters.portfolioCode;
+      if (filters.status) where.status = filters.status;
+      if (filters.type) where.type = filters.type;
+      if (filters.search) {
+        where.OR = [
+          { name: { contains: filters.search, mode: 'insensitive' } },
+          { registeredNumber: { contains: filters.search, mode: 'insensitive' } },
+          { mainEmail: { contains: filters.search, mode: 'insensitive' } },
+        ];
+      }
+
+      const skip = filters.offset !== undefined ? Number(filters.offset) : 0;
+      const take = filters.limit !== undefined ? Number(filters.limit) : 100;
+
+      this.logger.debug(`Fetching clients with filters: ${JSON.stringify(filters)}`);
+
+      const clients = await (this.prisma as any).client.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: Number.isFinite(skip) ? skip : 0,
+        take: Number.isFinite(take) ? take : 100,
+        include: { clientProfile: true },
+      });
+
+      this.logger.debug(`Found ${clients.length} clients, building contexts...`);
+
+      const contexts = clients.map((client: any) => {
+        try {
+          return buildClientContext(client, client.clientProfile || undefined);
+        } catch (err) {
+          this.logger.error(`Error building context for client ${client.id}: ${err.message}`, err.stack);
+          throw err;
+        }
+      });
+
+      this.logger.debug(`Successfully built ${contexts.length} contexts`);
+      return contexts;
+    } catch (error) {
+      this.logger.error(`Error in findAllContexts: ${error.message}`, error.stack);
+      throw error;
     }
-
-    const skip = filters.offset !== undefined ? Number(filters.offset) : 0;
-    const take = filters.limit !== undefined ? Number(filters.limit) : 100;
-
-    const clients = await (this.prisma as any).client.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      skip: Number.isFinite(skip) ? skip : 0,
-      take: Number.isFinite(take) ? take : 100,
-      include: { clientProfile: true },
-    });
-
-    return clients.map((client: any) => buildClientContext(client, client.clientProfile || undefined));
   }
 
   async findOne(id: string): Promise<Client | null> {
@@ -204,6 +233,12 @@ export class ClientsService {
     return (this.prisma as any).client.findFirst({
       where: { registeredNumber: identifier },
     });
+  }
+
+  async resolveClientId(identifier?: string): Promise<string | undefined> {
+    if (!identifier) return undefined;
+    const client = await this.findByIdentifier(identifier);
+    return client?.id;
   }
 
   async findByPortfolio(portfolioCode: number): Promise<Client[]> {

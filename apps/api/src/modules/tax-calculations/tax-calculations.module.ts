@@ -11,9 +11,10 @@ import { TaxRecommendationService } from './services/tax-recommendation.service'
 import { FileStorageModule } from '../file-storage/file-storage.module';
 import { DatabaseModule } from '../database/database.module';
 import { AuditModule } from '../audit/audit.module';
+import { ClientsModule } from '../clients/clients.module';
 
 @Module({
-  imports: [FileStorageModule, DatabaseModule, AuditModule],
+  imports: [FileStorageModule, DatabaseModule, AuditModule, ClientsModule],
   controllers: [TaxCalculationsController],
   providers: [
     TaxCalculationsService,

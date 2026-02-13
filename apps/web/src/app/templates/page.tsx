@@ -81,6 +81,7 @@ export default function TemplatesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategory | ''>('');
   const [showInactiveTemplates, setShowInactiveTemplates] = useState(false);
+  const [accountancyOnly, setAccountancyOnly] = useState(false);
 
   const fetchTemplates = async () => {
     try {
@@ -128,10 +129,12 @@ export default function TemplatesPage() {
 
       const matchesCategory = !selectedCategory || t.category === selectedCategory;
       const matchesActive = showInactiveTemplates || t.isActive;
+      const tags = [...(t.metadata?.tags || []), ...(t.tags || [])].map((tag) => String(tag).toLowerCase());
+      const matchesAccountancy = !accountancyOnly || tags.includes('accountancy');
 
-      return matchesSearch && matchesCategory && matchesActive;
+      return matchesSearch && matchesCategory && matchesActive && matchesAccountancy;
     });
-  }, [allTemplates, searchQuery, selectedCategory, showInactiveTemplates]);
+  }, [allTemplates, searchQuery, selectedCategory, showInactiveTemplates, accountancyOnly]);
 
   // Group templates by category
   const groupedTemplates = useMemo(() => {
@@ -165,6 +168,7 @@ export default function TemplatesPage() {
     setSearchQuery('');
     setSelectedCategory('');
     setShowInactiveTemplates(false);
+    setAccountancyOnly(false);
   };
 
   const formatDate = (dateStr: string) => {
@@ -195,6 +199,20 @@ export default function TemplatesPage() {
     >
       {/* Filters */}
       <div className="card-mdj" style={{ marginBottom: '1rem' }}>
+        <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div>
+            <strong>Accountancy Service Templates</strong>
+            <div className="mdj-sub">Use this toggle to show only accountancy-focused letter content.</div>
+          </div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input
+              type="checkbox"
+              checked={accountancyOnly}
+              onChange={(e) => setAccountancyOnly(e.target.checked)}
+            />
+            <span className="mdj-sub">Accountancy only</span>
+          </label>
+        </div>
         <div className="filter-grid">
           <input
             aria-label="Search templates"
@@ -273,11 +291,11 @@ export default function TemplatesPage() {
                   <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>
                     {CATEGORY_LABELS[category as TemplateCategory]}
                   </h3>
-                  <span
-                    className="mdj-badge"
-                    style={{
-                      backgroundColor: `${CATEGORY_COLORS[category as TemplateCategory]}20`,
-                      color: CATEGORY_COLORS[category as TemplateCategory],
+                          <span
+                            className="mdj-badge"
+                            style={{
+                              backgroundColor: `${CATEGORY_COLORS[category as TemplateCategory]}20`,
+                              color: CATEGORY_COLORS[category as TemplateCategory],
                     }}
                   >
                     {templates.length} {templates.length === 1 ? 'template' : 'templates'}
@@ -321,6 +339,15 @@ export default function TemplatesPage() {
                           >
                             v{template.version}
                           </span>
+                          {templates.some((template) =>
+                            ([...(template.metadata?.tags || []), ...(template.tags || [])] as string[])
+                              .map((tag) => String(tag).toLowerCase())
+                              .includes('accountancy')
+                          ) && (
+                            <span className="mdj-badge" style={{ backgroundColor: '#0f1f5220', color: '#0f1f52' }}>
+                              Accountancy
+                            </span>
+                          )}
                         </div>
 
                         <p style={{ color: 'var(--text-muted)', marginBottom: '0.75rem' }}>

@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AppService } from './app.service';
 
@@ -17,6 +17,16 @@ export class AppController {
   @ApiOperation({ summary: 'Health check endpoint' })
   getHealthCheck() {
     return this.appService.getHealth();
+  }
+
+  @Get('health/ready')
+  @ApiOperation({ summary: 'Readiness check endpoint (includes DB connectivity)' })
+  async getReadiness() {
+    const readiness = await this.appService.getReadiness();
+    if (readiness.status !== 'ready') {
+      throw new ServiceUnavailableException(readiness);
+    }
+    return readiness;
   }
 
   @Get('status')

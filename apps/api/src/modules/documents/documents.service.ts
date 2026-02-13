@@ -85,6 +85,8 @@ export class DocumentsService {
 
       await fs.writeFile(filePath, fileBuffer);
 
+      const safeUploadedById = await this.resolveUploadedById(createDocumentDto.uploadedById);
+
       const document = await (this.prisma as any).document.create({
         data: {
           filename: uniqueFilename,
@@ -93,7 +95,7 @@ export class DocumentsService {
           size: fileBuffer.length,
           clientId: createDocumentDto.clientId,
           category: createDocumentDto.category,
-          uploadedById: createDocumentDto.uploadedById,
+          uploadedById: safeUploadedById,
           isArchived: false,
         },
       });
@@ -104,6 +106,23 @@ export class DocumentsService {
     } catch (error) {
       this.logger.error('Failed to upload document:', error);
       return { document: null, success: false, error: error.message };
+    }
+  }
+
+  private async resolveUploadedById(uploadedById?: string): Promise<string | undefined> {
+    if (!uploadedById || uploadedById === 'system') {
+      return undefined;
+    }
+
+    try {
+      const user = await (this.prisma as any).user.findUnique({
+        where: { id: uploadedById },
+        select: { id: true },
+      });
+      return user?.id || undefined;
+    } catch (error) {
+      this.logger.warn(`Unable to validate uploadedById ${uploadedById}; saving without uploader reference`);
+      return undefined;
     }
   }
 

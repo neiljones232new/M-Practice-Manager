@@ -44,6 +44,26 @@ export type RefBucket = $Result.DefaultSelection<Prisma.$RefBucketPayload>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model UserAccessProfile
+ * 
+ */
+export type UserAccessProfile = $Result.DefaultSelection<Prisma.$UserAccessProfilePayload>
+/**
+ * Model AuthCredential
+ * 
+ */
+export type AuthCredential = $Result.DefaultSelection<Prisma.$AuthCredentialPayload>
+/**
+ * Model AuthSession
+ * 
+ */
+export type AuthSession = $Result.DefaultSelection<Prisma.$AuthSessionPayload>
+/**
+ * Model AuthPasswordResetToken
+ * 
+ */
+export type AuthPasswordResetToken = $Result.DefaultSelection<Prisma.$AuthPasswordResetTokenPayload>
+/**
  * Model Client
  * 
  */
@@ -74,6 +94,21 @@ export type ComplianceItem = $Result.DefaultSelection<Prisma.$ComplianceItemPayl
  */
 export type Task = $Result.DefaultSelection<Prisma.$TaskPayload>
 /**
+ * Model ServiceTemplate
+ * 
+ */
+export type ServiceTemplate = $Result.DefaultSelection<Prisma.$ServiceTemplatePayload>
+/**
+ * Model ServiceTemplateTask
+ * 
+ */
+export type ServiceTemplateTask = $Result.DefaultSelection<Prisma.$ServiceTemplateTaskPayload>
+/**
+ * Model StandaloneTaskTemplate
+ * 
+ */
+export type StandaloneTaskTemplate = $Result.DefaultSelection<Prisma.$StandaloneTaskTemplatePayload>
+/**
  * Model Document
  * 
  */
@@ -83,6 +118,11 @@ export type Document = $Result.DefaultSelection<Prisma.$DocumentPayload>
  * 
  */
 export type Template = $Result.DefaultSelection<Prisma.$TemplatePayload>
+/**
+ * Model TemplateField
+ * 
+ */
+export type TemplateField = $Result.DefaultSelection<Prisma.$TemplateFieldPayload>
 /**
  * Model Person
  * 
@@ -559,6 +599,46 @@ export class PrismaClient<
   get user(): Prisma.UserDelegate<ExtArgs>;
 
   /**
+   * `prisma.userAccessProfile`: Exposes CRUD operations for the **UserAccessProfile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserAccessProfiles
+    * const userAccessProfiles = await prisma.userAccessProfile.findMany()
+    * ```
+    */
+  get userAccessProfile(): Prisma.UserAccessProfileDelegate<ExtArgs>;
+
+  /**
+   * `prisma.authCredential`: Exposes CRUD operations for the **AuthCredential** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuthCredentials
+    * const authCredentials = await prisma.authCredential.findMany()
+    * ```
+    */
+  get authCredential(): Prisma.AuthCredentialDelegate<ExtArgs>;
+
+  /**
+   * `prisma.authSession`: Exposes CRUD operations for the **AuthSession** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuthSessions
+    * const authSessions = await prisma.authSession.findMany()
+    * ```
+    */
+  get authSession(): Prisma.AuthSessionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.authPasswordResetToken`: Exposes CRUD operations for the **AuthPasswordResetToken** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuthPasswordResetTokens
+    * const authPasswordResetTokens = await prisma.authPasswordResetToken.findMany()
+    * ```
+    */
+  get authPasswordResetToken(): Prisma.AuthPasswordResetTokenDelegate<ExtArgs>;
+
+  /**
    * `prisma.client`: Exposes CRUD operations for the **Client** model.
     * Example usage:
     * ```ts
@@ -619,6 +699,36 @@ export class PrismaClient<
   get task(): Prisma.TaskDelegate<ExtArgs>;
 
   /**
+   * `prisma.serviceTemplate`: Exposes CRUD operations for the **ServiceTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ServiceTemplates
+    * const serviceTemplates = await prisma.serviceTemplate.findMany()
+    * ```
+    */
+  get serviceTemplate(): Prisma.ServiceTemplateDelegate<ExtArgs>;
+
+  /**
+   * `prisma.serviceTemplateTask`: Exposes CRUD operations for the **ServiceTemplateTask** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ServiceTemplateTasks
+    * const serviceTemplateTasks = await prisma.serviceTemplateTask.findMany()
+    * ```
+    */
+  get serviceTemplateTask(): Prisma.ServiceTemplateTaskDelegate<ExtArgs>;
+
+  /**
+   * `prisma.standaloneTaskTemplate`: Exposes CRUD operations for the **StandaloneTaskTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StandaloneTaskTemplates
+    * const standaloneTaskTemplates = await prisma.standaloneTaskTemplate.findMany()
+    * ```
+    */
+  get standaloneTaskTemplate(): Prisma.StandaloneTaskTemplateDelegate<ExtArgs>;
+
+  /**
    * `prisma.document`: Exposes CRUD operations for the **Document** model.
     * Example usage:
     * ```ts
@@ -637,6 +747,16 @@ export class PrismaClient<
     * ```
     */
   get template(): Prisma.TemplateDelegate<ExtArgs>;
+
+  /**
+   * `prisma.templateField`: Exposes CRUD operations for the **TemplateField** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TemplateFields
+    * const templateFields = await prisma.templateField.findMany()
+    * ```
+    */
+  get templateField(): Prisma.TemplateFieldDelegate<ExtArgs>;
 
   /**
    * `prisma.person`: Exposes CRUD operations for the **Person** model.
@@ -1184,14 +1304,22 @@ export namespace Prisma {
     Portfolio: 'Portfolio',
     RefBucket: 'RefBucket',
     User: 'User',
+    UserAccessProfile: 'UserAccessProfile',
+    AuthCredential: 'AuthCredential',
+    AuthSession: 'AuthSession',
+    AuthPasswordResetToken: 'AuthPasswordResetToken',
     Client: 'Client',
     ClientProfile: 'ClientProfile',
     Address: 'Address',
     Service: 'Service',
     ComplianceItem: 'ComplianceItem',
     Task: 'Task',
+    ServiceTemplate: 'ServiceTemplate',
+    ServiceTemplateTask: 'ServiceTemplateTask',
+    StandaloneTaskTemplate: 'StandaloneTaskTemplate',
     Document: 'Document',
     Template: 'Template',
+    TemplateField: 'TemplateField',
     Person: 'Person',
     ClientParty: 'ClientParty',
     AccountsSet: 'AccountsSet',
@@ -1217,7 +1345,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "practice" | "practiceBranch" | "practiceSetting" | "portfolio" | "refBucket" | "user" | "client" | "clientProfile" | "address" | "service" | "complianceItem" | "task" | "document" | "template" | "person" | "clientParty" | "accountsSet" | "companiesHouseData" | "filing" | "taxCalculation" | "taxScenario" | "generatedReport" | "calendarEvent" | "event"
+      modelProps: "practice" | "practiceBranch" | "practiceSetting" | "portfolio" | "refBucket" | "user" | "userAccessProfile" | "authCredential" | "authSession" | "authPasswordResetToken" | "client" | "clientProfile" | "address" | "service" | "complianceItem" | "task" | "serviceTemplate" | "serviceTemplateTask" | "standaloneTaskTemplate" | "document" | "template" | "templateField" | "person" | "clientParty" | "accountsSet" | "companiesHouseData" | "filing" | "taxCalculation" | "taxScenario" | "generatedReport" | "calendarEvent" | "event"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1641,6 +1769,286 @@ export namespace Prisma {
           }
         }
       }
+      UserAccessProfile: {
+        payload: Prisma.$UserAccessProfilePayload<ExtArgs>
+        fields: Prisma.UserAccessProfileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserAccessProfileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserAccessProfileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload>
+          }
+          findFirst: {
+            args: Prisma.UserAccessProfileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserAccessProfileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload>
+          }
+          findMany: {
+            args: Prisma.UserAccessProfileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload>[]
+          }
+          create: {
+            args: Prisma.UserAccessProfileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload>
+          }
+          createMany: {
+            args: Prisma.UserAccessProfileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserAccessProfileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload>[]
+          }
+          delete: {
+            args: Prisma.UserAccessProfileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload>
+          }
+          update: {
+            args: Prisma.UserAccessProfileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload>
+          }
+          deleteMany: {
+            args: Prisma.UserAccessProfileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserAccessProfileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.UserAccessProfileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserAccessProfilePayload>
+          }
+          aggregate: {
+            args: Prisma.UserAccessProfileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserAccessProfile>
+          }
+          groupBy: {
+            args: Prisma.UserAccessProfileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserAccessProfileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserAccessProfileCountArgs<ExtArgs>
+            result: $Utils.Optional<UserAccessProfileCountAggregateOutputType> | number
+          }
+        }
+      }
+      AuthCredential: {
+        payload: Prisma.$AuthCredentialPayload<ExtArgs>
+        fields: Prisma.AuthCredentialFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuthCredentialFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuthCredentialFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload>
+          }
+          findFirst: {
+            args: Prisma.AuthCredentialFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuthCredentialFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload>
+          }
+          findMany: {
+            args: Prisma.AuthCredentialFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload>[]
+          }
+          create: {
+            args: Prisma.AuthCredentialCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload>
+          }
+          createMany: {
+            args: Prisma.AuthCredentialCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuthCredentialCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload>[]
+          }
+          delete: {
+            args: Prisma.AuthCredentialDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload>
+          }
+          update: {
+            args: Prisma.AuthCredentialUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuthCredentialDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuthCredentialUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AuthCredentialUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthCredentialPayload>
+          }
+          aggregate: {
+            args: Prisma.AuthCredentialAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuthCredential>
+          }
+          groupBy: {
+            args: Prisma.AuthCredentialGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuthCredentialGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuthCredentialCountArgs<ExtArgs>
+            result: $Utils.Optional<AuthCredentialCountAggregateOutputType> | number
+          }
+        }
+      }
+      AuthSession: {
+        payload: Prisma.$AuthSessionPayload<ExtArgs>
+        fields: Prisma.AuthSessionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuthSessionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuthSessionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload>
+          }
+          findFirst: {
+            args: Prisma.AuthSessionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuthSessionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload>
+          }
+          findMany: {
+            args: Prisma.AuthSessionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload>[]
+          }
+          create: {
+            args: Prisma.AuthSessionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload>
+          }
+          createMany: {
+            args: Prisma.AuthSessionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuthSessionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload>[]
+          }
+          delete: {
+            args: Prisma.AuthSessionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload>
+          }
+          update: {
+            args: Prisma.AuthSessionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuthSessionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuthSessionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AuthSessionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthSessionPayload>
+          }
+          aggregate: {
+            args: Prisma.AuthSessionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuthSession>
+          }
+          groupBy: {
+            args: Prisma.AuthSessionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuthSessionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuthSessionCountArgs<ExtArgs>
+            result: $Utils.Optional<AuthSessionCountAggregateOutputType> | number
+          }
+        }
+      }
+      AuthPasswordResetToken: {
+        payload: Prisma.$AuthPasswordResetTokenPayload<ExtArgs>
+        fields: Prisma.AuthPasswordResetTokenFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuthPasswordResetTokenFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuthPasswordResetTokenFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload>
+          }
+          findFirst: {
+            args: Prisma.AuthPasswordResetTokenFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuthPasswordResetTokenFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload>
+          }
+          findMany: {
+            args: Prisma.AuthPasswordResetTokenFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload>[]
+          }
+          create: {
+            args: Prisma.AuthPasswordResetTokenCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload>
+          }
+          createMany: {
+            args: Prisma.AuthPasswordResetTokenCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuthPasswordResetTokenCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload>[]
+          }
+          delete: {
+            args: Prisma.AuthPasswordResetTokenDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload>
+          }
+          update: {
+            args: Prisma.AuthPasswordResetTokenUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuthPasswordResetTokenDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuthPasswordResetTokenUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AuthPasswordResetTokenUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthPasswordResetTokenPayload>
+          }
+          aggregate: {
+            args: Prisma.AuthPasswordResetTokenAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuthPasswordResetToken>
+          }
+          groupBy: {
+            args: Prisma.AuthPasswordResetTokenGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuthPasswordResetTokenGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuthPasswordResetTokenCountArgs<ExtArgs>
+            result: $Utils.Optional<AuthPasswordResetTokenCountAggregateOutputType> | number
+          }
+        }
+      }
       Client: {
         payload: Prisma.$ClientPayload<ExtArgs>
         fields: Prisma.ClientFieldRefs
@@ -2061,6 +2469,216 @@ export namespace Prisma {
           }
         }
       }
+      ServiceTemplate: {
+        payload: Prisma.$ServiceTemplatePayload<ExtArgs>
+        fields: Prisma.ServiceTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ServiceTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ServiceTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.ServiceTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ServiceTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.ServiceTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.ServiceTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.ServiceTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ServiceTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.ServiceTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload>
+          }
+          update: {
+            args: Prisma.ServiceTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.ServiceTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ServiceTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ServiceTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.ServiceTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateServiceTemplate>
+          }
+          groupBy: {
+            args: Prisma.ServiceTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ServiceTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ServiceTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<ServiceTemplateCountAggregateOutputType> | number
+          }
+        }
+      }
+      ServiceTemplateTask: {
+        payload: Prisma.$ServiceTemplateTaskPayload<ExtArgs>
+        fields: Prisma.ServiceTemplateTaskFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ServiceTemplateTaskFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ServiceTemplateTaskFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload>
+          }
+          findFirst: {
+            args: Prisma.ServiceTemplateTaskFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ServiceTemplateTaskFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload>
+          }
+          findMany: {
+            args: Prisma.ServiceTemplateTaskFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload>[]
+          }
+          create: {
+            args: Prisma.ServiceTemplateTaskCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload>
+          }
+          createMany: {
+            args: Prisma.ServiceTemplateTaskCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ServiceTemplateTaskCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload>[]
+          }
+          delete: {
+            args: Prisma.ServiceTemplateTaskDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload>
+          }
+          update: {
+            args: Prisma.ServiceTemplateTaskUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload>
+          }
+          deleteMany: {
+            args: Prisma.ServiceTemplateTaskDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ServiceTemplateTaskUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ServiceTemplateTaskUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ServiceTemplateTaskPayload>
+          }
+          aggregate: {
+            args: Prisma.ServiceTemplateTaskAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateServiceTemplateTask>
+          }
+          groupBy: {
+            args: Prisma.ServiceTemplateTaskGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ServiceTemplateTaskGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ServiceTemplateTaskCountArgs<ExtArgs>
+            result: $Utils.Optional<ServiceTemplateTaskCountAggregateOutputType> | number
+          }
+        }
+      }
+      StandaloneTaskTemplate: {
+        payload: Prisma.$StandaloneTaskTemplatePayload<ExtArgs>
+        fields: Prisma.StandaloneTaskTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StandaloneTaskTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StandaloneTaskTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.StandaloneTaskTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StandaloneTaskTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.StandaloneTaskTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.StandaloneTaskTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.StandaloneTaskTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StandaloneTaskTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.StandaloneTaskTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload>
+          }
+          update: {
+            args: Prisma.StandaloneTaskTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.StandaloneTaskTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StandaloneTaskTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.StandaloneTaskTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StandaloneTaskTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.StandaloneTaskTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStandaloneTaskTemplate>
+          }
+          groupBy: {
+            args: Prisma.StandaloneTaskTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StandaloneTaskTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StandaloneTaskTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<StandaloneTaskTemplateCountAggregateOutputType> | number
+          }
+        }
+      }
       Document: {
         payload: Prisma.$DocumentPayload<ExtArgs>
         fields: Prisma.DocumentFieldRefs
@@ -2198,6 +2816,76 @@ export namespace Prisma {
           count: {
             args: Prisma.TemplateCountArgs<ExtArgs>
             result: $Utils.Optional<TemplateCountAggregateOutputType> | number
+          }
+        }
+      }
+      TemplateField: {
+        payload: Prisma.$TemplateFieldPayload<ExtArgs>
+        fields: Prisma.TemplateFieldFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TemplateFieldFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TemplateFieldFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload>
+          }
+          findFirst: {
+            args: Prisma.TemplateFieldFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TemplateFieldFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload>
+          }
+          findMany: {
+            args: Prisma.TemplateFieldFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload>[]
+          }
+          create: {
+            args: Prisma.TemplateFieldCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload>
+          }
+          createMany: {
+            args: Prisma.TemplateFieldCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TemplateFieldCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload>[]
+          }
+          delete: {
+            args: Prisma.TemplateFieldDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload>
+          }
+          update: {
+            args: Prisma.TemplateFieldUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload>
+          }
+          deleteMany: {
+            args: Prisma.TemplateFieldDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TemplateFieldUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TemplateFieldUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TemplateFieldPayload>
+          }
+          aggregate: {
+            args: Prisma.TemplateFieldAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTemplateField>
+          }
+          groupBy: {
+            args: Prisma.TemplateFieldGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TemplateFieldGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TemplateFieldCountArgs<ExtArgs>
+            result: $Utils.Optional<TemplateFieldCountAggregateOutputType> | number
           }
         }
       }
@@ -3142,6 +3830,8 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
+    authSessions: number
+    passwordResetTokens: number
     createdAccounts: number
     lastEditedAccounts: number
     createdDocuments: number
@@ -3151,6 +3841,8 @@ export namespace Prisma {
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    authSessions?: boolean | UserCountOutputTypeCountAuthSessionsArgs
+    passwordResetTokens?: boolean | UserCountOutputTypeCountPasswordResetTokensArgs
     createdAccounts?: boolean | UserCountOutputTypeCountCreatedAccountsArgs
     lastEditedAccounts?: boolean | UserCountOutputTypeCountLastEditedAccountsArgs
     createdDocuments?: boolean | UserCountOutputTypeCountCreatedDocumentsArgs
@@ -3168,6 +3860,20 @@ export namespace Prisma {
      * Select specific fields to fetch from the UserCountOutputType
      */
     select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAuthSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthSessionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPasswordResetTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthPasswordResetTokenWhereInput
   }
 
   /**
@@ -3411,6 +4117,68 @@ export namespace Prisma {
    */
   export type ServiceCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskWhereInput
+  }
+
+
+  /**
+   * Count Type ServiceTemplateCountOutputType
+   */
+
+  export type ServiceTemplateCountOutputType = {
+    taskTemplates: number
+  }
+
+  export type ServiceTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    taskTemplates?: boolean | ServiceTemplateCountOutputTypeCountTaskTemplatesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ServiceTemplateCountOutputType without action
+   */
+  export type ServiceTemplateCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateCountOutputType
+     */
+    select?: ServiceTemplateCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ServiceTemplateCountOutputType without action
+   */
+  export type ServiceTemplateCountOutputTypeCountTaskTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServiceTemplateTaskWhereInput
+  }
+
+
+  /**
+   * Count Type TemplateCountOutputType
+   */
+
+  export type TemplateCountOutputType = {
+    fields: number
+  }
+
+  export type TemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    fields?: boolean | TemplateCountOutputTypeCountFieldsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TemplateCountOutputType without action
+   */
+  export type TemplateCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateCountOutputType
+     */
+    select?: TemplateCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TemplateCountOutputType without action
+   */
+  export type TemplateCountOutputTypeCountFieldsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TemplateFieldWhereInput
   }
 
 
@@ -9465,12 +10233,16 @@ export namespace Prisma {
     lastLoginAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    authCredential?: boolean | User$authCredentialArgs<ExtArgs>
+    authSessions?: boolean | User$authSessionsArgs<ExtArgs>
+    passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     createdAccounts?: boolean | User$createdAccountsArgs<ExtArgs>
     lastEditedAccounts?: boolean | User$lastEditedAccountsArgs<ExtArgs>
     createdDocuments?: boolean | User$createdDocumentsArgs<ExtArgs>
     assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
     createdTasks?: boolean | User$createdTasksArgs<ExtArgs>
     createdTemplates?: boolean | User$createdTemplatesArgs<ExtArgs>
+    accessProfile?: boolean | User$accessProfileArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -9497,12 +10269,16 @@ export namespace Prisma {
   }
 
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    authCredential?: boolean | User$authCredentialArgs<ExtArgs>
+    authSessions?: boolean | User$authSessionsArgs<ExtArgs>
+    passwordResetTokens?: boolean | User$passwordResetTokensArgs<ExtArgs>
     createdAccounts?: boolean | User$createdAccountsArgs<ExtArgs>
     lastEditedAccounts?: boolean | User$lastEditedAccountsArgs<ExtArgs>
     createdDocuments?: boolean | User$createdDocumentsArgs<ExtArgs>
     assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
     createdTasks?: boolean | User$createdTasksArgs<ExtArgs>
     createdTemplates?: boolean | User$createdTemplatesArgs<ExtArgs>
+    accessProfile?: boolean | User$accessProfileArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -9510,12 +10286,16 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
+      authCredential: Prisma.$AuthCredentialPayload<ExtArgs> | null
+      authSessions: Prisma.$AuthSessionPayload<ExtArgs>[]
+      passwordResetTokens: Prisma.$AuthPasswordResetTokenPayload<ExtArgs>[]
       createdAccounts: Prisma.$AccountsSetPayload<ExtArgs>[]
       lastEditedAccounts: Prisma.$AccountsSetPayload<ExtArgs>[]
       createdDocuments: Prisma.$DocumentPayload<ExtArgs>[]
       assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
       createdTasks: Prisma.$TaskPayload<ExtArgs>[]
       createdTemplates: Prisma.$TemplatePayload<ExtArgs>[]
+      accessProfile: Prisma.$UserAccessProfilePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9890,12 +10670,16 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    authCredential<T extends User$authCredentialArgs<ExtArgs> = {}>(args?: Subset<T, User$authCredentialArgs<ExtArgs>>): Prisma__AuthCredentialClient<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    authSessions<T extends User$authSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$authSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "findMany"> | Null>
+    passwordResetTokens<T extends User$passwordResetTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$passwordResetTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "findMany"> | Null>
     createdAccounts<T extends User$createdAccountsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountsSetPayload<ExtArgs>, T, "findMany"> | Null>
     lastEditedAccounts<T extends User$lastEditedAccountsArgs<ExtArgs> = {}>(args?: Subset<T, User$lastEditedAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountsSetPayload<ExtArgs>, T, "findMany"> | Null>
     createdDocuments<T extends User$createdDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany"> | Null>
     assignedTasks<T extends User$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
     createdTasks<T extends User$createdTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$createdTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
     createdTemplates<T extends User$createdTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplatePayload<ExtArgs>, T, "findMany"> | Null>
+    accessProfile<T extends User$accessProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$accessProfileArgs<ExtArgs>>): Prisma__UserAccessProfileClient<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10247,6 +11031,61 @@ export namespace Prisma {
   }
 
   /**
+   * User.authCredential
+   */
+  export type User$authCredentialArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    where?: AuthCredentialWhereInput
+  }
+
+  /**
+   * User.authSessions
+   */
+  export type User$authSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    where?: AuthSessionWhereInput
+    orderBy?: AuthSessionOrderByWithRelationInput | AuthSessionOrderByWithRelationInput[]
+    cursor?: AuthSessionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuthSessionScalarFieldEnum | AuthSessionScalarFieldEnum[]
+  }
+
+  /**
+   * User.passwordResetTokens
+   */
+  export type User$passwordResetTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    where?: AuthPasswordResetTokenWhereInput
+    orderBy?: AuthPasswordResetTokenOrderByWithRelationInput | AuthPasswordResetTokenOrderByWithRelationInput[]
+    cursor?: AuthPasswordResetTokenWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuthPasswordResetTokenScalarFieldEnum | AuthPasswordResetTokenScalarFieldEnum[]
+  }
+
+  /**
    * User.createdAccounts
    */
   export type User$createdAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10367,6 +11206,21 @@ export namespace Prisma {
   }
 
   /**
+   * User.accessProfile
+   */
+  export type User$accessProfileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    where?: UserAccessProfileWhereInput
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10378,6 +11232,3876 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model UserAccessProfile
+   */
+
+  export type AggregateUserAccessProfile = {
+    _count: UserAccessProfileCountAggregateOutputType | null
+    _avg: UserAccessProfileAvgAggregateOutputType | null
+    _sum: UserAccessProfileSumAggregateOutputType | null
+    _min: UserAccessProfileMinAggregateOutputType | null
+    _max: UserAccessProfileMaxAggregateOutputType | null
+  }
+
+  export type UserAccessProfileAvgAggregateOutputType = {
+    portfolioCodes: number | null
+  }
+
+  export type UserAccessProfileSumAggregateOutputType = {
+    portfolioCodes: number[]
+  }
+
+  export type UserAccessProfileMinAggregateOutputType = {
+    userId: string | null
+    roleOverride: string | null
+    allPortfolios: boolean | null
+    assignedBy: string | null
+    assignedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserAccessProfileMaxAggregateOutputType = {
+    userId: string | null
+    roleOverride: string | null
+    allPortfolios: boolean | null
+    assignedBy: string | null
+    assignedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UserAccessProfileCountAggregateOutputType = {
+    userId: number
+    roleOverride: number
+    portfolioCodes: number
+    allPortfolios: number
+    assignedBy: number
+    assignedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type UserAccessProfileAvgAggregateInputType = {
+    portfolioCodes?: true
+  }
+
+  export type UserAccessProfileSumAggregateInputType = {
+    portfolioCodes?: true
+  }
+
+  export type UserAccessProfileMinAggregateInputType = {
+    userId?: true
+    roleOverride?: true
+    allPortfolios?: true
+    assignedBy?: true
+    assignedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserAccessProfileMaxAggregateInputType = {
+    userId?: true
+    roleOverride?: true
+    allPortfolios?: true
+    assignedBy?: true
+    assignedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UserAccessProfileCountAggregateInputType = {
+    userId?: true
+    roleOverride?: true
+    portfolioCodes?: true
+    allPortfolios?: true
+    assignedBy?: true
+    assignedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type UserAccessProfileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserAccessProfile to aggregate.
+     */
+    where?: UserAccessProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserAccessProfiles to fetch.
+     */
+    orderBy?: UserAccessProfileOrderByWithRelationInput | UserAccessProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserAccessProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserAccessProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserAccessProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserAccessProfiles
+    **/
+    _count?: true | UserAccessProfileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserAccessProfileAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserAccessProfileSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserAccessProfileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserAccessProfileMaxAggregateInputType
+  }
+
+  export type GetUserAccessProfileAggregateType<T extends UserAccessProfileAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserAccessProfile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserAccessProfile[P]>
+      : GetScalarType<T[P], AggregateUserAccessProfile[P]>
+  }
+
+
+
+
+  export type UserAccessProfileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserAccessProfileWhereInput
+    orderBy?: UserAccessProfileOrderByWithAggregationInput | UserAccessProfileOrderByWithAggregationInput[]
+    by: UserAccessProfileScalarFieldEnum[] | UserAccessProfileScalarFieldEnum
+    having?: UserAccessProfileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserAccessProfileCountAggregateInputType | true
+    _avg?: UserAccessProfileAvgAggregateInputType
+    _sum?: UserAccessProfileSumAggregateInputType
+    _min?: UserAccessProfileMinAggregateInputType
+    _max?: UserAccessProfileMaxAggregateInputType
+  }
+
+  export type UserAccessProfileGroupByOutputType = {
+    userId: string
+    roleOverride: string | null
+    portfolioCodes: number[]
+    allPortfolios: boolean
+    assignedBy: string | null
+    assignedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: UserAccessProfileCountAggregateOutputType | null
+    _avg: UserAccessProfileAvgAggregateOutputType | null
+    _sum: UserAccessProfileSumAggregateOutputType | null
+    _min: UserAccessProfileMinAggregateOutputType | null
+    _max: UserAccessProfileMaxAggregateOutputType | null
+  }
+
+  type GetUserAccessProfileGroupByPayload<T extends UserAccessProfileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserAccessProfileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserAccessProfileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserAccessProfileGroupByOutputType[P]>
+            : GetScalarType<T[P], UserAccessProfileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserAccessProfileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    roleOverride?: boolean
+    portfolioCodes?: boolean
+    allPortfolios?: boolean
+    assignedBy?: boolean
+    assignedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userAccessProfile"]>
+
+  export type UserAccessProfileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    roleOverride?: boolean
+    portfolioCodes?: boolean
+    allPortfolios?: boolean
+    assignedBy?: boolean
+    assignedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userAccessProfile"]>
+
+  export type UserAccessProfileSelectScalar = {
+    userId?: boolean
+    roleOverride?: boolean
+    portfolioCodes?: boolean
+    allPortfolios?: boolean
+    assignedBy?: boolean
+    assignedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type UserAccessProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type UserAccessProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $UserAccessProfilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserAccessProfile"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      userId: string
+      roleOverride: string | null
+      portfolioCodes: number[]
+      allPortfolios: boolean
+      assignedBy: string | null
+      assignedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["userAccessProfile"]>
+    composites: {}
+  }
+
+  type UserAccessProfileGetPayload<S extends boolean | null | undefined | UserAccessProfileDefaultArgs> = $Result.GetResult<Prisma.$UserAccessProfilePayload, S>
+
+  type UserAccessProfileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<UserAccessProfileFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: UserAccessProfileCountAggregateInputType | true
+    }
+
+  export interface UserAccessProfileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserAccessProfile'], meta: { name: 'UserAccessProfile' } }
+    /**
+     * Find zero or one UserAccessProfile that matches the filter.
+     * @param {UserAccessProfileFindUniqueArgs} args - Arguments to find a UserAccessProfile
+     * @example
+     * // Get one UserAccessProfile
+     * const userAccessProfile = await prisma.userAccessProfile.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserAccessProfileFindUniqueArgs>(args: SelectSubset<T, UserAccessProfileFindUniqueArgs<ExtArgs>>): Prisma__UserAccessProfileClient<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one UserAccessProfile that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {UserAccessProfileFindUniqueOrThrowArgs} args - Arguments to find a UserAccessProfile
+     * @example
+     * // Get one UserAccessProfile
+     * const userAccessProfile = await prisma.userAccessProfile.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserAccessProfileFindUniqueOrThrowArgs>(args: SelectSubset<T, UserAccessProfileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserAccessProfileClient<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first UserAccessProfile that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserAccessProfileFindFirstArgs} args - Arguments to find a UserAccessProfile
+     * @example
+     * // Get one UserAccessProfile
+     * const userAccessProfile = await prisma.userAccessProfile.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserAccessProfileFindFirstArgs>(args?: SelectSubset<T, UserAccessProfileFindFirstArgs<ExtArgs>>): Prisma__UserAccessProfileClient<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first UserAccessProfile that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserAccessProfileFindFirstOrThrowArgs} args - Arguments to find a UserAccessProfile
+     * @example
+     * // Get one UserAccessProfile
+     * const userAccessProfile = await prisma.userAccessProfile.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserAccessProfileFindFirstOrThrowArgs>(args?: SelectSubset<T, UserAccessProfileFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserAccessProfileClient<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more UserAccessProfiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserAccessProfileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserAccessProfiles
+     * const userAccessProfiles = await prisma.userAccessProfile.findMany()
+     * 
+     * // Get first 10 UserAccessProfiles
+     * const userAccessProfiles = await prisma.userAccessProfile.findMany({ take: 10 })
+     * 
+     * // Only select the `userId`
+     * const userAccessProfileWithUserIdOnly = await prisma.userAccessProfile.findMany({ select: { userId: true } })
+     * 
+     */
+    findMany<T extends UserAccessProfileFindManyArgs>(args?: SelectSubset<T, UserAccessProfileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a UserAccessProfile.
+     * @param {UserAccessProfileCreateArgs} args - Arguments to create a UserAccessProfile.
+     * @example
+     * // Create one UserAccessProfile
+     * const UserAccessProfile = await prisma.userAccessProfile.create({
+     *   data: {
+     *     // ... data to create a UserAccessProfile
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserAccessProfileCreateArgs>(args: SelectSubset<T, UserAccessProfileCreateArgs<ExtArgs>>): Prisma__UserAccessProfileClient<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many UserAccessProfiles.
+     * @param {UserAccessProfileCreateManyArgs} args - Arguments to create many UserAccessProfiles.
+     * @example
+     * // Create many UserAccessProfiles
+     * const userAccessProfile = await prisma.userAccessProfile.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserAccessProfileCreateManyArgs>(args?: SelectSubset<T, UserAccessProfileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserAccessProfiles and returns the data saved in the database.
+     * @param {UserAccessProfileCreateManyAndReturnArgs} args - Arguments to create many UserAccessProfiles.
+     * @example
+     * // Create many UserAccessProfiles
+     * const userAccessProfile = await prisma.userAccessProfile.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserAccessProfiles and only return the `userId`
+     * const userAccessProfileWithUserIdOnly = await prisma.userAccessProfile.createManyAndReturn({ 
+     *   select: { userId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserAccessProfileCreateManyAndReturnArgs>(args?: SelectSubset<T, UserAccessProfileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a UserAccessProfile.
+     * @param {UserAccessProfileDeleteArgs} args - Arguments to delete one UserAccessProfile.
+     * @example
+     * // Delete one UserAccessProfile
+     * const UserAccessProfile = await prisma.userAccessProfile.delete({
+     *   where: {
+     *     // ... filter to delete one UserAccessProfile
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserAccessProfileDeleteArgs>(args: SelectSubset<T, UserAccessProfileDeleteArgs<ExtArgs>>): Prisma__UserAccessProfileClient<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one UserAccessProfile.
+     * @param {UserAccessProfileUpdateArgs} args - Arguments to update one UserAccessProfile.
+     * @example
+     * // Update one UserAccessProfile
+     * const userAccessProfile = await prisma.userAccessProfile.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserAccessProfileUpdateArgs>(args: SelectSubset<T, UserAccessProfileUpdateArgs<ExtArgs>>): Prisma__UserAccessProfileClient<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more UserAccessProfiles.
+     * @param {UserAccessProfileDeleteManyArgs} args - Arguments to filter UserAccessProfiles to delete.
+     * @example
+     * // Delete a few UserAccessProfiles
+     * const { count } = await prisma.userAccessProfile.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserAccessProfileDeleteManyArgs>(args?: SelectSubset<T, UserAccessProfileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserAccessProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserAccessProfileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserAccessProfiles
+     * const userAccessProfile = await prisma.userAccessProfile.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserAccessProfileUpdateManyArgs>(args: SelectSubset<T, UserAccessProfileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one UserAccessProfile.
+     * @param {UserAccessProfileUpsertArgs} args - Arguments to update or create a UserAccessProfile.
+     * @example
+     * // Update or create a UserAccessProfile
+     * const userAccessProfile = await prisma.userAccessProfile.upsert({
+     *   create: {
+     *     // ... data to create a UserAccessProfile
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserAccessProfile we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserAccessProfileUpsertArgs>(args: SelectSubset<T, UserAccessProfileUpsertArgs<ExtArgs>>): Prisma__UserAccessProfileClient<$Result.GetResult<Prisma.$UserAccessProfilePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of UserAccessProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserAccessProfileCountArgs} args - Arguments to filter UserAccessProfiles to count.
+     * @example
+     * // Count the number of UserAccessProfiles
+     * const count = await prisma.userAccessProfile.count({
+     *   where: {
+     *     // ... the filter for the UserAccessProfiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserAccessProfileCountArgs>(
+      args?: Subset<T, UserAccessProfileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserAccessProfileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserAccessProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserAccessProfileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserAccessProfileAggregateArgs>(args: Subset<T, UserAccessProfileAggregateArgs>): Prisma.PrismaPromise<GetUserAccessProfileAggregateType<T>>
+
+    /**
+     * Group by UserAccessProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserAccessProfileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserAccessProfileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserAccessProfileGroupByArgs['orderBy'] }
+        : { orderBy?: UserAccessProfileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserAccessProfileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserAccessProfileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserAccessProfile model
+   */
+  readonly fields: UserAccessProfileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserAccessProfile.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserAccessProfileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserAccessProfile model
+   */ 
+  interface UserAccessProfileFieldRefs {
+    readonly userId: FieldRef<"UserAccessProfile", 'String'>
+    readonly roleOverride: FieldRef<"UserAccessProfile", 'String'>
+    readonly portfolioCodes: FieldRef<"UserAccessProfile", 'Int[]'>
+    readonly allPortfolios: FieldRef<"UserAccessProfile", 'Boolean'>
+    readonly assignedBy: FieldRef<"UserAccessProfile", 'String'>
+    readonly assignedAt: FieldRef<"UserAccessProfile", 'DateTime'>
+    readonly createdAt: FieldRef<"UserAccessProfile", 'DateTime'>
+    readonly updatedAt: FieldRef<"UserAccessProfile", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserAccessProfile findUnique
+   */
+  export type UserAccessProfileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which UserAccessProfile to fetch.
+     */
+    where: UserAccessProfileWhereUniqueInput
+  }
+
+  /**
+   * UserAccessProfile findUniqueOrThrow
+   */
+  export type UserAccessProfileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which UserAccessProfile to fetch.
+     */
+    where: UserAccessProfileWhereUniqueInput
+  }
+
+  /**
+   * UserAccessProfile findFirst
+   */
+  export type UserAccessProfileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which UserAccessProfile to fetch.
+     */
+    where?: UserAccessProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserAccessProfiles to fetch.
+     */
+    orderBy?: UserAccessProfileOrderByWithRelationInput | UserAccessProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserAccessProfiles.
+     */
+    cursor?: UserAccessProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserAccessProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserAccessProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserAccessProfiles.
+     */
+    distinct?: UserAccessProfileScalarFieldEnum | UserAccessProfileScalarFieldEnum[]
+  }
+
+  /**
+   * UserAccessProfile findFirstOrThrow
+   */
+  export type UserAccessProfileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which UserAccessProfile to fetch.
+     */
+    where?: UserAccessProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserAccessProfiles to fetch.
+     */
+    orderBy?: UserAccessProfileOrderByWithRelationInput | UserAccessProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserAccessProfiles.
+     */
+    cursor?: UserAccessProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserAccessProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserAccessProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserAccessProfiles.
+     */
+    distinct?: UserAccessProfileScalarFieldEnum | UserAccessProfileScalarFieldEnum[]
+  }
+
+  /**
+   * UserAccessProfile findMany
+   */
+  export type UserAccessProfileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which UserAccessProfiles to fetch.
+     */
+    where?: UserAccessProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserAccessProfiles to fetch.
+     */
+    orderBy?: UserAccessProfileOrderByWithRelationInput | UserAccessProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserAccessProfiles.
+     */
+    cursor?: UserAccessProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserAccessProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserAccessProfiles.
+     */
+    skip?: number
+    distinct?: UserAccessProfileScalarFieldEnum | UserAccessProfileScalarFieldEnum[]
+  }
+
+  /**
+   * UserAccessProfile create
+   */
+  export type UserAccessProfileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserAccessProfile.
+     */
+    data: XOR<UserAccessProfileCreateInput, UserAccessProfileUncheckedCreateInput>
+  }
+
+  /**
+   * UserAccessProfile createMany
+   */
+  export type UserAccessProfileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserAccessProfiles.
+     */
+    data: UserAccessProfileCreateManyInput | UserAccessProfileCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserAccessProfile createManyAndReturn
+   */
+  export type UserAccessProfileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many UserAccessProfiles.
+     */
+    data: UserAccessProfileCreateManyInput | UserAccessProfileCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserAccessProfile update
+   */
+  export type UserAccessProfileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserAccessProfile.
+     */
+    data: XOR<UserAccessProfileUpdateInput, UserAccessProfileUncheckedUpdateInput>
+    /**
+     * Choose, which UserAccessProfile to update.
+     */
+    where: UserAccessProfileWhereUniqueInput
+  }
+
+  /**
+   * UserAccessProfile updateMany
+   */
+  export type UserAccessProfileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserAccessProfiles.
+     */
+    data: XOR<UserAccessProfileUpdateManyMutationInput, UserAccessProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which UserAccessProfiles to update
+     */
+    where?: UserAccessProfileWhereInput
+  }
+
+  /**
+   * UserAccessProfile upsert
+   */
+  export type UserAccessProfileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserAccessProfile to update in case it exists.
+     */
+    where: UserAccessProfileWhereUniqueInput
+    /**
+     * In case the UserAccessProfile found by the `where` argument doesn't exist, create a new UserAccessProfile with this data.
+     */
+    create: XOR<UserAccessProfileCreateInput, UserAccessProfileUncheckedCreateInput>
+    /**
+     * In case the UserAccessProfile was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserAccessProfileUpdateInput, UserAccessProfileUncheckedUpdateInput>
+  }
+
+  /**
+   * UserAccessProfile delete
+   */
+  export type UserAccessProfileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+    /**
+     * Filter which UserAccessProfile to delete.
+     */
+    where: UserAccessProfileWhereUniqueInput
+  }
+
+  /**
+   * UserAccessProfile deleteMany
+   */
+  export type UserAccessProfileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserAccessProfiles to delete
+     */
+    where?: UserAccessProfileWhereInput
+  }
+
+  /**
+   * UserAccessProfile without action
+   */
+  export type UserAccessProfileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserAccessProfile
+     */
+    select?: UserAccessProfileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserAccessProfileInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AuthCredential
+   */
+
+  export type AggregateAuthCredential = {
+    _count: AuthCredentialCountAggregateOutputType | null
+    _min: AuthCredentialMinAggregateOutputType | null
+    _max: AuthCredentialMaxAggregateOutputType | null
+  }
+
+  export type AuthCredentialMinAggregateOutputType = {
+    userId: string | null
+    passwordHash: string | null
+    emailVerified: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AuthCredentialMaxAggregateOutputType = {
+    userId: string | null
+    passwordHash: string | null
+    emailVerified: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AuthCredentialCountAggregateOutputType = {
+    userId: number
+    passwordHash: number
+    emailVerified: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AuthCredentialMinAggregateInputType = {
+    userId?: true
+    passwordHash?: true
+    emailVerified?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AuthCredentialMaxAggregateInputType = {
+    userId?: true
+    passwordHash?: true
+    emailVerified?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AuthCredentialCountAggregateInputType = {
+    userId?: true
+    passwordHash?: true
+    emailVerified?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AuthCredentialAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthCredential to aggregate.
+     */
+    where?: AuthCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthCredentials to fetch.
+     */
+    orderBy?: AuthCredentialOrderByWithRelationInput | AuthCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuthCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuthCredentials
+    **/
+    _count?: true | AuthCredentialCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuthCredentialMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuthCredentialMaxAggregateInputType
+  }
+
+  export type GetAuthCredentialAggregateType<T extends AuthCredentialAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuthCredential]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuthCredential[P]>
+      : GetScalarType<T[P], AggregateAuthCredential[P]>
+  }
+
+
+
+
+  export type AuthCredentialGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthCredentialWhereInput
+    orderBy?: AuthCredentialOrderByWithAggregationInput | AuthCredentialOrderByWithAggregationInput[]
+    by: AuthCredentialScalarFieldEnum[] | AuthCredentialScalarFieldEnum
+    having?: AuthCredentialScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuthCredentialCountAggregateInputType | true
+    _min?: AuthCredentialMinAggregateInputType
+    _max?: AuthCredentialMaxAggregateInputType
+  }
+
+  export type AuthCredentialGroupByOutputType = {
+    userId: string
+    passwordHash: string
+    emailVerified: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: AuthCredentialCountAggregateOutputType | null
+    _min: AuthCredentialMinAggregateOutputType | null
+    _max: AuthCredentialMaxAggregateOutputType | null
+  }
+
+  type GetAuthCredentialGroupByPayload<T extends AuthCredentialGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuthCredentialGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuthCredentialGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuthCredentialGroupByOutputType[P]>
+            : GetScalarType<T[P], AuthCredentialGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuthCredentialSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    passwordHash?: boolean
+    emailVerified?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["authCredential"]>
+
+  export type AuthCredentialSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    userId?: boolean
+    passwordHash?: boolean
+    emailVerified?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["authCredential"]>
+
+  export type AuthCredentialSelectScalar = {
+    userId?: boolean
+    passwordHash?: boolean
+    emailVerified?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AuthCredentialInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AuthCredentialIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AuthCredentialPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuthCredential"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      userId: string
+      passwordHash: string
+      emailVerified: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["authCredential"]>
+    composites: {}
+  }
+
+  type AuthCredentialGetPayload<S extends boolean | null | undefined | AuthCredentialDefaultArgs> = $Result.GetResult<Prisma.$AuthCredentialPayload, S>
+
+  type AuthCredentialCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AuthCredentialFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AuthCredentialCountAggregateInputType | true
+    }
+
+  export interface AuthCredentialDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuthCredential'], meta: { name: 'AuthCredential' } }
+    /**
+     * Find zero or one AuthCredential that matches the filter.
+     * @param {AuthCredentialFindUniqueArgs} args - Arguments to find a AuthCredential
+     * @example
+     * // Get one AuthCredential
+     * const authCredential = await prisma.authCredential.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuthCredentialFindUniqueArgs>(args: SelectSubset<T, AuthCredentialFindUniqueArgs<ExtArgs>>): Prisma__AuthCredentialClient<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AuthCredential that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AuthCredentialFindUniqueOrThrowArgs} args - Arguments to find a AuthCredential
+     * @example
+     * // Get one AuthCredential
+     * const authCredential = await prisma.authCredential.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuthCredentialFindUniqueOrThrowArgs>(args: SelectSubset<T, AuthCredentialFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuthCredentialClient<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AuthCredential that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthCredentialFindFirstArgs} args - Arguments to find a AuthCredential
+     * @example
+     * // Get one AuthCredential
+     * const authCredential = await prisma.authCredential.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuthCredentialFindFirstArgs>(args?: SelectSubset<T, AuthCredentialFindFirstArgs<ExtArgs>>): Prisma__AuthCredentialClient<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AuthCredential that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthCredentialFindFirstOrThrowArgs} args - Arguments to find a AuthCredential
+     * @example
+     * // Get one AuthCredential
+     * const authCredential = await prisma.authCredential.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuthCredentialFindFirstOrThrowArgs>(args?: SelectSubset<T, AuthCredentialFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuthCredentialClient<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AuthCredentials that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthCredentialFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuthCredentials
+     * const authCredentials = await prisma.authCredential.findMany()
+     * 
+     * // Get first 10 AuthCredentials
+     * const authCredentials = await prisma.authCredential.findMany({ take: 10 })
+     * 
+     * // Only select the `userId`
+     * const authCredentialWithUserIdOnly = await prisma.authCredential.findMany({ select: { userId: true } })
+     * 
+     */
+    findMany<T extends AuthCredentialFindManyArgs>(args?: SelectSubset<T, AuthCredentialFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AuthCredential.
+     * @param {AuthCredentialCreateArgs} args - Arguments to create a AuthCredential.
+     * @example
+     * // Create one AuthCredential
+     * const AuthCredential = await prisma.authCredential.create({
+     *   data: {
+     *     // ... data to create a AuthCredential
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuthCredentialCreateArgs>(args: SelectSubset<T, AuthCredentialCreateArgs<ExtArgs>>): Prisma__AuthCredentialClient<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AuthCredentials.
+     * @param {AuthCredentialCreateManyArgs} args - Arguments to create many AuthCredentials.
+     * @example
+     * // Create many AuthCredentials
+     * const authCredential = await prisma.authCredential.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuthCredentialCreateManyArgs>(args?: SelectSubset<T, AuthCredentialCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuthCredentials and returns the data saved in the database.
+     * @param {AuthCredentialCreateManyAndReturnArgs} args - Arguments to create many AuthCredentials.
+     * @example
+     * // Create many AuthCredentials
+     * const authCredential = await prisma.authCredential.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AuthCredentials and only return the `userId`
+     * const authCredentialWithUserIdOnly = await prisma.authCredential.createManyAndReturn({ 
+     *   select: { userId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AuthCredentialCreateManyAndReturnArgs>(args?: SelectSubset<T, AuthCredentialCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AuthCredential.
+     * @param {AuthCredentialDeleteArgs} args - Arguments to delete one AuthCredential.
+     * @example
+     * // Delete one AuthCredential
+     * const AuthCredential = await prisma.authCredential.delete({
+     *   where: {
+     *     // ... filter to delete one AuthCredential
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuthCredentialDeleteArgs>(args: SelectSubset<T, AuthCredentialDeleteArgs<ExtArgs>>): Prisma__AuthCredentialClient<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AuthCredential.
+     * @param {AuthCredentialUpdateArgs} args - Arguments to update one AuthCredential.
+     * @example
+     * // Update one AuthCredential
+     * const authCredential = await prisma.authCredential.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuthCredentialUpdateArgs>(args: SelectSubset<T, AuthCredentialUpdateArgs<ExtArgs>>): Prisma__AuthCredentialClient<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AuthCredentials.
+     * @param {AuthCredentialDeleteManyArgs} args - Arguments to filter AuthCredentials to delete.
+     * @example
+     * // Delete a few AuthCredentials
+     * const { count } = await prisma.authCredential.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuthCredentialDeleteManyArgs>(args?: SelectSubset<T, AuthCredentialDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuthCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthCredentialUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuthCredentials
+     * const authCredential = await prisma.authCredential.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuthCredentialUpdateManyArgs>(args: SelectSubset<T, AuthCredentialUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AuthCredential.
+     * @param {AuthCredentialUpsertArgs} args - Arguments to update or create a AuthCredential.
+     * @example
+     * // Update or create a AuthCredential
+     * const authCredential = await prisma.authCredential.upsert({
+     *   create: {
+     *     // ... data to create a AuthCredential
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuthCredential we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuthCredentialUpsertArgs>(args: SelectSubset<T, AuthCredentialUpsertArgs<ExtArgs>>): Prisma__AuthCredentialClient<$Result.GetResult<Prisma.$AuthCredentialPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AuthCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthCredentialCountArgs} args - Arguments to filter AuthCredentials to count.
+     * @example
+     * // Count the number of AuthCredentials
+     * const count = await prisma.authCredential.count({
+     *   where: {
+     *     // ... the filter for the AuthCredentials we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuthCredentialCountArgs>(
+      args?: Subset<T, AuthCredentialCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuthCredentialCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuthCredential.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthCredentialAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuthCredentialAggregateArgs>(args: Subset<T, AuthCredentialAggregateArgs>): Prisma.PrismaPromise<GetAuthCredentialAggregateType<T>>
+
+    /**
+     * Group by AuthCredential.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthCredentialGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuthCredentialGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuthCredentialGroupByArgs['orderBy'] }
+        : { orderBy?: AuthCredentialGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuthCredentialGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuthCredentialGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuthCredential model
+   */
+  readonly fields: AuthCredentialFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuthCredential.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuthCredentialClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuthCredential model
+   */ 
+  interface AuthCredentialFieldRefs {
+    readonly userId: FieldRef<"AuthCredential", 'String'>
+    readonly passwordHash: FieldRef<"AuthCredential", 'String'>
+    readonly emailVerified: FieldRef<"AuthCredential", 'Boolean'>
+    readonly createdAt: FieldRef<"AuthCredential", 'DateTime'>
+    readonly updatedAt: FieldRef<"AuthCredential", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuthCredential findUnique
+   */
+  export type AuthCredentialFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthCredential to fetch.
+     */
+    where: AuthCredentialWhereUniqueInput
+  }
+
+  /**
+   * AuthCredential findUniqueOrThrow
+   */
+  export type AuthCredentialFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthCredential to fetch.
+     */
+    where: AuthCredentialWhereUniqueInput
+  }
+
+  /**
+   * AuthCredential findFirst
+   */
+  export type AuthCredentialFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthCredential to fetch.
+     */
+    where?: AuthCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthCredentials to fetch.
+     */
+    orderBy?: AuthCredentialOrderByWithRelationInput | AuthCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthCredentials.
+     */
+    cursor?: AuthCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthCredentials.
+     */
+    distinct?: AuthCredentialScalarFieldEnum | AuthCredentialScalarFieldEnum[]
+  }
+
+  /**
+   * AuthCredential findFirstOrThrow
+   */
+  export type AuthCredentialFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthCredential to fetch.
+     */
+    where?: AuthCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthCredentials to fetch.
+     */
+    orderBy?: AuthCredentialOrderByWithRelationInput | AuthCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthCredentials.
+     */
+    cursor?: AuthCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthCredentials.
+     */
+    distinct?: AuthCredentialScalarFieldEnum | AuthCredentialScalarFieldEnum[]
+  }
+
+  /**
+   * AuthCredential findMany
+   */
+  export type AuthCredentialFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthCredentials to fetch.
+     */
+    where?: AuthCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthCredentials to fetch.
+     */
+    orderBy?: AuthCredentialOrderByWithRelationInput | AuthCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuthCredentials.
+     */
+    cursor?: AuthCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthCredentials.
+     */
+    skip?: number
+    distinct?: AuthCredentialScalarFieldEnum | AuthCredentialScalarFieldEnum[]
+  }
+
+  /**
+   * AuthCredential create
+   */
+  export type AuthCredentialCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AuthCredential.
+     */
+    data: XOR<AuthCredentialCreateInput, AuthCredentialUncheckedCreateInput>
+  }
+
+  /**
+   * AuthCredential createMany
+   */
+  export type AuthCredentialCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuthCredentials.
+     */
+    data: AuthCredentialCreateManyInput | AuthCredentialCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuthCredential createManyAndReturn
+   */
+  export type AuthCredentialCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AuthCredentials.
+     */
+    data: AuthCredentialCreateManyInput | AuthCredentialCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuthCredential update
+   */
+  export type AuthCredentialUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AuthCredential.
+     */
+    data: XOR<AuthCredentialUpdateInput, AuthCredentialUncheckedUpdateInput>
+    /**
+     * Choose, which AuthCredential to update.
+     */
+    where: AuthCredentialWhereUniqueInput
+  }
+
+  /**
+   * AuthCredential updateMany
+   */
+  export type AuthCredentialUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuthCredentials.
+     */
+    data: XOR<AuthCredentialUpdateManyMutationInput, AuthCredentialUncheckedUpdateManyInput>
+    /**
+     * Filter which AuthCredentials to update
+     */
+    where?: AuthCredentialWhereInput
+  }
+
+  /**
+   * AuthCredential upsert
+   */
+  export type AuthCredentialUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AuthCredential to update in case it exists.
+     */
+    where: AuthCredentialWhereUniqueInput
+    /**
+     * In case the AuthCredential found by the `where` argument doesn't exist, create a new AuthCredential with this data.
+     */
+    create: XOR<AuthCredentialCreateInput, AuthCredentialUncheckedCreateInput>
+    /**
+     * In case the AuthCredential was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuthCredentialUpdateInput, AuthCredentialUncheckedUpdateInput>
+  }
+
+  /**
+   * AuthCredential delete
+   */
+  export type AuthCredentialDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+    /**
+     * Filter which AuthCredential to delete.
+     */
+    where: AuthCredentialWhereUniqueInput
+  }
+
+  /**
+   * AuthCredential deleteMany
+   */
+  export type AuthCredentialDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthCredentials to delete
+     */
+    where?: AuthCredentialWhereInput
+  }
+
+  /**
+   * AuthCredential without action
+   */
+  export type AuthCredentialDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthCredential
+     */
+    select?: AuthCredentialSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthCredentialInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AuthSession
+   */
+
+  export type AggregateAuthSession = {
+    _count: AuthSessionCountAggregateOutputType | null
+    _min: AuthSessionMinAggregateOutputType | null
+    _max: AuthSessionMaxAggregateOutputType | null
+  }
+
+  export type AuthSessionMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    refreshToken: string | null
+    expiresAt: Date | null
+    rememberMe: boolean | null
+    ipAddress: string | null
+    userAgent: string | null
+    createdAt: Date | null
+    lastUsedAt: Date | null
+  }
+
+  export type AuthSessionMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    refreshToken: string | null
+    expiresAt: Date | null
+    rememberMe: boolean | null
+    ipAddress: string | null
+    userAgent: string | null
+    createdAt: Date | null
+    lastUsedAt: Date | null
+  }
+
+  export type AuthSessionCountAggregateOutputType = {
+    id: number
+    userId: number
+    token: number
+    refreshToken: number
+    expiresAt: number
+    rememberMe: number
+    ipAddress: number
+    userAgent: number
+    createdAt: number
+    lastUsedAt: number
+    _all: number
+  }
+
+
+  export type AuthSessionMinAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    refreshToken?: true
+    expiresAt?: true
+    rememberMe?: true
+    ipAddress?: true
+    userAgent?: true
+    createdAt?: true
+    lastUsedAt?: true
+  }
+
+  export type AuthSessionMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    refreshToken?: true
+    expiresAt?: true
+    rememberMe?: true
+    ipAddress?: true
+    userAgent?: true
+    createdAt?: true
+    lastUsedAt?: true
+  }
+
+  export type AuthSessionCountAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    refreshToken?: true
+    expiresAt?: true
+    rememberMe?: true
+    ipAddress?: true
+    userAgent?: true
+    createdAt?: true
+    lastUsedAt?: true
+    _all?: true
+  }
+
+  export type AuthSessionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthSession to aggregate.
+     */
+    where?: AuthSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthSessions to fetch.
+     */
+    orderBy?: AuthSessionOrderByWithRelationInput | AuthSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuthSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuthSessions
+    **/
+    _count?: true | AuthSessionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuthSessionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuthSessionMaxAggregateInputType
+  }
+
+  export type GetAuthSessionAggregateType<T extends AuthSessionAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuthSession]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuthSession[P]>
+      : GetScalarType<T[P], AggregateAuthSession[P]>
+  }
+
+
+
+
+  export type AuthSessionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthSessionWhereInput
+    orderBy?: AuthSessionOrderByWithAggregationInput | AuthSessionOrderByWithAggregationInput[]
+    by: AuthSessionScalarFieldEnum[] | AuthSessionScalarFieldEnum
+    having?: AuthSessionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuthSessionCountAggregateInputType | true
+    _min?: AuthSessionMinAggregateInputType
+    _max?: AuthSessionMaxAggregateInputType
+  }
+
+  export type AuthSessionGroupByOutputType = {
+    id: string
+    userId: string
+    token: string
+    refreshToken: string
+    expiresAt: Date
+    rememberMe: boolean
+    ipAddress: string | null
+    userAgent: string | null
+    createdAt: Date
+    lastUsedAt: Date
+    _count: AuthSessionCountAggregateOutputType | null
+    _min: AuthSessionMinAggregateOutputType | null
+    _max: AuthSessionMaxAggregateOutputType | null
+  }
+
+  type GetAuthSessionGroupByPayload<T extends AuthSessionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuthSessionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuthSessionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuthSessionGroupByOutputType[P]>
+            : GetScalarType<T[P], AuthSessionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuthSessionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    refreshToken?: boolean
+    expiresAt?: boolean
+    rememberMe?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    createdAt?: boolean
+    lastUsedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["authSession"]>
+
+  export type AuthSessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    refreshToken?: boolean
+    expiresAt?: boolean
+    rememberMe?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    createdAt?: boolean
+    lastUsedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["authSession"]>
+
+  export type AuthSessionSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    refreshToken?: boolean
+    expiresAt?: boolean
+    rememberMe?: boolean
+    ipAddress?: boolean
+    userAgent?: boolean
+    createdAt?: boolean
+    lastUsedAt?: boolean
+  }
+
+  export type AuthSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AuthSessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AuthSessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuthSession"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      token: string
+      refreshToken: string
+      expiresAt: Date
+      rememberMe: boolean
+      ipAddress: string | null
+      userAgent: string | null
+      createdAt: Date
+      lastUsedAt: Date
+    }, ExtArgs["result"]["authSession"]>
+    composites: {}
+  }
+
+  type AuthSessionGetPayload<S extends boolean | null | undefined | AuthSessionDefaultArgs> = $Result.GetResult<Prisma.$AuthSessionPayload, S>
+
+  type AuthSessionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AuthSessionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AuthSessionCountAggregateInputType | true
+    }
+
+  export interface AuthSessionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuthSession'], meta: { name: 'AuthSession' } }
+    /**
+     * Find zero or one AuthSession that matches the filter.
+     * @param {AuthSessionFindUniqueArgs} args - Arguments to find a AuthSession
+     * @example
+     * // Get one AuthSession
+     * const authSession = await prisma.authSession.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuthSessionFindUniqueArgs>(args: SelectSubset<T, AuthSessionFindUniqueArgs<ExtArgs>>): Prisma__AuthSessionClient<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AuthSession that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AuthSessionFindUniqueOrThrowArgs} args - Arguments to find a AuthSession
+     * @example
+     * // Get one AuthSession
+     * const authSession = await prisma.authSession.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuthSessionFindUniqueOrThrowArgs>(args: SelectSubset<T, AuthSessionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuthSessionClient<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AuthSession that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthSessionFindFirstArgs} args - Arguments to find a AuthSession
+     * @example
+     * // Get one AuthSession
+     * const authSession = await prisma.authSession.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuthSessionFindFirstArgs>(args?: SelectSubset<T, AuthSessionFindFirstArgs<ExtArgs>>): Prisma__AuthSessionClient<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AuthSession that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthSessionFindFirstOrThrowArgs} args - Arguments to find a AuthSession
+     * @example
+     * // Get one AuthSession
+     * const authSession = await prisma.authSession.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuthSessionFindFirstOrThrowArgs>(args?: SelectSubset<T, AuthSessionFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuthSessionClient<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AuthSessions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthSessionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuthSessions
+     * const authSessions = await prisma.authSession.findMany()
+     * 
+     * // Get first 10 AuthSessions
+     * const authSessions = await prisma.authSession.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const authSessionWithIdOnly = await prisma.authSession.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuthSessionFindManyArgs>(args?: SelectSubset<T, AuthSessionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AuthSession.
+     * @param {AuthSessionCreateArgs} args - Arguments to create a AuthSession.
+     * @example
+     * // Create one AuthSession
+     * const AuthSession = await prisma.authSession.create({
+     *   data: {
+     *     // ... data to create a AuthSession
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuthSessionCreateArgs>(args: SelectSubset<T, AuthSessionCreateArgs<ExtArgs>>): Prisma__AuthSessionClient<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AuthSessions.
+     * @param {AuthSessionCreateManyArgs} args - Arguments to create many AuthSessions.
+     * @example
+     * // Create many AuthSessions
+     * const authSession = await prisma.authSession.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuthSessionCreateManyArgs>(args?: SelectSubset<T, AuthSessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuthSessions and returns the data saved in the database.
+     * @param {AuthSessionCreateManyAndReturnArgs} args - Arguments to create many AuthSessions.
+     * @example
+     * // Create many AuthSessions
+     * const authSession = await prisma.authSession.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AuthSessions and only return the `id`
+     * const authSessionWithIdOnly = await prisma.authSession.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AuthSessionCreateManyAndReturnArgs>(args?: SelectSubset<T, AuthSessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AuthSession.
+     * @param {AuthSessionDeleteArgs} args - Arguments to delete one AuthSession.
+     * @example
+     * // Delete one AuthSession
+     * const AuthSession = await prisma.authSession.delete({
+     *   where: {
+     *     // ... filter to delete one AuthSession
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuthSessionDeleteArgs>(args: SelectSubset<T, AuthSessionDeleteArgs<ExtArgs>>): Prisma__AuthSessionClient<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AuthSession.
+     * @param {AuthSessionUpdateArgs} args - Arguments to update one AuthSession.
+     * @example
+     * // Update one AuthSession
+     * const authSession = await prisma.authSession.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuthSessionUpdateArgs>(args: SelectSubset<T, AuthSessionUpdateArgs<ExtArgs>>): Prisma__AuthSessionClient<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AuthSessions.
+     * @param {AuthSessionDeleteManyArgs} args - Arguments to filter AuthSessions to delete.
+     * @example
+     * // Delete a few AuthSessions
+     * const { count } = await prisma.authSession.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuthSessionDeleteManyArgs>(args?: SelectSubset<T, AuthSessionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuthSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthSessionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuthSessions
+     * const authSession = await prisma.authSession.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuthSessionUpdateManyArgs>(args: SelectSubset<T, AuthSessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AuthSession.
+     * @param {AuthSessionUpsertArgs} args - Arguments to update or create a AuthSession.
+     * @example
+     * // Update or create a AuthSession
+     * const authSession = await prisma.authSession.upsert({
+     *   create: {
+     *     // ... data to create a AuthSession
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuthSession we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuthSessionUpsertArgs>(args: SelectSubset<T, AuthSessionUpsertArgs<ExtArgs>>): Prisma__AuthSessionClient<$Result.GetResult<Prisma.$AuthSessionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AuthSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthSessionCountArgs} args - Arguments to filter AuthSessions to count.
+     * @example
+     * // Count the number of AuthSessions
+     * const count = await prisma.authSession.count({
+     *   where: {
+     *     // ... the filter for the AuthSessions we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuthSessionCountArgs>(
+      args?: Subset<T, AuthSessionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuthSessionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuthSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthSessionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuthSessionAggregateArgs>(args: Subset<T, AuthSessionAggregateArgs>): Prisma.PrismaPromise<GetAuthSessionAggregateType<T>>
+
+    /**
+     * Group by AuthSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthSessionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuthSessionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuthSessionGroupByArgs['orderBy'] }
+        : { orderBy?: AuthSessionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuthSessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuthSessionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuthSession model
+   */
+  readonly fields: AuthSessionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuthSession.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuthSessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuthSession model
+   */ 
+  interface AuthSessionFieldRefs {
+    readonly id: FieldRef<"AuthSession", 'String'>
+    readonly userId: FieldRef<"AuthSession", 'String'>
+    readonly token: FieldRef<"AuthSession", 'String'>
+    readonly refreshToken: FieldRef<"AuthSession", 'String'>
+    readonly expiresAt: FieldRef<"AuthSession", 'DateTime'>
+    readonly rememberMe: FieldRef<"AuthSession", 'Boolean'>
+    readonly ipAddress: FieldRef<"AuthSession", 'String'>
+    readonly userAgent: FieldRef<"AuthSession", 'String'>
+    readonly createdAt: FieldRef<"AuthSession", 'DateTime'>
+    readonly lastUsedAt: FieldRef<"AuthSession", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuthSession findUnique
+   */
+  export type AuthSessionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthSession to fetch.
+     */
+    where: AuthSessionWhereUniqueInput
+  }
+
+  /**
+   * AuthSession findUniqueOrThrow
+   */
+  export type AuthSessionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthSession to fetch.
+     */
+    where: AuthSessionWhereUniqueInput
+  }
+
+  /**
+   * AuthSession findFirst
+   */
+  export type AuthSessionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthSession to fetch.
+     */
+    where?: AuthSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthSessions to fetch.
+     */
+    orderBy?: AuthSessionOrderByWithRelationInput | AuthSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthSessions.
+     */
+    cursor?: AuthSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthSessions.
+     */
+    distinct?: AuthSessionScalarFieldEnum | AuthSessionScalarFieldEnum[]
+  }
+
+  /**
+   * AuthSession findFirstOrThrow
+   */
+  export type AuthSessionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthSession to fetch.
+     */
+    where?: AuthSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthSessions to fetch.
+     */
+    orderBy?: AuthSessionOrderByWithRelationInput | AuthSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthSessions.
+     */
+    cursor?: AuthSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthSessions.
+     */
+    distinct?: AuthSessionScalarFieldEnum | AuthSessionScalarFieldEnum[]
+  }
+
+  /**
+   * AuthSession findMany
+   */
+  export type AuthSessionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthSessions to fetch.
+     */
+    where?: AuthSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthSessions to fetch.
+     */
+    orderBy?: AuthSessionOrderByWithRelationInput | AuthSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuthSessions.
+     */
+    cursor?: AuthSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthSessions.
+     */
+    skip?: number
+    distinct?: AuthSessionScalarFieldEnum | AuthSessionScalarFieldEnum[]
+  }
+
+  /**
+   * AuthSession create
+   */
+  export type AuthSessionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AuthSession.
+     */
+    data: XOR<AuthSessionCreateInput, AuthSessionUncheckedCreateInput>
+  }
+
+  /**
+   * AuthSession createMany
+   */
+  export type AuthSessionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuthSessions.
+     */
+    data: AuthSessionCreateManyInput | AuthSessionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuthSession createManyAndReturn
+   */
+  export type AuthSessionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AuthSessions.
+     */
+    data: AuthSessionCreateManyInput | AuthSessionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuthSession update
+   */
+  export type AuthSessionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AuthSession.
+     */
+    data: XOR<AuthSessionUpdateInput, AuthSessionUncheckedUpdateInput>
+    /**
+     * Choose, which AuthSession to update.
+     */
+    where: AuthSessionWhereUniqueInput
+  }
+
+  /**
+   * AuthSession updateMany
+   */
+  export type AuthSessionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuthSessions.
+     */
+    data: XOR<AuthSessionUpdateManyMutationInput, AuthSessionUncheckedUpdateManyInput>
+    /**
+     * Filter which AuthSessions to update
+     */
+    where?: AuthSessionWhereInput
+  }
+
+  /**
+   * AuthSession upsert
+   */
+  export type AuthSessionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AuthSession to update in case it exists.
+     */
+    where: AuthSessionWhereUniqueInput
+    /**
+     * In case the AuthSession found by the `where` argument doesn't exist, create a new AuthSession with this data.
+     */
+    create: XOR<AuthSessionCreateInput, AuthSessionUncheckedCreateInput>
+    /**
+     * In case the AuthSession was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuthSessionUpdateInput, AuthSessionUncheckedUpdateInput>
+  }
+
+  /**
+   * AuthSession delete
+   */
+  export type AuthSessionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+    /**
+     * Filter which AuthSession to delete.
+     */
+    where: AuthSessionWhereUniqueInput
+  }
+
+  /**
+   * AuthSession deleteMany
+   */
+  export type AuthSessionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthSessions to delete
+     */
+    where?: AuthSessionWhereInput
+  }
+
+  /**
+   * AuthSession without action
+   */
+  export type AuthSessionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthSession
+     */
+    select?: AuthSessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthSessionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AuthPasswordResetToken
+   */
+
+  export type AggregateAuthPasswordResetToken = {
+    _count: AuthPasswordResetTokenCountAggregateOutputType | null
+    _min: AuthPasswordResetTokenMinAggregateOutputType | null
+    _max: AuthPasswordResetTokenMaxAggregateOutputType | null
+  }
+
+  export type AuthPasswordResetTokenMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    expiresAt: Date | null
+    used: boolean | null
+    createdAt: Date | null
+  }
+
+  export type AuthPasswordResetTokenMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    expiresAt: Date | null
+    used: boolean | null
+    createdAt: Date | null
+  }
+
+  export type AuthPasswordResetTokenCountAggregateOutputType = {
+    id: number
+    userId: number
+    token: number
+    expiresAt: number
+    used: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AuthPasswordResetTokenMinAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    expiresAt?: true
+    used?: true
+    createdAt?: true
+  }
+
+  export type AuthPasswordResetTokenMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    expiresAt?: true
+    used?: true
+    createdAt?: true
+  }
+
+  export type AuthPasswordResetTokenCountAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    expiresAt?: true
+    used?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AuthPasswordResetTokenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthPasswordResetToken to aggregate.
+     */
+    where?: AuthPasswordResetTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthPasswordResetTokens to fetch.
+     */
+    orderBy?: AuthPasswordResetTokenOrderByWithRelationInput | AuthPasswordResetTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuthPasswordResetTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthPasswordResetTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthPasswordResetTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuthPasswordResetTokens
+    **/
+    _count?: true | AuthPasswordResetTokenCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuthPasswordResetTokenMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuthPasswordResetTokenMaxAggregateInputType
+  }
+
+  export type GetAuthPasswordResetTokenAggregateType<T extends AuthPasswordResetTokenAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuthPasswordResetToken]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuthPasswordResetToken[P]>
+      : GetScalarType<T[P], AggregateAuthPasswordResetToken[P]>
+  }
+
+
+
+
+  export type AuthPasswordResetTokenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthPasswordResetTokenWhereInput
+    orderBy?: AuthPasswordResetTokenOrderByWithAggregationInput | AuthPasswordResetTokenOrderByWithAggregationInput[]
+    by: AuthPasswordResetTokenScalarFieldEnum[] | AuthPasswordResetTokenScalarFieldEnum
+    having?: AuthPasswordResetTokenScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuthPasswordResetTokenCountAggregateInputType | true
+    _min?: AuthPasswordResetTokenMinAggregateInputType
+    _max?: AuthPasswordResetTokenMaxAggregateInputType
+  }
+
+  export type AuthPasswordResetTokenGroupByOutputType = {
+    id: string
+    userId: string
+    token: string
+    expiresAt: Date
+    used: boolean
+    createdAt: Date
+    _count: AuthPasswordResetTokenCountAggregateOutputType | null
+    _min: AuthPasswordResetTokenMinAggregateOutputType | null
+    _max: AuthPasswordResetTokenMaxAggregateOutputType | null
+  }
+
+  type GetAuthPasswordResetTokenGroupByPayload<T extends AuthPasswordResetTokenGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuthPasswordResetTokenGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuthPasswordResetTokenGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuthPasswordResetTokenGroupByOutputType[P]>
+            : GetScalarType<T[P], AuthPasswordResetTokenGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuthPasswordResetTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    expiresAt?: boolean
+    used?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["authPasswordResetToken"]>
+
+  export type AuthPasswordResetTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    expiresAt?: boolean
+    used?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["authPasswordResetToken"]>
+
+  export type AuthPasswordResetTokenSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    expiresAt?: boolean
+    used?: boolean
+    createdAt?: boolean
+  }
+
+  export type AuthPasswordResetTokenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AuthPasswordResetTokenIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AuthPasswordResetTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuthPasswordResetToken"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      token: string
+      expiresAt: Date
+      used: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["authPasswordResetToken"]>
+    composites: {}
+  }
+
+  type AuthPasswordResetTokenGetPayload<S extends boolean | null | undefined | AuthPasswordResetTokenDefaultArgs> = $Result.GetResult<Prisma.$AuthPasswordResetTokenPayload, S>
+
+  type AuthPasswordResetTokenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AuthPasswordResetTokenFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AuthPasswordResetTokenCountAggregateInputType | true
+    }
+
+  export interface AuthPasswordResetTokenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuthPasswordResetToken'], meta: { name: 'AuthPasswordResetToken' } }
+    /**
+     * Find zero or one AuthPasswordResetToken that matches the filter.
+     * @param {AuthPasswordResetTokenFindUniqueArgs} args - Arguments to find a AuthPasswordResetToken
+     * @example
+     * // Get one AuthPasswordResetToken
+     * const authPasswordResetToken = await prisma.authPasswordResetToken.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuthPasswordResetTokenFindUniqueArgs>(args: SelectSubset<T, AuthPasswordResetTokenFindUniqueArgs<ExtArgs>>): Prisma__AuthPasswordResetTokenClient<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AuthPasswordResetToken that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AuthPasswordResetTokenFindUniqueOrThrowArgs} args - Arguments to find a AuthPasswordResetToken
+     * @example
+     * // Get one AuthPasswordResetToken
+     * const authPasswordResetToken = await prisma.authPasswordResetToken.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuthPasswordResetTokenFindUniqueOrThrowArgs>(args: SelectSubset<T, AuthPasswordResetTokenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuthPasswordResetTokenClient<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AuthPasswordResetToken that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthPasswordResetTokenFindFirstArgs} args - Arguments to find a AuthPasswordResetToken
+     * @example
+     * // Get one AuthPasswordResetToken
+     * const authPasswordResetToken = await prisma.authPasswordResetToken.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuthPasswordResetTokenFindFirstArgs>(args?: SelectSubset<T, AuthPasswordResetTokenFindFirstArgs<ExtArgs>>): Prisma__AuthPasswordResetTokenClient<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AuthPasswordResetToken that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthPasswordResetTokenFindFirstOrThrowArgs} args - Arguments to find a AuthPasswordResetToken
+     * @example
+     * // Get one AuthPasswordResetToken
+     * const authPasswordResetToken = await prisma.authPasswordResetToken.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuthPasswordResetTokenFindFirstOrThrowArgs>(args?: SelectSubset<T, AuthPasswordResetTokenFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuthPasswordResetTokenClient<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AuthPasswordResetTokens that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthPasswordResetTokenFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuthPasswordResetTokens
+     * const authPasswordResetTokens = await prisma.authPasswordResetToken.findMany()
+     * 
+     * // Get first 10 AuthPasswordResetTokens
+     * const authPasswordResetTokens = await prisma.authPasswordResetToken.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const authPasswordResetTokenWithIdOnly = await prisma.authPasswordResetToken.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuthPasswordResetTokenFindManyArgs>(args?: SelectSubset<T, AuthPasswordResetTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AuthPasswordResetToken.
+     * @param {AuthPasswordResetTokenCreateArgs} args - Arguments to create a AuthPasswordResetToken.
+     * @example
+     * // Create one AuthPasswordResetToken
+     * const AuthPasswordResetToken = await prisma.authPasswordResetToken.create({
+     *   data: {
+     *     // ... data to create a AuthPasswordResetToken
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuthPasswordResetTokenCreateArgs>(args: SelectSubset<T, AuthPasswordResetTokenCreateArgs<ExtArgs>>): Prisma__AuthPasswordResetTokenClient<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AuthPasswordResetTokens.
+     * @param {AuthPasswordResetTokenCreateManyArgs} args - Arguments to create many AuthPasswordResetTokens.
+     * @example
+     * // Create many AuthPasswordResetTokens
+     * const authPasswordResetToken = await prisma.authPasswordResetToken.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuthPasswordResetTokenCreateManyArgs>(args?: SelectSubset<T, AuthPasswordResetTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuthPasswordResetTokens and returns the data saved in the database.
+     * @param {AuthPasswordResetTokenCreateManyAndReturnArgs} args - Arguments to create many AuthPasswordResetTokens.
+     * @example
+     * // Create many AuthPasswordResetTokens
+     * const authPasswordResetToken = await prisma.authPasswordResetToken.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AuthPasswordResetTokens and only return the `id`
+     * const authPasswordResetTokenWithIdOnly = await prisma.authPasswordResetToken.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AuthPasswordResetTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, AuthPasswordResetTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AuthPasswordResetToken.
+     * @param {AuthPasswordResetTokenDeleteArgs} args - Arguments to delete one AuthPasswordResetToken.
+     * @example
+     * // Delete one AuthPasswordResetToken
+     * const AuthPasswordResetToken = await prisma.authPasswordResetToken.delete({
+     *   where: {
+     *     // ... filter to delete one AuthPasswordResetToken
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuthPasswordResetTokenDeleteArgs>(args: SelectSubset<T, AuthPasswordResetTokenDeleteArgs<ExtArgs>>): Prisma__AuthPasswordResetTokenClient<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AuthPasswordResetToken.
+     * @param {AuthPasswordResetTokenUpdateArgs} args - Arguments to update one AuthPasswordResetToken.
+     * @example
+     * // Update one AuthPasswordResetToken
+     * const authPasswordResetToken = await prisma.authPasswordResetToken.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuthPasswordResetTokenUpdateArgs>(args: SelectSubset<T, AuthPasswordResetTokenUpdateArgs<ExtArgs>>): Prisma__AuthPasswordResetTokenClient<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AuthPasswordResetTokens.
+     * @param {AuthPasswordResetTokenDeleteManyArgs} args - Arguments to filter AuthPasswordResetTokens to delete.
+     * @example
+     * // Delete a few AuthPasswordResetTokens
+     * const { count } = await prisma.authPasswordResetToken.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuthPasswordResetTokenDeleteManyArgs>(args?: SelectSubset<T, AuthPasswordResetTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuthPasswordResetTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthPasswordResetTokenUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuthPasswordResetTokens
+     * const authPasswordResetToken = await prisma.authPasswordResetToken.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuthPasswordResetTokenUpdateManyArgs>(args: SelectSubset<T, AuthPasswordResetTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AuthPasswordResetToken.
+     * @param {AuthPasswordResetTokenUpsertArgs} args - Arguments to update or create a AuthPasswordResetToken.
+     * @example
+     * // Update or create a AuthPasswordResetToken
+     * const authPasswordResetToken = await prisma.authPasswordResetToken.upsert({
+     *   create: {
+     *     // ... data to create a AuthPasswordResetToken
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuthPasswordResetToken we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuthPasswordResetTokenUpsertArgs>(args: SelectSubset<T, AuthPasswordResetTokenUpsertArgs<ExtArgs>>): Prisma__AuthPasswordResetTokenClient<$Result.GetResult<Prisma.$AuthPasswordResetTokenPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AuthPasswordResetTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthPasswordResetTokenCountArgs} args - Arguments to filter AuthPasswordResetTokens to count.
+     * @example
+     * // Count the number of AuthPasswordResetTokens
+     * const count = await prisma.authPasswordResetToken.count({
+     *   where: {
+     *     // ... the filter for the AuthPasswordResetTokens we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuthPasswordResetTokenCountArgs>(
+      args?: Subset<T, AuthPasswordResetTokenCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuthPasswordResetTokenCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuthPasswordResetToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthPasswordResetTokenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuthPasswordResetTokenAggregateArgs>(args: Subset<T, AuthPasswordResetTokenAggregateArgs>): Prisma.PrismaPromise<GetAuthPasswordResetTokenAggregateType<T>>
+
+    /**
+     * Group by AuthPasswordResetToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthPasswordResetTokenGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuthPasswordResetTokenGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuthPasswordResetTokenGroupByArgs['orderBy'] }
+        : { orderBy?: AuthPasswordResetTokenGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuthPasswordResetTokenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuthPasswordResetTokenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuthPasswordResetToken model
+   */
+  readonly fields: AuthPasswordResetTokenFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuthPasswordResetToken.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuthPasswordResetTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuthPasswordResetToken model
+   */ 
+  interface AuthPasswordResetTokenFieldRefs {
+    readonly id: FieldRef<"AuthPasswordResetToken", 'String'>
+    readonly userId: FieldRef<"AuthPasswordResetToken", 'String'>
+    readonly token: FieldRef<"AuthPasswordResetToken", 'String'>
+    readonly expiresAt: FieldRef<"AuthPasswordResetToken", 'DateTime'>
+    readonly used: FieldRef<"AuthPasswordResetToken", 'Boolean'>
+    readonly createdAt: FieldRef<"AuthPasswordResetToken", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuthPasswordResetToken findUnique
+   */
+  export type AuthPasswordResetTokenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthPasswordResetToken to fetch.
+     */
+    where: AuthPasswordResetTokenWhereUniqueInput
+  }
+
+  /**
+   * AuthPasswordResetToken findUniqueOrThrow
+   */
+  export type AuthPasswordResetTokenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthPasswordResetToken to fetch.
+     */
+    where: AuthPasswordResetTokenWhereUniqueInput
+  }
+
+  /**
+   * AuthPasswordResetToken findFirst
+   */
+  export type AuthPasswordResetTokenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthPasswordResetToken to fetch.
+     */
+    where?: AuthPasswordResetTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthPasswordResetTokens to fetch.
+     */
+    orderBy?: AuthPasswordResetTokenOrderByWithRelationInput | AuthPasswordResetTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthPasswordResetTokens.
+     */
+    cursor?: AuthPasswordResetTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthPasswordResetTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthPasswordResetTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthPasswordResetTokens.
+     */
+    distinct?: AuthPasswordResetTokenScalarFieldEnum | AuthPasswordResetTokenScalarFieldEnum[]
+  }
+
+  /**
+   * AuthPasswordResetToken findFirstOrThrow
+   */
+  export type AuthPasswordResetTokenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthPasswordResetToken to fetch.
+     */
+    where?: AuthPasswordResetTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthPasswordResetTokens to fetch.
+     */
+    orderBy?: AuthPasswordResetTokenOrderByWithRelationInput | AuthPasswordResetTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthPasswordResetTokens.
+     */
+    cursor?: AuthPasswordResetTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthPasswordResetTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthPasswordResetTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthPasswordResetTokens.
+     */
+    distinct?: AuthPasswordResetTokenScalarFieldEnum | AuthPasswordResetTokenScalarFieldEnum[]
+  }
+
+  /**
+   * AuthPasswordResetToken findMany
+   */
+  export type AuthPasswordResetTokenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthPasswordResetTokens to fetch.
+     */
+    where?: AuthPasswordResetTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthPasswordResetTokens to fetch.
+     */
+    orderBy?: AuthPasswordResetTokenOrderByWithRelationInput | AuthPasswordResetTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuthPasswordResetTokens.
+     */
+    cursor?: AuthPasswordResetTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthPasswordResetTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthPasswordResetTokens.
+     */
+    skip?: number
+    distinct?: AuthPasswordResetTokenScalarFieldEnum | AuthPasswordResetTokenScalarFieldEnum[]
+  }
+
+  /**
+   * AuthPasswordResetToken create
+   */
+  export type AuthPasswordResetTokenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AuthPasswordResetToken.
+     */
+    data: XOR<AuthPasswordResetTokenCreateInput, AuthPasswordResetTokenUncheckedCreateInput>
+  }
+
+  /**
+   * AuthPasswordResetToken createMany
+   */
+  export type AuthPasswordResetTokenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuthPasswordResetTokens.
+     */
+    data: AuthPasswordResetTokenCreateManyInput | AuthPasswordResetTokenCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuthPasswordResetToken createManyAndReturn
+   */
+  export type AuthPasswordResetTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AuthPasswordResetTokens.
+     */
+    data: AuthPasswordResetTokenCreateManyInput | AuthPasswordResetTokenCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuthPasswordResetToken update
+   */
+  export type AuthPasswordResetTokenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AuthPasswordResetToken.
+     */
+    data: XOR<AuthPasswordResetTokenUpdateInput, AuthPasswordResetTokenUncheckedUpdateInput>
+    /**
+     * Choose, which AuthPasswordResetToken to update.
+     */
+    where: AuthPasswordResetTokenWhereUniqueInput
+  }
+
+  /**
+   * AuthPasswordResetToken updateMany
+   */
+  export type AuthPasswordResetTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuthPasswordResetTokens.
+     */
+    data: XOR<AuthPasswordResetTokenUpdateManyMutationInput, AuthPasswordResetTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which AuthPasswordResetTokens to update
+     */
+    where?: AuthPasswordResetTokenWhereInput
+  }
+
+  /**
+   * AuthPasswordResetToken upsert
+   */
+  export type AuthPasswordResetTokenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AuthPasswordResetToken to update in case it exists.
+     */
+    where: AuthPasswordResetTokenWhereUniqueInput
+    /**
+     * In case the AuthPasswordResetToken found by the `where` argument doesn't exist, create a new AuthPasswordResetToken with this data.
+     */
+    create: XOR<AuthPasswordResetTokenCreateInput, AuthPasswordResetTokenUncheckedCreateInput>
+    /**
+     * In case the AuthPasswordResetToken was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuthPasswordResetTokenUpdateInput, AuthPasswordResetTokenUncheckedUpdateInput>
+  }
+
+  /**
+   * AuthPasswordResetToken delete
+   */
+  export type AuthPasswordResetTokenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
+    /**
+     * Filter which AuthPasswordResetToken to delete.
+     */
+    where: AuthPasswordResetTokenWhereUniqueInput
+  }
+
+  /**
+   * AuthPasswordResetToken deleteMany
+   */
+  export type AuthPasswordResetTokenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthPasswordResetTokens to delete
+     */
+    where?: AuthPasswordResetTokenWhereInput
+  }
+
+  /**
+   * AuthPasswordResetToken without action
+   */
+  export type AuthPasswordResetTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthPasswordResetToken
+     */
+    select?: AuthPasswordResetTokenSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthPasswordResetTokenInclude<ExtArgs> | null
   }
 
 
@@ -18358,6 +23082,2919 @@ export namespace Prisma {
 
 
   /**
+   * Model ServiceTemplate
+   */
+
+  export type AggregateServiceTemplate = {
+    _count: ServiceTemplateCountAggregateOutputType | null
+    _min: ServiceTemplateMinAggregateOutputType | null
+    _max: ServiceTemplateMaxAggregateOutputType | null
+  }
+
+  export type ServiceTemplateMinAggregateOutputType = {
+    id: string | null
+    serviceKind: string | null
+    frequency: string | null
+    complianceImpact: boolean | null
+    pricingModel: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ServiceTemplateMaxAggregateOutputType = {
+    id: string | null
+    serviceKind: string | null
+    frequency: string | null
+    complianceImpact: boolean | null
+    pricingModel: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ServiceTemplateCountAggregateOutputType = {
+    id: number
+    serviceKind: number
+    frequency: number
+    appliesTo: number
+    complianceImpact: number
+    pricingModel: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ServiceTemplateMinAggregateInputType = {
+    id?: true
+    serviceKind?: true
+    frequency?: true
+    complianceImpact?: true
+    pricingModel?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ServiceTemplateMaxAggregateInputType = {
+    id?: true
+    serviceKind?: true
+    frequency?: true
+    complianceImpact?: true
+    pricingModel?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ServiceTemplateCountAggregateInputType = {
+    id?: true
+    serviceKind?: true
+    frequency?: true
+    appliesTo?: true
+    complianceImpact?: true
+    pricingModel?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ServiceTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ServiceTemplate to aggregate.
+     */
+    where?: ServiceTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceTemplates to fetch.
+     */
+    orderBy?: ServiceTemplateOrderByWithRelationInput | ServiceTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ServiceTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ServiceTemplates
+    **/
+    _count?: true | ServiceTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ServiceTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ServiceTemplateMaxAggregateInputType
+  }
+
+  export type GetServiceTemplateAggregateType<T extends ServiceTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregateServiceTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateServiceTemplate[P]>
+      : GetScalarType<T[P], AggregateServiceTemplate[P]>
+  }
+
+
+
+
+  export type ServiceTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServiceTemplateWhereInput
+    orderBy?: ServiceTemplateOrderByWithAggregationInput | ServiceTemplateOrderByWithAggregationInput[]
+    by: ServiceTemplateScalarFieldEnum[] | ServiceTemplateScalarFieldEnum
+    having?: ServiceTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ServiceTemplateCountAggregateInputType | true
+    _min?: ServiceTemplateMinAggregateInputType
+    _max?: ServiceTemplateMaxAggregateInputType
+  }
+
+  export type ServiceTemplateGroupByOutputType = {
+    id: string
+    serviceKind: string
+    frequency: string
+    appliesTo: string[]
+    complianceImpact: boolean
+    pricingModel: string
+    createdAt: Date
+    updatedAt: Date
+    _count: ServiceTemplateCountAggregateOutputType | null
+    _min: ServiceTemplateMinAggregateOutputType | null
+    _max: ServiceTemplateMaxAggregateOutputType | null
+  }
+
+  type GetServiceTemplateGroupByPayload<T extends ServiceTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ServiceTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ServiceTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ServiceTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], ServiceTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ServiceTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    serviceKind?: boolean
+    frequency?: boolean
+    appliesTo?: boolean
+    complianceImpact?: boolean
+    pricingModel?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    taskTemplates?: boolean | ServiceTemplate$taskTemplatesArgs<ExtArgs>
+    _count?: boolean | ServiceTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["serviceTemplate"]>
+
+  export type ServiceTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    serviceKind?: boolean
+    frequency?: boolean
+    appliesTo?: boolean
+    complianceImpact?: boolean
+    pricingModel?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["serviceTemplate"]>
+
+  export type ServiceTemplateSelectScalar = {
+    id?: boolean
+    serviceKind?: boolean
+    frequency?: boolean
+    appliesTo?: boolean
+    complianceImpact?: boolean
+    pricingModel?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ServiceTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    taskTemplates?: boolean | ServiceTemplate$taskTemplatesArgs<ExtArgs>
+    _count?: boolean | ServiceTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ServiceTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $ServiceTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ServiceTemplate"
+    objects: {
+      taskTemplates: Prisma.$ServiceTemplateTaskPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      serviceKind: string
+      frequency: string
+      appliesTo: string[]
+      complianceImpact: boolean
+      pricingModel: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["serviceTemplate"]>
+    composites: {}
+  }
+
+  type ServiceTemplateGetPayload<S extends boolean | null | undefined | ServiceTemplateDefaultArgs> = $Result.GetResult<Prisma.$ServiceTemplatePayload, S>
+
+  type ServiceTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ServiceTemplateFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ServiceTemplateCountAggregateInputType | true
+    }
+
+  export interface ServiceTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ServiceTemplate'], meta: { name: 'ServiceTemplate' } }
+    /**
+     * Find zero or one ServiceTemplate that matches the filter.
+     * @param {ServiceTemplateFindUniqueArgs} args - Arguments to find a ServiceTemplate
+     * @example
+     * // Get one ServiceTemplate
+     * const serviceTemplate = await prisma.serviceTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ServiceTemplateFindUniqueArgs>(args: SelectSubset<T, ServiceTemplateFindUniqueArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ServiceTemplate that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ServiceTemplateFindUniqueOrThrowArgs} args - Arguments to find a ServiceTemplate
+     * @example
+     * // Get one ServiceTemplate
+     * const serviceTemplate = await prisma.serviceTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ServiceTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, ServiceTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ServiceTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateFindFirstArgs} args - Arguments to find a ServiceTemplate
+     * @example
+     * // Get one ServiceTemplate
+     * const serviceTemplate = await prisma.serviceTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ServiceTemplateFindFirstArgs>(args?: SelectSubset<T, ServiceTemplateFindFirstArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ServiceTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateFindFirstOrThrowArgs} args - Arguments to find a ServiceTemplate
+     * @example
+     * // Get one ServiceTemplate
+     * const serviceTemplate = await prisma.serviceTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ServiceTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, ServiceTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ServiceTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ServiceTemplates
+     * const serviceTemplates = await prisma.serviceTemplate.findMany()
+     * 
+     * // Get first 10 ServiceTemplates
+     * const serviceTemplates = await prisma.serviceTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const serviceTemplateWithIdOnly = await prisma.serviceTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ServiceTemplateFindManyArgs>(args?: SelectSubset<T, ServiceTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ServiceTemplate.
+     * @param {ServiceTemplateCreateArgs} args - Arguments to create a ServiceTemplate.
+     * @example
+     * // Create one ServiceTemplate
+     * const ServiceTemplate = await prisma.serviceTemplate.create({
+     *   data: {
+     *     // ... data to create a ServiceTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends ServiceTemplateCreateArgs>(args: SelectSubset<T, ServiceTemplateCreateArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ServiceTemplates.
+     * @param {ServiceTemplateCreateManyArgs} args - Arguments to create many ServiceTemplates.
+     * @example
+     * // Create many ServiceTemplates
+     * const serviceTemplate = await prisma.serviceTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ServiceTemplateCreateManyArgs>(args?: SelectSubset<T, ServiceTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ServiceTemplates and returns the data saved in the database.
+     * @param {ServiceTemplateCreateManyAndReturnArgs} args - Arguments to create many ServiceTemplates.
+     * @example
+     * // Create many ServiceTemplates
+     * const serviceTemplate = await prisma.serviceTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ServiceTemplates and only return the `id`
+     * const serviceTemplateWithIdOnly = await prisma.serviceTemplate.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ServiceTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, ServiceTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ServiceTemplate.
+     * @param {ServiceTemplateDeleteArgs} args - Arguments to delete one ServiceTemplate.
+     * @example
+     * // Delete one ServiceTemplate
+     * const ServiceTemplate = await prisma.serviceTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one ServiceTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ServiceTemplateDeleteArgs>(args: SelectSubset<T, ServiceTemplateDeleteArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ServiceTemplate.
+     * @param {ServiceTemplateUpdateArgs} args - Arguments to update one ServiceTemplate.
+     * @example
+     * // Update one ServiceTemplate
+     * const serviceTemplate = await prisma.serviceTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ServiceTemplateUpdateArgs>(args: SelectSubset<T, ServiceTemplateUpdateArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ServiceTemplates.
+     * @param {ServiceTemplateDeleteManyArgs} args - Arguments to filter ServiceTemplates to delete.
+     * @example
+     * // Delete a few ServiceTemplates
+     * const { count } = await prisma.serviceTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ServiceTemplateDeleteManyArgs>(args?: SelectSubset<T, ServiceTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ServiceTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ServiceTemplates
+     * const serviceTemplate = await prisma.serviceTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ServiceTemplateUpdateManyArgs>(args: SelectSubset<T, ServiceTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ServiceTemplate.
+     * @param {ServiceTemplateUpsertArgs} args - Arguments to update or create a ServiceTemplate.
+     * @example
+     * // Update or create a ServiceTemplate
+     * const serviceTemplate = await prisma.serviceTemplate.upsert({
+     *   create: {
+     *     // ... data to create a ServiceTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ServiceTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ServiceTemplateUpsertArgs>(args: SelectSubset<T, ServiceTemplateUpsertArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ServiceTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateCountArgs} args - Arguments to filter ServiceTemplates to count.
+     * @example
+     * // Count the number of ServiceTemplates
+     * const count = await prisma.serviceTemplate.count({
+     *   where: {
+     *     // ... the filter for the ServiceTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends ServiceTemplateCountArgs>(
+      args?: Subset<T, ServiceTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ServiceTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ServiceTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ServiceTemplateAggregateArgs>(args: Subset<T, ServiceTemplateAggregateArgs>): Prisma.PrismaPromise<GetServiceTemplateAggregateType<T>>
+
+    /**
+     * Group by ServiceTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ServiceTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ServiceTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: ServiceTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ServiceTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetServiceTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ServiceTemplate model
+   */
+  readonly fields: ServiceTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ServiceTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ServiceTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    taskTemplates<T extends ServiceTemplate$taskTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, ServiceTemplate$taskTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ServiceTemplate model
+   */ 
+  interface ServiceTemplateFieldRefs {
+    readonly id: FieldRef<"ServiceTemplate", 'String'>
+    readonly serviceKind: FieldRef<"ServiceTemplate", 'String'>
+    readonly frequency: FieldRef<"ServiceTemplate", 'String'>
+    readonly appliesTo: FieldRef<"ServiceTemplate", 'String[]'>
+    readonly complianceImpact: FieldRef<"ServiceTemplate", 'Boolean'>
+    readonly pricingModel: FieldRef<"ServiceTemplate", 'String'>
+    readonly createdAt: FieldRef<"ServiceTemplate", 'DateTime'>
+    readonly updatedAt: FieldRef<"ServiceTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ServiceTemplate findUnique
+   */
+  export type ServiceTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplate to fetch.
+     */
+    where: ServiceTemplateWhereUniqueInput
+  }
+
+  /**
+   * ServiceTemplate findUniqueOrThrow
+   */
+  export type ServiceTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplate to fetch.
+     */
+    where: ServiceTemplateWhereUniqueInput
+  }
+
+  /**
+   * ServiceTemplate findFirst
+   */
+  export type ServiceTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplate to fetch.
+     */
+    where?: ServiceTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceTemplates to fetch.
+     */
+    orderBy?: ServiceTemplateOrderByWithRelationInput | ServiceTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ServiceTemplates.
+     */
+    cursor?: ServiceTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServiceTemplates.
+     */
+    distinct?: ServiceTemplateScalarFieldEnum | ServiceTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceTemplate findFirstOrThrow
+   */
+  export type ServiceTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplate to fetch.
+     */
+    where?: ServiceTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceTemplates to fetch.
+     */
+    orderBy?: ServiceTemplateOrderByWithRelationInput | ServiceTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ServiceTemplates.
+     */
+    cursor?: ServiceTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServiceTemplates.
+     */
+    distinct?: ServiceTemplateScalarFieldEnum | ServiceTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceTemplate findMany
+   */
+  export type ServiceTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplates to fetch.
+     */
+    where?: ServiceTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceTemplates to fetch.
+     */
+    orderBy?: ServiceTemplateOrderByWithRelationInput | ServiceTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ServiceTemplates.
+     */
+    cursor?: ServiceTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceTemplates.
+     */
+    skip?: number
+    distinct?: ServiceTemplateScalarFieldEnum | ServiceTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceTemplate create
+   */
+  export type ServiceTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ServiceTemplate.
+     */
+    data: XOR<ServiceTemplateCreateInput, ServiceTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * ServiceTemplate createMany
+   */
+  export type ServiceTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ServiceTemplates.
+     */
+    data: ServiceTemplateCreateManyInput | ServiceTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ServiceTemplate createManyAndReturn
+   */
+  export type ServiceTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ServiceTemplates.
+     */
+    data: ServiceTemplateCreateManyInput | ServiceTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ServiceTemplate update
+   */
+  export type ServiceTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ServiceTemplate.
+     */
+    data: XOR<ServiceTemplateUpdateInput, ServiceTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which ServiceTemplate to update.
+     */
+    where: ServiceTemplateWhereUniqueInput
+  }
+
+  /**
+   * ServiceTemplate updateMany
+   */
+  export type ServiceTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ServiceTemplates.
+     */
+    data: XOR<ServiceTemplateUpdateManyMutationInput, ServiceTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which ServiceTemplates to update
+     */
+    where?: ServiceTemplateWhereInput
+  }
+
+  /**
+   * ServiceTemplate upsert
+   */
+  export type ServiceTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ServiceTemplate to update in case it exists.
+     */
+    where: ServiceTemplateWhereUniqueInput
+    /**
+     * In case the ServiceTemplate found by the `where` argument doesn't exist, create a new ServiceTemplate with this data.
+     */
+    create: XOR<ServiceTemplateCreateInput, ServiceTemplateUncheckedCreateInput>
+    /**
+     * In case the ServiceTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ServiceTemplateUpdateInput, ServiceTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * ServiceTemplate delete
+   */
+  export type ServiceTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    /**
+     * Filter which ServiceTemplate to delete.
+     */
+    where: ServiceTemplateWhereUniqueInput
+  }
+
+  /**
+   * ServiceTemplate deleteMany
+   */
+  export type ServiceTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ServiceTemplates to delete
+     */
+    where?: ServiceTemplateWhereInput
+  }
+
+  /**
+   * ServiceTemplate.taskTemplates
+   */
+  export type ServiceTemplate$taskTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    where?: ServiceTemplateTaskWhereInput
+    orderBy?: ServiceTemplateTaskOrderByWithRelationInput | ServiceTemplateTaskOrderByWithRelationInput[]
+    cursor?: ServiceTemplateTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ServiceTemplateTaskScalarFieldEnum | ServiceTemplateTaskScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceTemplate without action
+   */
+  export type ServiceTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ServiceTemplateTask
+   */
+
+  export type AggregateServiceTemplateTask = {
+    _count: ServiceTemplateTaskCountAggregateOutputType | null
+    _avg: ServiceTemplateTaskAvgAggregateOutputType | null
+    _sum: ServiceTemplateTaskSumAggregateOutputType | null
+    _min: ServiceTemplateTaskMinAggregateOutputType | null
+    _max: ServiceTemplateTaskMaxAggregateOutputType | null
+  }
+
+  export type ServiceTemplateTaskAvgAggregateOutputType = {
+    daysBeforeDue: number | null
+  }
+
+  export type ServiceTemplateTaskSumAggregateOutputType = {
+    daysBeforeDue: number | null
+  }
+
+  export type ServiceTemplateTaskMinAggregateOutputType = {
+    id: string | null
+    templateId: string | null
+    title: string | null
+    description: string | null
+    daysBeforeDue: number | null
+    priority: $Enums.Priority | null
+    assigneeId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ServiceTemplateTaskMaxAggregateOutputType = {
+    id: string | null
+    templateId: string | null
+    title: string | null
+    description: string | null
+    daysBeforeDue: number | null
+    priority: $Enums.Priority | null
+    assigneeId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ServiceTemplateTaskCountAggregateOutputType = {
+    id: number
+    templateId: number
+    title: number
+    description: number
+    daysBeforeDue: number
+    priority: number
+    tags: number
+    assigneeId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ServiceTemplateTaskAvgAggregateInputType = {
+    daysBeforeDue?: true
+  }
+
+  export type ServiceTemplateTaskSumAggregateInputType = {
+    daysBeforeDue?: true
+  }
+
+  export type ServiceTemplateTaskMinAggregateInputType = {
+    id?: true
+    templateId?: true
+    title?: true
+    description?: true
+    daysBeforeDue?: true
+    priority?: true
+    assigneeId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ServiceTemplateTaskMaxAggregateInputType = {
+    id?: true
+    templateId?: true
+    title?: true
+    description?: true
+    daysBeforeDue?: true
+    priority?: true
+    assigneeId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ServiceTemplateTaskCountAggregateInputType = {
+    id?: true
+    templateId?: true
+    title?: true
+    description?: true
+    daysBeforeDue?: true
+    priority?: true
+    tags?: true
+    assigneeId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ServiceTemplateTaskAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ServiceTemplateTask to aggregate.
+     */
+    where?: ServiceTemplateTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceTemplateTasks to fetch.
+     */
+    orderBy?: ServiceTemplateTaskOrderByWithRelationInput | ServiceTemplateTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ServiceTemplateTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceTemplateTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceTemplateTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ServiceTemplateTasks
+    **/
+    _count?: true | ServiceTemplateTaskCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ServiceTemplateTaskAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ServiceTemplateTaskSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ServiceTemplateTaskMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ServiceTemplateTaskMaxAggregateInputType
+  }
+
+  export type GetServiceTemplateTaskAggregateType<T extends ServiceTemplateTaskAggregateArgs> = {
+        [P in keyof T & keyof AggregateServiceTemplateTask]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateServiceTemplateTask[P]>
+      : GetScalarType<T[P], AggregateServiceTemplateTask[P]>
+  }
+
+
+
+
+  export type ServiceTemplateTaskGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServiceTemplateTaskWhereInput
+    orderBy?: ServiceTemplateTaskOrderByWithAggregationInput | ServiceTemplateTaskOrderByWithAggregationInput[]
+    by: ServiceTemplateTaskScalarFieldEnum[] | ServiceTemplateTaskScalarFieldEnum
+    having?: ServiceTemplateTaskScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ServiceTemplateTaskCountAggregateInputType | true
+    _avg?: ServiceTemplateTaskAvgAggregateInputType
+    _sum?: ServiceTemplateTaskSumAggregateInputType
+    _min?: ServiceTemplateTaskMinAggregateInputType
+    _max?: ServiceTemplateTaskMaxAggregateInputType
+  }
+
+  export type ServiceTemplateTaskGroupByOutputType = {
+    id: string
+    templateId: string
+    title: string
+    description: string | null
+    daysBeforeDue: number
+    priority: $Enums.Priority
+    tags: string[]
+    assigneeId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ServiceTemplateTaskCountAggregateOutputType | null
+    _avg: ServiceTemplateTaskAvgAggregateOutputType | null
+    _sum: ServiceTemplateTaskSumAggregateOutputType | null
+    _min: ServiceTemplateTaskMinAggregateOutputType | null
+    _max: ServiceTemplateTaskMaxAggregateOutputType | null
+  }
+
+  type GetServiceTemplateTaskGroupByPayload<T extends ServiceTemplateTaskGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ServiceTemplateTaskGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ServiceTemplateTaskGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ServiceTemplateTaskGroupByOutputType[P]>
+            : GetScalarType<T[P], ServiceTemplateTaskGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ServiceTemplateTaskSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    templateId?: boolean
+    title?: boolean
+    description?: boolean
+    daysBeforeDue?: boolean
+    priority?: boolean
+    tags?: boolean
+    assigneeId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    serviceTemplate?: boolean | ServiceTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["serviceTemplateTask"]>
+
+  export type ServiceTemplateTaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    templateId?: boolean
+    title?: boolean
+    description?: boolean
+    daysBeforeDue?: boolean
+    priority?: boolean
+    tags?: boolean
+    assigneeId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    serviceTemplate?: boolean | ServiceTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["serviceTemplateTask"]>
+
+  export type ServiceTemplateTaskSelectScalar = {
+    id?: boolean
+    templateId?: boolean
+    title?: boolean
+    description?: boolean
+    daysBeforeDue?: boolean
+    priority?: boolean
+    tags?: boolean
+    assigneeId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ServiceTemplateTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    serviceTemplate?: boolean | ServiceTemplateDefaultArgs<ExtArgs>
+  }
+  export type ServiceTemplateTaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    serviceTemplate?: boolean | ServiceTemplateDefaultArgs<ExtArgs>
+  }
+
+  export type $ServiceTemplateTaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ServiceTemplateTask"
+    objects: {
+      serviceTemplate: Prisma.$ServiceTemplatePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      templateId: string
+      title: string
+      description: string | null
+      daysBeforeDue: number
+      priority: $Enums.Priority
+      tags: string[]
+      assigneeId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["serviceTemplateTask"]>
+    composites: {}
+  }
+
+  type ServiceTemplateTaskGetPayload<S extends boolean | null | undefined | ServiceTemplateTaskDefaultArgs> = $Result.GetResult<Prisma.$ServiceTemplateTaskPayload, S>
+
+  type ServiceTemplateTaskCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ServiceTemplateTaskFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ServiceTemplateTaskCountAggregateInputType | true
+    }
+
+  export interface ServiceTemplateTaskDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ServiceTemplateTask'], meta: { name: 'ServiceTemplateTask' } }
+    /**
+     * Find zero or one ServiceTemplateTask that matches the filter.
+     * @param {ServiceTemplateTaskFindUniqueArgs} args - Arguments to find a ServiceTemplateTask
+     * @example
+     * // Get one ServiceTemplateTask
+     * const serviceTemplateTask = await prisma.serviceTemplateTask.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ServiceTemplateTaskFindUniqueArgs>(args: SelectSubset<T, ServiceTemplateTaskFindUniqueArgs<ExtArgs>>): Prisma__ServiceTemplateTaskClient<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ServiceTemplateTask that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ServiceTemplateTaskFindUniqueOrThrowArgs} args - Arguments to find a ServiceTemplateTask
+     * @example
+     * // Get one ServiceTemplateTask
+     * const serviceTemplateTask = await prisma.serviceTemplateTask.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ServiceTemplateTaskFindUniqueOrThrowArgs>(args: SelectSubset<T, ServiceTemplateTaskFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ServiceTemplateTaskClient<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ServiceTemplateTask that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateTaskFindFirstArgs} args - Arguments to find a ServiceTemplateTask
+     * @example
+     * // Get one ServiceTemplateTask
+     * const serviceTemplateTask = await prisma.serviceTemplateTask.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ServiceTemplateTaskFindFirstArgs>(args?: SelectSubset<T, ServiceTemplateTaskFindFirstArgs<ExtArgs>>): Prisma__ServiceTemplateTaskClient<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ServiceTemplateTask that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateTaskFindFirstOrThrowArgs} args - Arguments to find a ServiceTemplateTask
+     * @example
+     * // Get one ServiceTemplateTask
+     * const serviceTemplateTask = await prisma.serviceTemplateTask.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ServiceTemplateTaskFindFirstOrThrowArgs>(args?: SelectSubset<T, ServiceTemplateTaskFindFirstOrThrowArgs<ExtArgs>>): Prisma__ServiceTemplateTaskClient<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ServiceTemplateTasks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateTaskFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ServiceTemplateTasks
+     * const serviceTemplateTasks = await prisma.serviceTemplateTask.findMany()
+     * 
+     * // Get first 10 ServiceTemplateTasks
+     * const serviceTemplateTasks = await prisma.serviceTemplateTask.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const serviceTemplateTaskWithIdOnly = await prisma.serviceTemplateTask.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ServiceTemplateTaskFindManyArgs>(args?: SelectSubset<T, ServiceTemplateTaskFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ServiceTemplateTask.
+     * @param {ServiceTemplateTaskCreateArgs} args - Arguments to create a ServiceTemplateTask.
+     * @example
+     * // Create one ServiceTemplateTask
+     * const ServiceTemplateTask = await prisma.serviceTemplateTask.create({
+     *   data: {
+     *     // ... data to create a ServiceTemplateTask
+     *   }
+     * })
+     * 
+     */
+    create<T extends ServiceTemplateTaskCreateArgs>(args: SelectSubset<T, ServiceTemplateTaskCreateArgs<ExtArgs>>): Prisma__ServiceTemplateTaskClient<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ServiceTemplateTasks.
+     * @param {ServiceTemplateTaskCreateManyArgs} args - Arguments to create many ServiceTemplateTasks.
+     * @example
+     * // Create many ServiceTemplateTasks
+     * const serviceTemplateTask = await prisma.serviceTemplateTask.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ServiceTemplateTaskCreateManyArgs>(args?: SelectSubset<T, ServiceTemplateTaskCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ServiceTemplateTasks and returns the data saved in the database.
+     * @param {ServiceTemplateTaskCreateManyAndReturnArgs} args - Arguments to create many ServiceTemplateTasks.
+     * @example
+     * // Create many ServiceTemplateTasks
+     * const serviceTemplateTask = await prisma.serviceTemplateTask.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ServiceTemplateTasks and only return the `id`
+     * const serviceTemplateTaskWithIdOnly = await prisma.serviceTemplateTask.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ServiceTemplateTaskCreateManyAndReturnArgs>(args?: SelectSubset<T, ServiceTemplateTaskCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ServiceTemplateTask.
+     * @param {ServiceTemplateTaskDeleteArgs} args - Arguments to delete one ServiceTemplateTask.
+     * @example
+     * // Delete one ServiceTemplateTask
+     * const ServiceTemplateTask = await prisma.serviceTemplateTask.delete({
+     *   where: {
+     *     // ... filter to delete one ServiceTemplateTask
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ServiceTemplateTaskDeleteArgs>(args: SelectSubset<T, ServiceTemplateTaskDeleteArgs<ExtArgs>>): Prisma__ServiceTemplateTaskClient<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ServiceTemplateTask.
+     * @param {ServiceTemplateTaskUpdateArgs} args - Arguments to update one ServiceTemplateTask.
+     * @example
+     * // Update one ServiceTemplateTask
+     * const serviceTemplateTask = await prisma.serviceTemplateTask.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ServiceTemplateTaskUpdateArgs>(args: SelectSubset<T, ServiceTemplateTaskUpdateArgs<ExtArgs>>): Prisma__ServiceTemplateTaskClient<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ServiceTemplateTasks.
+     * @param {ServiceTemplateTaskDeleteManyArgs} args - Arguments to filter ServiceTemplateTasks to delete.
+     * @example
+     * // Delete a few ServiceTemplateTasks
+     * const { count } = await prisma.serviceTemplateTask.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ServiceTemplateTaskDeleteManyArgs>(args?: SelectSubset<T, ServiceTemplateTaskDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ServiceTemplateTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateTaskUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ServiceTemplateTasks
+     * const serviceTemplateTask = await prisma.serviceTemplateTask.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ServiceTemplateTaskUpdateManyArgs>(args: SelectSubset<T, ServiceTemplateTaskUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ServiceTemplateTask.
+     * @param {ServiceTemplateTaskUpsertArgs} args - Arguments to update or create a ServiceTemplateTask.
+     * @example
+     * // Update or create a ServiceTemplateTask
+     * const serviceTemplateTask = await prisma.serviceTemplateTask.upsert({
+     *   create: {
+     *     // ... data to create a ServiceTemplateTask
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ServiceTemplateTask we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ServiceTemplateTaskUpsertArgs>(args: SelectSubset<T, ServiceTemplateTaskUpsertArgs<ExtArgs>>): Prisma__ServiceTemplateTaskClient<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ServiceTemplateTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateTaskCountArgs} args - Arguments to filter ServiceTemplateTasks to count.
+     * @example
+     * // Count the number of ServiceTemplateTasks
+     * const count = await prisma.serviceTemplateTask.count({
+     *   where: {
+     *     // ... the filter for the ServiceTemplateTasks we want to count
+     *   }
+     * })
+    **/
+    count<T extends ServiceTemplateTaskCountArgs>(
+      args?: Subset<T, ServiceTemplateTaskCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ServiceTemplateTaskCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ServiceTemplateTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateTaskAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ServiceTemplateTaskAggregateArgs>(args: Subset<T, ServiceTemplateTaskAggregateArgs>): Prisma.PrismaPromise<GetServiceTemplateTaskAggregateType<T>>
+
+    /**
+     * Group by ServiceTemplateTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ServiceTemplateTaskGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ServiceTemplateTaskGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ServiceTemplateTaskGroupByArgs['orderBy'] }
+        : { orderBy?: ServiceTemplateTaskGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ServiceTemplateTaskGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetServiceTemplateTaskGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ServiceTemplateTask model
+   */
+  readonly fields: ServiceTemplateTaskFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ServiceTemplateTask.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ServiceTemplateTaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    serviceTemplate<T extends ServiceTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceTemplateDefaultArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ServiceTemplateTask model
+   */ 
+  interface ServiceTemplateTaskFieldRefs {
+    readonly id: FieldRef<"ServiceTemplateTask", 'String'>
+    readonly templateId: FieldRef<"ServiceTemplateTask", 'String'>
+    readonly title: FieldRef<"ServiceTemplateTask", 'String'>
+    readonly description: FieldRef<"ServiceTemplateTask", 'String'>
+    readonly daysBeforeDue: FieldRef<"ServiceTemplateTask", 'Int'>
+    readonly priority: FieldRef<"ServiceTemplateTask", 'Priority'>
+    readonly tags: FieldRef<"ServiceTemplateTask", 'String[]'>
+    readonly assigneeId: FieldRef<"ServiceTemplateTask", 'String'>
+    readonly createdAt: FieldRef<"ServiceTemplateTask", 'DateTime'>
+    readonly updatedAt: FieldRef<"ServiceTemplateTask", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ServiceTemplateTask findUnique
+   */
+  export type ServiceTemplateTaskFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplateTask to fetch.
+     */
+    where: ServiceTemplateTaskWhereUniqueInput
+  }
+
+  /**
+   * ServiceTemplateTask findUniqueOrThrow
+   */
+  export type ServiceTemplateTaskFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplateTask to fetch.
+     */
+    where: ServiceTemplateTaskWhereUniqueInput
+  }
+
+  /**
+   * ServiceTemplateTask findFirst
+   */
+  export type ServiceTemplateTaskFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplateTask to fetch.
+     */
+    where?: ServiceTemplateTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceTemplateTasks to fetch.
+     */
+    orderBy?: ServiceTemplateTaskOrderByWithRelationInput | ServiceTemplateTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ServiceTemplateTasks.
+     */
+    cursor?: ServiceTemplateTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceTemplateTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceTemplateTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServiceTemplateTasks.
+     */
+    distinct?: ServiceTemplateTaskScalarFieldEnum | ServiceTemplateTaskScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceTemplateTask findFirstOrThrow
+   */
+  export type ServiceTemplateTaskFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplateTask to fetch.
+     */
+    where?: ServiceTemplateTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceTemplateTasks to fetch.
+     */
+    orderBy?: ServiceTemplateTaskOrderByWithRelationInput | ServiceTemplateTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ServiceTemplateTasks.
+     */
+    cursor?: ServiceTemplateTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceTemplateTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceTemplateTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ServiceTemplateTasks.
+     */
+    distinct?: ServiceTemplateTaskScalarFieldEnum | ServiceTemplateTaskScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceTemplateTask findMany
+   */
+  export type ServiceTemplateTaskFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which ServiceTemplateTasks to fetch.
+     */
+    where?: ServiceTemplateTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ServiceTemplateTasks to fetch.
+     */
+    orderBy?: ServiceTemplateTaskOrderByWithRelationInput | ServiceTemplateTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ServiceTemplateTasks.
+     */
+    cursor?: ServiceTemplateTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ServiceTemplateTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ServiceTemplateTasks.
+     */
+    skip?: number
+    distinct?: ServiceTemplateTaskScalarFieldEnum | ServiceTemplateTaskScalarFieldEnum[]
+  }
+
+  /**
+   * ServiceTemplateTask create
+   */
+  export type ServiceTemplateTaskCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ServiceTemplateTask.
+     */
+    data: XOR<ServiceTemplateTaskCreateInput, ServiceTemplateTaskUncheckedCreateInput>
+  }
+
+  /**
+   * ServiceTemplateTask createMany
+   */
+  export type ServiceTemplateTaskCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ServiceTemplateTasks.
+     */
+    data: ServiceTemplateTaskCreateManyInput | ServiceTemplateTaskCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ServiceTemplateTask createManyAndReturn
+   */
+  export type ServiceTemplateTaskCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ServiceTemplateTasks.
+     */
+    data: ServiceTemplateTaskCreateManyInput | ServiceTemplateTaskCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ServiceTemplateTask update
+   */
+  export type ServiceTemplateTaskUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ServiceTemplateTask.
+     */
+    data: XOR<ServiceTemplateTaskUpdateInput, ServiceTemplateTaskUncheckedUpdateInput>
+    /**
+     * Choose, which ServiceTemplateTask to update.
+     */
+    where: ServiceTemplateTaskWhereUniqueInput
+  }
+
+  /**
+   * ServiceTemplateTask updateMany
+   */
+  export type ServiceTemplateTaskUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ServiceTemplateTasks.
+     */
+    data: XOR<ServiceTemplateTaskUpdateManyMutationInput, ServiceTemplateTaskUncheckedUpdateManyInput>
+    /**
+     * Filter which ServiceTemplateTasks to update
+     */
+    where?: ServiceTemplateTaskWhereInput
+  }
+
+  /**
+   * ServiceTemplateTask upsert
+   */
+  export type ServiceTemplateTaskUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ServiceTemplateTask to update in case it exists.
+     */
+    where: ServiceTemplateTaskWhereUniqueInput
+    /**
+     * In case the ServiceTemplateTask found by the `where` argument doesn't exist, create a new ServiceTemplateTask with this data.
+     */
+    create: XOR<ServiceTemplateTaskCreateInput, ServiceTemplateTaskUncheckedCreateInput>
+    /**
+     * In case the ServiceTemplateTask was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ServiceTemplateTaskUpdateInput, ServiceTemplateTaskUncheckedUpdateInput>
+  }
+
+  /**
+   * ServiceTemplateTask delete
+   */
+  export type ServiceTemplateTaskDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+    /**
+     * Filter which ServiceTemplateTask to delete.
+     */
+    where: ServiceTemplateTaskWhereUniqueInput
+  }
+
+  /**
+   * ServiceTemplateTask deleteMany
+   */
+  export type ServiceTemplateTaskDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ServiceTemplateTasks to delete
+     */
+    where?: ServiceTemplateTaskWhereInput
+  }
+
+  /**
+   * ServiceTemplateTask without action
+   */
+  export type ServiceTemplateTaskDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplateTask
+     */
+    select?: ServiceTemplateTaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateTaskInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model StandaloneTaskTemplate
+   */
+
+  export type AggregateStandaloneTaskTemplate = {
+    _count: StandaloneTaskTemplateCountAggregateOutputType | null
+    _min: StandaloneTaskTemplateMinAggregateOutputType | null
+    _max: StandaloneTaskTemplateMaxAggregateOutputType | null
+  }
+
+  export type StandaloneTaskTemplateMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    category: string | null
+    priority: $Enums.Priority | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StandaloneTaskTemplateMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    category: string | null
+    priority: $Enums.Priority | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StandaloneTaskTemplateCountAggregateOutputType = {
+    id: number
+    title: number
+    description: number
+    category: number
+    priority: number
+    tags: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type StandaloneTaskTemplateMinAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    category?: true
+    priority?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StandaloneTaskTemplateMaxAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    category?: true
+    priority?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StandaloneTaskTemplateCountAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    category?: true
+    priority?: true
+    tags?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type StandaloneTaskTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StandaloneTaskTemplate to aggregate.
+     */
+    where?: StandaloneTaskTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StandaloneTaskTemplates to fetch.
+     */
+    orderBy?: StandaloneTaskTemplateOrderByWithRelationInput | StandaloneTaskTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StandaloneTaskTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StandaloneTaskTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StandaloneTaskTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StandaloneTaskTemplates
+    **/
+    _count?: true | StandaloneTaskTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StandaloneTaskTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StandaloneTaskTemplateMaxAggregateInputType
+  }
+
+  export type GetStandaloneTaskTemplateAggregateType<T extends StandaloneTaskTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregateStandaloneTaskTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStandaloneTaskTemplate[P]>
+      : GetScalarType<T[P], AggregateStandaloneTaskTemplate[P]>
+  }
+
+
+
+
+  export type StandaloneTaskTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StandaloneTaskTemplateWhereInput
+    orderBy?: StandaloneTaskTemplateOrderByWithAggregationInput | StandaloneTaskTemplateOrderByWithAggregationInput[]
+    by: StandaloneTaskTemplateScalarFieldEnum[] | StandaloneTaskTemplateScalarFieldEnum
+    having?: StandaloneTaskTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StandaloneTaskTemplateCountAggregateInputType | true
+    _min?: StandaloneTaskTemplateMinAggregateInputType
+    _max?: StandaloneTaskTemplateMaxAggregateInputType
+  }
+
+  export type StandaloneTaskTemplateGroupByOutputType = {
+    id: string
+    title: string
+    description: string
+    category: string
+    priority: $Enums.Priority
+    tags: string[]
+    createdAt: Date
+    updatedAt: Date
+    _count: StandaloneTaskTemplateCountAggregateOutputType | null
+    _min: StandaloneTaskTemplateMinAggregateOutputType | null
+    _max: StandaloneTaskTemplateMaxAggregateOutputType | null
+  }
+
+  type GetStandaloneTaskTemplateGroupByPayload<T extends StandaloneTaskTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StandaloneTaskTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StandaloneTaskTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StandaloneTaskTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], StandaloneTaskTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StandaloneTaskTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    category?: boolean
+    priority?: boolean
+    tags?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["standaloneTaskTemplate"]>
+
+  export type StandaloneTaskTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    category?: boolean
+    priority?: boolean
+    tags?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["standaloneTaskTemplate"]>
+
+  export type StandaloneTaskTemplateSelectScalar = {
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    category?: boolean
+    priority?: boolean
+    tags?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $StandaloneTaskTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StandaloneTaskTemplate"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      description: string
+      category: string
+      priority: $Enums.Priority
+      tags: string[]
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["standaloneTaskTemplate"]>
+    composites: {}
+  }
+
+  type StandaloneTaskTemplateGetPayload<S extends boolean | null | undefined | StandaloneTaskTemplateDefaultArgs> = $Result.GetResult<Prisma.$StandaloneTaskTemplatePayload, S>
+
+  type StandaloneTaskTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<StandaloneTaskTemplateFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: StandaloneTaskTemplateCountAggregateInputType | true
+    }
+
+  export interface StandaloneTaskTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StandaloneTaskTemplate'], meta: { name: 'StandaloneTaskTemplate' } }
+    /**
+     * Find zero or one StandaloneTaskTemplate that matches the filter.
+     * @param {StandaloneTaskTemplateFindUniqueArgs} args - Arguments to find a StandaloneTaskTemplate
+     * @example
+     * // Get one StandaloneTaskTemplate
+     * const standaloneTaskTemplate = await prisma.standaloneTaskTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StandaloneTaskTemplateFindUniqueArgs>(args: SelectSubset<T, StandaloneTaskTemplateFindUniqueArgs<ExtArgs>>): Prisma__StandaloneTaskTemplateClient<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one StandaloneTaskTemplate that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {StandaloneTaskTemplateFindUniqueOrThrowArgs} args - Arguments to find a StandaloneTaskTemplate
+     * @example
+     * // Get one StandaloneTaskTemplate
+     * const standaloneTaskTemplate = await prisma.standaloneTaskTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StandaloneTaskTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, StandaloneTaskTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StandaloneTaskTemplateClient<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first StandaloneTaskTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StandaloneTaskTemplateFindFirstArgs} args - Arguments to find a StandaloneTaskTemplate
+     * @example
+     * // Get one StandaloneTaskTemplate
+     * const standaloneTaskTemplate = await prisma.standaloneTaskTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StandaloneTaskTemplateFindFirstArgs>(args?: SelectSubset<T, StandaloneTaskTemplateFindFirstArgs<ExtArgs>>): Prisma__StandaloneTaskTemplateClient<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first StandaloneTaskTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StandaloneTaskTemplateFindFirstOrThrowArgs} args - Arguments to find a StandaloneTaskTemplate
+     * @example
+     * // Get one StandaloneTaskTemplate
+     * const standaloneTaskTemplate = await prisma.standaloneTaskTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StandaloneTaskTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, StandaloneTaskTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__StandaloneTaskTemplateClient<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more StandaloneTaskTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StandaloneTaskTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StandaloneTaskTemplates
+     * const standaloneTaskTemplates = await prisma.standaloneTaskTemplate.findMany()
+     * 
+     * // Get first 10 StandaloneTaskTemplates
+     * const standaloneTaskTemplates = await prisma.standaloneTaskTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const standaloneTaskTemplateWithIdOnly = await prisma.standaloneTaskTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StandaloneTaskTemplateFindManyArgs>(args?: SelectSubset<T, StandaloneTaskTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a StandaloneTaskTemplate.
+     * @param {StandaloneTaskTemplateCreateArgs} args - Arguments to create a StandaloneTaskTemplate.
+     * @example
+     * // Create one StandaloneTaskTemplate
+     * const StandaloneTaskTemplate = await prisma.standaloneTaskTemplate.create({
+     *   data: {
+     *     // ... data to create a StandaloneTaskTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends StandaloneTaskTemplateCreateArgs>(args: SelectSubset<T, StandaloneTaskTemplateCreateArgs<ExtArgs>>): Prisma__StandaloneTaskTemplateClient<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many StandaloneTaskTemplates.
+     * @param {StandaloneTaskTemplateCreateManyArgs} args - Arguments to create many StandaloneTaskTemplates.
+     * @example
+     * // Create many StandaloneTaskTemplates
+     * const standaloneTaskTemplate = await prisma.standaloneTaskTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StandaloneTaskTemplateCreateManyArgs>(args?: SelectSubset<T, StandaloneTaskTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StandaloneTaskTemplates and returns the data saved in the database.
+     * @param {StandaloneTaskTemplateCreateManyAndReturnArgs} args - Arguments to create many StandaloneTaskTemplates.
+     * @example
+     * // Create many StandaloneTaskTemplates
+     * const standaloneTaskTemplate = await prisma.standaloneTaskTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StandaloneTaskTemplates and only return the `id`
+     * const standaloneTaskTemplateWithIdOnly = await prisma.standaloneTaskTemplate.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StandaloneTaskTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, StandaloneTaskTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a StandaloneTaskTemplate.
+     * @param {StandaloneTaskTemplateDeleteArgs} args - Arguments to delete one StandaloneTaskTemplate.
+     * @example
+     * // Delete one StandaloneTaskTemplate
+     * const StandaloneTaskTemplate = await prisma.standaloneTaskTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one StandaloneTaskTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StandaloneTaskTemplateDeleteArgs>(args: SelectSubset<T, StandaloneTaskTemplateDeleteArgs<ExtArgs>>): Prisma__StandaloneTaskTemplateClient<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one StandaloneTaskTemplate.
+     * @param {StandaloneTaskTemplateUpdateArgs} args - Arguments to update one StandaloneTaskTemplate.
+     * @example
+     * // Update one StandaloneTaskTemplate
+     * const standaloneTaskTemplate = await prisma.standaloneTaskTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StandaloneTaskTemplateUpdateArgs>(args: SelectSubset<T, StandaloneTaskTemplateUpdateArgs<ExtArgs>>): Prisma__StandaloneTaskTemplateClient<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more StandaloneTaskTemplates.
+     * @param {StandaloneTaskTemplateDeleteManyArgs} args - Arguments to filter StandaloneTaskTemplates to delete.
+     * @example
+     * // Delete a few StandaloneTaskTemplates
+     * const { count } = await prisma.standaloneTaskTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StandaloneTaskTemplateDeleteManyArgs>(args?: SelectSubset<T, StandaloneTaskTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StandaloneTaskTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StandaloneTaskTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StandaloneTaskTemplates
+     * const standaloneTaskTemplate = await prisma.standaloneTaskTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StandaloneTaskTemplateUpdateManyArgs>(args: SelectSubset<T, StandaloneTaskTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one StandaloneTaskTemplate.
+     * @param {StandaloneTaskTemplateUpsertArgs} args - Arguments to update or create a StandaloneTaskTemplate.
+     * @example
+     * // Update or create a StandaloneTaskTemplate
+     * const standaloneTaskTemplate = await prisma.standaloneTaskTemplate.upsert({
+     *   create: {
+     *     // ... data to create a StandaloneTaskTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StandaloneTaskTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StandaloneTaskTemplateUpsertArgs>(args: SelectSubset<T, StandaloneTaskTemplateUpsertArgs<ExtArgs>>): Prisma__StandaloneTaskTemplateClient<$Result.GetResult<Prisma.$StandaloneTaskTemplatePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of StandaloneTaskTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StandaloneTaskTemplateCountArgs} args - Arguments to filter StandaloneTaskTemplates to count.
+     * @example
+     * // Count the number of StandaloneTaskTemplates
+     * const count = await prisma.standaloneTaskTemplate.count({
+     *   where: {
+     *     // ... the filter for the StandaloneTaskTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends StandaloneTaskTemplateCountArgs>(
+      args?: Subset<T, StandaloneTaskTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StandaloneTaskTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StandaloneTaskTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StandaloneTaskTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StandaloneTaskTemplateAggregateArgs>(args: Subset<T, StandaloneTaskTemplateAggregateArgs>): Prisma.PrismaPromise<GetStandaloneTaskTemplateAggregateType<T>>
+
+    /**
+     * Group by StandaloneTaskTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StandaloneTaskTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StandaloneTaskTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StandaloneTaskTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: StandaloneTaskTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StandaloneTaskTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStandaloneTaskTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StandaloneTaskTemplate model
+   */
+  readonly fields: StandaloneTaskTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StandaloneTaskTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StandaloneTaskTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StandaloneTaskTemplate model
+   */ 
+  interface StandaloneTaskTemplateFieldRefs {
+    readonly id: FieldRef<"StandaloneTaskTemplate", 'String'>
+    readonly title: FieldRef<"StandaloneTaskTemplate", 'String'>
+    readonly description: FieldRef<"StandaloneTaskTemplate", 'String'>
+    readonly category: FieldRef<"StandaloneTaskTemplate", 'String'>
+    readonly priority: FieldRef<"StandaloneTaskTemplate", 'Priority'>
+    readonly tags: FieldRef<"StandaloneTaskTemplate", 'String[]'>
+    readonly createdAt: FieldRef<"StandaloneTaskTemplate", 'DateTime'>
+    readonly updatedAt: FieldRef<"StandaloneTaskTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StandaloneTaskTemplate findUnique
+   */
+  export type StandaloneTaskTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which StandaloneTaskTemplate to fetch.
+     */
+    where: StandaloneTaskTemplateWhereUniqueInput
+  }
+
+  /**
+   * StandaloneTaskTemplate findUniqueOrThrow
+   */
+  export type StandaloneTaskTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which StandaloneTaskTemplate to fetch.
+     */
+    where: StandaloneTaskTemplateWhereUniqueInput
+  }
+
+  /**
+   * StandaloneTaskTemplate findFirst
+   */
+  export type StandaloneTaskTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which StandaloneTaskTemplate to fetch.
+     */
+    where?: StandaloneTaskTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StandaloneTaskTemplates to fetch.
+     */
+    orderBy?: StandaloneTaskTemplateOrderByWithRelationInput | StandaloneTaskTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StandaloneTaskTemplates.
+     */
+    cursor?: StandaloneTaskTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StandaloneTaskTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StandaloneTaskTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StandaloneTaskTemplates.
+     */
+    distinct?: StandaloneTaskTemplateScalarFieldEnum | StandaloneTaskTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * StandaloneTaskTemplate findFirstOrThrow
+   */
+  export type StandaloneTaskTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which StandaloneTaskTemplate to fetch.
+     */
+    where?: StandaloneTaskTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StandaloneTaskTemplates to fetch.
+     */
+    orderBy?: StandaloneTaskTemplateOrderByWithRelationInput | StandaloneTaskTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StandaloneTaskTemplates.
+     */
+    cursor?: StandaloneTaskTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StandaloneTaskTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StandaloneTaskTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StandaloneTaskTemplates.
+     */
+    distinct?: StandaloneTaskTemplateScalarFieldEnum | StandaloneTaskTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * StandaloneTaskTemplate findMany
+   */
+  export type StandaloneTaskTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which StandaloneTaskTemplates to fetch.
+     */
+    where?: StandaloneTaskTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StandaloneTaskTemplates to fetch.
+     */
+    orderBy?: StandaloneTaskTemplateOrderByWithRelationInput | StandaloneTaskTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StandaloneTaskTemplates.
+     */
+    cursor?: StandaloneTaskTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StandaloneTaskTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StandaloneTaskTemplates.
+     */
+    skip?: number
+    distinct?: StandaloneTaskTemplateScalarFieldEnum | StandaloneTaskTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * StandaloneTaskTemplate create
+   */
+  export type StandaloneTaskTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+    /**
+     * The data needed to create a StandaloneTaskTemplate.
+     */
+    data: XOR<StandaloneTaskTemplateCreateInput, StandaloneTaskTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * StandaloneTaskTemplate createMany
+   */
+  export type StandaloneTaskTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StandaloneTaskTemplates.
+     */
+    data: StandaloneTaskTemplateCreateManyInput | StandaloneTaskTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StandaloneTaskTemplate createManyAndReturn
+   */
+  export type StandaloneTaskTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many StandaloneTaskTemplates.
+     */
+    data: StandaloneTaskTemplateCreateManyInput | StandaloneTaskTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StandaloneTaskTemplate update
+   */
+  export type StandaloneTaskTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+    /**
+     * The data needed to update a StandaloneTaskTemplate.
+     */
+    data: XOR<StandaloneTaskTemplateUpdateInput, StandaloneTaskTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which StandaloneTaskTemplate to update.
+     */
+    where: StandaloneTaskTemplateWhereUniqueInput
+  }
+
+  /**
+   * StandaloneTaskTemplate updateMany
+   */
+  export type StandaloneTaskTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StandaloneTaskTemplates.
+     */
+    data: XOR<StandaloneTaskTemplateUpdateManyMutationInput, StandaloneTaskTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which StandaloneTaskTemplates to update
+     */
+    where?: StandaloneTaskTemplateWhereInput
+  }
+
+  /**
+   * StandaloneTaskTemplate upsert
+   */
+  export type StandaloneTaskTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+    /**
+     * The filter to search for the StandaloneTaskTemplate to update in case it exists.
+     */
+    where: StandaloneTaskTemplateWhereUniqueInput
+    /**
+     * In case the StandaloneTaskTemplate found by the `where` argument doesn't exist, create a new StandaloneTaskTemplate with this data.
+     */
+    create: XOR<StandaloneTaskTemplateCreateInput, StandaloneTaskTemplateUncheckedCreateInput>
+    /**
+     * In case the StandaloneTaskTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StandaloneTaskTemplateUpdateInput, StandaloneTaskTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * StandaloneTaskTemplate delete
+   */
+  export type StandaloneTaskTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+    /**
+     * Filter which StandaloneTaskTemplate to delete.
+     */
+    where: StandaloneTaskTemplateWhereUniqueInput
+  }
+
+  /**
+   * StandaloneTaskTemplate deleteMany
+   */
+  export type StandaloneTaskTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StandaloneTaskTemplates to delete
+     */
+    where?: StandaloneTaskTemplateWhereInput
+  }
+
+  /**
+   * StandaloneTaskTemplate without action
+   */
+  export type StandaloneTaskTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandaloneTaskTemplate
+     */
+    select?: StandaloneTaskTemplateSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Model Document
    */
 
@@ -19637,6 +27274,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     createdBy?: boolean | Template$createdByArgs<ExtArgs>
+    fields?: boolean | Template$fieldsArgs<ExtArgs>
+    _count?: boolean | TemplateCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["template"]>
 
   export type TemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -19670,6 +27309,8 @@ export namespace Prisma {
 
   export type TemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdBy?: boolean | Template$createdByArgs<ExtArgs>
+    fields?: boolean | Template$fieldsArgs<ExtArgs>
+    _count?: boolean | TemplateCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdBy?: boolean | Template$createdByArgs<ExtArgs>
@@ -19679,6 +27320,7 @@ export namespace Prisma {
     name: "Template"
     objects: {
       createdBy: Prisma.$UserPayload<ExtArgs> | null
+      fields: Prisma.$TemplateFieldPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -20057,6 +27699,7 @@ export namespace Prisma {
   export interface Prisma__TemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     createdBy<T extends Template$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Template$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    fields<T extends Template$fieldsArgs<ExtArgs> = {}>(args?: Subset<T, Template$fieldsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20430,6 +28073,26 @@ export namespace Prisma {
   }
 
   /**
+   * Template.fields
+   */
+  export type Template$fieldsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    where?: TemplateFieldWhereInput
+    orderBy?: TemplateFieldOrderByWithRelationInput | TemplateFieldOrderByWithRelationInput[]
+    cursor?: TemplateFieldWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TemplateFieldScalarFieldEnum | TemplateFieldScalarFieldEnum[]
+  }
+
+  /**
    * Template without action
    */
   export type TemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -20441,6 +28104,1077 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: TemplateInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TemplateField
+   */
+
+  export type AggregateTemplateField = {
+    _count: TemplateFieldCountAggregateOutputType | null
+    _avg: TemplateFieldAvgAggregateOutputType | null
+    _sum: TemplateFieldSumAggregateOutputType | null
+    _min: TemplateFieldMinAggregateOutputType | null
+    _max: TemplateFieldMaxAggregateOutputType | null
+  }
+
+  export type TemplateFieldAvgAggregateOutputType = {
+    displayOrder: number | null
+  }
+
+  export type TemplateFieldSumAggregateOutputType = {
+    displayOrder: number | null
+  }
+
+  export type TemplateFieldMinAggregateOutputType = {
+    id: string | null
+    templateId: string | null
+    key: string | null
+    label: string | null
+    type: string | null
+    required: boolean | null
+    defaultValue: string | null
+    format: string | null
+    source: string | null
+    sourcePath: string | null
+    displayOrder: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TemplateFieldMaxAggregateOutputType = {
+    id: string | null
+    templateId: string | null
+    key: string | null
+    label: string | null
+    type: string | null
+    required: boolean | null
+    defaultValue: string | null
+    format: string | null
+    source: string | null
+    sourcePath: string | null
+    displayOrder: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TemplateFieldCountAggregateOutputType = {
+    id: number
+    templateId: number
+    key: number
+    label: number
+    type: number
+    required: number
+    defaultValue: number
+    format: number
+    source: number
+    sourcePath: number
+    validation: number
+    displayOrder: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TemplateFieldAvgAggregateInputType = {
+    displayOrder?: true
+  }
+
+  export type TemplateFieldSumAggregateInputType = {
+    displayOrder?: true
+  }
+
+  export type TemplateFieldMinAggregateInputType = {
+    id?: true
+    templateId?: true
+    key?: true
+    label?: true
+    type?: true
+    required?: true
+    defaultValue?: true
+    format?: true
+    source?: true
+    sourcePath?: true
+    displayOrder?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TemplateFieldMaxAggregateInputType = {
+    id?: true
+    templateId?: true
+    key?: true
+    label?: true
+    type?: true
+    required?: true
+    defaultValue?: true
+    format?: true
+    source?: true
+    sourcePath?: true
+    displayOrder?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TemplateFieldCountAggregateInputType = {
+    id?: true
+    templateId?: true
+    key?: true
+    label?: true
+    type?: true
+    required?: true
+    defaultValue?: true
+    format?: true
+    source?: true
+    sourcePath?: true
+    validation?: true
+    displayOrder?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TemplateFieldAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TemplateField to aggregate.
+     */
+    where?: TemplateFieldWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TemplateFields to fetch.
+     */
+    orderBy?: TemplateFieldOrderByWithRelationInput | TemplateFieldOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TemplateFieldWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TemplateFields from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TemplateFields.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TemplateFields
+    **/
+    _count?: true | TemplateFieldCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TemplateFieldAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TemplateFieldSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TemplateFieldMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TemplateFieldMaxAggregateInputType
+  }
+
+  export type GetTemplateFieldAggregateType<T extends TemplateFieldAggregateArgs> = {
+        [P in keyof T & keyof AggregateTemplateField]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTemplateField[P]>
+      : GetScalarType<T[P], AggregateTemplateField[P]>
+  }
+
+
+
+
+  export type TemplateFieldGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TemplateFieldWhereInput
+    orderBy?: TemplateFieldOrderByWithAggregationInput | TemplateFieldOrderByWithAggregationInput[]
+    by: TemplateFieldScalarFieldEnum[] | TemplateFieldScalarFieldEnum
+    having?: TemplateFieldScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TemplateFieldCountAggregateInputType | true
+    _avg?: TemplateFieldAvgAggregateInputType
+    _sum?: TemplateFieldSumAggregateInputType
+    _min?: TemplateFieldMinAggregateInputType
+    _max?: TemplateFieldMaxAggregateInputType
+  }
+
+  export type TemplateFieldGroupByOutputType = {
+    id: string
+    templateId: string
+    key: string
+    label: string
+    type: string
+    required: boolean
+    defaultValue: string | null
+    format: string | null
+    source: string | null
+    sourcePath: string | null
+    validation: JsonValue | null
+    displayOrder: number
+    createdAt: Date
+    updatedAt: Date
+    _count: TemplateFieldCountAggregateOutputType | null
+    _avg: TemplateFieldAvgAggregateOutputType | null
+    _sum: TemplateFieldSumAggregateOutputType | null
+    _min: TemplateFieldMinAggregateOutputType | null
+    _max: TemplateFieldMaxAggregateOutputType | null
+  }
+
+  type GetTemplateFieldGroupByPayload<T extends TemplateFieldGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TemplateFieldGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TemplateFieldGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TemplateFieldGroupByOutputType[P]>
+            : GetScalarType<T[P], TemplateFieldGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TemplateFieldSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    templateId?: boolean
+    key?: boolean
+    label?: boolean
+    type?: boolean
+    required?: boolean
+    defaultValue?: boolean
+    format?: boolean
+    source?: boolean
+    sourcePath?: boolean
+    validation?: boolean
+    displayOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    template?: boolean | TemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["templateField"]>
+
+  export type TemplateFieldSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    templateId?: boolean
+    key?: boolean
+    label?: boolean
+    type?: boolean
+    required?: boolean
+    defaultValue?: boolean
+    format?: boolean
+    source?: boolean
+    sourcePath?: boolean
+    validation?: boolean
+    displayOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    template?: boolean | TemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["templateField"]>
+
+  export type TemplateFieldSelectScalar = {
+    id?: boolean
+    templateId?: boolean
+    key?: boolean
+    label?: boolean
+    type?: boolean
+    required?: boolean
+    defaultValue?: boolean
+    format?: boolean
+    source?: boolean
+    sourcePath?: boolean
+    validation?: boolean
+    displayOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TemplateFieldInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    template?: boolean | TemplateDefaultArgs<ExtArgs>
+  }
+  export type TemplateFieldIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    template?: boolean | TemplateDefaultArgs<ExtArgs>
+  }
+
+  export type $TemplateFieldPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TemplateField"
+    objects: {
+      template: Prisma.$TemplatePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      templateId: string
+      key: string
+      label: string
+      type: string
+      required: boolean
+      defaultValue: string | null
+      format: string | null
+      source: string | null
+      sourcePath: string | null
+      validation: Prisma.JsonValue | null
+      displayOrder: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["templateField"]>
+    composites: {}
+  }
+
+  type TemplateFieldGetPayload<S extends boolean | null | undefined | TemplateFieldDefaultArgs> = $Result.GetResult<Prisma.$TemplateFieldPayload, S>
+
+  type TemplateFieldCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TemplateFieldFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TemplateFieldCountAggregateInputType | true
+    }
+
+  export interface TemplateFieldDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TemplateField'], meta: { name: 'TemplateField' } }
+    /**
+     * Find zero or one TemplateField that matches the filter.
+     * @param {TemplateFieldFindUniqueArgs} args - Arguments to find a TemplateField
+     * @example
+     * // Get one TemplateField
+     * const templateField = await prisma.templateField.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TemplateFieldFindUniqueArgs>(args: SelectSubset<T, TemplateFieldFindUniqueArgs<ExtArgs>>): Prisma__TemplateFieldClient<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TemplateField that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TemplateFieldFindUniqueOrThrowArgs} args - Arguments to find a TemplateField
+     * @example
+     * // Get one TemplateField
+     * const templateField = await prisma.templateField.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TemplateFieldFindUniqueOrThrowArgs>(args: SelectSubset<T, TemplateFieldFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TemplateFieldClient<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TemplateField that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplateFieldFindFirstArgs} args - Arguments to find a TemplateField
+     * @example
+     * // Get one TemplateField
+     * const templateField = await prisma.templateField.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TemplateFieldFindFirstArgs>(args?: SelectSubset<T, TemplateFieldFindFirstArgs<ExtArgs>>): Prisma__TemplateFieldClient<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TemplateField that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplateFieldFindFirstOrThrowArgs} args - Arguments to find a TemplateField
+     * @example
+     * // Get one TemplateField
+     * const templateField = await prisma.templateField.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TemplateFieldFindFirstOrThrowArgs>(args?: SelectSubset<T, TemplateFieldFindFirstOrThrowArgs<ExtArgs>>): Prisma__TemplateFieldClient<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TemplateFields that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplateFieldFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TemplateFields
+     * const templateFields = await prisma.templateField.findMany()
+     * 
+     * // Get first 10 TemplateFields
+     * const templateFields = await prisma.templateField.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const templateFieldWithIdOnly = await prisma.templateField.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TemplateFieldFindManyArgs>(args?: SelectSubset<T, TemplateFieldFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TemplateField.
+     * @param {TemplateFieldCreateArgs} args - Arguments to create a TemplateField.
+     * @example
+     * // Create one TemplateField
+     * const TemplateField = await prisma.templateField.create({
+     *   data: {
+     *     // ... data to create a TemplateField
+     *   }
+     * })
+     * 
+     */
+    create<T extends TemplateFieldCreateArgs>(args: SelectSubset<T, TemplateFieldCreateArgs<ExtArgs>>): Prisma__TemplateFieldClient<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TemplateFields.
+     * @param {TemplateFieldCreateManyArgs} args - Arguments to create many TemplateFields.
+     * @example
+     * // Create many TemplateFields
+     * const templateField = await prisma.templateField.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TemplateFieldCreateManyArgs>(args?: SelectSubset<T, TemplateFieldCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TemplateFields and returns the data saved in the database.
+     * @param {TemplateFieldCreateManyAndReturnArgs} args - Arguments to create many TemplateFields.
+     * @example
+     * // Create many TemplateFields
+     * const templateField = await prisma.templateField.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TemplateFields and only return the `id`
+     * const templateFieldWithIdOnly = await prisma.templateField.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TemplateFieldCreateManyAndReturnArgs>(args?: SelectSubset<T, TemplateFieldCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a TemplateField.
+     * @param {TemplateFieldDeleteArgs} args - Arguments to delete one TemplateField.
+     * @example
+     * // Delete one TemplateField
+     * const TemplateField = await prisma.templateField.delete({
+     *   where: {
+     *     // ... filter to delete one TemplateField
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TemplateFieldDeleteArgs>(args: SelectSubset<T, TemplateFieldDeleteArgs<ExtArgs>>): Prisma__TemplateFieldClient<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TemplateField.
+     * @param {TemplateFieldUpdateArgs} args - Arguments to update one TemplateField.
+     * @example
+     * // Update one TemplateField
+     * const templateField = await prisma.templateField.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TemplateFieldUpdateArgs>(args: SelectSubset<T, TemplateFieldUpdateArgs<ExtArgs>>): Prisma__TemplateFieldClient<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TemplateFields.
+     * @param {TemplateFieldDeleteManyArgs} args - Arguments to filter TemplateFields to delete.
+     * @example
+     * // Delete a few TemplateFields
+     * const { count } = await prisma.templateField.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TemplateFieldDeleteManyArgs>(args?: SelectSubset<T, TemplateFieldDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TemplateFields.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplateFieldUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TemplateFields
+     * const templateField = await prisma.templateField.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TemplateFieldUpdateManyArgs>(args: SelectSubset<T, TemplateFieldUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TemplateField.
+     * @param {TemplateFieldUpsertArgs} args - Arguments to update or create a TemplateField.
+     * @example
+     * // Update or create a TemplateField
+     * const templateField = await prisma.templateField.upsert({
+     *   create: {
+     *     // ... data to create a TemplateField
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TemplateField we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TemplateFieldUpsertArgs>(args: SelectSubset<T, TemplateFieldUpsertArgs<ExtArgs>>): Prisma__TemplateFieldClient<$Result.GetResult<Prisma.$TemplateFieldPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TemplateFields.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplateFieldCountArgs} args - Arguments to filter TemplateFields to count.
+     * @example
+     * // Count the number of TemplateFields
+     * const count = await prisma.templateField.count({
+     *   where: {
+     *     // ... the filter for the TemplateFields we want to count
+     *   }
+     * })
+    **/
+    count<T extends TemplateFieldCountArgs>(
+      args?: Subset<T, TemplateFieldCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TemplateFieldCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TemplateField.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplateFieldAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TemplateFieldAggregateArgs>(args: Subset<T, TemplateFieldAggregateArgs>): Prisma.PrismaPromise<GetTemplateFieldAggregateType<T>>
+
+    /**
+     * Group by TemplateField.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TemplateFieldGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TemplateFieldGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TemplateFieldGroupByArgs['orderBy'] }
+        : { orderBy?: TemplateFieldGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TemplateFieldGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTemplateFieldGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TemplateField model
+   */
+  readonly fields: TemplateFieldFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TemplateField.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TemplateFieldClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    template<T extends TemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TemplateDefaultArgs<ExtArgs>>): Prisma__TemplateClient<$Result.GetResult<Prisma.$TemplatePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TemplateField model
+   */ 
+  interface TemplateFieldFieldRefs {
+    readonly id: FieldRef<"TemplateField", 'String'>
+    readonly templateId: FieldRef<"TemplateField", 'String'>
+    readonly key: FieldRef<"TemplateField", 'String'>
+    readonly label: FieldRef<"TemplateField", 'String'>
+    readonly type: FieldRef<"TemplateField", 'String'>
+    readonly required: FieldRef<"TemplateField", 'Boolean'>
+    readonly defaultValue: FieldRef<"TemplateField", 'String'>
+    readonly format: FieldRef<"TemplateField", 'String'>
+    readonly source: FieldRef<"TemplateField", 'String'>
+    readonly sourcePath: FieldRef<"TemplateField", 'String'>
+    readonly validation: FieldRef<"TemplateField", 'Json'>
+    readonly displayOrder: FieldRef<"TemplateField", 'Int'>
+    readonly createdAt: FieldRef<"TemplateField", 'DateTime'>
+    readonly updatedAt: FieldRef<"TemplateField", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TemplateField findUnique
+   */
+  export type TemplateFieldFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplateField to fetch.
+     */
+    where: TemplateFieldWhereUniqueInput
+  }
+
+  /**
+   * TemplateField findUniqueOrThrow
+   */
+  export type TemplateFieldFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplateField to fetch.
+     */
+    where: TemplateFieldWhereUniqueInput
+  }
+
+  /**
+   * TemplateField findFirst
+   */
+  export type TemplateFieldFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplateField to fetch.
+     */
+    where?: TemplateFieldWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TemplateFields to fetch.
+     */
+    orderBy?: TemplateFieldOrderByWithRelationInput | TemplateFieldOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TemplateFields.
+     */
+    cursor?: TemplateFieldWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TemplateFields from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TemplateFields.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TemplateFields.
+     */
+    distinct?: TemplateFieldScalarFieldEnum | TemplateFieldScalarFieldEnum[]
+  }
+
+  /**
+   * TemplateField findFirstOrThrow
+   */
+  export type TemplateFieldFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplateField to fetch.
+     */
+    where?: TemplateFieldWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TemplateFields to fetch.
+     */
+    orderBy?: TemplateFieldOrderByWithRelationInput | TemplateFieldOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TemplateFields.
+     */
+    cursor?: TemplateFieldWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TemplateFields from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TemplateFields.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TemplateFields.
+     */
+    distinct?: TemplateFieldScalarFieldEnum | TemplateFieldScalarFieldEnum[]
+  }
+
+  /**
+   * TemplateField findMany
+   */
+  export type TemplateFieldFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    /**
+     * Filter, which TemplateFields to fetch.
+     */
+    where?: TemplateFieldWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TemplateFields to fetch.
+     */
+    orderBy?: TemplateFieldOrderByWithRelationInput | TemplateFieldOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TemplateFields.
+     */
+    cursor?: TemplateFieldWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TemplateFields from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TemplateFields.
+     */
+    skip?: number
+    distinct?: TemplateFieldScalarFieldEnum | TemplateFieldScalarFieldEnum[]
+  }
+
+  /**
+   * TemplateField create
+   */
+  export type TemplateFieldCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TemplateField.
+     */
+    data: XOR<TemplateFieldCreateInput, TemplateFieldUncheckedCreateInput>
+  }
+
+  /**
+   * TemplateField createMany
+   */
+  export type TemplateFieldCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TemplateFields.
+     */
+    data: TemplateFieldCreateManyInput | TemplateFieldCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TemplateField createManyAndReturn
+   */
+  export type TemplateFieldCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many TemplateFields.
+     */
+    data: TemplateFieldCreateManyInput | TemplateFieldCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TemplateField update
+   */
+  export type TemplateFieldUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TemplateField.
+     */
+    data: XOR<TemplateFieldUpdateInput, TemplateFieldUncheckedUpdateInput>
+    /**
+     * Choose, which TemplateField to update.
+     */
+    where: TemplateFieldWhereUniqueInput
+  }
+
+  /**
+   * TemplateField updateMany
+   */
+  export type TemplateFieldUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TemplateFields.
+     */
+    data: XOR<TemplateFieldUpdateManyMutationInput, TemplateFieldUncheckedUpdateManyInput>
+    /**
+     * Filter which TemplateFields to update
+     */
+    where?: TemplateFieldWhereInput
+  }
+
+  /**
+   * TemplateField upsert
+   */
+  export type TemplateFieldUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TemplateField to update in case it exists.
+     */
+    where: TemplateFieldWhereUniqueInput
+    /**
+     * In case the TemplateField found by the `where` argument doesn't exist, create a new TemplateField with this data.
+     */
+    create: XOR<TemplateFieldCreateInput, TemplateFieldUncheckedCreateInput>
+    /**
+     * In case the TemplateField was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TemplateFieldUpdateInput, TemplateFieldUncheckedUpdateInput>
+  }
+
+  /**
+   * TemplateField delete
+   */
+  export type TemplateFieldDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
+    /**
+     * Filter which TemplateField to delete.
+     */
+    where: TemplateFieldWhereUniqueInput
+  }
+
+  /**
+   * TemplateField deleteMany
+   */
+  export type TemplateFieldDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TemplateFields to delete
+     */
+    where?: TemplateFieldWhereInput
+  }
+
+  /**
+   * TemplateField without action
+   */
+  export type TemplateFieldDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TemplateField
+     */
+    select?: TemplateFieldSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TemplateFieldInclude<ExtArgs> | null
   }
 
 
@@ -31237,6 +39971,59 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const UserAccessProfileScalarFieldEnum: {
+    userId: 'userId',
+    roleOverride: 'roleOverride',
+    portfolioCodes: 'portfolioCodes',
+    allPortfolios: 'allPortfolios',
+    assignedBy: 'assignedBy',
+    assignedAt: 'assignedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type UserAccessProfileScalarFieldEnum = (typeof UserAccessProfileScalarFieldEnum)[keyof typeof UserAccessProfileScalarFieldEnum]
+
+
+  export const AuthCredentialScalarFieldEnum: {
+    userId: 'userId',
+    passwordHash: 'passwordHash',
+    emailVerified: 'emailVerified',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AuthCredentialScalarFieldEnum = (typeof AuthCredentialScalarFieldEnum)[keyof typeof AuthCredentialScalarFieldEnum]
+
+
+  export const AuthSessionScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    token: 'token',
+    refreshToken: 'refreshToken',
+    expiresAt: 'expiresAt',
+    rememberMe: 'rememberMe',
+    ipAddress: 'ipAddress',
+    userAgent: 'userAgent',
+    createdAt: 'createdAt',
+    lastUsedAt: 'lastUsedAt'
+  };
+
+  export type AuthSessionScalarFieldEnum = (typeof AuthSessionScalarFieldEnum)[keyof typeof AuthSessionScalarFieldEnum]
+
+
+  export const AuthPasswordResetTokenScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    token: 'token',
+    expiresAt: 'expiresAt',
+    used: 'used',
+    createdAt: 'createdAt'
+  };
+
+  export type AuthPasswordResetTokenScalarFieldEnum = (typeof AuthPasswordResetTokenScalarFieldEnum)[keyof typeof AuthPasswordResetTokenScalarFieldEnum]
+
+
   export const ClientScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -31445,6 +40232,50 @@ export namespace Prisma {
   export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
 
 
+  export const ServiceTemplateScalarFieldEnum: {
+    id: 'id',
+    serviceKind: 'serviceKind',
+    frequency: 'frequency',
+    appliesTo: 'appliesTo',
+    complianceImpact: 'complianceImpact',
+    pricingModel: 'pricingModel',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ServiceTemplateScalarFieldEnum = (typeof ServiceTemplateScalarFieldEnum)[keyof typeof ServiceTemplateScalarFieldEnum]
+
+
+  export const ServiceTemplateTaskScalarFieldEnum: {
+    id: 'id',
+    templateId: 'templateId',
+    title: 'title',
+    description: 'description',
+    daysBeforeDue: 'daysBeforeDue',
+    priority: 'priority',
+    tags: 'tags',
+    assigneeId: 'assigneeId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ServiceTemplateTaskScalarFieldEnum = (typeof ServiceTemplateTaskScalarFieldEnum)[keyof typeof ServiceTemplateTaskScalarFieldEnum]
+
+
+  export const StandaloneTaskTemplateScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    category: 'category',
+    priority: 'priority',
+    tags: 'tags',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type StandaloneTaskTemplateScalarFieldEnum = (typeof StandaloneTaskTemplateScalarFieldEnum)[keyof typeof StandaloneTaskTemplateScalarFieldEnum]
+
+
   export const DocumentScalarFieldEnum: {
     id: 'id',
     clientId: 'clientId',
@@ -31477,6 +40308,26 @@ export namespace Prisma {
   };
 
   export type TemplateScalarFieldEnum = (typeof TemplateScalarFieldEnum)[keyof typeof TemplateScalarFieldEnum]
+
+
+  export const TemplateFieldScalarFieldEnum: {
+    id: 'id',
+    templateId: 'templateId',
+    key: 'key',
+    label: 'label',
+    type: 'type',
+    required: 'required',
+    defaultValue: 'defaultValue',
+    format: 'format',
+    source: 'source',
+    sourcePath: 'sourcePath',
+    validation: 'validation',
+    displayOrder: 'displayOrder',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TemplateFieldScalarFieldEnum = (typeof TemplateFieldScalarFieldEnum)[keyof typeof TemplateFieldScalarFieldEnum]
 
 
   export const PersonScalarFieldEnum: {
@@ -32713,12 +41564,16 @@ export namespace Prisma {
     lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    authCredential?: XOR<AuthCredentialNullableRelationFilter, AuthCredentialWhereInput> | null
+    authSessions?: AuthSessionListRelationFilter
+    passwordResetTokens?: AuthPasswordResetTokenListRelationFilter
     createdAccounts?: AccountsSetListRelationFilter
     lastEditedAccounts?: AccountsSetListRelationFilter
     createdDocuments?: DocumentListRelationFilter
     assignedTasks?: TaskListRelationFilter
     createdTasks?: TaskListRelationFilter
     createdTemplates?: TemplateListRelationFilter
+    accessProfile?: XOR<UserAccessProfileNullableRelationFilter, UserAccessProfileWhereInput> | null
   }
 
   export type UserOrderByWithRelationInput = {
@@ -32730,12 +41585,16 @@ export namespace Prisma {
     lastLoginAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    authCredential?: AuthCredentialOrderByWithRelationInput
+    authSessions?: AuthSessionOrderByRelationAggregateInput
+    passwordResetTokens?: AuthPasswordResetTokenOrderByRelationAggregateInput
     createdAccounts?: AccountsSetOrderByRelationAggregateInput
     lastEditedAccounts?: AccountsSetOrderByRelationAggregateInput
     createdDocuments?: DocumentOrderByRelationAggregateInput
     assignedTasks?: TaskOrderByRelationAggregateInput
     createdTasks?: TaskOrderByRelationAggregateInput
     createdTemplates?: TemplateOrderByRelationAggregateInput
+    accessProfile?: UserAccessProfileOrderByWithRelationInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -32750,12 +41609,16 @@ export namespace Prisma {
     lastLoginAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    authCredential?: XOR<AuthCredentialNullableRelationFilter, AuthCredentialWhereInput> | null
+    authSessions?: AuthSessionListRelationFilter
+    passwordResetTokens?: AuthPasswordResetTokenListRelationFilter
     createdAccounts?: AccountsSetListRelationFilter
     lastEditedAccounts?: AccountsSetListRelationFilter
     createdDocuments?: DocumentListRelationFilter
     assignedTasks?: TaskListRelationFilter
     createdTasks?: TaskListRelationFilter
     createdTemplates?: TemplateListRelationFilter
+    accessProfile?: XOR<UserAccessProfileNullableRelationFilter, UserAccessProfileWhereInput> | null
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -32784,6 +41647,273 @@ export namespace Prisma {
     lastLoginAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+  }
+
+  export type UserAccessProfileWhereInput = {
+    AND?: UserAccessProfileWhereInput | UserAccessProfileWhereInput[]
+    OR?: UserAccessProfileWhereInput[]
+    NOT?: UserAccessProfileWhereInput | UserAccessProfileWhereInput[]
+    userId?: StringFilter<"UserAccessProfile"> | string
+    roleOverride?: StringNullableFilter<"UserAccessProfile"> | string | null
+    portfolioCodes?: IntNullableListFilter<"UserAccessProfile">
+    allPortfolios?: BoolFilter<"UserAccessProfile"> | boolean
+    assignedBy?: StringNullableFilter<"UserAccessProfile"> | string | null
+    assignedAt?: DateTimeNullableFilter<"UserAccessProfile"> | Date | string | null
+    createdAt?: DateTimeFilter<"UserAccessProfile"> | Date | string
+    updatedAt?: DateTimeFilter<"UserAccessProfile"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type UserAccessProfileOrderByWithRelationInput = {
+    userId?: SortOrder
+    roleOverride?: SortOrderInput | SortOrder
+    portfolioCodes?: SortOrder
+    allPortfolios?: SortOrder
+    assignedBy?: SortOrderInput | SortOrder
+    assignedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type UserAccessProfileWhereUniqueInput = Prisma.AtLeast<{
+    userId?: string
+    AND?: UserAccessProfileWhereInput | UserAccessProfileWhereInput[]
+    OR?: UserAccessProfileWhereInput[]
+    NOT?: UserAccessProfileWhereInput | UserAccessProfileWhereInput[]
+    roleOverride?: StringNullableFilter<"UserAccessProfile"> | string | null
+    portfolioCodes?: IntNullableListFilter<"UserAccessProfile">
+    allPortfolios?: BoolFilter<"UserAccessProfile"> | boolean
+    assignedBy?: StringNullableFilter<"UserAccessProfile"> | string | null
+    assignedAt?: DateTimeNullableFilter<"UserAccessProfile"> | Date | string | null
+    createdAt?: DateTimeFilter<"UserAccessProfile"> | Date | string
+    updatedAt?: DateTimeFilter<"UserAccessProfile"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "userId">
+
+  export type UserAccessProfileOrderByWithAggregationInput = {
+    userId?: SortOrder
+    roleOverride?: SortOrderInput | SortOrder
+    portfolioCodes?: SortOrder
+    allPortfolios?: SortOrder
+    assignedBy?: SortOrderInput | SortOrder
+    assignedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: UserAccessProfileCountOrderByAggregateInput
+    _avg?: UserAccessProfileAvgOrderByAggregateInput
+    _max?: UserAccessProfileMaxOrderByAggregateInput
+    _min?: UserAccessProfileMinOrderByAggregateInput
+    _sum?: UserAccessProfileSumOrderByAggregateInput
+  }
+
+  export type UserAccessProfileScalarWhereWithAggregatesInput = {
+    AND?: UserAccessProfileScalarWhereWithAggregatesInput | UserAccessProfileScalarWhereWithAggregatesInput[]
+    OR?: UserAccessProfileScalarWhereWithAggregatesInput[]
+    NOT?: UserAccessProfileScalarWhereWithAggregatesInput | UserAccessProfileScalarWhereWithAggregatesInput[]
+    userId?: StringWithAggregatesFilter<"UserAccessProfile"> | string
+    roleOverride?: StringNullableWithAggregatesFilter<"UserAccessProfile"> | string | null
+    portfolioCodes?: IntNullableListFilter<"UserAccessProfile">
+    allPortfolios?: BoolWithAggregatesFilter<"UserAccessProfile"> | boolean
+    assignedBy?: StringNullableWithAggregatesFilter<"UserAccessProfile"> | string | null
+    assignedAt?: DateTimeNullableWithAggregatesFilter<"UserAccessProfile"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"UserAccessProfile"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"UserAccessProfile"> | Date | string
+  }
+
+  export type AuthCredentialWhereInput = {
+    AND?: AuthCredentialWhereInput | AuthCredentialWhereInput[]
+    OR?: AuthCredentialWhereInput[]
+    NOT?: AuthCredentialWhereInput | AuthCredentialWhereInput[]
+    userId?: StringFilter<"AuthCredential"> | string
+    passwordHash?: StringFilter<"AuthCredential"> | string
+    emailVerified?: BoolFilter<"AuthCredential"> | boolean
+    createdAt?: DateTimeFilter<"AuthCredential"> | Date | string
+    updatedAt?: DateTimeFilter<"AuthCredential"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type AuthCredentialOrderByWithRelationInput = {
+    userId?: SortOrder
+    passwordHash?: SortOrder
+    emailVerified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type AuthCredentialWhereUniqueInput = Prisma.AtLeast<{
+    userId?: string
+    AND?: AuthCredentialWhereInput | AuthCredentialWhereInput[]
+    OR?: AuthCredentialWhereInput[]
+    NOT?: AuthCredentialWhereInput | AuthCredentialWhereInput[]
+    passwordHash?: StringFilter<"AuthCredential"> | string
+    emailVerified?: BoolFilter<"AuthCredential"> | boolean
+    createdAt?: DateTimeFilter<"AuthCredential"> | Date | string
+    updatedAt?: DateTimeFilter<"AuthCredential"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "userId">
+
+  export type AuthCredentialOrderByWithAggregationInput = {
+    userId?: SortOrder
+    passwordHash?: SortOrder
+    emailVerified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AuthCredentialCountOrderByAggregateInput
+    _max?: AuthCredentialMaxOrderByAggregateInput
+    _min?: AuthCredentialMinOrderByAggregateInput
+  }
+
+  export type AuthCredentialScalarWhereWithAggregatesInput = {
+    AND?: AuthCredentialScalarWhereWithAggregatesInput | AuthCredentialScalarWhereWithAggregatesInput[]
+    OR?: AuthCredentialScalarWhereWithAggregatesInput[]
+    NOT?: AuthCredentialScalarWhereWithAggregatesInput | AuthCredentialScalarWhereWithAggregatesInput[]
+    userId?: StringWithAggregatesFilter<"AuthCredential"> | string
+    passwordHash?: StringWithAggregatesFilter<"AuthCredential"> | string
+    emailVerified?: BoolWithAggregatesFilter<"AuthCredential"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"AuthCredential"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AuthCredential"> | Date | string
+  }
+
+  export type AuthSessionWhereInput = {
+    AND?: AuthSessionWhereInput | AuthSessionWhereInput[]
+    OR?: AuthSessionWhereInput[]
+    NOT?: AuthSessionWhereInput | AuthSessionWhereInput[]
+    id?: StringFilter<"AuthSession"> | string
+    userId?: StringFilter<"AuthSession"> | string
+    token?: StringFilter<"AuthSession"> | string
+    refreshToken?: StringFilter<"AuthSession"> | string
+    expiresAt?: DateTimeFilter<"AuthSession"> | Date | string
+    rememberMe?: BoolFilter<"AuthSession"> | boolean
+    ipAddress?: StringNullableFilter<"AuthSession"> | string | null
+    userAgent?: StringNullableFilter<"AuthSession"> | string | null
+    createdAt?: DateTimeFilter<"AuthSession"> | Date | string
+    lastUsedAt?: DateTimeFilter<"AuthSession"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type AuthSessionOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    rememberMe?: SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    lastUsedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type AuthSessionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    token?: string
+    refreshToken?: string
+    AND?: AuthSessionWhereInput | AuthSessionWhereInput[]
+    OR?: AuthSessionWhereInput[]
+    NOT?: AuthSessionWhereInput | AuthSessionWhereInput[]
+    userId?: StringFilter<"AuthSession"> | string
+    expiresAt?: DateTimeFilter<"AuthSession"> | Date | string
+    rememberMe?: BoolFilter<"AuthSession"> | boolean
+    ipAddress?: StringNullableFilter<"AuthSession"> | string | null
+    userAgent?: StringNullableFilter<"AuthSession"> | string | null
+    createdAt?: DateTimeFilter<"AuthSession"> | Date | string
+    lastUsedAt?: DateTimeFilter<"AuthSession"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "token" | "refreshToken">
+
+  export type AuthSessionOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    rememberMe?: SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    lastUsedAt?: SortOrder
+    _count?: AuthSessionCountOrderByAggregateInput
+    _max?: AuthSessionMaxOrderByAggregateInput
+    _min?: AuthSessionMinOrderByAggregateInput
+  }
+
+  export type AuthSessionScalarWhereWithAggregatesInput = {
+    AND?: AuthSessionScalarWhereWithAggregatesInput | AuthSessionScalarWhereWithAggregatesInput[]
+    OR?: AuthSessionScalarWhereWithAggregatesInput[]
+    NOT?: AuthSessionScalarWhereWithAggregatesInput | AuthSessionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AuthSession"> | string
+    userId?: StringWithAggregatesFilter<"AuthSession"> | string
+    token?: StringWithAggregatesFilter<"AuthSession"> | string
+    refreshToken?: StringWithAggregatesFilter<"AuthSession"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"AuthSession"> | Date | string
+    rememberMe?: BoolWithAggregatesFilter<"AuthSession"> | boolean
+    ipAddress?: StringNullableWithAggregatesFilter<"AuthSession"> | string | null
+    userAgent?: StringNullableWithAggregatesFilter<"AuthSession"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AuthSession"> | Date | string
+    lastUsedAt?: DateTimeWithAggregatesFilter<"AuthSession"> | Date | string
+  }
+
+  export type AuthPasswordResetTokenWhereInput = {
+    AND?: AuthPasswordResetTokenWhereInput | AuthPasswordResetTokenWhereInput[]
+    OR?: AuthPasswordResetTokenWhereInput[]
+    NOT?: AuthPasswordResetTokenWhereInput | AuthPasswordResetTokenWhereInput[]
+    id?: StringFilter<"AuthPasswordResetToken"> | string
+    userId?: StringFilter<"AuthPasswordResetToken"> | string
+    token?: StringFilter<"AuthPasswordResetToken"> | string
+    expiresAt?: DateTimeFilter<"AuthPasswordResetToken"> | Date | string
+    used?: BoolFilter<"AuthPasswordResetToken"> | boolean
+    createdAt?: DateTimeFilter<"AuthPasswordResetToken"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type AuthPasswordResetTokenOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type AuthPasswordResetTokenWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    token?: string
+    AND?: AuthPasswordResetTokenWhereInput | AuthPasswordResetTokenWhereInput[]
+    OR?: AuthPasswordResetTokenWhereInput[]
+    NOT?: AuthPasswordResetTokenWhereInput | AuthPasswordResetTokenWhereInput[]
+    userId?: StringFilter<"AuthPasswordResetToken"> | string
+    expiresAt?: DateTimeFilter<"AuthPasswordResetToken"> | Date | string
+    used?: BoolFilter<"AuthPasswordResetToken"> | boolean
+    createdAt?: DateTimeFilter<"AuthPasswordResetToken"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "token">
+
+  export type AuthPasswordResetTokenOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
+    _count?: AuthPasswordResetTokenCountOrderByAggregateInput
+    _max?: AuthPasswordResetTokenMaxOrderByAggregateInput
+    _min?: AuthPasswordResetTokenMinOrderByAggregateInput
+  }
+
+  export type AuthPasswordResetTokenScalarWhereWithAggregatesInput = {
+    AND?: AuthPasswordResetTokenScalarWhereWithAggregatesInput | AuthPasswordResetTokenScalarWhereWithAggregatesInput[]
+    OR?: AuthPasswordResetTokenScalarWhereWithAggregatesInput[]
+    NOT?: AuthPasswordResetTokenScalarWhereWithAggregatesInput | AuthPasswordResetTokenScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AuthPasswordResetToken"> | string
+    userId?: StringWithAggregatesFilter<"AuthPasswordResetToken"> | string
+    token?: StringWithAggregatesFilter<"AuthPasswordResetToken"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"AuthPasswordResetToken"> | Date | string
+    used?: BoolWithAggregatesFilter<"AuthPasswordResetToken"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"AuthPasswordResetToken"> | Date | string
   }
 
   export type ClientWhereInput = {
@@ -33898,6 +43028,225 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
   }
 
+  export type ServiceTemplateWhereInput = {
+    AND?: ServiceTemplateWhereInput | ServiceTemplateWhereInput[]
+    OR?: ServiceTemplateWhereInput[]
+    NOT?: ServiceTemplateWhereInput | ServiceTemplateWhereInput[]
+    id?: StringFilter<"ServiceTemplate"> | string
+    serviceKind?: StringFilter<"ServiceTemplate"> | string
+    frequency?: StringFilter<"ServiceTemplate"> | string
+    appliesTo?: StringNullableListFilter<"ServiceTemplate">
+    complianceImpact?: BoolFilter<"ServiceTemplate"> | boolean
+    pricingModel?: StringFilter<"ServiceTemplate"> | string
+    createdAt?: DateTimeFilter<"ServiceTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"ServiceTemplate"> | Date | string
+    taskTemplates?: ServiceTemplateTaskListRelationFilter
+  }
+
+  export type ServiceTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    serviceKind?: SortOrder
+    frequency?: SortOrder
+    appliesTo?: SortOrder
+    complianceImpact?: SortOrder
+    pricingModel?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    taskTemplates?: ServiceTemplateTaskOrderByRelationAggregateInput
+  }
+
+  export type ServiceTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ServiceTemplateWhereInput | ServiceTemplateWhereInput[]
+    OR?: ServiceTemplateWhereInput[]
+    NOT?: ServiceTemplateWhereInput | ServiceTemplateWhereInput[]
+    serviceKind?: StringFilter<"ServiceTemplate"> | string
+    frequency?: StringFilter<"ServiceTemplate"> | string
+    appliesTo?: StringNullableListFilter<"ServiceTemplate">
+    complianceImpact?: BoolFilter<"ServiceTemplate"> | boolean
+    pricingModel?: StringFilter<"ServiceTemplate"> | string
+    createdAt?: DateTimeFilter<"ServiceTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"ServiceTemplate"> | Date | string
+    taskTemplates?: ServiceTemplateTaskListRelationFilter
+  }, "id">
+
+  export type ServiceTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    serviceKind?: SortOrder
+    frequency?: SortOrder
+    appliesTo?: SortOrder
+    complianceImpact?: SortOrder
+    pricingModel?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ServiceTemplateCountOrderByAggregateInput
+    _max?: ServiceTemplateMaxOrderByAggregateInput
+    _min?: ServiceTemplateMinOrderByAggregateInput
+  }
+
+  export type ServiceTemplateScalarWhereWithAggregatesInput = {
+    AND?: ServiceTemplateScalarWhereWithAggregatesInput | ServiceTemplateScalarWhereWithAggregatesInput[]
+    OR?: ServiceTemplateScalarWhereWithAggregatesInput[]
+    NOT?: ServiceTemplateScalarWhereWithAggregatesInput | ServiceTemplateScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ServiceTemplate"> | string
+    serviceKind?: StringWithAggregatesFilter<"ServiceTemplate"> | string
+    frequency?: StringWithAggregatesFilter<"ServiceTemplate"> | string
+    appliesTo?: StringNullableListFilter<"ServiceTemplate">
+    complianceImpact?: BoolWithAggregatesFilter<"ServiceTemplate"> | boolean
+    pricingModel?: StringWithAggregatesFilter<"ServiceTemplate"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"ServiceTemplate"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ServiceTemplate"> | Date | string
+  }
+
+  export type ServiceTemplateTaskWhereInput = {
+    AND?: ServiceTemplateTaskWhereInput | ServiceTemplateTaskWhereInput[]
+    OR?: ServiceTemplateTaskWhereInput[]
+    NOT?: ServiceTemplateTaskWhereInput | ServiceTemplateTaskWhereInput[]
+    id?: StringFilter<"ServiceTemplateTask"> | string
+    templateId?: StringFilter<"ServiceTemplateTask"> | string
+    title?: StringFilter<"ServiceTemplateTask"> | string
+    description?: StringNullableFilter<"ServiceTemplateTask"> | string | null
+    daysBeforeDue?: IntFilter<"ServiceTemplateTask"> | number
+    priority?: EnumPriorityFilter<"ServiceTemplateTask"> | $Enums.Priority
+    tags?: StringNullableListFilter<"ServiceTemplateTask">
+    assigneeId?: StringNullableFilter<"ServiceTemplateTask"> | string | null
+    createdAt?: DateTimeFilter<"ServiceTemplateTask"> | Date | string
+    updatedAt?: DateTimeFilter<"ServiceTemplateTask"> | Date | string
+    serviceTemplate?: XOR<ServiceTemplateRelationFilter, ServiceTemplateWhereInput>
+  }
+
+  export type ServiceTemplateTaskOrderByWithRelationInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    daysBeforeDue?: SortOrder
+    priority?: SortOrder
+    tags?: SortOrder
+    assigneeId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    serviceTemplate?: ServiceTemplateOrderByWithRelationInput
+  }
+
+  export type ServiceTemplateTaskWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ServiceTemplateTaskWhereInput | ServiceTemplateTaskWhereInput[]
+    OR?: ServiceTemplateTaskWhereInput[]
+    NOT?: ServiceTemplateTaskWhereInput | ServiceTemplateTaskWhereInput[]
+    templateId?: StringFilter<"ServiceTemplateTask"> | string
+    title?: StringFilter<"ServiceTemplateTask"> | string
+    description?: StringNullableFilter<"ServiceTemplateTask"> | string | null
+    daysBeforeDue?: IntFilter<"ServiceTemplateTask"> | number
+    priority?: EnumPriorityFilter<"ServiceTemplateTask"> | $Enums.Priority
+    tags?: StringNullableListFilter<"ServiceTemplateTask">
+    assigneeId?: StringNullableFilter<"ServiceTemplateTask"> | string | null
+    createdAt?: DateTimeFilter<"ServiceTemplateTask"> | Date | string
+    updatedAt?: DateTimeFilter<"ServiceTemplateTask"> | Date | string
+    serviceTemplate?: XOR<ServiceTemplateRelationFilter, ServiceTemplateWhereInput>
+  }, "id">
+
+  export type ServiceTemplateTaskOrderByWithAggregationInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    daysBeforeDue?: SortOrder
+    priority?: SortOrder
+    tags?: SortOrder
+    assigneeId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ServiceTemplateTaskCountOrderByAggregateInput
+    _avg?: ServiceTemplateTaskAvgOrderByAggregateInput
+    _max?: ServiceTemplateTaskMaxOrderByAggregateInput
+    _min?: ServiceTemplateTaskMinOrderByAggregateInput
+    _sum?: ServiceTemplateTaskSumOrderByAggregateInput
+  }
+
+  export type ServiceTemplateTaskScalarWhereWithAggregatesInput = {
+    AND?: ServiceTemplateTaskScalarWhereWithAggregatesInput | ServiceTemplateTaskScalarWhereWithAggregatesInput[]
+    OR?: ServiceTemplateTaskScalarWhereWithAggregatesInput[]
+    NOT?: ServiceTemplateTaskScalarWhereWithAggregatesInput | ServiceTemplateTaskScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ServiceTemplateTask"> | string
+    templateId?: StringWithAggregatesFilter<"ServiceTemplateTask"> | string
+    title?: StringWithAggregatesFilter<"ServiceTemplateTask"> | string
+    description?: StringNullableWithAggregatesFilter<"ServiceTemplateTask"> | string | null
+    daysBeforeDue?: IntWithAggregatesFilter<"ServiceTemplateTask"> | number
+    priority?: EnumPriorityWithAggregatesFilter<"ServiceTemplateTask"> | $Enums.Priority
+    tags?: StringNullableListFilter<"ServiceTemplateTask">
+    assigneeId?: StringNullableWithAggregatesFilter<"ServiceTemplateTask"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ServiceTemplateTask"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ServiceTemplateTask"> | Date | string
+  }
+
+  export type StandaloneTaskTemplateWhereInput = {
+    AND?: StandaloneTaskTemplateWhereInput | StandaloneTaskTemplateWhereInput[]
+    OR?: StandaloneTaskTemplateWhereInput[]
+    NOT?: StandaloneTaskTemplateWhereInput | StandaloneTaskTemplateWhereInput[]
+    id?: StringFilter<"StandaloneTaskTemplate"> | string
+    title?: StringFilter<"StandaloneTaskTemplate"> | string
+    description?: StringFilter<"StandaloneTaskTemplate"> | string
+    category?: StringFilter<"StandaloneTaskTemplate"> | string
+    priority?: EnumPriorityFilter<"StandaloneTaskTemplate"> | $Enums.Priority
+    tags?: StringNullableListFilter<"StandaloneTaskTemplate">
+    createdAt?: DateTimeFilter<"StandaloneTaskTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"StandaloneTaskTemplate"> | Date | string
+  }
+
+  export type StandaloneTaskTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    tags?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StandaloneTaskTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: StandaloneTaskTemplateWhereInput | StandaloneTaskTemplateWhereInput[]
+    OR?: StandaloneTaskTemplateWhereInput[]
+    NOT?: StandaloneTaskTemplateWhereInput | StandaloneTaskTemplateWhereInput[]
+    title?: StringFilter<"StandaloneTaskTemplate"> | string
+    description?: StringFilter<"StandaloneTaskTemplate"> | string
+    category?: StringFilter<"StandaloneTaskTemplate"> | string
+    priority?: EnumPriorityFilter<"StandaloneTaskTemplate"> | $Enums.Priority
+    tags?: StringNullableListFilter<"StandaloneTaskTemplate">
+    createdAt?: DateTimeFilter<"StandaloneTaskTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"StandaloneTaskTemplate"> | Date | string
+  }, "id">
+
+  export type StandaloneTaskTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    tags?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: StandaloneTaskTemplateCountOrderByAggregateInput
+    _max?: StandaloneTaskTemplateMaxOrderByAggregateInput
+    _min?: StandaloneTaskTemplateMinOrderByAggregateInput
+  }
+
+  export type StandaloneTaskTemplateScalarWhereWithAggregatesInput = {
+    AND?: StandaloneTaskTemplateScalarWhereWithAggregatesInput | StandaloneTaskTemplateScalarWhereWithAggregatesInput[]
+    OR?: StandaloneTaskTemplateScalarWhereWithAggregatesInput[]
+    NOT?: StandaloneTaskTemplateScalarWhereWithAggregatesInput | StandaloneTaskTemplateScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"StandaloneTaskTemplate"> | string
+    title?: StringWithAggregatesFilter<"StandaloneTaskTemplate"> | string
+    description?: StringWithAggregatesFilter<"StandaloneTaskTemplate"> | string
+    category?: StringWithAggregatesFilter<"StandaloneTaskTemplate"> | string
+    priority?: EnumPriorityWithAggregatesFilter<"StandaloneTaskTemplate"> | $Enums.Priority
+    tags?: StringNullableListFilter<"StandaloneTaskTemplate">
+    createdAt?: DateTimeWithAggregatesFilter<"StandaloneTaskTemplate"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"StandaloneTaskTemplate"> | Date | string
+  }
+
   export type DocumentWhereInput = {
     AND?: DocumentWhereInput | DocumentWhereInput[]
     OR?: DocumentWhereInput[]
@@ -34004,6 +43353,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Template"> | Date | string
     updatedAt?: DateTimeFilter<"Template"> | Date | string
     createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    fields?: TemplateFieldListRelationFilter
   }
 
   export type TemplateOrderByWithRelationInput = {
@@ -34019,6 +43369,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     createdBy?: UserOrderByWithRelationInput
+    fields?: TemplateFieldOrderByRelationAggregateInput
   }
 
   export type TemplateWhereUniqueInput = Prisma.AtLeast<{
@@ -34037,6 +43388,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Template"> | Date | string
     updatedAt?: DateTimeFilter<"Template"> | Date | string
     createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    fields?: TemplateFieldListRelationFilter
   }, "id">
 
   export type TemplateOrderByWithAggregationInput = {
@@ -34071,6 +43423,109 @@ export namespace Prisma {
     createdById?: StringNullableWithAggregatesFilter<"Template"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Template"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Template"> | Date | string
+  }
+
+  export type TemplateFieldWhereInput = {
+    AND?: TemplateFieldWhereInput | TemplateFieldWhereInput[]
+    OR?: TemplateFieldWhereInput[]
+    NOT?: TemplateFieldWhereInput | TemplateFieldWhereInput[]
+    id?: StringFilter<"TemplateField"> | string
+    templateId?: StringFilter<"TemplateField"> | string
+    key?: StringFilter<"TemplateField"> | string
+    label?: StringFilter<"TemplateField"> | string
+    type?: StringFilter<"TemplateField"> | string
+    required?: BoolFilter<"TemplateField"> | boolean
+    defaultValue?: StringNullableFilter<"TemplateField"> | string | null
+    format?: StringNullableFilter<"TemplateField"> | string | null
+    source?: StringNullableFilter<"TemplateField"> | string | null
+    sourcePath?: StringNullableFilter<"TemplateField"> | string | null
+    validation?: JsonNullableFilter<"TemplateField">
+    displayOrder?: IntFilter<"TemplateField"> | number
+    createdAt?: DateTimeFilter<"TemplateField"> | Date | string
+    updatedAt?: DateTimeFilter<"TemplateField"> | Date | string
+    template?: XOR<TemplateRelationFilter, TemplateWhereInput>
+  }
+
+  export type TemplateFieldOrderByWithRelationInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    key?: SortOrder
+    label?: SortOrder
+    type?: SortOrder
+    required?: SortOrder
+    defaultValue?: SortOrderInput | SortOrder
+    format?: SortOrderInput | SortOrder
+    source?: SortOrderInput | SortOrder
+    sourcePath?: SortOrderInput | SortOrder
+    validation?: SortOrderInput | SortOrder
+    displayOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    template?: TemplateOrderByWithRelationInput
+  }
+
+  export type TemplateFieldWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    templateId_key?: TemplateFieldTemplateIdKeyCompoundUniqueInput
+    AND?: TemplateFieldWhereInput | TemplateFieldWhereInput[]
+    OR?: TemplateFieldWhereInput[]
+    NOT?: TemplateFieldWhereInput | TemplateFieldWhereInput[]
+    templateId?: StringFilter<"TemplateField"> | string
+    key?: StringFilter<"TemplateField"> | string
+    label?: StringFilter<"TemplateField"> | string
+    type?: StringFilter<"TemplateField"> | string
+    required?: BoolFilter<"TemplateField"> | boolean
+    defaultValue?: StringNullableFilter<"TemplateField"> | string | null
+    format?: StringNullableFilter<"TemplateField"> | string | null
+    source?: StringNullableFilter<"TemplateField"> | string | null
+    sourcePath?: StringNullableFilter<"TemplateField"> | string | null
+    validation?: JsonNullableFilter<"TemplateField">
+    displayOrder?: IntFilter<"TemplateField"> | number
+    createdAt?: DateTimeFilter<"TemplateField"> | Date | string
+    updatedAt?: DateTimeFilter<"TemplateField"> | Date | string
+    template?: XOR<TemplateRelationFilter, TemplateWhereInput>
+  }, "id" | "templateId_key">
+
+  export type TemplateFieldOrderByWithAggregationInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    key?: SortOrder
+    label?: SortOrder
+    type?: SortOrder
+    required?: SortOrder
+    defaultValue?: SortOrderInput | SortOrder
+    format?: SortOrderInput | SortOrder
+    source?: SortOrderInput | SortOrder
+    sourcePath?: SortOrderInput | SortOrder
+    validation?: SortOrderInput | SortOrder
+    displayOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TemplateFieldCountOrderByAggregateInput
+    _avg?: TemplateFieldAvgOrderByAggregateInput
+    _max?: TemplateFieldMaxOrderByAggregateInput
+    _min?: TemplateFieldMinOrderByAggregateInput
+    _sum?: TemplateFieldSumOrderByAggregateInput
+  }
+
+  export type TemplateFieldScalarWhereWithAggregatesInput = {
+    AND?: TemplateFieldScalarWhereWithAggregatesInput | TemplateFieldScalarWhereWithAggregatesInput[]
+    OR?: TemplateFieldScalarWhereWithAggregatesInput[]
+    NOT?: TemplateFieldScalarWhereWithAggregatesInput | TemplateFieldScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TemplateField"> | string
+    templateId?: StringWithAggregatesFilter<"TemplateField"> | string
+    key?: StringWithAggregatesFilter<"TemplateField"> | string
+    label?: StringWithAggregatesFilter<"TemplateField"> | string
+    type?: StringWithAggregatesFilter<"TemplateField"> | string
+    required?: BoolWithAggregatesFilter<"TemplateField"> | boolean
+    defaultValue?: StringNullableWithAggregatesFilter<"TemplateField"> | string | null
+    format?: StringNullableWithAggregatesFilter<"TemplateField"> | string | null
+    source?: StringNullableWithAggregatesFilter<"TemplateField"> | string | null
+    sourcePath?: StringNullableWithAggregatesFilter<"TemplateField"> | string | null
+    validation?: JsonNullableWithAggregatesFilter<"TemplateField">
+    displayOrder?: IntWithAggregatesFilter<"TemplateField"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"TemplateField"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TemplateField"> | Date | string
   }
 
   export type PersonWhereInput = {
@@ -35882,12 +45337,16 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -35899,12 +45358,16 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -35916,12 +45379,16 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -35933,12 +45400,16 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -35972,6 +45443,289 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserAccessProfileCreateInput = {
+    roleOverride?: string | null
+    portfolioCodes?: UserAccessProfileCreateportfolioCodesInput | number[]
+    allPortfolios?: boolean
+    assignedBy?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutAccessProfileInput
+  }
+
+  export type UserAccessProfileUncheckedCreateInput = {
+    userId: string
+    roleOverride?: string | null
+    portfolioCodes?: UserAccessProfileCreateportfolioCodesInput | number[]
+    allPortfolios?: boolean
+    assignedBy?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserAccessProfileUpdateInput = {
+    roleOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioCodes?: UserAccessProfileUpdateportfolioCodesInput | number[]
+    allPortfolios?: BoolFieldUpdateOperationsInput | boolean
+    assignedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAccessProfileNestedInput
+  }
+
+  export type UserAccessProfileUncheckedUpdateInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    roleOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioCodes?: UserAccessProfileUpdateportfolioCodesInput | number[]
+    allPortfolios?: BoolFieldUpdateOperationsInput | boolean
+    assignedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserAccessProfileCreateManyInput = {
+    userId: string
+    roleOverride?: string | null
+    portfolioCodes?: UserAccessProfileCreateportfolioCodesInput | number[]
+    allPortfolios?: boolean
+    assignedBy?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserAccessProfileUpdateManyMutationInput = {
+    roleOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioCodes?: UserAccessProfileUpdateportfolioCodesInput | number[]
+    allPortfolios?: BoolFieldUpdateOperationsInput | boolean
+    assignedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserAccessProfileUncheckedUpdateManyInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    roleOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioCodes?: UserAccessProfileUpdateportfolioCodesInput | number[]
+    allPortfolios?: BoolFieldUpdateOperationsInput | boolean
+    assignedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthCredentialCreateInput = {
+    passwordHash: string
+    emailVerified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutAuthCredentialInput
+  }
+
+  export type AuthCredentialUncheckedCreateInput = {
+    userId: string
+    passwordHash: string
+    emailVerified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AuthCredentialUpdateInput = {
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAuthCredentialNestedInput
+  }
+
+  export type AuthCredentialUncheckedUpdateInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthCredentialCreateManyInput = {
+    userId: string
+    passwordHash: string
+    emailVerified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AuthCredentialUpdateManyMutationInput = {
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthCredentialUncheckedUpdateManyInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthSessionCreateInput = {
+    id?: string
+    token: string
+    refreshToken: string
+    expiresAt: Date | string
+    rememberMe?: boolean
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+    lastUsedAt?: Date | string
+    user: UserCreateNestedOneWithoutAuthSessionsInput
+  }
+
+  export type AuthSessionUncheckedCreateInput = {
+    id?: string
+    userId: string
+    token: string
+    refreshToken: string
+    expiresAt: Date | string
+    rememberMe?: boolean
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+    lastUsedAt?: Date | string
+  }
+
+  export type AuthSessionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rememberMe?: BoolFieldUpdateOperationsInput | boolean
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUsedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAuthSessionsNestedInput
+  }
+
+  export type AuthSessionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rememberMe?: BoolFieldUpdateOperationsInput | boolean
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUsedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthSessionCreateManyInput = {
+    id?: string
+    userId: string
+    token: string
+    refreshToken: string
+    expiresAt: Date | string
+    rememberMe?: boolean
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+    lastUsedAt?: Date | string
+  }
+
+  export type AuthSessionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rememberMe?: BoolFieldUpdateOperationsInput | boolean
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUsedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthSessionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rememberMe?: BoolFieldUpdateOperationsInput | boolean
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUsedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthPasswordResetTokenCreateInput = {
+    id?: string
+    token: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPasswordResetTokensInput
+  }
+
+  export type AuthPasswordResetTokenUncheckedCreateInput = {
+    id?: string
+    userId: string
+    token: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+  }
+
+  export type AuthPasswordResetTokenUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPasswordResetTokensNestedInput
+  }
+
+  export type AuthPasswordResetTokenUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthPasswordResetTokenCreateManyInput = {
+    id?: string
+    userId: string
+    token: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+  }
+
+  export type AuthPasswordResetTokenUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthPasswordResetTokenUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ClientCreateInput = {
@@ -37366,6 +47120,254 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ServiceTemplateCreateInput = {
+    id?: string
+    serviceKind: string
+    frequency: string
+    appliesTo?: ServiceTemplateCreateappliesToInput | string[]
+    complianceImpact?: boolean
+    pricingModel?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    taskTemplates?: ServiceTemplateTaskCreateNestedManyWithoutServiceTemplateInput
+  }
+
+  export type ServiceTemplateUncheckedCreateInput = {
+    id?: string
+    serviceKind: string
+    frequency: string
+    appliesTo?: ServiceTemplateCreateappliesToInput | string[]
+    complianceImpact?: boolean
+    pricingModel?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    taskTemplates?: ServiceTemplateTaskUncheckedCreateNestedManyWithoutServiceTemplateInput
+  }
+
+  export type ServiceTemplateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceKind?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    appliesTo?: ServiceTemplateUpdateappliesToInput | string[]
+    complianceImpact?: BoolFieldUpdateOperationsInput | boolean
+    pricingModel?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskTemplates?: ServiceTemplateTaskUpdateManyWithoutServiceTemplateNestedInput
+  }
+
+  export type ServiceTemplateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceKind?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    appliesTo?: ServiceTemplateUpdateappliesToInput | string[]
+    complianceImpact?: BoolFieldUpdateOperationsInput | boolean
+    pricingModel?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskTemplates?: ServiceTemplateTaskUncheckedUpdateManyWithoutServiceTemplateNestedInput
+  }
+
+  export type ServiceTemplateCreateManyInput = {
+    id?: string
+    serviceKind: string
+    frequency: string
+    appliesTo?: ServiceTemplateCreateappliesToInput | string[]
+    complianceImpact?: boolean
+    pricingModel?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceTemplateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceKind?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    appliesTo?: ServiceTemplateUpdateappliesToInput | string[]
+    complianceImpact?: BoolFieldUpdateOperationsInput | boolean
+    pricingModel?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceTemplateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceKind?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    appliesTo?: ServiceTemplateUpdateappliesToInput | string[]
+    complianceImpact?: BoolFieldUpdateOperationsInput | boolean
+    pricingModel?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceTemplateTaskCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    daysBeforeDue: number
+    priority?: $Enums.Priority
+    tags?: ServiceTemplateTaskCreatetagsInput | string[]
+    assigneeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    serviceTemplate: ServiceTemplateCreateNestedOneWithoutTaskTemplatesInput
+  }
+
+  export type ServiceTemplateTaskUncheckedCreateInput = {
+    id?: string
+    templateId: string
+    title: string
+    description?: string | null
+    daysBeforeDue: number
+    priority?: $Enums.Priority
+    tags?: ServiceTemplateTaskCreatetagsInput | string[]
+    assigneeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceTemplateTaskUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    daysBeforeDue?: IntFieldUpdateOperationsInput | number
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: ServiceTemplateTaskUpdatetagsInput | string[]
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    serviceTemplate?: ServiceTemplateUpdateOneRequiredWithoutTaskTemplatesNestedInput
+  }
+
+  export type ServiceTemplateTaskUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    daysBeforeDue?: IntFieldUpdateOperationsInput | number
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: ServiceTemplateTaskUpdatetagsInput | string[]
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceTemplateTaskCreateManyInput = {
+    id?: string
+    templateId: string
+    title: string
+    description?: string | null
+    daysBeforeDue: number
+    priority?: $Enums.Priority
+    tags?: ServiceTemplateTaskCreatetagsInput | string[]
+    assigneeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceTemplateTaskUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    daysBeforeDue?: IntFieldUpdateOperationsInput | number
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: ServiceTemplateTaskUpdatetagsInput | string[]
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceTemplateTaskUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    daysBeforeDue?: IntFieldUpdateOperationsInput | number
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: ServiceTemplateTaskUpdatetagsInput | string[]
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StandaloneTaskTemplateCreateInput = {
+    id?: string
+    title: string
+    description: string
+    category: string
+    priority?: $Enums.Priority
+    tags?: StandaloneTaskTemplateCreatetagsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StandaloneTaskTemplateUncheckedCreateInput = {
+    id?: string
+    title: string
+    description: string
+    category: string
+    priority?: $Enums.Priority
+    tags?: StandaloneTaskTemplateCreatetagsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StandaloneTaskTemplateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: StandaloneTaskTemplateUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StandaloneTaskTemplateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: StandaloneTaskTemplateUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StandaloneTaskTemplateCreateManyInput = {
+    id?: string
+    title: string
+    description: string
+    category: string
+    priority?: $Enums.Priority
+    tags?: StandaloneTaskTemplateCreatetagsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StandaloneTaskTemplateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: StandaloneTaskTemplateUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StandaloneTaskTemplateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: StandaloneTaskTemplateUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type DocumentCreateInput = {
     id?: string
     filename: string
@@ -37474,6 +47476,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy?: UserCreateNestedOneWithoutCreatedTemplatesInput
+    fields?: TemplateFieldCreateNestedManyWithoutTemplateInput
   }
 
   export type TemplateUncheckedCreateInput = {
@@ -37488,6 +47491,7 @@ export namespace Prisma {
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    fields?: TemplateFieldUncheckedCreateNestedManyWithoutTemplateInput
   }
 
   export type TemplateUpdateInput = {
@@ -37502,6 +47506,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneWithoutCreatedTemplatesNestedInput
+    fields?: TemplateFieldUpdateManyWithoutTemplateNestedInput
   }
 
   export type TemplateUncheckedUpdateInput = {
@@ -37516,6 +47521,7 @@ export namespace Prisma {
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fields?: TemplateFieldUncheckedUpdateManyWithoutTemplateNestedInput
   }
 
   export type TemplateCreateManyInput = {
@@ -37555,6 +47561,124 @@ export namespace Prisma {
     placeholders?: NullableJsonNullValueInput | InputJsonValue
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplateFieldCreateInput = {
+    id?: string
+    key: string
+    label: string
+    type: string
+    required?: boolean
+    defaultValue?: string | null
+    format?: string | null
+    source?: string | null
+    sourcePath?: string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    template: TemplateCreateNestedOneWithoutFieldsInput
+  }
+
+  export type TemplateFieldUncheckedCreateInput = {
+    id?: string
+    templateId: string
+    key: string
+    label: string
+    type: string
+    required?: boolean
+    defaultValue?: string | null
+    format?: string | null
+    source?: string | null
+    sourcePath?: string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TemplateFieldUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    defaultValue?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePath?: NullableStringFieldUpdateOperationsInput | string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    template?: TemplateUpdateOneRequiredWithoutFieldsNestedInput
+  }
+
+  export type TemplateFieldUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    defaultValue?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePath?: NullableStringFieldUpdateOperationsInput | string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplateFieldCreateManyInput = {
+    id?: string
+    templateId: string
+    key: string
+    label: string
+    type: string
+    required?: boolean
+    defaultValue?: string | null
+    format?: string | null
+    source?: string | null
+    sourcePath?: string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TemplateFieldUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    defaultValue?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePath?: NullableStringFieldUpdateOperationsInput | string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplateFieldUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    defaultValue?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePath?: NullableStringFieldUpdateOperationsInput | string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -39432,6 +49556,23 @@ export namespace Prisma {
     not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
   }
 
+  export type AuthCredentialNullableRelationFilter = {
+    is?: AuthCredentialWhereInput | null
+    isNot?: AuthCredentialWhereInput | null
+  }
+
+  export type AuthSessionListRelationFilter = {
+    every?: AuthSessionWhereInput
+    some?: AuthSessionWhereInput
+    none?: AuthSessionWhereInput
+  }
+
+  export type AuthPasswordResetTokenListRelationFilter = {
+    every?: AuthPasswordResetTokenWhereInput
+    some?: AuthPasswordResetTokenWhereInput
+    none?: AuthPasswordResetTokenWhereInput
+  }
+
   export type AccountsSetListRelationFilter = {
     every?: AccountsSetWhereInput
     some?: AccountsSetWhereInput
@@ -39454,6 +49595,19 @@ export namespace Prisma {
     every?: TemplateWhereInput
     some?: TemplateWhereInput
     none?: TemplateWhereInput
+  }
+
+  export type UserAccessProfileNullableRelationFilter = {
+    is?: UserAccessProfileWhereInput | null
+    isNot?: UserAccessProfileWhereInput | null
+  }
+
+  export type AuthSessionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AuthPasswordResetTokenOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type AccountsSetOrderByRelationAggregateInput = {
@@ -39513,6 +49667,148 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumUserRoleFilter<$PrismaModel>
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
+  }
+
+  export type IntNullableListFilter<$PrismaModel = never> = {
+    equals?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    has?: number | IntFieldRefInput<$PrismaModel> | null
+    hasEvery?: number[] | ListIntFieldRefInput<$PrismaModel>
+    hasSome?: number[] | ListIntFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type UserRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type UserAccessProfileCountOrderByAggregateInput = {
+    userId?: SortOrder
+    roleOverride?: SortOrder
+    portfolioCodes?: SortOrder
+    allPortfolios?: SortOrder
+    assignedBy?: SortOrder
+    assignedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserAccessProfileAvgOrderByAggregateInput = {
+    portfolioCodes?: SortOrder
+  }
+
+  export type UserAccessProfileMaxOrderByAggregateInput = {
+    userId?: SortOrder
+    roleOverride?: SortOrder
+    allPortfolios?: SortOrder
+    assignedBy?: SortOrder
+    assignedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserAccessProfileMinOrderByAggregateInput = {
+    userId?: SortOrder
+    roleOverride?: SortOrder
+    allPortfolios?: SortOrder
+    assignedBy?: SortOrder
+    assignedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserAccessProfileSumOrderByAggregateInput = {
+    portfolioCodes?: SortOrder
+  }
+
+  export type AuthCredentialCountOrderByAggregateInput = {
+    userId?: SortOrder
+    passwordHash?: SortOrder
+    emailVerified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AuthCredentialMaxOrderByAggregateInput = {
+    userId?: SortOrder
+    passwordHash?: SortOrder
+    emailVerified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AuthCredentialMinOrderByAggregateInput = {
+    userId?: SortOrder
+    passwordHash?: SortOrder
+    emailVerified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AuthSessionCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    rememberMe?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    createdAt?: SortOrder
+    lastUsedAt?: SortOrder
+  }
+
+  export type AuthSessionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    rememberMe?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    createdAt?: SortOrder
+    lastUsedAt?: SortOrder
+  }
+
+  export type AuthSessionMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    refreshToken?: SortOrder
+    expiresAt?: SortOrder
+    rememberMe?: SortOrder
+    ipAddress?: SortOrder
+    userAgent?: SortOrder
+    createdAt?: SortOrder
+    lastUsedAt?: SortOrder
+  }
+
+  export type AuthPasswordResetTokenCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuthPasswordResetTokenMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuthPasswordResetTokenMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type EnumClientTypeFilter<$PrismaModel = never> = {
@@ -40407,6 +50703,128 @@ export namespace Prisma {
     _max?: NestedEnumPriorityFilter<$PrismaModel>
   }
 
+  export type ServiceTemplateTaskListRelationFilter = {
+    every?: ServiceTemplateTaskWhereInput
+    some?: ServiceTemplateTaskWhereInput
+    none?: ServiceTemplateTaskWhereInput
+  }
+
+  export type ServiceTemplateTaskOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ServiceTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    serviceKind?: SortOrder
+    frequency?: SortOrder
+    appliesTo?: SortOrder
+    complianceImpact?: SortOrder
+    pricingModel?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServiceTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    serviceKind?: SortOrder
+    frequency?: SortOrder
+    complianceImpact?: SortOrder
+    pricingModel?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServiceTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    serviceKind?: SortOrder
+    frequency?: SortOrder
+    complianceImpact?: SortOrder
+    pricingModel?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServiceTemplateRelationFilter = {
+    is?: ServiceTemplateWhereInput
+    isNot?: ServiceTemplateWhereInput
+  }
+
+  export type ServiceTemplateTaskCountOrderByAggregateInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    daysBeforeDue?: SortOrder
+    priority?: SortOrder
+    tags?: SortOrder
+    assigneeId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServiceTemplateTaskAvgOrderByAggregateInput = {
+    daysBeforeDue?: SortOrder
+  }
+
+  export type ServiceTemplateTaskMaxOrderByAggregateInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    daysBeforeDue?: SortOrder
+    priority?: SortOrder
+    assigneeId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServiceTemplateTaskMinOrderByAggregateInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    daysBeforeDue?: SortOrder
+    priority?: SortOrder
+    assigneeId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ServiceTemplateTaskSumOrderByAggregateInput = {
+    daysBeforeDue?: SortOrder
+  }
+
+  export type StandaloneTaskTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    tags?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StandaloneTaskTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StandaloneTaskTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    priority?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type EnumDocumentCategoryFilter<$PrismaModel = never> = {
     equals?: $Enums.DocumentCategory | EnumDocumentCategoryFieldRefInput<$PrismaModel>
     in?: $Enums.DocumentCategory[] | ListEnumDocumentCategoryFieldRefInput<$PrismaModel>
@@ -40488,6 +50906,16 @@ export namespace Prisma {
     not?: NestedEnumTemplateTypeFilter<$PrismaModel> | $Enums.TemplateType
   }
 
+  export type TemplateFieldListRelationFilter = {
+    every?: TemplateFieldWhereInput
+    some?: TemplateFieldWhereInput
+    none?: TemplateFieldWhereInput
+  }
+
+  export type TemplateFieldOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type TemplateCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -40544,6 +50972,73 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTemplateTypeFilter<$PrismaModel>
     _max?: NestedEnumTemplateTypeFilter<$PrismaModel>
+  }
+
+  export type TemplateRelationFilter = {
+    is?: TemplateWhereInput
+    isNot?: TemplateWhereInput
+  }
+
+  export type TemplateFieldTemplateIdKeyCompoundUniqueInput = {
+    templateId: string
+    key: string
+  }
+
+  export type TemplateFieldCountOrderByAggregateInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    key?: SortOrder
+    label?: SortOrder
+    type?: SortOrder
+    required?: SortOrder
+    defaultValue?: SortOrder
+    format?: SortOrder
+    source?: SortOrder
+    sourcePath?: SortOrder
+    validation?: SortOrder
+    displayOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TemplateFieldAvgOrderByAggregateInput = {
+    displayOrder?: SortOrder
+  }
+
+  export type TemplateFieldMaxOrderByAggregateInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    key?: SortOrder
+    label?: SortOrder
+    type?: SortOrder
+    required?: SortOrder
+    defaultValue?: SortOrder
+    format?: SortOrder
+    source?: SortOrder
+    sourcePath?: SortOrder
+    displayOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TemplateFieldMinOrderByAggregateInput = {
+    id?: SortOrder
+    templateId?: SortOrder
+    key?: SortOrder
+    label?: SortOrder
+    type?: SortOrder
+    required?: SortOrder
+    defaultValue?: SortOrder
+    format?: SortOrder
+    source?: SortOrder
+    sourcePath?: SortOrder
+    displayOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TemplateFieldSumOrderByAggregateInput = {
+    displayOrder?: SortOrder
   }
 
   export type PersonCountOrderByAggregateInput = {
@@ -41477,6 +51972,26 @@ export namespace Prisma {
     update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutRefBucketsInput, PortfolioUpdateWithoutRefBucketsInput>, PortfolioUncheckedUpdateWithoutRefBucketsInput>
   }
 
+  export type AuthCredentialCreateNestedOneWithoutUserInput = {
+    create?: XOR<AuthCredentialCreateWithoutUserInput, AuthCredentialUncheckedCreateWithoutUserInput>
+    connectOrCreate?: AuthCredentialCreateOrConnectWithoutUserInput
+    connect?: AuthCredentialWhereUniqueInput
+  }
+
+  export type AuthSessionCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuthSessionCreateWithoutUserInput, AuthSessionUncheckedCreateWithoutUserInput> | AuthSessionCreateWithoutUserInput[] | AuthSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuthSessionCreateOrConnectWithoutUserInput | AuthSessionCreateOrConnectWithoutUserInput[]
+    createMany?: AuthSessionCreateManyUserInputEnvelope
+    connect?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+  }
+
+  export type AuthPasswordResetTokenCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuthPasswordResetTokenCreateWithoutUserInput, AuthPasswordResetTokenUncheckedCreateWithoutUserInput> | AuthPasswordResetTokenCreateWithoutUserInput[] | AuthPasswordResetTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuthPasswordResetTokenCreateOrConnectWithoutUserInput | AuthPasswordResetTokenCreateOrConnectWithoutUserInput[]
+    createMany?: AuthPasswordResetTokenCreateManyUserInputEnvelope
+    connect?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
+  }
+
   export type AccountsSetCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<AccountsSetCreateWithoutCreatedByInput, AccountsSetUncheckedCreateWithoutCreatedByInput> | AccountsSetCreateWithoutCreatedByInput[] | AccountsSetUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AccountsSetCreateOrConnectWithoutCreatedByInput | AccountsSetCreateOrConnectWithoutCreatedByInput[]
@@ -41517,6 +52032,32 @@ export namespace Prisma {
     connectOrCreate?: TemplateCreateOrConnectWithoutCreatedByInput | TemplateCreateOrConnectWithoutCreatedByInput[]
     createMany?: TemplateCreateManyCreatedByInputEnvelope
     connect?: TemplateWhereUniqueInput | TemplateWhereUniqueInput[]
+  }
+
+  export type UserAccessProfileCreateNestedOneWithoutUserInput = {
+    create?: XOR<UserAccessProfileCreateWithoutUserInput, UserAccessProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserAccessProfileCreateOrConnectWithoutUserInput
+    connect?: UserAccessProfileWhereUniqueInput
+  }
+
+  export type AuthCredentialUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<AuthCredentialCreateWithoutUserInput, AuthCredentialUncheckedCreateWithoutUserInput>
+    connectOrCreate?: AuthCredentialCreateOrConnectWithoutUserInput
+    connect?: AuthCredentialWhereUniqueInput
+  }
+
+  export type AuthSessionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuthSessionCreateWithoutUserInput, AuthSessionUncheckedCreateWithoutUserInput> | AuthSessionCreateWithoutUserInput[] | AuthSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuthSessionCreateOrConnectWithoutUserInput | AuthSessionCreateOrConnectWithoutUserInput[]
+    createMany?: AuthSessionCreateManyUserInputEnvelope
+    connect?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+  }
+
+  export type AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuthPasswordResetTokenCreateWithoutUserInput, AuthPasswordResetTokenUncheckedCreateWithoutUserInput> | AuthPasswordResetTokenCreateWithoutUserInput[] | AuthPasswordResetTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuthPasswordResetTokenCreateOrConnectWithoutUserInput | AuthPasswordResetTokenCreateOrConnectWithoutUserInput[]
+    createMany?: AuthPasswordResetTokenCreateManyUserInputEnvelope
+    connect?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
   }
 
   export type AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput = {
@@ -41561,8 +52102,52 @@ export namespace Prisma {
     connect?: TemplateWhereUniqueInput | TemplateWhereUniqueInput[]
   }
 
+  export type UserAccessProfileUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<UserAccessProfileCreateWithoutUserInput, UserAccessProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserAccessProfileCreateOrConnectWithoutUserInput
+    connect?: UserAccessProfileWhereUniqueInput
+  }
+
   export type EnumUserRoleFieldUpdateOperationsInput = {
     set?: $Enums.UserRole
+  }
+
+  export type AuthCredentialUpdateOneWithoutUserNestedInput = {
+    create?: XOR<AuthCredentialCreateWithoutUserInput, AuthCredentialUncheckedCreateWithoutUserInput>
+    connectOrCreate?: AuthCredentialCreateOrConnectWithoutUserInput
+    upsert?: AuthCredentialUpsertWithoutUserInput
+    disconnect?: AuthCredentialWhereInput | boolean
+    delete?: AuthCredentialWhereInput | boolean
+    connect?: AuthCredentialWhereUniqueInput
+    update?: XOR<XOR<AuthCredentialUpdateToOneWithWhereWithoutUserInput, AuthCredentialUpdateWithoutUserInput>, AuthCredentialUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AuthSessionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuthSessionCreateWithoutUserInput, AuthSessionUncheckedCreateWithoutUserInput> | AuthSessionCreateWithoutUserInput[] | AuthSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuthSessionCreateOrConnectWithoutUserInput | AuthSessionCreateOrConnectWithoutUserInput[]
+    upsert?: AuthSessionUpsertWithWhereUniqueWithoutUserInput | AuthSessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuthSessionCreateManyUserInputEnvelope
+    set?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+    disconnect?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+    delete?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+    connect?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+    update?: AuthSessionUpdateWithWhereUniqueWithoutUserInput | AuthSessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuthSessionUpdateManyWithWhereWithoutUserInput | AuthSessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuthSessionScalarWhereInput | AuthSessionScalarWhereInput[]
+  }
+
+  export type AuthPasswordResetTokenUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuthPasswordResetTokenCreateWithoutUserInput, AuthPasswordResetTokenUncheckedCreateWithoutUserInput> | AuthPasswordResetTokenCreateWithoutUserInput[] | AuthPasswordResetTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuthPasswordResetTokenCreateOrConnectWithoutUserInput | AuthPasswordResetTokenCreateOrConnectWithoutUserInput[]
+    upsert?: AuthPasswordResetTokenUpsertWithWhereUniqueWithoutUserInput | AuthPasswordResetTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuthPasswordResetTokenCreateManyUserInputEnvelope
+    set?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
+    disconnect?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
+    delete?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
+    connect?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
+    update?: AuthPasswordResetTokenUpdateWithWhereUniqueWithoutUserInput | AuthPasswordResetTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuthPasswordResetTokenUpdateManyWithWhereWithoutUserInput | AuthPasswordResetTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuthPasswordResetTokenScalarWhereInput | AuthPasswordResetTokenScalarWhereInput[]
   }
 
   export type AccountsSetUpdateManyWithoutCreatedByNestedInput = {
@@ -41649,6 +52234,54 @@ export namespace Prisma {
     deleteMany?: TemplateScalarWhereInput | TemplateScalarWhereInput[]
   }
 
+  export type UserAccessProfileUpdateOneWithoutUserNestedInput = {
+    create?: XOR<UserAccessProfileCreateWithoutUserInput, UserAccessProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserAccessProfileCreateOrConnectWithoutUserInput
+    upsert?: UserAccessProfileUpsertWithoutUserInput
+    disconnect?: UserAccessProfileWhereInput | boolean
+    delete?: UserAccessProfileWhereInput | boolean
+    connect?: UserAccessProfileWhereUniqueInput
+    update?: XOR<XOR<UserAccessProfileUpdateToOneWithWhereWithoutUserInput, UserAccessProfileUpdateWithoutUserInput>, UserAccessProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AuthCredentialUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<AuthCredentialCreateWithoutUserInput, AuthCredentialUncheckedCreateWithoutUserInput>
+    connectOrCreate?: AuthCredentialCreateOrConnectWithoutUserInput
+    upsert?: AuthCredentialUpsertWithoutUserInput
+    disconnect?: AuthCredentialWhereInput | boolean
+    delete?: AuthCredentialWhereInput | boolean
+    connect?: AuthCredentialWhereUniqueInput
+    update?: XOR<XOR<AuthCredentialUpdateToOneWithWhereWithoutUserInput, AuthCredentialUpdateWithoutUserInput>, AuthCredentialUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AuthSessionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuthSessionCreateWithoutUserInput, AuthSessionUncheckedCreateWithoutUserInput> | AuthSessionCreateWithoutUserInput[] | AuthSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuthSessionCreateOrConnectWithoutUserInput | AuthSessionCreateOrConnectWithoutUserInput[]
+    upsert?: AuthSessionUpsertWithWhereUniqueWithoutUserInput | AuthSessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuthSessionCreateManyUserInputEnvelope
+    set?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+    disconnect?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+    delete?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+    connect?: AuthSessionWhereUniqueInput | AuthSessionWhereUniqueInput[]
+    update?: AuthSessionUpdateWithWhereUniqueWithoutUserInput | AuthSessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuthSessionUpdateManyWithWhereWithoutUserInput | AuthSessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuthSessionScalarWhereInput | AuthSessionScalarWhereInput[]
+  }
+
+  export type AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuthPasswordResetTokenCreateWithoutUserInput, AuthPasswordResetTokenUncheckedCreateWithoutUserInput> | AuthPasswordResetTokenCreateWithoutUserInput[] | AuthPasswordResetTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuthPasswordResetTokenCreateOrConnectWithoutUserInput | AuthPasswordResetTokenCreateOrConnectWithoutUserInput[]
+    upsert?: AuthPasswordResetTokenUpsertWithWhereUniqueWithoutUserInput | AuthPasswordResetTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuthPasswordResetTokenCreateManyUserInputEnvelope
+    set?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
+    disconnect?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
+    delete?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
+    connect?: AuthPasswordResetTokenWhereUniqueInput | AuthPasswordResetTokenWhereUniqueInput[]
+    update?: AuthPasswordResetTokenUpdateWithWhereUniqueWithoutUserInput | AuthPasswordResetTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuthPasswordResetTokenUpdateManyWithWhereWithoutUserInput | AuthPasswordResetTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuthPasswordResetTokenScalarWhereInput | AuthPasswordResetTokenScalarWhereInput[]
+  }
+
   export type AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<AccountsSetCreateWithoutCreatedByInput, AccountsSetUncheckedCreateWithoutCreatedByInput> | AccountsSetCreateWithoutCreatedByInput[] | AccountsSetUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AccountsSetCreateOrConnectWithoutCreatedByInput | AccountsSetCreateOrConnectWithoutCreatedByInput[]
@@ -41731,6 +52364,81 @@ export namespace Prisma {
     update?: TemplateUpdateWithWhereUniqueWithoutCreatedByInput | TemplateUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: TemplateUpdateManyWithWhereWithoutCreatedByInput | TemplateUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: TemplateScalarWhereInput | TemplateScalarWhereInput[]
+  }
+
+  export type UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<UserAccessProfileCreateWithoutUserInput, UserAccessProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: UserAccessProfileCreateOrConnectWithoutUserInput
+    upsert?: UserAccessProfileUpsertWithoutUserInput
+    disconnect?: UserAccessProfileWhereInput | boolean
+    delete?: UserAccessProfileWhereInput | boolean
+    connect?: UserAccessProfileWhereUniqueInput
+    update?: XOR<XOR<UserAccessProfileUpdateToOneWithWhereWithoutUserInput, UserAccessProfileUpdateWithoutUserInput>, UserAccessProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserAccessProfileCreateportfolioCodesInput = {
+    set: number[]
+  }
+
+  export type UserCreateNestedOneWithoutAccessProfileInput = {
+    create?: XOR<UserCreateWithoutAccessProfileInput, UserUncheckedCreateWithoutAccessProfileInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAccessProfileInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserAccessProfileUpdateportfolioCodesInput = {
+    set?: number[]
+    push?: number | number[]
+  }
+
+  export type UserUpdateOneRequiredWithoutAccessProfileNestedInput = {
+    create?: XOR<UserCreateWithoutAccessProfileInput, UserUncheckedCreateWithoutAccessProfileInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAccessProfileInput
+    upsert?: UserUpsertWithoutAccessProfileInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAccessProfileInput, UserUpdateWithoutAccessProfileInput>, UserUncheckedUpdateWithoutAccessProfileInput>
+  }
+
+  export type UserCreateNestedOneWithoutAuthCredentialInput = {
+    create?: XOR<UserCreateWithoutAuthCredentialInput, UserUncheckedCreateWithoutAuthCredentialInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuthCredentialInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutAuthCredentialNestedInput = {
+    create?: XOR<UserCreateWithoutAuthCredentialInput, UserUncheckedCreateWithoutAuthCredentialInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuthCredentialInput
+    upsert?: UserUpsertWithoutAuthCredentialInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuthCredentialInput, UserUpdateWithoutAuthCredentialInput>, UserUncheckedUpdateWithoutAuthCredentialInput>
+  }
+
+  export type UserCreateNestedOneWithoutAuthSessionsInput = {
+    create?: XOR<UserCreateWithoutAuthSessionsInput, UserUncheckedCreateWithoutAuthSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuthSessionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutAuthSessionsNestedInput = {
+    create?: XOR<UserCreateWithoutAuthSessionsInput, UserUncheckedCreateWithoutAuthSessionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuthSessionsInput
+    upsert?: UserUpsertWithoutAuthSessionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuthSessionsInput, UserUpdateWithoutAuthSessionsInput>, UserUncheckedUpdateWithoutAuthSessionsInput>
+  }
+
+  export type UserCreateNestedOneWithoutPasswordResetTokensInput = {
+    create?: XOR<UserCreateWithoutPasswordResetTokensInput, UserUncheckedCreateWithoutPasswordResetTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPasswordResetTokensInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutPasswordResetTokensNestedInput = {
+    create?: XOR<UserCreateWithoutPasswordResetTokensInput, UserUncheckedCreateWithoutPasswordResetTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPasswordResetTokensInput
+    upsert?: UserUpsertWithoutPasswordResetTokensInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPasswordResetTokensInput, UserUpdateWithoutPasswordResetTokensInput>, UserUncheckedUpdateWithoutPasswordResetTokensInput>
   }
 
   export type AccountsSetCreateNestedManyWithoutClientInput = {
@@ -42660,6 +53368,89 @@ export namespace Prisma {
     update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutTasksInput, ServiceUpdateWithoutTasksInput>, ServiceUncheckedUpdateWithoutTasksInput>
   }
 
+  export type ServiceTemplateCreateappliesToInput = {
+    set: string[]
+  }
+
+  export type ServiceTemplateTaskCreateNestedManyWithoutServiceTemplateInput = {
+    create?: XOR<ServiceTemplateTaskCreateWithoutServiceTemplateInput, ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput> | ServiceTemplateTaskCreateWithoutServiceTemplateInput[] | ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput[]
+    connectOrCreate?: ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput | ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput[]
+    createMany?: ServiceTemplateTaskCreateManyServiceTemplateInputEnvelope
+    connect?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+  }
+
+  export type ServiceTemplateTaskUncheckedCreateNestedManyWithoutServiceTemplateInput = {
+    create?: XOR<ServiceTemplateTaskCreateWithoutServiceTemplateInput, ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput> | ServiceTemplateTaskCreateWithoutServiceTemplateInput[] | ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput[]
+    connectOrCreate?: ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput | ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput[]
+    createMany?: ServiceTemplateTaskCreateManyServiceTemplateInputEnvelope
+    connect?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+  }
+
+  export type ServiceTemplateUpdateappliesToInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type ServiceTemplateTaskUpdateManyWithoutServiceTemplateNestedInput = {
+    create?: XOR<ServiceTemplateTaskCreateWithoutServiceTemplateInput, ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput> | ServiceTemplateTaskCreateWithoutServiceTemplateInput[] | ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput[]
+    connectOrCreate?: ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput | ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput[]
+    upsert?: ServiceTemplateTaskUpsertWithWhereUniqueWithoutServiceTemplateInput | ServiceTemplateTaskUpsertWithWhereUniqueWithoutServiceTemplateInput[]
+    createMany?: ServiceTemplateTaskCreateManyServiceTemplateInputEnvelope
+    set?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+    disconnect?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+    delete?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+    connect?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+    update?: ServiceTemplateTaskUpdateWithWhereUniqueWithoutServiceTemplateInput | ServiceTemplateTaskUpdateWithWhereUniqueWithoutServiceTemplateInput[]
+    updateMany?: ServiceTemplateTaskUpdateManyWithWhereWithoutServiceTemplateInput | ServiceTemplateTaskUpdateManyWithWhereWithoutServiceTemplateInput[]
+    deleteMany?: ServiceTemplateTaskScalarWhereInput | ServiceTemplateTaskScalarWhereInput[]
+  }
+
+  export type ServiceTemplateTaskUncheckedUpdateManyWithoutServiceTemplateNestedInput = {
+    create?: XOR<ServiceTemplateTaskCreateWithoutServiceTemplateInput, ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput> | ServiceTemplateTaskCreateWithoutServiceTemplateInput[] | ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput[]
+    connectOrCreate?: ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput | ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput[]
+    upsert?: ServiceTemplateTaskUpsertWithWhereUniqueWithoutServiceTemplateInput | ServiceTemplateTaskUpsertWithWhereUniqueWithoutServiceTemplateInput[]
+    createMany?: ServiceTemplateTaskCreateManyServiceTemplateInputEnvelope
+    set?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+    disconnect?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+    delete?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+    connect?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+    update?: ServiceTemplateTaskUpdateWithWhereUniqueWithoutServiceTemplateInput | ServiceTemplateTaskUpdateWithWhereUniqueWithoutServiceTemplateInput[]
+    updateMany?: ServiceTemplateTaskUpdateManyWithWhereWithoutServiceTemplateInput | ServiceTemplateTaskUpdateManyWithWhereWithoutServiceTemplateInput[]
+    deleteMany?: ServiceTemplateTaskScalarWhereInput | ServiceTemplateTaskScalarWhereInput[]
+  }
+
+  export type ServiceTemplateTaskCreatetagsInput = {
+    set: string[]
+  }
+
+  export type ServiceTemplateCreateNestedOneWithoutTaskTemplatesInput = {
+    create?: XOR<ServiceTemplateCreateWithoutTaskTemplatesInput, ServiceTemplateUncheckedCreateWithoutTaskTemplatesInput>
+    connectOrCreate?: ServiceTemplateCreateOrConnectWithoutTaskTemplatesInput
+    connect?: ServiceTemplateWhereUniqueInput
+  }
+
+  export type ServiceTemplateTaskUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type ServiceTemplateUpdateOneRequiredWithoutTaskTemplatesNestedInput = {
+    create?: XOR<ServiceTemplateCreateWithoutTaskTemplatesInput, ServiceTemplateUncheckedCreateWithoutTaskTemplatesInput>
+    connectOrCreate?: ServiceTemplateCreateOrConnectWithoutTaskTemplatesInput
+    upsert?: ServiceTemplateUpsertWithoutTaskTemplatesInput
+    connect?: ServiceTemplateWhereUniqueInput
+    update?: XOR<XOR<ServiceTemplateUpdateToOneWithWhereWithoutTaskTemplatesInput, ServiceTemplateUpdateWithoutTaskTemplatesInput>, ServiceTemplateUncheckedUpdateWithoutTaskTemplatesInput>
+  }
+
+  export type StandaloneTaskTemplateCreatetagsInput = {
+    set: string[]
+  }
+
+  export type StandaloneTaskTemplateUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
   export type ClientCreateNestedOneWithoutDocumentsInput = {
     create?: XOR<ClientCreateWithoutDocumentsInput, ClientUncheckedCreateWithoutDocumentsInput>
     connectOrCreate?: ClientCreateOrConnectWithoutDocumentsInput
@@ -42702,6 +53493,20 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type TemplateFieldCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<TemplateFieldCreateWithoutTemplateInput, TemplateFieldUncheckedCreateWithoutTemplateInput> | TemplateFieldCreateWithoutTemplateInput[] | TemplateFieldUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: TemplateFieldCreateOrConnectWithoutTemplateInput | TemplateFieldCreateOrConnectWithoutTemplateInput[]
+    createMany?: TemplateFieldCreateManyTemplateInputEnvelope
+    connect?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+  }
+
+  export type TemplateFieldUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<TemplateFieldCreateWithoutTemplateInput, TemplateFieldUncheckedCreateWithoutTemplateInput> | TemplateFieldCreateWithoutTemplateInput[] | TemplateFieldUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: TemplateFieldCreateOrConnectWithoutTemplateInput | TemplateFieldCreateOrConnectWithoutTemplateInput[]
+    createMany?: TemplateFieldCreateManyTemplateInputEnvelope
+    connect?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+  }
+
   export type EnumTemplateCategoryFieldUpdateOperationsInput = {
     set?: $Enums.TemplateCategory
   }
@@ -42718,6 +53523,48 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedTemplatesInput, UserUpdateWithoutCreatedTemplatesInput>, UserUncheckedUpdateWithoutCreatedTemplatesInput>
+  }
+
+  export type TemplateFieldUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<TemplateFieldCreateWithoutTemplateInput, TemplateFieldUncheckedCreateWithoutTemplateInput> | TemplateFieldCreateWithoutTemplateInput[] | TemplateFieldUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: TemplateFieldCreateOrConnectWithoutTemplateInput | TemplateFieldCreateOrConnectWithoutTemplateInput[]
+    upsert?: TemplateFieldUpsertWithWhereUniqueWithoutTemplateInput | TemplateFieldUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: TemplateFieldCreateManyTemplateInputEnvelope
+    set?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+    disconnect?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+    delete?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+    connect?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+    update?: TemplateFieldUpdateWithWhereUniqueWithoutTemplateInput | TemplateFieldUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: TemplateFieldUpdateManyWithWhereWithoutTemplateInput | TemplateFieldUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: TemplateFieldScalarWhereInput | TemplateFieldScalarWhereInput[]
+  }
+
+  export type TemplateFieldUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<TemplateFieldCreateWithoutTemplateInput, TemplateFieldUncheckedCreateWithoutTemplateInput> | TemplateFieldCreateWithoutTemplateInput[] | TemplateFieldUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: TemplateFieldCreateOrConnectWithoutTemplateInput | TemplateFieldCreateOrConnectWithoutTemplateInput[]
+    upsert?: TemplateFieldUpsertWithWhereUniqueWithoutTemplateInput | TemplateFieldUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: TemplateFieldCreateManyTemplateInputEnvelope
+    set?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+    disconnect?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+    delete?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+    connect?: TemplateFieldWhereUniqueInput | TemplateFieldWhereUniqueInput[]
+    update?: TemplateFieldUpdateWithWhereUniqueWithoutTemplateInput | TemplateFieldUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: TemplateFieldUpdateManyWithWhereWithoutTemplateInput | TemplateFieldUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: TemplateFieldScalarWhereInput | TemplateFieldScalarWhereInput[]
+  }
+
+  export type TemplateCreateNestedOneWithoutFieldsInput = {
+    create?: XOR<TemplateCreateWithoutFieldsInput, TemplateUncheckedCreateWithoutFieldsInput>
+    connectOrCreate?: TemplateCreateOrConnectWithoutFieldsInput
+    connect?: TemplateWhereUniqueInput
+  }
+
+  export type TemplateUpdateOneRequiredWithoutFieldsNestedInput = {
+    create?: XOR<TemplateCreateWithoutFieldsInput, TemplateUncheckedCreateWithoutFieldsInput>
+    connectOrCreate?: TemplateCreateOrConnectWithoutFieldsInput
+    upsert?: TemplateUpsertWithoutFieldsInput
+    connect?: TemplateWhereUniqueInput
+    update?: XOR<XOR<TemplateUpdateToOneWithWhereWithoutFieldsInput, TemplateUpdateWithoutFieldsInput>, TemplateUncheckedUpdateWithoutFieldsInput>
   }
 
   export type ClientPartyCreateNestedManyWithoutPersonInput = {
@@ -44796,6 +55643,85 @@ export namespace Prisma {
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
+  export type AuthCredentialCreateWithoutUserInput = {
+    passwordHash: string
+    emailVerified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AuthCredentialUncheckedCreateWithoutUserInput = {
+    passwordHash: string
+    emailVerified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AuthCredentialCreateOrConnectWithoutUserInput = {
+    where: AuthCredentialWhereUniqueInput
+    create: XOR<AuthCredentialCreateWithoutUserInput, AuthCredentialUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuthSessionCreateWithoutUserInput = {
+    id?: string
+    token: string
+    refreshToken: string
+    expiresAt: Date | string
+    rememberMe?: boolean
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+    lastUsedAt?: Date | string
+  }
+
+  export type AuthSessionUncheckedCreateWithoutUserInput = {
+    id?: string
+    token: string
+    refreshToken: string
+    expiresAt: Date | string
+    rememberMe?: boolean
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+    lastUsedAt?: Date | string
+  }
+
+  export type AuthSessionCreateOrConnectWithoutUserInput = {
+    where: AuthSessionWhereUniqueInput
+    create: XOR<AuthSessionCreateWithoutUserInput, AuthSessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuthSessionCreateManyUserInputEnvelope = {
+    data: AuthSessionCreateManyUserInput | AuthSessionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AuthPasswordResetTokenCreateWithoutUserInput = {
+    id?: string
+    token: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+  }
+
+  export type AuthPasswordResetTokenUncheckedCreateWithoutUserInput = {
+    id?: string
+    token: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+  }
+
+  export type AuthPasswordResetTokenCreateOrConnectWithoutUserInput = {
+    where: AuthPasswordResetTokenWhereUniqueInput
+    create: XOR<AuthPasswordResetTokenCreateWithoutUserInput, AuthPasswordResetTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuthPasswordResetTokenCreateManyUserInputEnvelope = {
+    data: AuthPasswordResetTokenCreateManyUserInput | AuthPasswordResetTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AccountsSetCreateWithoutCreatedByInput = {
     id?: string
     companyNumber: string
@@ -45047,6 +55973,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    fields?: TemplateFieldCreateNestedManyWithoutTemplateInput
   }
 
   export type TemplateUncheckedCreateWithoutCreatedByInput = {
@@ -45060,6 +55987,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    fields?: TemplateFieldUncheckedCreateNestedManyWithoutTemplateInput
   }
 
   export type TemplateCreateOrConnectWithoutCreatedByInput = {
@@ -45070,6 +55998,116 @@ export namespace Prisma {
   export type TemplateCreateManyCreatedByInputEnvelope = {
     data: TemplateCreateManyCreatedByInput | TemplateCreateManyCreatedByInput[]
     skipDuplicates?: boolean
+  }
+
+  export type UserAccessProfileCreateWithoutUserInput = {
+    roleOverride?: string | null
+    portfolioCodes?: UserAccessProfileCreateportfolioCodesInput | number[]
+    allPortfolios?: boolean
+    assignedBy?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserAccessProfileUncheckedCreateWithoutUserInput = {
+    roleOverride?: string | null
+    portfolioCodes?: UserAccessProfileCreateportfolioCodesInput | number[]
+    allPortfolios?: boolean
+    assignedBy?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserAccessProfileCreateOrConnectWithoutUserInput = {
+    where: UserAccessProfileWhereUniqueInput
+    create: XOR<UserAccessProfileCreateWithoutUserInput, UserAccessProfileUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuthCredentialUpsertWithoutUserInput = {
+    update: XOR<AuthCredentialUpdateWithoutUserInput, AuthCredentialUncheckedUpdateWithoutUserInput>
+    create: XOR<AuthCredentialCreateWithoutUserInput, AuthCredentialUncheckedCreateWithoutUserInput>
+    where?: AuthCredentialWhereInput
+  }
+
+  export type AuthCredentialUpdateToOneWithWhereWithoutUserInput = {
+    where?: AuthCredentialWhereInput
+    data: XOR<AuthCredentialUpdateWithoutUserInput, AuthCredentialUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AuthCredentialUpdateWithoutUserInput = {
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthCredentialUncheckedUpdateWithoutUserInput = {
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthSessionUpsertWithWhereUniqueWithoutUserInput = {
+    where: AuthSessionWhereUniqueInput
+    update: XOR<AuthSessionUpdateWithoutUserInput, AuthSessionUncheckedUpdateWithoutUserInput>
+    create: XOR<AuthSessionCreateWithoutUserInput, AuthSessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuthSessionUpdateWithWhereUniqueWithoutUserInput = {
+    where: AuthSessionWhereUniqueInput
+    data: XOR<AuthSessionUpdateWithoutUserInput, AuthSessionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AuthSessionUpdateManyWithWhereWithoutUserInput = {
+    where: AuthSessionScalarWhereInput
+    data: XOR<AuthSessionUpdateManyMutationInput, AuthSessionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type AuthSessionScalarWhereInput = {
+    AND?: AuthSessionScalarWhereInput | AuthSessionScalarWhereInput[]
+    OR?: AuthSessionScalarWhereInput[]
+    NOT?: AuthSessionScalarWhereInput | AuthSessionScalarWhereInput[]
+    id?: StringFilter<"AuthSession"> | string
+    userId?: StringFilter<"AuthSession"> | string
+    token?: StringFilter<"AuthSession"> | string
+    refreshToken?: StringFilter<"AuthSession"> | string
+    expiresAt?: DateTimeFilter<"AuthSession"> | Date | string
+    rememberMe?: BoolFilter<"AuthSession"> | boolean
+    ipAddress?: StringNullableFilter<"AuthSession"> | string | null
+    userAgent?: StringNullableFilter<"AuthSession"> | string | null
+    createdAt?: DateTimeFilter<"AuthSession"> | Date | string
+    lastUsedAt?: DateTimeFilter<"AuthSession"> | Date | string
+  }
+
+  export type AuthPasswordResetTokenUpsertWithWhereUniqueWithoutUserInput = {
+    where: AuthPasswordResetTokenWhereUniqueInput
+    update: XOR<AuthPasswordResetTokenUpdateWithoutUserInput, AuthPasswordResetTokenUncheckedUpdateWithoutUserInput>
+    create: XOR<AuthPasswordResetTokenCreateWithoutUserInput, AuthPasswordResetTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuthPasswordResetTokenUpdateWithWhereUniqueWithoutUserInput = {
+    where: AuthPasswordResetTokenWhereUniqueInput
+    data: XOR<AuthPasswordResetTokenUpdateWithoutUserInput, AuthPasswordResetTokenUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AuthPasswordResetTokenUpdateManyWithWhereWithoutUserInput = {
+    where: AuthPasswordResetTokenScalarWhereInput
+    data: XOR<AuthPasswordResetTokenUpdateManyMutationInput, AuthPasswordResetTokenUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type AuthPasswordResetTokenScalarWhereInput = {
+    AND?: AuthPasswordResetTokenScalarWhereInput | AuthPasswordResetTokenScalarWhereInput[]
+    OR?: AuthPasswordResetTokenScalarWhereInput[]
+    NOT?: AuthPasswordResetTokenScalarWhereInput | AuthPasswordResetTokenScalarWhereInput[]
+    id?: StringFilter<"AuthPasswordResetToken"> | string
+    userId?: StringFilter<"AuthPasswordResetToken"> | string
+    token?: StringFilter<"AuthPasswordResetToken"> | string
+    expiresAt?: DateTimeFilter<"AuthPasswordResetToken"> | Date | string
+    used?: BoolFilter<"AuthPasswordResetToken"> | boolean
+    createdAt?: DateTimeFilter<"AuthPasswordResetToken"> | Date | string
   }
 
   export type AccountsSetUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -45249,6 +56287,421 @@ export namespace Prisma {
     createdById?: StringNullableFilter<"Template"> | string | null
     createdAt?: DateTimeFilter<"Template"> | Date | string
     updatedAt?: DateTimeFilter<"Template"> | Date | string
+  }
+
+  export type UserAccessProfileUpsertWithoutUserInput = {
+    update: XOR<UserAccessProfileUpdateWithoutUserInput, UserAccessProfileUncheckedUpdateWithoutUserInput>
+    create: XOR<UserAccessProfileCreateWithoutUserInput, UserAccessProfileUncheckedCreateWithoutUserInput>
+    where?: UserAccessProfileWhereInput
+  }
+
+  export type UserAccessProfileUpdateToOneWithWhereWithoutUserInput = {
+    where?: UserAccessProfileWhereInput
+    data: XOR<UserAccessProfileUpdateWithoutUserInput, UserAccessProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserAccessProfileUpdateWithoutUserInput = {
+    roleOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioCodes?: UserAccessProfileUpdateportfolioCodesInput | number[]
+    allPortfolios?: BoolFieldUpdateOperationsInput | boolean
+    assignedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserAccessProfileUncheckedUpdateWithoutUserInput = {
+    roleOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioCodes?: UserAccessProfileUpdateportfolioCodesInput | number[]
+    allPortfolios?: BoolFieldUpdateOperationsInput | boolean
+    assignedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserCreateWithoutAccessProfileInput = {
+    id?: string
+    email: string
+    name?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
+    createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
+    lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
+    createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
+    assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
+    createdTasks?: TaskCreateNestedManyWithoutCreatorInput
+    createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutAccessProfileInput = {
+    id?: string
+    email: string
+    name?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
+    lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
+    createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
+    createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
+    createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutAccessProfileInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAccessProfileInput, UserUncheckedCreateWithoutAccessProfileInput>
+  }
+
+  export type UserUpsertWithoutAccessProfileInput = {
+    update: XOR<UserUpdateWithoutAccessProfileInput, UserUncheckedUpdateWithoutAccessProfileInput>
+    create: XOR<UserCreateWithoutAccessProfileInput, UserUncheckedCreateWithoutAccessProfileInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAccessProfileInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAccessProfileInput, UserUncheckedUpdateWithoutAccessProfileInput>
+  }
+
+  export type UserUpdateWithoutAccessProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
+    createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
+    lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
+    createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAccessProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
+    lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
+    createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type UserCreateWithoutAuthCredentialInput = {
+    id?: string
+    email: string
+    name?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
+    createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
+    lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
+    createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
+    assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
+    createdTasks?: TaskCreateNestedManyWithoutCreatorInput
+    createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAuthCredentialInput = {
+    id?: string
+    email: string
+    name?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
+    lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
+    createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
+    createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
+    createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAuthCredentialInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAuthCredentialInput, UserUncheckedCreateWithoutAuthCredentialInput>
+  }
+
+  export type UserUpsertWithoutAuthCredentialInput = {
+    update: XOR<UserUpdateWithoutAuthCredentialInput, UserUncheckedUpdateWithoutAuthCredentialInput>
+    create: XOR<UserCreateWithoutAuthCredentialInput, UserUncheckedCreateWithoutAuthCredentialInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAuthCredentialInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAuthCredentialInput, UserUncheckedUpdateWithoutAuthCredentialInput>
+  }
+
+  export type UserUpdateWithoutAuthCredentialInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
+    createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
+    lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
+    createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAuthCredentialInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
+    lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
+    createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutAuthSessionsInput = {
+    id?: string
+    email: string
+    name?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
+    createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
+    lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
+    createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
+    assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
+    createdTasks?: TaskCreateNestedManyWithoutCreatorInput
+    createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAuthSessionsInput = {
+    id?: string
+    email: string
+    name?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
+    lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
+    createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
+    createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
+    createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAuthSessionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAuthSessionsInput, UserUncheckedCreateWithoutAuthSessionsInput>
+  }
+
+  export type UserUpsertWithoutAuthSessionsInput = {
+    update: XOR<UserUpdateWithoutAuthSessionsInput, UserUncheckedUpdateWithoutAuthSessionsInput>
+    create: XOR<UserCreateWithoutAuthSessionsInput, UserUncheckedCreateWithoutAuthSessionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAuthSessionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAuthSessionsInput, UserUncheckedUpdateWithoutAuthSessionsInput>
+  }
+
+  export type UserUpdateWithoutAuthSessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
+    createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
+    lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
+    createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAuthSessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
+    lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
+    createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutPasswordResetTokensInput = {
+    id?: string
+    email: string
+    name?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
+    lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
+    createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
+    assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
+    createdTasks?: TaskCreateNestedManyWithoutCreatorInput
+    createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
+    id?: string
+    email: string
+    name?: string | null
+    role?: $Enums.UserRole
+    isActive?: boolean
+    lastLoginAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
+    lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
+    createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
+    createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
+    createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPasswordResetTokensInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPasswordResetTokensInput, UserUncheckedCreateWithoutPasswordResetTokensInput>
+  }
+
+  export type UserUpsertWithoutPasswordResetTokensInput = {
+    update: XOR<UserUpdateWithoutPasswordResetTokensInput, UserUncheckedUpdateWithoutPasswordResetTokensInput>
+    create: XOR<UserCreateWithoutPasswordResetTokensInput, UserUncheckedCreateWithoutPasswordResetTokensInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPasswordResetTokensInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPasswordResetTokensInput, UserUncheckedUpdateWithoutPasswordResetTokensInput>
+  }
+
+  export type UserUpdateWithoutPasswordResetTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
+    lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
+    createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
+    lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
+    createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type AccountsSetCreateWithoutClientInput = {
@@ -47988,11 +59441,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssignedTasksInput = {
@@ -48004,11 +59461,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssignedTasksInput = {
@@ -48138,11 +59599,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
     createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedTasksInput = {
@@ -48154,11 +59619,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
     createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedTasksInput = {
@@ -48221,11 +59690,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedTasksInput = {
@@ -48237,11 +59710,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ClientUpsertWithoutTasksInput = {
@@ -48383,11 +59860,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
     createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedTasksInput = {
@@ -48399,11 +59880,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
     createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ServiceUpsertWithoutTasksInput = {
@@ -48445,6 +59930,132 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     complianceItems?: ComplianceItemUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceTemplateTaskCreateWithoutServiceTemplateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    daysBeforeDue: number
+    priority?: $Enums.Priority
+    tags?: ServiceTemplateTaskCreatetagsInput | string[]
+    assigneeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    daysBeforeDue: number
+    priority?: $Enums.Priority
+    tags?: ServiceTemplateTaskCreatetagsInput | string[]
+    assigneeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput = {
+    where: ServiceTemplateTaskWhereUniqueInput
+    create: XOR<ServiceTemplateTaskCreateWithoutServiceTemplateInput, ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput>
+  }
+
+  export type ServiceTemplateTaskCreateManyServiceTemplateInputEnvelope = {
+    data: ServiceTemplateTaskCreateManyServiceTemplateInput | ServiceTemplateTaskCreateManyServiceTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ServiceTemplateTaskUpsertWithWhereUniqueWithoutServiceTemplateInput = {
+    where: ServiceTemplateTaskWhereUniqueInput
+    update: XOR<ServiceTemplateTaskUpdateWithoutServiceTemplateInput, ServiceTemplateTaskUncheckedUpdateWithoutServiceTemplateInput>
+    create: XOR<ServiceTemplateTaskCreateWithoutServiceTemplateInput, ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput>
+  }
+
+  export type ServiceTemplateTaskUpdateWithWhereUniqueWithoutServiceTemplateInput = {
+    where: ServiceTemplateTaskWhereUniqueInput
+    data: XOR<ServiceTemplateTaskUpdateWithoutServiceTemplateInput, ServiceTemplateTaskUncheckedUpdateWithoutServiceTemplateInput>
+  }
+
+  export type ServiceTemplateTaskUpdateManyWithWhereWithoutServiceTemplateInput = {
+    where: ServiceTemplateTaskScalarWhereInput
+    data: XOR<ServiceTemplateTaskUpdateManyMutationInput, ServiceTemplateTaskUncheckedUpdateManyWithoutServiceTemplateInput>
+  }
+
+  export type ServiceTemplateTaskScalarWhereInput = {
+    AND?: ServiceTemplateTaskScalarWhereInput | ServiceTemplateTaskScalarWhereInput[]
+    OR?: ServiceTemplateTaskScalarWhereInput[]
+    NOT?: ServiceTemplateTaskScalarWhereInput | ServiceTemplateTaskScalarWhereInput[]
+    id?: StringFilter<"ServiceTemplateTask"> | string
+    templateId?: StringFilter<"ServiceTemplateTask"> | string
+    title?: StringFilter<"ServiceTemplateTask"> | string
+    description?: StringNullableFilter<"ServiceTemplateTask"> | string | null
+    daysBeforeDue?: IntFilter<"ServiceTemplateTask"> | number
+    priority?: EnumPriorityFilter<"ServiceTemplateTask"> | $Enums.Priority
+    tags?: StringNullableListFilter<"ServiceTemplateTask">
+    assigneeId?: StringNullableFilter<"ServiceTemplateTask"> | string | null
+    createdAt?: DateTimeFilter<"ServiceTemplateTask"> | Date | string
+    updatedAt?: DateTimeFilter<"ServiceTemplateTask"> | Date | string
+  }
+
+  export type ServiceTemplateCreateWithoutTaskTemplatesInput = {
+    id?: string
+    serviceKind: string
+    frequency: string
+    appliesTo?: ServiceTemplateCreateappliesToInput | string[]
+    complianceImpact?: boolean
+    pricingModel?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceTemplateUncheckedCreateWithoutTaskTemplatesInput = {
+    id?: string
+    serviceKind: string
+    frequency: string
+    appliesTo?: ServiceTemplateCreateappliesToInput | string[]
+    complianceImpact?: boolean
+    pricingModel?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceTemplateCreateOrConnectWithoutTaskTemplatesInput = {
+    where: ServiceTemplateWhereUniqueInput
+    create: XOR<ServiceTemplateCreateWithoutTaskTemplatesInput, ServiceTemplateUncheckedCreateWithoutTaskTemplatesInput>
+  }
+
+  export type ServiceTemplateUpsertWithoutTaskTemplatesInput = {
+    update: XOR<ServiceTemplateUpdateWithoutTaskTemplatesInput, ServiceTemplateUncheckedUpdateWithoutTaskTemplatesInput>
+    create: XOR<ServiceTemplateCreateWithoutTaskTemplatesInput, ServiceTemplateUncheckedCreateWithoutTaskTemplatesInput>
+    where?: ServiceTemplateWhereInput
+  }
+
+  export type ServiceTemplateUpdateToOneWithWhereWithoutTaskTemplatesInput = {
+    where?: ServiceTemplateWhereInput
+    data: XOR<ServiceTemplateUpdateWithoutTaskTemplatesInput, ServiceTemplateUncheckedUpdateWithoutTaskTemplatesInput>
+  }
+
+  export type ServiceTemplateUpdateWithoutTaskTemplatesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceKind?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    appliesTo?: ServiceTemplateUpdateappliesToInput | string[]
+    complianceImpact?: BoolFieldUpdateOperationsInput | boolean
+    pricingModel?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceTemplateUncheckedUpdateWithoutTaskTemplatesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceKind?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    appliesTo?: ServiceTemplateUpdateappliesToInput | string[]
+    complianceImpact?: BoolFieldUpdateOperationsInput | boolean
+    pricingModel?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ClientCreateWithoutDocumentsInput = {
@@ -48569,11 +60180,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedDocumentsInput = {
@@ -48585,11 +60200,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedDocumentsInput = {
@@ -48736,11 +60355,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedDocumentsInput = {
@@ -48752,11 +60375,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCreatedTemplatesInput = {
@@ -48768,11 +60395,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedTemplatesInput = {
@@ -48784,16 +60415,62 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
     lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedTemplatesInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutCreatedTemplatesInput, UserUncheckedCreateWithoutCreatedTemplatesInput>
+  }
+
+  export type TemplateFieldCreateWithoutTemplateInput = {
+    id?: string
+    key: string
+    label: string
+    type: string
+    required?: boolean
+    defaultValue?: string | null
+    format?: string | null
+    source?: string | null
+    sourcePath?: string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TemplateFieldUncheckedCreateWithoutTemplateInput = {
+    id?: string
+    key: string
+    label: string
+    type: string
+    required?: boolean
+    defaultValue?: string | null
+    format?: string | null
+    source?: string | null
+    sourcePath?: string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TemplateFieldCreateOrConnectWithoutTemplateInput = {
+    where: TemplateFieldWhereUniqueInput
+    create: XOR<TemplateFieldCreateWithoutTemplateInput, TemplateFieldUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type TemplateFieldCreateManyTemplateInputEnvelope = {
+    data: TemplateFieldCreateManyTemplateInput | TemplateFieldCreateManyTemplateInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutCreatedTemplatesInput = {
@@ -48816,11 +60493,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedTemplatesInput = {
@@ -48832,11 +60513,123 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
     lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type TemplateFieldUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: TemplateFieldWhereUniqueInput
+    update: XOR<TemplateFieldUpdateWithoutTemplateInput, TemplateFieldUncheckedUpdateWithoutTemplateInput>
+    create: XOR<TemplateFieldCreateWithoutTemplateInput, TemplateFieldUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type TemplateFieldUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: TemplateFieldWhereUniqueInput
+    data: XOR<TemplateFieldUpdateWithoutTemplateInput, TemplateFieldUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type TemplateFieldUpdateManyWithWhereWithoutTemplateInput = {
+    where: TemplateFieldScalarWhereInput
+    data: XOR<TemplateFieldUpdateManyMutationInput, TemplateFieldUncheckedUpdateManyWithoutTemplateInput>
+  }
+
+  export type TemplateFieldScalarWhereInput = {
+    AND?: TemplateFieldScalarWhereInput | TemplateFieldScalarWhereInput[]
+    OR?: TemplateFieldScalarWhereInput[]
+    NOT?: TemplateFieldScalarWhereInput | TemplateFieldScalarWhereInput[]
+    id?: StringFilter<"TemplateField"> | string
+    templateId?: StringFilter<"TemplateField"> | string
+    key?: StringFilter<"TemplateField"> | string
+    label?: StringFilter<"TemplateField"> | string
+    type?: StringFilter<"TemplateField"> | string
+    required?: BoolFilter<"TemplateField"> | boolean
+    defaultValue?: StringNullableFilter<"TemplateField"> | string | null
+    format?: StringNullableFilter<"TemplateField"> | string | null
+    source?: StringNullableFilter<"TemplateField"> | string | null
+    sourcePath?: StringNullableFilter<"TemplateField"> | string | null
+    validation?: JsonNullableFilter<"TemplateField">
+    displayOrder?: IntFilter<"TemplateField"> | number
+    createdAt?: DateTimeFilter<"TemplateField"> | Date | string
+    updatedAt?: DateTimeFilter<"TemplateField"> | Date | string
+  }
+
+  export type TemplateCreateWithoutFieldsInput = {
+    id?: string
+    name: string
+    description: string
+    category: $Enums.TemplateCategory
+    type: $Enums.TemplateType
+    content: string
+    placeholders?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutCreatedTemplatesInput
+  }
+
+  export type TemplateUncheckedCreateWithoutFieldsInput = {
+    id?: string
+    name: string
+    description: string
+    category: $Enums.TemplateCategory
+    type: $Enums.TemplateType
+    content: string
+    placeholders?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TemplateCreateOrConnectWithoutFieldsInput = {
+    where: TemplateWhereUniqueInput
+    create: XOR<TemplateCreateWithoutFieldsInput, TemplateUncheckedCreateWithoutFieldsInput>
+  }
+
+  export type TemplateUpsertWithoutFieldsInput = {
+    update: XOR<TemplateUpdateWithoutFieldsInput, TemplateUncheckedUpdateWithoutFieldsInput>
+    create: XOR<TemplateCreateWithoutFieldsInput, TemplateUncheckedCreateWithoutFieldsInput>
+    where?: TemplateWhereInput
+  }
+
+  export type TemplateUpdateToOneWithWhereWithoutFieldsInput = {
+    where?: TemplateWhereInput
+    data: XOR<TemplateUpdateWithoutFieldsInput, TemplateUncheckedUpdateWithoutFieldsInput>
+  }
+
+  export type TemplateUpdateWithoutFieldsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: EnumTemplateCategoryFieldUpdateOperationsInput | $Enums.TemplateCategory
+    type?: EnumTemplateTypeFieldUpdateOperationsInput | $Enums.TemplateType
+    content?: StringFieldUpdateOperationsInput | string
+    placeholders?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutCreatedTemplatesNestedInput
+  }
+
+  export type TemplateUncheckedUpdateWithoutFieldsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    category?: EnumTemplateCategoryFieldUpdateOperationsInput | $Enums.TemplateCategory
+    type?: EnumTemplateTypeFieldUpdateOperationsInput | $Enums.TemplateType
+    content?: StringFieldUpdateOperationsInput | string
+    placeholders?: NullableJsonNullValueInput | InputJsonValue
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ClientPartyCreateWithoutPersonInput = {
@@ -49299,11 +61092,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
     lastEditedAccounts?: AccountsSetCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedAccountsInput = {
@@ -49315,11 +61112,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     lastEditedAccounts?: AccountsSetUncheckedCreateNestedManyWithoutLastEditedByInput
     createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedAccountsInput = {
@@ -49336,11 +61137,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetCreateNestedManyWithoutCreatedByInput
     createdDocuments?: DocumentCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLastEditedAccountsInput = {
@@ -49352,11 +61157,15 @@ export namespace Prisma {
     lastLoginAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    authCredential?: AuthCredentialUncheckedCreateNestedOneWithoutUserInput
+    authSessions?: AuthSessionUncheckedCreateNestedManyWithoutUserInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
     createdAccounts?: AccountsSetUncheckedCreateNestedManyWithoutCreatedByInput
     createdDocuments?: DocumentUncheckedCreateNestedManyWithoutUploadedByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutAssigneeInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatorInput
     createdTemplates?: TemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    accessProfile?: UserAccessProfileUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLastEditedAccountsInput = {
@@ -49503,11 +61312,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
     lastEditedAccounts?: AccountsSetUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedAccountsInput = {
@@ -49519,11 +61332,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     lastEditedAccounts?: AccountsSetUncheckedUpdateManyWithoutLastEditedByNestedInput
     createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutLastEditedAccountsInput = {
@@ -49546,11 +61363,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUpdateManyWithoutCreatedByNestedInput
     createdDocuments?: DocumentUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLastEditedAccountsInput = {
@@ -49562,11 +61383,15 @@ export namespace Prisma {
     lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    authCredential?: AuthCredentialUncheckedUpdateOneWithoutUserNestedInput
+    authSessions?: AuthSessionUncheckedUpdateManyWithoutUserNestedInput
+    passwordResetTokens?: AuthPasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
     createdAccounts?: AccountsSetUncheckedUpdateManyWithoutCreatedByNestedInput
     createdDocuments?: DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutAssigneeNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatorNestedInput
     createdTemplates?: TemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accessProfile?: UserAccessProfileUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutCompaniesHouseDataInput = {
@@ -51608,6 +63433,26 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AuthSessionCreateManyUserInput = {
+    id?: string
+    token: string
+    refreshToken: string
+    expiresAt: Date | string
+    rememberMe?: boolean
+    ipAddress?: string | null
+    userAgent?: string | null
+    createdAt?: Date | string
+    lastUsedAt?: Date | string
+  }
+
+  export type AuthPasswordResetTokenCreateManyUserInput = {
+    id?: string
+    token: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+  }
+
   export type AccountsSetCreateManyCreatedByInput = {
     id?: string
     clientId: string
@@ -51714,6 +63559,66 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type AuthSessionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rememberMe?: BoolFieldUpdateOperationsInput | boolean
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUsedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthSessionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rememberMe?: BoolFieldUpdateOperationsInput | boolean
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUsedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthSessionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rememberMe?: BoolFieldUpdateOperationsInput | boolean
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUsedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthPasswordResetTokenUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthPasswordResetTokenUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthPasswordResetTokenUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AccountsSetUpdateWithoutCreatedByInput = {
@@ -52012,6 +63917,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fields?: TemplateFieldUpdateManyWithoutTemplateNestedInput
   }
 
   export type TemplateUncheckedUpdateWithoutCreatedByInput = {
@@ -52025,6 +63931,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fields?: TemplateFieldUncheckedUpdateManyWithoutTemplateNestedInput
   }
 
   export type TemplateUncheckedUpdateManyWithoutCreatedByInput = {
@@ -53094,6 +65001,118 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ServiceTemplateTaskCreateManyServiceTemplateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    daysBeforeDue: number
+    priority?: $Enums.Priority
+    tags?: ServiceTemplateTaskCreatetagsInput | string[]
+    assigneeId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServiceTemplateTaskUpdateWithoutServiceTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    daysBeforeDue?: IntFieldUpdateOperationsInput | number
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: ServiceTemplateTaskUpdatetagsInput | string[]
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceTemplateTaskUncheckedUpdateWithoutServiceTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    daysBeforeDue?: IntFieldUpdateOperationsInput | number
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: ServiceTemplateTaskUpdatetagsInput | string[]
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceTemplateTaskUncheckedUpdateManyWithoutServiceTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    daysBeforeDue?: IntFieldUpdateOperationsInput | number
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: ServiceTemplateTaskUpdatetagsInput | string[]
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplateFieldCreateManyTemplateInput = {
+    id?: string
+    key: string
+    label: string
+    type: string
+    required?: boolean
+    defaultValue?: string | null
+    format?: string | null
+    source?: string | null
+    sourcePath?: string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TemplateFieldUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    defaultValue?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePath?: NullableStringFieldUpdateOperationsInput | string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplateFieldUncheckedUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    defaultValue?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePath?: NullableStringFieldUpdateOperationsInput | string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TemplateFieldUncheckedUpdateManyWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    defaultValue?: NullableStringFieldUpdateOperationsInput | string | null
+    format?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePath?: NullableStringFieldUpdateOperationsInput | string | null
+    validation?: NullableJsonNullValueInput | InputJsonValue
+    displayOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ClientPartyCreateManyPersonInput = {
     id?: string
     clientId: string
@@ -53296,6 +65315,14 @@ export namespace Prisma {
      */
     export type ServiceCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ServiceCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use ServiceTemplateCountOutputTypeDefaultArgs instead
+     */
+    export type ServiceTemplateCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ServiceTemplateCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TemplateCountOutputTypeDefaultArgs instead
+     */
+    export type TemplateCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TemplateCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use PersonCountOutputTypeDefaultArgs instead
      */
     export type PersonCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PersonCountOutputTypeDefaultArgs<ExtArgs>
@@ -53328,6 +65355,22 @@ export namespace Prisma {
      */
     export type UserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use UserAccessProfileDefaultArgs instead
+     */
+    export type UserAccessProfileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserAccessProfileDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AuthCredentialDefaultArgs instead
+     */
+    export type AuthCredentialArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AuthCredentialDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AuthSessionDefaultArgs instead
+     */
+    export type AuthSessionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AuthSessionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AuthPasswordResetTokenDefaultArgs instead
+     */
+    export type AuthPasswordResetTokenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AuthPasswordResetTokenDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use ClientDefaultArgs instead
      */
     export type ClientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClientDefaultArgs<ExtArgs>
@@ -53352,6 +65395,18 @@ export namespace Prisma {
      */
     export type TaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TaskDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use ServiceTemplateDefaultArgs instead
+     */
+    export type ServiceTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ServiceTemplateDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ServiceTemplateTaskDefaultArgs instead
+     */
+    export type ServiceTemplateTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ServiceTemplateTaskDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use StandaloneTaskTemplateDefaultArgs instead
+     */
+    export type StandaloneTaskTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = StandaloneTaskTemplateDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use DocumentDefaultArgs instead
      */
     export type DocumentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocumentDefaultArgs<ExtArgs>
@@ -53359,6 +65414,10 @@ export namespace Prisma {
      * @deprecated Use TemplateDefaultArgs instead
      */
     export type TemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TemplateDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TemplateFieldDefaultArgs instead
+     */
+    export type TemplateFieldArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TemplateFieldDefaultArgs<ExtArgs>
     /**
      * @deprecated Use PersonDefaultArgs instead
      */

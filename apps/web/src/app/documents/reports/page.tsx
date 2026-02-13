@@ -15,6 +15,14 @@ interface ReportOptions {
   customSections: string[];
 }
 
+interface GeneratedReport {
+  id: string;
+  title: string;
+  format: 'PDF' | 'HTML';
+  generatedAt: string;
+  filePath?: string;
+}
+
 export default function ReportsPage() {
   const [clients, setClients] = useState<ClientContext[]>([]);
   const [selectedClient, setSelectedClient] = useState<string>('');
@@ -28,6 +36,8 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [reportHistory, setReportHistory] = useState<GeneratedReport[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
     loadClients();
@@ -95,6 +105,57 @@ export default function ReportsPage() {
       setError(err instanceof Error ? err.message : 'Failed to generate report');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReportHistory = async (clientId: string) => {
+    if (!clientId) {
+      setReportHistory([]);
+      return;
+    }
+    try {
+      setLoadingHistory(true);
+      const reports = await api.get<GeneratedReport[]>(`/reports/client/${clientId}?limit=25`);
+      setReportHistory(Array.isArray(reports) ? reports : []);
+    } catch (err) {
+      console.error('Failed to load report history', err);
+      setReportHistory([]);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  useEffect(() => {
+    loadReportHistory(selectedClient);
+  }, [selectedClient]);
+
+  const downloadGeneratedReport = async (reportId: string) => {
+    try {
+      const token = localStorage.getItem('accessToken') || '';
+      const response = await fetch(`${API_BASE_URL}/reports/${reportId}/download`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to download report (${response.status})`);
+      }
+      const blob = await response.blob();
+      const cd = response.headers.get('content-disposition') || '';
+      const fallbackName = `report-${reportId}`;
+      const filenameMatch = cd.match(/filename=\"?([^\";]+)\"?/i);
+      const filename = filenameMatch?.[1] || fallbackName;
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to download generated report');
     }
   };
 
@@ -247,6 +308,60 @@ export default function ReportsPage() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Report Information */}
+        <div className="card-mdj">
+          <h2 className="text-gold">Generated Report Files</h2>
+          <p style={{ color: 'var(--dim)', marginTop: '0.5rem' }}>
+            These are the saved reports from storage. Select a client to view and access them.
+          </p>
+          <div style={{ marginTop: '1rem' }}>
+            {!selectedClient ? (
+              <p style={{ color: 'var(--dim)' }}>Select a client to load saved reports.</p>
+            ) : loadingHistory ? (
+              <p style={{ color: 'var(--dim)' }}>Loading report history...</p>
+            ) : reportHistory.length === 0 ? (
+              <p style={{ color: 'var(--dim)' }}>No saved reports found for this client yet.</p>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table className="mdj-table">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Format</th>
+                      <th>Generated</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reportHistory.map((report) => (
+                      <tr key={report.id}>
+                        <td>{report.title}</td>
+                        <td>{report.format}</td>
+                        <td>{new Date(report.generatedAt).toLocaleString('en-GB')}</td>
+                        <td>
+                          <button
+                            className="btn-outline-gold btn-xs"
+                            onClick={() => window.open(`${API_BASE_URL}/reports/${report.id}/preview`, '_blank')}
+                            style={{ marginRight: '0.5rem' }}
+                          >
+                            Preview
+                          </button>
+                          <button
+                            className="btn-outline-gold btn-xs"
+                            onClick={() => downloadGeneratedReport(report.id)}
+                          >
+                            Download
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
 
