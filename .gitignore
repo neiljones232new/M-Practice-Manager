@@ -18,6 +18,7 @@ apps/api/dist/
 .turbo/
 apps/web/tsconfig.tsbuildinfo
 storage/
+apps/api/storage/
 apps/mkdir
 apps/nest
 
