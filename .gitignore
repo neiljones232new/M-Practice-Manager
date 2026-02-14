@@ -15,16 +15,9 @@ node_modules/
 .next/
 dist/
 apps/api/dist/
-.turbo/cache/
-.turbo/cookies/
-.turbo/daemon/
+.turbo/
 apps/web/tsconfig.tsbuildinfo
-storage/backups/
-storage/documents/
-storage/generated-letters/
-storage/reports/
-storage/indexes/generated-letters.json
-storage/indexes/search/generated-letters_search.json
+storage/
 apps/mkdir
 apps/nest
 
