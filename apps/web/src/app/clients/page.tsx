@@ -178,7 +178,7 @@ export default function ClientsPage() {
       const profile = ctx.profile;
       const matchesIdentifier =
         !filters.identifier ||
-        getText(node.id).includes(filters.identifier.toLowerCase());
+        getText(node.clientRef || node.id).includes(filters.identifier.toLowerCase());
       const matchesName = !filters.name || getText(node.name).includes(filters.name.toLowerCase());
       const matchesCompanyNo =
         !filters.registeredNumber ||
@@ -247,7 +247,9 @@ export default function ClientsPage() {
           result = (aNode.portfolioCode ?? 0) - (bNode.portfolioCode ?? 0);
           break;
         case 'identifier':
-          result = (aNode.registeredNumber || aNode.id || '').localeCompare(bNode.registeredNumber || bNode.id || '');
+          result = (aNode.clientRef || aNode.registeredNumber || aNode.id || '').localeCompare(
+            bNode.clientRef || bNode.registeredNumber || bNode.id || ''
+          );
           break;
       }
       return sortDir === 'asc' ? result : -result;
@@ -308,7 +310,7 @@ export default function ClientsPage() {
     {
       id: 'identifier',
       label: 'Identifier',
-      render: (c: ClientRow) => <span className="mdj-ref">{c.node.id || '—'}</span>,
+      render: (c: ClientRow) => <span className="mdj-ref">{c.node.clientRef || c.node.id || '—'}</span>,
     },
     {
       id: 'name',
@@ -690,7 +692,7 @@ export default function ClientsPage() {
               sorted.map((c) => (
                 <Link key={c.node.id} href={`/clients/${c.node.id}`} className="client-card">
                   <div className="client-card-head">
-                    <span className="client-ref">{c.node.registeredNumber || c.node.id || '—'}</span>
+                    <span className="client-ref">{c.node.clientRef || c.node.registeredNumber || c.node.id || '—'}</span>
                     <span
                       className={`mdj-badge ${
                         c.node.status === 'ACTIVE'

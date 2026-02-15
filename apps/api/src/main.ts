@@ -6,10 +6,13 @@ import { AppModule } from './app.module';
 import * as bcrypt from 'bcryptjs';
 import { FileStorageService } from './modules/file-storage/file-storage.service';
 import { User } from './modules/auth/entities/user.entity';
+import { DatabaseUnavailableExceptionFilter } from './common/filters/database-unavailable-exception.filter';
+import { findPracticeManagerRoot, resolveStorageRoot } from './common/utils/storage-path.util';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  logger.log(`ENV LOADED FROM: ${process.cwd()}`);
+  const projectRoot = findPracticeManagerRoot();
+  logger.log(`PROJECT ROOT: ${projectRoot}`);
   
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
@@ -42,6 +45,8 @@ async function bootstrap() {
   }
 
   // Global validation pipe
+  app.useGlobalFilters(new DatabaseUnavailableExceptionFilter());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -134,8 +139,8 @@ async function bootstrap() {
   logger.log(`🚀 M Practice Manager API is running on: http://localhost:${port}/${apiPrefix}`);
   logger.log(`📚 API Documentation available at: http://localhost:${port}/${apiPrefix}/docs`);
   logger.log(`🏢 Companies House integration: ${configService.get('COMPANIES_HOUSE_API_KEY') ? 'Enabled' : 'Disabled'}`);
-  logger.log(`💾 Storage path: ${configService.get('STORAGE_PATH', './storage')}`);
-  logger.log(`🗄️ Database path: ${configService.get('DATABASE_URL', 'sqlite:./storage/practice-manager.db')}`);
+  logger.log(`💾 Storage path: ${resolveStorageRoot(configService)}`);
+  logger.log(`🗄️ Database path: ${configService.get('DATABASE_URL', 'not configured')}`);
 }
 
 bootstrap().catch((error) => {

@@ -8,9 +8,18 @@ export type ClientType =
   | 'LLP';
 
 export type ClientStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+export type HMRCRegistrationStatus =
+  | 'NOT_REGISTERED'
+  | 'NOT_APPLICABLE'
+  | 'APPLIED_FOR'
+  | 'REGISTERED'
+  | 'DEREGISTERED'
+  | 'MISSING_DATA';
 
 export interface Client {
   id: string;
+  clientRef?: string | null;
+  baseClientRef?: string | null;
   name: string;
   type: ClientType;
   status: ClientStatus;
@@ -26,14 +35,14 @@ export interface Client {
   mtdVatEnabled?: boolean;
   mtdItsaEnabled?: boolean;
   eoriNumber?: string | null;
-  hmrcCtStatus?: string | null;
-  hmrcSaStatus?: string | null;
-  hmrcVatStatus?: string | null;
-  hmrcPayeStatus?: string | null;
-  hmrcCisStatus?: string | null;
-  hmrcMtdVatStatus?: string | null;
-  hmrcMtdItsaStatus?: string | null;
-  hmrcEoriStatus?: string | null;
+  hmrcCtStatus?: HMRCRegistrationStatus | null;
+  hmrcSaStatus?: HMRCRegistrationStatus | null;
+  hmrcVatStatus?: HMRCRegistrationStatus | null;
+  hmrcPayeStatus?: HMRCRegistrationStatus | null;
+  hmrcCisStatus?: HMRCRegistrationStatus | null;
+  hmrcMtdVatStatus?: HMRCRegistrationStatus | null;
+  hmrcMtdItsaStatus?: HMRCRegistrationStatus | null;
+  hmrcEoriStatus?: HMRCRegistrationStatus | null;
   incorporationDate?: string | null;
   confirmationLastMadeUpTo?: string | null;
   address?: {
@@ -45,9 +54,7 @@ export interface Client {
     country?: string;
   };
   // optional augmented fields used by UI
-  mainContact?: string;
   yearEnd?: string | null;
-  confirmationStatementDue?: string | null;
   annualFees?: number;
   tasksDueCount?: number;
   accountsNextDue?: string | null;
@@ -55,10 +62,8 @@ export interface Client {
   accountsAccountingReferenceDay?: number | null;
   accountsAccountingReferenceMonth?: number | null;
   confirmationNextDue?: string | null;
-  compAccounts?: 'overdue' | 'dueSoon' | 'ok' | null;
-  compCS?: 'overdue' | 'dueSoon' | 'ok' | null;
-    createdAt?: string;
-    updatedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ClientProfileSubset {
@@ -131,7 +136,6 @@ export interface ClientProfileSubset {
   selfAssessmentTaxYear?: string;
   linkedCompanyNumber?: string;
   directorRole?: string;
-  clientType?: string;
   companyStatusDetail?: string;
   jurisdiction?: string;
   registeredOfficeFull?: string;
@@ -202,6 +206,9 @@ export interface ClientContextWithParties extends ClientContext {
   };
 }
 
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELLED';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
 export interface Task {
   id: string;
   title: string;
@@ -210,24 +217,24 @@ export interface Task {
   description?: string;
   dueDate?: string;
   assignee?: string;
-  status?: string;
-  priority?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
   tags?: string[];
   createdAt?: string;
   updatedAt?: string;
 }
 
-export type ServiceFrequency = string; // Allow any frequency string
-export type ServiceStatus = string; // Allow any status string
+export type ServiceFrequency = 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+export type ServiceStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 
 export interface Service {
   id: string;
   clientId?: string;
   kind: string;
-  frequency?: string;
+  frequency?: ServiceFrequency;
   fee?: number;
   annualized?: number;
-  status?: string;
+  status?: ServiceStatus;
   nextDue?: string;
   description?: string;
   createdAt?: string;

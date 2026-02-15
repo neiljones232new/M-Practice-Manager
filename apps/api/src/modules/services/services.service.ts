@@ -1,15 +1,20 @@
-import { Inject, Injectable, forwardRef, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, forwardRef, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ClientsService } from '../clients/clients.service';
 import { TasksService } from '../tasks/tasks.service';
 import { ServiceComplianceIntegrationService } from './service-compliance-integration.service';
 import {
   Service,
+  ServiceFrequency,
+  ServiceStatus,
   ServiceFilters,
   CreateServiceDto,
   UpdateServiceDto,
   ServiceSummary,
 } from './interfaces/service.interface';
+
+const SERVICE_FREQUENCY_VALUES = ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY'] as const;
+const SERVICE_STATUS_VALUES = ['ACTIVE', 'INACTIVE', 'SUSPENDED'] as const;
 
 @Injectable()
 export class ServicesService {
@@ -26,24 +31,25 @@ export class ServicesService {
   ) {}
 
   async create(createServiceDto: CreateServiceDto): Promise<Service> {
-    const resolvedClient = await this.clientsService.findByIdentifier(createServiceDto.clientId);
+    const normalizedCreateDto = this.normalizeServicePayload(createServiceDto, true);
+    const resolvedClient = await this.clientsService.findByIdentifier(normalizedCreateDto.clientId);
     const client = resolvedClient;
     if (!client) {
-      throw new NotFoundException(`Client with ID ${createServiceDto.clientId} not found`);
+      throw new NotFoundException(`Client with ID ${normalizedCreateDto.clientId} not found`);
     }
 
-    const annualized = this.calculateAnnualizedFee(createServiceDto.fee, createServiceDto.frequency);
+    const annualized = this.calculateAnnualizedFee(normalizedCreateDto.fee, normalizedCreateDto.frequency);
 
     const service = await (this.prisma as any).service.create({
       data: {
         clientId: client.id,
-        kind: createServiceDto.kind,
-        frequency: createServiceDto.frequency,
-        fee: createServiceDto.fee,
+        kind: normalizedCreateDto.kind,
+        frequency: normalizedCreateDto.frequency,
+        fee: normalizedCreateDto.fee,
         annualized,
-        status: createServiceDto.status || 'ACTIVE',
-        nextDue: createServiceDto.nextDue,
-        description: createServiceDto.description,
+        status: normalizedCreateDto.status || 'ACTIVE',
+        nextDue: normalizedCreateDto.nextDue,
+        description: normalizedCreateDto.description,
       },
     });
 
@@ -52,54 +58,80 @@ export class ServicesService {
   }
 
   async findAll(filters: ServiceFilters = {}): Promise<Service[]> {
-    const where: any = {};
+    try {
+      const normalizedFilters = this.normalizeServiceFilters(filters);
+      const where: any = {};
 
-    if (filters.clientId) {
-      const resolvedClientId = await this.clientsService.resolveClientId(filters.clientId);
-      where.clientId = resolvedClientId || filters.clientId;
+      if (normalizedFilters.clientId) {
+        const resolvedClientId = await this.clientsService.resolveClientId(normalizedFilters.clientId);
+        where.clientId = resolvedClientId || normalizedFilters.clientId;
+      }
+      if (normalizedFilters.kind) where.kind = { contains: normalizedFilters.kind, mode: 'insensitive' };
+      if (normalizedFilters.frequency) where.frequency = normalizedFilters.frequency;
+      if (normalizedFilters.status) where.status = normalizedFilters.status;
+
+      if (normalizedFilters.portfolioCode) {
+        const clients = await this.clientsService.findByPortfolio(normalizedFilters.portfolioCode);
+        const ids = clients.map((c) => c.id);
+        where.clientId = { in: ids };
+      }
+
+      if (normalizedFilters.search) {
+        where.OR = [
+          { kind: { contains: normalizedFilters.search, mode: 'insensitive' } },
+          { description: { contains: normalizedFilters.search, mode: 'insensitive' } },
+        ];
+      }
+
+      const skip = normalizedFilters.offset !== undefined ? Number(normalizedFilters.offset) : 0;
+      const take = normalizedFilters.limit !== undefined ? Number(normalizedFilters.limit) : 100;
+
+      const rows = await (this.prisma as any).service.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: Number.isFinite(skip) ? skip : 0,
+        take: Number.isFinite(take) ? take : 100,
+      });
+
+      return rows.map((service: any) => this.normalizeService(service));
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable while loading services; returning empty list');
+        return [];
+      }
+      throw error;
     }
-    if (filters.kind) where.kind = { contains: filters.kind, mode: 'insensitive' };
-    if (filters.frequency) where.frequency = filters.frequency;
-    if (filters.status) where.status = filters.status;
-
-    if (filters.portfolioCode) {
-      const clients = await this.clientsService.findByPortfolio(filters.portfolioCode);
-      const ids = clients.map((c) => c.id);
-      where.clientId = { in: ids };
-    }
-
-    if (filters.search) {
-      where.OR = [
-        { kind: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
-      ];
-    }
-
-    const skip = filters.offset !== undefined ? Number(filters.offset) : 0;
-    const take = filters.limit !== undefined ? Number(filters.limit) : 100;
-
-    const rows = await (this.prisma as any).service.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      skip: Number.isFinite(skip) ? skip : 0,
-      take: Number.isFinite(take) ? take : 100,
-    });
-
-    return rows.map((service: any) => this.normalizeService(service));
   }
 
   async findOne(id: string): Promise<Service | null> {
-    return (this.prisma as any).service.findUnique({ where: { id } });
+    try {
+      const service = await (this.prisma as any).service.findUnique({ where: { id } });
+      return service ? this.normalizeService(service) : null;
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading service ${id}`);
+        return null;
+      }
+      throw error;
+    }
   }
 
   async findByClient(clientId: string): Promise<Array<Service & { eligibility?: { status: 'active' | 'blocked' | 'warning'; reasons: string[]; eligible: boolean } }>> {
-    const resolvedClientId = await this.clientsService.resolveClientId(clientId);
-    const services = await (this.prisma as any).service.findMany({
-      where: { clientId: resolvedClientId || clientId },
-      orderBy: { createdAt: 'desc' },
-    });
+    try {
+      const resolvedClientId = await this.clientsService.resolveClientId(clientId);
+      const services = await (this.prisma as any).service.findMany({
+        where: { clientId: resolvedClientId || clientId },
+        orderBy: { createdAt: 'desc' },
+      });
 
-    return services.map((service: any) => this.normalizeService(service));
+      return services.map((service: any) => this.normalizeService(service));
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading services for client ${clientId}`);
+        return [];
+      }
+      throw error;
+    }
   }
 
   async getServicesByClient(clientId: string): Promise<Service[]> {
@@ -107,10 +139,18 @@ export class ServicesService {
   }
 
   async findByKind(kind: string): Promise<Service[]> {
-    const rows = await (this.prisma as any).service.findMany({
-      where: { kind: { contains: kind, mode: 'insensitive' } },
-    });
-    return rows.map((service: any) => this.normalizeService(service));
+    try {
+      const rows = await (this.prisma as any).service.findMany({
+        where: { kind: { contains: kind, mode: 'insensitive' } },
+      });
+      return rows.map((service: any) => this.normalizeService(service));
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading services by kind ${kind}`);
+        return [];
+      }
+      throw error;
+    }
   }
 
   async search(query: string, filters?: ServiceFilters): Promise<Service[]> {
@@ -122,25 +162,26 @@ export class ServicesService {
     if (!existing) {
       throw new NotFoundException(`Service with ID ${id} not found`);
     }
+    const normalizedUpdateDto = this.normalizeServicePayload(updateServiceDto, false);
 
     let annualized = existing.annualized;
-    if (updateServiceDto.fee !== undefined || updateServiceDto.frequency !== undefined) {
-      const fee = updateServiceDto.fee ?? existing.fee;
-      const frequency = updateServiceDto.frequency ?? existing.frequency;
+    if (normalizedUpdateDto.fee !== undefined || normalizedUpdateDto.frequency !== undefined) {
+      const fee = normalizedUpdateDto.fee ?? existing.fee;
+      const frequency = normalizedUpdateDto.frequency ?? existing.frequency;
       annualized = this.calculateAnnualizedFee(fee, frequency);
     }
 
     const updated = await (this.prisma as any).service.update({
       where: { id },
       data: {
-        ...updateServiceDto,
+        ...normalizedUpdateDto,
         annualized,
       },
     });
 
     this.logger.log(`Updated service: ${updated.kind} (${updated.id})`);
 
-    if (updateServiceDto.nextDue && updateServiceDto.nextDue !== existing.nextDue) {
+    if (normalizedUpdateDto.nextDue && normalizedUpdateDto.nextDue !== existing.nextDue) {
       try {
         await this.serviceComplianceIntegration.syncServiceAndComplianceDates(id);
         this.logger.log(`Synced compliance dates for service ${id}`);
@@ -185,7 +226,8 @@ export class ServicesService {
 
     services.forEach((service) => {
       servicesByKind[service.kind] = (servicesByKind[service.kind] || 0) + 1;
-      servicesByFrequency[service.frequency] = (servicesByFrequency[service.frequency] || 0) + 1;
+      const frequencyKey = service.frequency || 'UNSPECIFIED';
+      servicesByFrequency[frequencyKey] = (servicesByFrequency[frequencyKey] || 0) + 1;
     });
 
     return {
@@ -220,14 +262,18 @@ export class ServicesService {
   }
 
   async updateNextDueDate(id: string, nextDue: Date): Promise<Service> {
-    return this.update(id, { nextDue });
+    const normalizedDate = this.parseOptionalDate(nextDue, 'nextDue');
+    if (!normalizedDate) {
+      throw new BadRequestException('nextDue is required');
+    }
+    return this.update(id, { nextDue: normalizedDate });
   }
 
-  async updateStatus(id: string, status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'): Promise<Service> {
+  async updateStatus(id: string, status: ServiceStatus): Promise<Service> {
     return this.update(id, { status });
   }
 
-  private calculateAnnualizedFee(fee: number, frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY'): number {
+  private calculateAnnualizedFee(fee: number, frequency?: ServiceFrequency): number {
     switch (frequency) {
       case 'ANNUAL':
         return fee;
@@ -273,13 +319,14 @@ export class ServicesService {
       return `£${amount.toFixed(2)}`;
     };
 
-    const getFrequencyDescription = (frequency: string): string => {
+    const getFrequencyDescription = (frequency?: string): string => {
       const descriptions: Record<string, string> = {
         ANNUAL: 'annually',
         QUARTERLY: 'quarterly',
         MONTHLY: 'monthly',
         WEEKLY: 'weekly',
       };
+      if (!frequency) return 'unspecified';
       return descriptions[frequency] || frequency.toLowerCase();
     };
 
@@ -288,7 +335,7 @@ export class ServicesService {
       serviceName: service.kind,
       serviceKind: service.kind,
       serviceType: service.kind,
-      frequency: service.frequency,
+      frequency: service.frequency || '',
       frequencyDescription: getFrequencyDescription(service.frequency),
       nextDue: service.nextDue ? formatDate(service.nextDue) : '',
       nextDueDate: service.nextDue ? formatDate(service.nextDue) : '',
@@ -314,5 +361,130 @@ export class ServicesService {
       fee: service?.fee !== null && service?.fee !== undefined ? Number(service.fee) : 0,
       annualized: service?.annualized !== null && service?.annualized !== undefined ? Number(service.annualized) : 0,
     };
+  }
+
+  private normalizeServiceFilters(filters: ServiceFilters): ServiceFilters {
+    const normalized: ServiceFilters = {
+      ...filters,
+    };
+    if (normalized.frequency !== undefined) {
+      normalized.frequency = this.normalizeEnumField(
+        normalized.frequency,
+        'frequency',
+        SERVICE_FREQUENCY_VALUES,
+      ) as ServiceFilters['frequency'];
+    }
+    if (normalized.status !== undefined) {
+      normalized.status = this.normalizeEnumField(
+        normalized.status,
+        'status',
+        SERVICE_STATUS_VALUES,
+      ) as ServiceFilters['status'];
+    }
+    if (normalized.portfolioCode !== undefined) {
+      const code = Number(normalized.portfolioCode);
+      if (!Number.isFinite(code)) {
+        throw new BadRequestException('portfolioCode must be a number');
+      }
+      normalized.portfolioCode = code;
+    }
+    return normalized;
+  }
+
+  private normalizeServicePayload(
+    payload: CreateServiceDto | UpdateServiceDto,
+    requireFrequency: boolean,
+  ): any {
+    const normalized: Record<string, any> = { ...payload };
+
+    if (normalized.frequency !== undefined || requireFrequency) {
+      const frequency = this.normalizeEnumField(
+        normalized.frequency,
+        'frequency',
+        SERVICE_FREQUENCY_VALUES,
+      );
+      if (!frequency && requireFrequency) {
+        throw new BadRequestException('frequency is required');
+      }
+      normalized.frequency = frequency;
+    }
+
+    if (normalized.status !== undefined) {
+      const status = this.normalizeEnumField(
+        normalized.status,
+        'status',
+        SERVICE_STATUS_VALUES,
+      );
+      if (!status) {
+        throw new BadRequestException('status cannot be empty');
+      }
+      normalized.status = status;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(normalized, 'nextDue')) {
+      normalized.nextDue = this.parseOptionalDate(normalized.nextDue, 'nextDue');
+    }
+
+    if (Object.prototype.hasOwnProperty.call(normalized, 'fee')) {
+      const fee = Number(normalized.fee);
+      if (!Number.isFinite(fee)) {
+        throw new BadRequestException('fee must be a valid number');
+      }
+      normalized.fee = fee;
+    }
+
+    return normalized;
+  }
+
+  private normalizeEnumField(
+    value: unknown,
+    fieldName: string,
+    allowedValues: readonly string[],
+  ): string | undefined {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value !== 'string') {
+      throw new BadRequestException(`${fieldName} must be a string`);
+    }
+    const normalized = value.trim().toUpperCase();
+    if (!normalized) return undefined;
+    if (!allowedValues.includes(normalized)) {
+      throw new BadRequestException(`${fieldName} must be one of: ${allowedValues.join(', ')}`);
+    }
+    return normalized;
+  }
+
+  private parseOptionalDate(value: unknown, fieldName: string): Date | null | undefined {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (value instanceof Date) {
+      if (Number.isNaN(value.getTime())) {
+        throw new BadRequestException(`Invalid date for ${fieldName}`);
+      }
+      return value;
+    }
+    if (typeof value !== 'string') {
+      throw new BadRequestException(`${fieldName} must be a valid date string`);
+    }
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const parsed = new Date(trimmed);
+    if (Number.isNaN(parsed.getTime())) {
+      throw new BadRequestException(`Invalid date for ${fieldName}`);
+    }
+    return parsed;
+  }
+
+  private isDatabaseUnavailableError(error: unknown): boolean {
+    if (!error) return false;
+    const message = error instanceof Error ? error.message : String(error);
+    const lowered = message.toLowerCase();
+    return (
+      lowered.includes("can't reach database server") ||
+      lowered.includes('failed to connect to database') ||
+      lowered.includes('connection refused') ||
+      lowered.includes('database is unavailable') ||
+      lowered.includes('prismaclientinitializationerror') ||
+      lowered.includes('timeout')
+    );
   }
 }

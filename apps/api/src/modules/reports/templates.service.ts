@@ -5,6 +5,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { existsSync } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import { resolveStorageRoot } from '../../common/utils/storage-path.util';
 
 export interface ReportTemplate {
   id: string;
@@ -42,7 +43,7 @@ export class TemplatesService {
     private readonly configService: ConfigService,
     private readonly databaseService: DatabaseService,
   ) {
-    const storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
+    const storagePath = resolveStorageRoot(this.configService);
     this.templatesPath = path.join(storagePath, 'templates');
     this.ensureTemplatesDirectory();
     this.initializeDefaultTemplates();

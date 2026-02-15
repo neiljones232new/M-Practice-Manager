@@ -134,7 +134,7 @@ export default function ClientsSummaryPage() {
             <tbody>
               {filtered.map((c) => (
                 <tr key={c.node.id}>
-                  <td><span className="gold-ref">{c.node.registeredNumber || c.node.id || '—'}</span></td>
+                  <td><span className="gold-ref">{c.node.clientRef || c.node.registeredNumber || c.node.id || '—'}</span></td>
                   <td>{c.node.status}</td>
                   <td>{c.node.name}</td>
                   <td>{c.node.registeredNumber || '—'}</td>

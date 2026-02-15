@@ -110,20 +110,17 @@ const health = await indexingService.checkIndexHealth();
 
 The file storage follows a structured hierarchy:
 ```
-mdj-data/
+storage/
 ├── clients/
-│   ├── portfolio-1/
-│   │   ├── 1A001.json
-│   │   └── 1A002.json
-│   └── portfolio-2/
-├── services/
-│   ├── S001.json
-│   └── index.json
-├── tasks/
-│   ├── T001.json
-│   └── index.json
+│   ├── <client-ref>/
+│   │   ├── accounts-sets/
+│   │   ├── reports/
+│   │   └── generated-letters/
+│   └── <client-ref-2>/
+├── tax-calculations/
+│   └── <id>.json
 ├── indexes/
-│   ├── clients.json
+│   ├── tax-calculations.json
 │   └── search/
 │       ├── clients_search.json
 │       └── tasks_search.json
@@ -232,7 +229,7 @@ All services include comprehensive error handling:
 ## Configuration
 
 The system can be configured through environment variables:
-- `STORAGE_PATH` - Base path for file storage (default: ../../storage)
+- `STORAGE_PATH` - Base path for file storage (default: ./storage resolved from the project root)
 - `INDEX_BATCH_SIZE` - Batch size for index processing (default: 100)
 - `SEARCH_CACHE_TTL` - Search result cache TTL in seconds (default: 300)
 

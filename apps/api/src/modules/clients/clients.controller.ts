@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -34,6 +35,14 @@ export class ClientsController {
     private readonly clientPartyService: ClientPartyService,
   ) {}
 
+  private async resolveClientIdOrThrow(identifier: string): Promise<string> {
+    const resolvedId = await this.clientsService.resolveClientId(identifier);
+    if (!resolvedId) {
+      throw new NotFoundException(`Client with ID ${identifier} not found`);
+    }
+    return resolvedId;
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all clients with optional filters' })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
@@ -44,6 +53,13 @@ export class ClientsController {
   @ApiQuery({ name: 'offset', required: false, type: Number })
   async findAllClients(@Query() filters: ClientFilters) {
     return this.clientsService.findAllContexts(filters);
+  }
+
+  @Get('search')
+  @ApiOperation({ summary: 'Search clients' })
+  @ApiQuery({ name: 'q', required: true, type: String })
+  async searchClients(@Query('q') query: string, @Query() filters: ClientFilters) {
+    return this.clientsService.search(query, filters);
   }
 
   @Get(':id')
@@ -94,31 +110,40 @@ export class ClientsController {
   @Get(':id/profile')
   @ApiOperation({ summary: 'Get client profile by client ID' })
   async getClientProfile(@Param('id') id: string) {
-    return this.clientsService.getProfile(id);
+    const resolvedId = await this.resolveClientIdOrThrow(id);
+    return this.clientsService.getProfile(resolvedId);
   }
 
   @Post(':id/profile')
   @ApiOperation({ summary: 'Create client profile' })
   async createClientProfile(@Param('id') id: string, @Body() body: CreateClientProfileDto) {
-    return this.clientsService.createProfile({ ...body, clientId: id });
+    const resolvedId = await this.resolveClientIdOrThrow(id);
+    return this.clientsService.createProfile({ ...body, clientId: resolvedId });
   }
 
   @Put(':id/profile')
-  @ApiOperation({ summary: 'Update client profile' })
+  @ApiOperation({ summary: 'Update (or create) client profile' })
   async updateClientProfile(@Param('id') id: string, @Body() body: UpdateClientProfileDto) {
-    return this.clientsService.updateProfile(id, body);
+    const resolvedId = await this.resolveClientIdOrThrow(id);
+    const existing = await this.clientsService.getProfile(resolvedId);
+    if (!existing) {
+      return this.clientsService.createProfile({ ...body, clientId: resolvedId });
+    }
+    return this.clientsService.updateProfile(resolvedId, body);
   }
 
   @Get(':id/parties')
   @ApiOperation({ summary: 'Get client parties' })
   async getClientParties(@Param('id') id: string) {
-    return this.clientPartyService.findByClient(id);
+    const resolvedId = await this.resolveClientIdOrThrow(id);
+    return this.clientPartyService.findByClient(resolvedId);
   }
 
   @Post(':id/parties')
   @ApiOperation({ summary: 'Create client party' })
   async createClientParty(@Param('id') id: string, @Body() body: CreateClientPartyDto) {
-    return this.clientPartyService.create({ ...body, clientId: id });
+    const resolvedId = await this.resolveClientIdOrThrow(id);
+    return this.clientPartyService.create({ ...body, clientId: resolvedId });
   }
 
   @Put(':id/parties/:partyId')
@@ -130,6 +155,42 @@ export class ClientsController {
   @Delete(':id/parties/:partyId')
   @ApiOperation({ summary: 'Delete client party' })
   async deleteClientParty(@Param('partyId') partyId: string) {
+    return this.clientPartyService.delete(partyId);
+  }
+
+  @Post('parties')
+  @ApiOperation({ summary: 'Create client party (legacy route)' })
+  async createClientPartyLegacy(@Body() body: CreateClientPartyDto) {
+    if (!body?.clientId) {
+      throw new BadRequestException('clientId is required');
+    }
+    const resolvedId = await this.resolveClientIdOrThrow(body.clientId);
+    return this.clientPartyService.create({ ...body, clientId: resolvedId });
+  }
+
+  @Put('parties/:partyId')
+  @ApiOperation({ summary: 'Update client party (legacy route)' })
+  async updateClientPartyLegacy(@Param('partyId') partyId: string, @Body() body: UpdateClientPartyDto) {
+    return this.clientPartyService.update(partyId, body);
+  }
+
+  @Put('parties/:partyId/resign')
+  @ApiOperation({ summary: 'Resign client party (legacy route)' })
+  async resignClientPartyLegacy(
+    @Param('partyId') partyId: string,
+    @Body() body: { resignationDate?: string; resignedAt?: string | Date },
+  ) {
+    const rawDate = body?.resignationDate || body?.resignedAt;
+    const resignedAt = rawDate ? new Date(rawDate) : new Date();
+    if (Number.isNaN(resignedAt.getTime())) {
+      throw new BadRequestException('Invalid resignationDate');
+    }
+    return this.clientPartyService.update(partyId, { resignedAt });
+  }
+
+  @Delete('parties/:partyId')
+  @ApiOperation({ summary: 'Delete client party (legacy route)' })
+  async deleteClientPartyLegacy(@Param('partyId') partyId: string) {
     return this.clientPartyService.delete(partyId);
   }
 }

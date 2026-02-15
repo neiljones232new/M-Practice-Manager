@@ -17,13 +17,13 @@ import { CompaniesHouseService } from '../companies-house/companies-house.servic
 import { DatabaseService } from '../database/database.service';
 import { AuditService } from '../audit/audit.service';
 import { ClientsService } from '../clients/clients.service';
+import { resolveStorageRoot } from '../../common/utils/storage-path.util';
 
 @Injectable()
 export class AccountsProductionService {
   private readonly logger = new Logger(AccountsProductionService.name);
   private readonly storagePath: string;
-  private readonly accountsSetsPath: string;
-  private readonly accountsSetsHistoryPath: string;
+  private readonly clientsPath: string;
   private readonly indexPath: string;
 
   constructor(
@@ -37,42 +37,19 @@ export class AccountsProductionService {
     private readonly clientsService: ClientsService,
   ) {
     this.storagePath = this.resolveStoragePath();
-    this.accountsSetsPath = path.join(this.storagePath, 'accounts-sets');
-    this.accountsSetsHistoryPath = path.join(this.accountsSetsPath, 'history');
+    this.clientsPath = path.join(this.storagePath, 'clients');
     this.indexPath = path.join(this.storagePath, 'indexes', 'accounts-sets.json');
     this.ensureDirectories();
   }
 
   private resolveStoragePath(): string {
-    const configuredStoragePath = this.configService.get<string>('STORAGE_PATH');
-    const repoRoot = this.findRepositoryRoot();
-    if (configuredStoragePath) {
-      return path.isAbsolute(configuredStoragePath)
-        ? configuredStoragePath
-        : path.resolve(repoRoot, configuredStoragePath);
-    }
-    return path.join(repoRoot, 'storage');
-  }
-
-  private findRepositoryRoot(): string {
-    let cursor = __dirname;
-    const root = path.parse(cursor).root;
-    while (cursor !== root) {
-      if (existsSync(path.join(cursor, 'apps')) && existsSync(path.join(cursor, 'storage'))) {
-        return cursor;
-      }
-      cursor = path.dirname(cursor);
-    }
-    return process.cwd();
+    return resolveStorageRoot(this.configService);
   }
 
   private async ensureDirectories(): Promise<void> {
     try {
-      if (!existsSync(this.accountsSetsPath)) {
-        await fs.mkdir(this.accountsSetsPath, { recursive: true });
-      }
-      if (!existsSync(this.accountsSetsHistoryPath)) {
-        await fs.mkdir(this.accountsSetsHistoryPath, { recursive: true });
+      if (!existsSync(this.clientsPath)) {
+        await fs.mkdir(this.clientsPath, { recursive: true });
       }
       if (!existsSync(path.dirname(this.indexPath))) {
         await fs.mkdir(path.dirname(this.indexPath), { recursive: true });
@@ -306,7 +283,7 @@ export class AccountsProductionService {
   }
 
   async getAccountsSet(id: string): Promise<AccountsSet> {
-    const filePath = path.join(this.accountsSetsPath, `accounts_set_${id}.json`);
+    const filePath = await this.resolveAccountsSetFilePath(id);
     
     if (!existsSync(filePath)) {
       throw new NotFoundException(`Accounts set ${id} not found`);
@@ -672,10 +649,10 @@ export class AccountsProductionService {
     }
 
     // Delete the file
-    const filePath = path.join(this.accountsSetsPath, `accounts_set_${id}.json`);
+    const filePath = await this.resolveAccountsSetFilePath(id);
     await fs.unlink(filePath);
 
-    const historyPath = path.join(this.accountsSetsHistoryPath, `accounts_set_${id}`);
+    const historyPath = this.getAccountsSetHistoryDir(accountsSet.clientId, id);
     if (existsSync(historyPath)) {
       await fs.rm(historyPath, { recursive: true, force: true });
     }
@@ -719,7 +696,11 @@ export class AccountsProductionService {
   }
 
   private async saveAccountsSet(accountsSet: AccountsSet): Promise<void> {
-    const filePath = path.join(this.accountsSetsPath, `accounts_set_${accountsSet.id}.json`);
+    const accountsSetDir = this.getClientAccountsSetsDir(accountsSet.clientId);
+    if (!existsSync(accountsSetDir)) {
+      await fs.mkdir(accountsSetDir, { recursive: true });
+    }
+    const filePath = this.getAccountsSetFilePath(accountsSet.clientId, accountsSet.id);
     if (existsSync(filePath)) {
       await this.writeAccountsSetHistory(accountsSet.id, filePath);
     }
@@ -728,7 +709,7 @@ export class AccountsProductionService {
 
   private async writeAccountsSetHistory(accountsSetId: string, filePath: string): Promise<void> {
     try {
-      const historyDir = path.join(this.accountsSetsHistoryPath, `accounts_set_${accountsSetId}`);
+      const historyDir = path.join(path.dirname(filePath), 'history', `accounts_set_${accountsSetId}`);
       if (!existsSync(historyDir)) {
         await fs.mkdir(historyDir, { recursive: true });
       }
@@ -790,6 +771,52 @@ export class AccountsProductionService {
     } catch (error) {
       this.logger.error('Failed to remove from index:', error);
     }
+  }
+
+  private getClientAccountsSetsDir(clientId: string): string {
+    return path.join(this.clientsPath, clientId, 'accounts-sets');
+  }
+
+  private getAccountsSetFilePath(clientId: string, id: string): string {
+    return path.join(this.getClientAccountsSetsDir(clientId), `accounts_set_${id}.json`);
+  }
+
+  private getAccountsSetHistoryDir(clientId: string, id: string): string {
+    return path.join(this.getClientAccountsSetsDir(clientId), 'history', `accounts_set_${id}`);
+  }
+
+  private async resolveAccountsSetFilePath(id: string): Promise<string> {
+    try {
+      const indexData = await fs.readFile(this.indexPath, 'utf8');
+      const index = JSON.parse(indexData) as Array<{ id: string; clientId: string }>;
+      const entry = index.find((item) => item.id === id);
+      if (entry?.clientId) {
+        const clientScopedPath = this.getAccountsSetFilePath(entry.clientId, id);
+        if (existsSync(clientScopedPath)) {
+          return clientScopedPath;
+        }
+      }
+    } catch {
+      // Ignore index read failures and continue fallback resolution.
+    }
+
+    const legacyPath = path.join(this.storagePath, 'accounts-sets', `accounts_set_${id}.json`);
+    if (existsSync(legacyPath)) {
+      return legacyPath;
+    }
+
+    if (existsSync(this.clientsPath)) {
+      const clients = await fs.readdir(this.clientsPath, { withFileTypes: true });
+      for (const entry of clients) {
+        if (!entry.isDirectory()) continue;
+        const candidate = this.getAccountsSetFilePath(entry.name, id);
+        if (existsSync(candidate)) {
+          return candidate;
+        }
+      }
+    }
+
+    return legacyPath;
   }
 
   private mapAddressFromCompaniesHouse(chAddress: any): any {

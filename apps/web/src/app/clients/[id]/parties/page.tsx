@@ -137,12 +137,9 @@ export default function ClientPartiesPage() {
     setError(null);
     try {
       const person = await api.post<Person>('/people', {
-        firstName: personForm.firstName,
-        lastName: personForm.lastName,
+        fullName: [personForm.firstName, personForm.lastName].filter(Boolean).join(' ').trim(),
         email: personForm.email || undefined,
         phone: personForm.phone || undefined,
-        dateOfBirth: personForm.dateOfBirth || undefined,
-        nationality: personForm.nationality || undefined,
       });
 
       await api.post('/clients/parties', {
@@ -170,12 +167,9 @@ export default function ClientPartiesPage() {
     try {
       if (selectedParty.personId) {
         await api.patch(`/people/${selectedParty.personId}`, {
-          firstName: personForm.firstName || undefined,
-          lastName: personForm.lastName || undefined,
+          fullName: [personForm.firstName, personForm.lastName].filter(Boolean).join(' ').trim() || undefined,
           email: personForm.email || undefined,
           phone: personForm.phone || undefined,
-          dateOfBirth: personForm.dateOfBirth || undefined,
-          nationality: personForm.nationality || undefined,
         });
       }
 

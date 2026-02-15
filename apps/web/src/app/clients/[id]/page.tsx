@@ -32,7 +32,7 @@ type Task = {
   id: string;
   title: string;
   description?: string;
-  status: 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELLED' | string;
+  status: 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELLED';
   dueDate?: string;
   tags?: string[];
   serviceId?: string;
@@ -44,10 +44,10 @@ type Compliance = {
   serviceId?: string;
   type: string;
   description?: string;
-  status: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT' | string;
+  status: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
   dueDate?: string;
   period?: string;
-  source?: 'COMPANIES_HOUSE' | 'HMRC' | 'MANUAL' | string;
+  source?: 'COMPANIES_HOUSE' | 'HMRC' | 'MANUAL';
 };
 
 type Document = {
@@ -74,7 +74,7 @@ type Service = {
 type AccountsSet = {
   id: string;
   clientId: string;
-  status: 'DRAFT' | 'IN_REVIEW' | 'READY' | 'LOCKED' | string;
+  status: 'DRAFT' | 'IN_REVIEW' | 'READY' | 'LOCKED';
   updatedAt?: string;
   framework?: string;
   companyNumber?: string;
@@ -237,7 +237,7 @@ export default function ClientDetailsPage() {
   const peopleCacheRef = useRef<Record<string, Person | null>>({});
 
   const client = clientContext?.node ?? null;
-  const clientIdentifier = client?.id || clientId;
+  const clientIdentifier = client?.clientRef || client?.id || clientId;
   const profile = clientContext?.profile;
   const computed = clientContext?.computed;
   const partiesDetails = useMemo(() => clientContext?.partiesDetails ?? [], [clientContext?.partiesDetails]);

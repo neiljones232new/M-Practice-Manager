@@ -231,10 +231,19 @@ export default function CompaniesHousePage() {
     setSelected(null);
     try {
       const qs = new URLSearchParams(params).toString();
-      const res = await api.get(`/companies-house/search?${qs}`);
+      const res = await api.get(`/companies-house/search?${qs}`, { suppressErrorLog: true } as any);
       setResults(Array.isArray(res) ? res : []);
     } catch (e: any) {
-      setError(e?.message || 'Search failed');
+      const message = String(e?.message || 'Search failed');
+      if (
+        /invalid companies house api key/i.test(message) ||
+        /api key not configured/i.test(message) ||
+        /integration is not configured/i.test(message)
+      ) {
+        setError('Companies House integration is not configured. Add a valid API key in Settings > Integrations.');
+      } else {
+        setError(message);
+      }
       setResults([]);
     } finally {
       setLoading(false);

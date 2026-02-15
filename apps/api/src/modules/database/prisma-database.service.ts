@@ -225,10 +225,25 @@ export class PrismaDatabaseService extends DatabaseService {
 
       const portfolio = await (this.prisma as any).portfolio.findFirst({ orderBy: { code: 'asc' } });
       const portfolioCode = (client as any).portfolioCode ?? portfolio?.code ?? 1;
+      const requestedClientRef = typeof (client as any).clientRef === 'string'
+        ? (client as any).clientRef.trim().toUpperCase()
+        : '';
+      const clientRef = requestedClientRef || id;
+      const requestedBaseClientRef = typeof (client as any).baseClientRef === 'string'
+        ? (client as any).baseClientRef.trim().toUpperCase()
+        : '';
+      const baseClientRef = requestedBaseClientRef || clientRef;
+      const requestedPracticeId = typeof (client as any).practiceId === 'string'
+        ? (client as any).practiceId.trim()
+        : '';
+      const practiceId = requestedPracticeId || 'default';
 
       await (this.prisma as any).client.create({
         data: {
           id,
+          clientRef,
+          baseClientRef,
+          practiceId,
           name,
           status: status === 'INACTIVE' || status === 'ARCHIVED' ? status : 'ACTIVE',
           type: ['COMPANY', 'INDIVIDUAL', 'SOLE_TRADER', 'PARTNERSHIP', 'LLP'].includes(type) ? type : 'COMPANY',

@@ -134,6 +134,7 @@ model Portfolio {
 
 model RefBucket {
   id            String    @id @default(cuid())
+  practiceId    String    @default("default")
   portfolioCode Int
   alpha         String
   nextIndex     Int       @default(1)
@@ -141,7 +142,8 @@ model RefBucket {
   updatedAt     DateTime  @updatedAt
   portfolio     Portfolio @relation(fields: [portfolioCode], references: [code])
 
-  @@unique([portfolioCode, alpha])
+  @@unique([practiceId, portfolioCode, alpha])
+  @@index([practiceId, portfolioCode])
   @@map("ref_buckets")
 }
 
@@ -228,9 +230,15 @@ model AuthPasswordResetToken {
 
 model Client {
   id                               String              @id
+  clientRef                        String
+  baseClientRef                    String
   name                             String
   type                             ClientType
   status                           ClientStatus        @default(ACTIVE)
+  practiceId                       String              @default("default")
+  isConnectedParty                 Boolean             @default(false)
+  connectedOrder                   Int?
+  connectedPrincipalId             String?
   mainEmail                        String?
   mainPhone                        String?
   registeredNumber                 String?             @unique
@@ -242,14 +250,14 @@ model Client {
   eoriNumber                       String?             @unique
   mtdVatEnabled                    Boolean             @default(false)
   mtdItsaEnabled                   Boolean             @default(false)
-  hmrcCtStatus                     String?
-  hmrcSaStatus                     String?
-  hmrcVatStatus                    String?
-  hmrcPayeStatus                   String?
-  hmrcCisStatus                    String?
-  hmrcMtdVatStatus                 String?
-  hmrcMtdItsaStatus                String?
-  hmrcEoriStatus                   String?
+  hmrcCtStatus                     HMRCRegistrationStatus?
+  hmrcSaStatus                     HMRCRegistrationStatus?
+  hmrcVatStatus                    HMRCRegistrationStatus?
+  hmrcPayeStatus                   HMRCRegistrationStatus?
+  hmrcCisStatus                    HMRCRegistrationStatus?
+  hmrcMtdVatStatus                 HMRCRegistrationStatus?
+  hmrcMtdItsaStatus                HMRCRegistrationStatus?
+  hmrcEoriStatus                   HMRCRegistrationStatus?
   incorporationDate                DateTime?
   yearEnd                          DateTime?
   accountsNextDue                  DateTime?
@@ -285,6 +293,10 @@ model Client {
   @@index([portfolioCode])
   @@index([name])
   @@index([registeredNumber])
+  @@index([clientRef])
+  @@index([practiceId, portfolioCode, baseClientRef], map: "idx_client_baseRef_practice")
+  @@index([connectedPrincipalId], map: "idx_client_connected_principal")
+  @@unique([practiceId, portfolioCode, clientRef])
   @@map("clients")
 }
 
@@ -817,6 +829,28 @@ enum VatStagger {
   B
   C
   NONE
+}
+
+enum HMRCRegistrationStatus {
+  NOT_REGISTERED
+  NOT_APPLICABLE
+  APPLIED_FOR
+  REGISTERED
+  DEREGISTERED
+  MISSING_DATA
+}
+
+enum ServiceFrequency {
+  ANNUAL
+  QUARTERLY
+  MONTHLY
+  WEEKLY
+}
+
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }
 
 enum ComplianceStatus {

@@ -229,6 +229,7 @@ exports.Prisma.PortfolioScalarFieldEnum = {
 
 exports.Prisma.RefBucketScalarFieldEnum = {
   id: 'id',
+  practiceId: 'practiceId',
   portfolioCode: 'portfolioCode',
   alpha: 'alpha',
   nextIndex: 'nextIndex',
@@ -290,9 +291,15 @@ exports.Prisma.AuthPasswordResetTokenScalarFieldEnum = {
 
 exports.Prisma.ClientScalarFieldEnum = {
   id: 'id',
+  clientRef: 'clientRef',
+  baseClientRef: 'baseClientRef',
   name: 'name',
   type: 'type',
   status: 'status',
+  practiceId: 'practiceId',
+  isConnectedParty: 'isConnectedParty',
+  connectedOrder: 'connectedOrder',
+  connectedPrincipalId: 'connectedPrincipalId',
   mainEmail: 'mainEmail',
   mainPhone: 'mainPhone',
   registeredNumber: 'registeredNumber',
@@ -770,6 +777,15 @@ exports.ClientStatus = exports.$Enums.ClientStatus = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
   ARCHIVED: 'ARCHIVED'
+};
+
+exports.HMRCRegistrationStatus = exports.$Enums.HMRCRegistrationStatus = {
+  NOT_REGISTERED: 'NOT_REGISTERED',
+  NOT_APPLICABLE: 'NOT_APPLICABLE',
+  APPLIED_FOR: 'APPLIED_FOR',
+  REGISTERED: 'REGISTERED',
+  DEREGISTERED: 'DEREGISTERED',
+  MISSING_DATA: 'MISSING_DATA'
 };
 
 exports.LifecycleStatus = exports.$Enums.LifecycleStatus = {

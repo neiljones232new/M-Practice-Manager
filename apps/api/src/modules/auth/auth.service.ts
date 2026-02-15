@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
 import { User, UserSession, PasswordResetToken, AuthResponse, JwtPayload } from './entities/user.entity';
 import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto } from './dto/auth.dto';
+import { FileStorageService } from '../file-storage/file-storage.service';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
 
   constructor(
     private prisma: PrismaService,
+    private readonly fileStorageService: FileStorageService,
   ) {}
 
   private splitName(fullName?: string | null): { firstName: string; lastName: string } {
@@ -25,6 +27,13 @@ export class AuthService {
     if (role === 'ADMIN') return 'SUPER_ADMIN';
     if (role === 'MANAGER') return 'MANAGER';
     if (role === 'READONLY') return 'READ_ONLY';
+    return 'STAFF';
+  }
+
+  private mapAuthRoleToDbRole(role?: User['role']): 'ADMIN' | 'MANAGER' | 'STAFF' | 'READONLY' {
+    if (role === 'SUPER_ADMIN') return 'ADMIN';
+    if (role === 'MANAGER') return 'MANAGER';
+    if (role === 'READ_ONLY') return 'READONLY';
     return 'STAFF';
   }
 
@@ -117,13 +126,24 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Update last login
-    const updatedDbUser = await (this.prisma as any).user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date() },
-      include: { authCredential: true },
-    });
-    const freshUser = this.toAuthUser(updatedDbUser, updatedDbUser.authCredential);
+    let freshUser = user;
+    try {
+      const updatedDbUser = await (this.prisma as any).user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() },
+        include: { authCredential: true },
+      });
+      freshUser = this.toAuthUser(updatedDbUser, updatedDbUser.authCredential);
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable during login; continuing in offline auth mode');
+      } else if (this.isPrismaRecordMissingError(error)) {
+        this.logger.warn(`User ${user.email} not found in database during login; syncing from file storage`);
+        freshUser = await this.ensureUserPersisted(user);
+      } else {
+        throw error;
+      }
+    }
 
     this.logger.log(`User logged in: ${email}`);
 
@@ -333,8 +353,12 @@ export class AuthService {
   }
 
   private async generateAuthResponse(user: User, rememberMe = false): Promise<AuthResponse> {
-    (user as any).role = 'SUPER_ADMIN';
-    (user as any).portfolios = ['*'];
+    let authUser: User = {
+      ...user,
+      role: 'SUPER_ADMIN',
+      portfolios: ['*'],
+    };
+    authUser = await this.ensureUserPersisted(authUser);
 
     const accessToken = `local-dev-access-${uuidv4()}`;
     const refreshToken = `local-dev-refresh-${uuidv4()}`;
@@ -346,7 +370,7 @@ export class AuthService {
 
     const session: UserSession = {
       id: sessionId,
-      userId: user.id,
+      userId: authUser.id,
       token: accessToken,
       refreshToken,
       expiresAt,
@@ -355,19 +379,27 @@ export class AuthService {
       lastUsedAt: new Date(),
     };
 
-    await (this.prisma as any).authSession.create({
-      data: {
-        id: session.id,
-        userId: user.id,
-        token: session.token,
-        refreshToken: session.refreshToken,
-        expiresAt: session.expiresAt,
-        rememberMe: session.rememberMe,
-        lastUsedAt: session.lastUsedAt,
-      },
-    });
+    try {
+      await (this.prisma as any).authSession.create({
+        data: {
+          id: session.id,
+          userId: authUser.id,
+          token: session.token,
+          refreshToken: session.refreshToken,
+          expiresAt: session.expiresAt,
+          rememberMe: session.rememberMe,
+          lastUsedAt: session.lastUsedAt,
+        },
+      });
+    } catch (error) {
+      if (this.isRecoverableSessionPersistenceError(error)) {
+        this.logger.warn('Database unavailable while creating auth session; token issued without persisted session');
+      } else {
+        throw error;
+      }
+    }
 
-    const { passwordHash, ...userWithoutPassword } = user;
+    const { passwordHash, ...userWithoutPassword } = authUser;
 
     return {
       user: userWithoutPassword,
@@ -378,17 +410,175 @@ export class AuthService {
   }
 
   private async findUserByEmail(email: string): Promise<User | null> {
+    const normalizedEmail = String(email || '').toLowerCase();
     try {
       const user = await (this.prisma as any).user.findFirst({
-        where: { email: email.toLowerCase() },
+        where: { email: normalizedEmail },
         include: { authCredential: true },
       });
-      if (!user) return null;
+      if (!user) {
+        return this.findUserByEmailFromStorage(normalizedEmail);
+      }
       return this.toAuthUser(user, user.authCredential);
     } catch (error) {
-      this.logger.error(`Error finding user by email ${email}:`, error);
-      return null;
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while looking up ${normalizedEmail}; trying file storage`);
+        return this.findUserByEmailFromStorage(normalizedEmail);
+      }
+      this.logger.error(`Error finding user by email ${normalizedEmail}:`, error);
+      return this.findUserByEmailFromStorage(normalizedEmail);
     }
+  }
+
+  private isDatabaseUnavailableError(error: unknown): boolean {
+    const message = String((error as any)?.message || error || '').toLowerCase();
+    return (
+      message.includes("can't reach database server")
+      || message.includes('prismaclientinitializationerror')
+      || message.includes('connection refused')
+      || message.includes('timed out')
+      || message.includes('database connection failed')
+    );
+  }
+
+  private isPrismaRecordMissingError(error: unknown): boolean {
+    const message = String((error as any)?.message || error || '').toLowerCase();
+    return message.includes('record to update not found') || message.includes('p2025');
+  }
+
+  private isForeignKeyConstraintError(error: unknown): boolean {
+    const message = String((error as any)?.message || error || '').toLowerCase();
+    return message.includes('foreign key constraint violated') || message.includes('p2003');
+  }
+
+  private isRecoverableSessionPersistenceError(error: unknown): boolean {
+    return this.isDatabaseUnavailableError(error) || this.isForeignKeyConstraintError(error);
+  }
+
+  private async ensureUserPersisted(user: User): Promise<User> {
+    const normalizedEmail = String(user.email || '').trim().toLowerCase();
+    if (!normalizedEmail) return user;
+
+    try {
+      let dbUser = await (this.prisma as any).user.findUnique({
+        where: { id: user.id },
+        include: { authCredential: true },
+      });
+
+      if (!dbUser) {
+        dbUser = await (this.prisma as any).user.findFirst({
+          where: { email: normalizedEmail },
+          include: { authCredential: true },
+        });
+      }
+
+      if (!dbUser) {
+        try {
+          dbUser = await (this.prisma as any).user.create({
+            data: {
+              id: user.id,
+              email: normalizedEmail,
+              name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User',
+              role: this.mapAuthRoleToDbRole(user.role),
+              isActive: user.isActive !== false,
+              lastLoginAt: user.lastLoginAt || null,
+            },
+            include: { authCredential: true },
+          });
+        } catch (createError) {
+          // Handle race/uniqueness on email by loading the existing row.
+          dbUser = await (this.prisma as any).user.findFirst({
+            where: { email: normalizedEmail },
+            include: { authCredential: true },
+          });
+          if (!dbUser) throw createError;
+        }
+      }
+
+      if (user.passwordHash) {
+        if (dbUser.authCredential) {
+          if (!dbUser.authCredential.passwordHash) {
+            await (this.prisma as any).authCredential.update({
+              where: { userId: dbUser.id },
+              data: {
+                passwordHash: user.passwordHash,
+                emailVerified: user.emailVerified !== false,
+              },
+            });
+          }
+        } else {
+          await (this.prisma as any).authCredential.create({
+            data: {
+              userId: dbUser.id,
+              passwordHash: user.passwordHash,
+              emailVerified: user.emailVerified !== false,
+            },
+          });
+        }
+      }
+
+      const refreshed = await (this.prisma as any).user.findUnique({
+        where: { id: dbUser.id },
+        include: { authCredential: true },
+      });
+      if (!refreshed) return user;
+      return this.toAuthUser(refreshed, refreshed.authCredential);
+    } catch (error) {
+      if (!this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Failed to persist auth user ${normalizedEmail}; using in-memory auth user`);
+      }
+      return user;
+    }
+  }
+
+  private mapStoredUserToAuthUser(record: any): User | null {
+    if (!record || typeof record !== 'object') return null;
+    const role = String(record.role || '').toUpperCase();
+    const safeRole: User['role'] = (
+      role === 'ADMIN'
+      || role === 'MANAGER'
+      || role === 'STAFF'
+      || role === 'READ_ONLY'
+      || role === 'SUPER_ADMIN'
+    ) ? (role as User['role']) : 'STAFF';
+
+    const email = String(record.email || '').trim().toLowerCase();
+    if (!email) return null;
+    const passwordHash = String(record.passwordHash || '').trim();
+    if (!passwordHash) return null;
+
+    const createdAt = record.createdAt ? new Date(record.createdAt) : new Date();
+    const updatedAt = record.updatedAt ? new Date(record.updatedAt) : createdAt;
+    return {
+      id: String(record.id || ''),
+      email,
+      firstName: String(record.firstName || 'User'),
+      lastName: String(record.lastName || ''),
+      passwordHash,
+      role: safeRole,
+      portfolios: Array.isArray(record.portfolios) && record.portfolios.length ? record.portfolios : ['*'],
+      isActive: record.isActive !== false,
+      emailVerified: record.emailVerified !== false,
+      lastLoginAt: record.lastLoginAt ? new Date(record.lastLoginAt) : undefined,
+      createdAt: Number.isNaN(createdAt.getTime()) ? new Date() : createdAt,
+      updatedAt: Number.isNaN(updatedAt.getTime()) ? new Date() : updatedAt,
+    };
+  }
+
+  private async findUserByEmailFromStorage(email: string): Promise<User | null> {
+    try {
+      const ids = await this.fileStorageService.listFiles('users');
+      for (const id of ids) {
+        const record = await this.fileStorageService.readJson<any>('users', id);
+        const user = this.mapStoredUserToAuthUser(record);
+        if (user && user.email.toLowerCase() === email.toLowerCase()) {
+          return user;
+        }
+      }
+    } catch (error) {
+      this.logger.warn(`Failed file-storage user lookup for ${email}`);
+    }
+    return null;
   }
 
   private async findPasswordResetToken(token: string): Promise<PasswordResetToken | null> {

@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import { existsSync } from 'fs';
 import * as crypto from 'crypto';
+import { resolveStorageRoot } from '../../common/utils/storage-path.util';
 
 export interface FileAuditResult {
   category: string;
@@ -68,7 +69,7 @@ export class FileAuditService {
     private fileStorageService: FileStorageService,
     private databaseService: DatabaseService
   ) {
-    this.storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
+    this.storagePath = resolveStorageRoot(this.configService);
     this.backupPath = path.join(this.storagePath, 'audit-backups');
   }
 

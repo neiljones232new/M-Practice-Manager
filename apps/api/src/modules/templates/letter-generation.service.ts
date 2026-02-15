@@ -230,7 +230,7 @@ export class LetterGenerationService {
         () => true,
       );
 
-      const resolvedClient = filters.clientId ? await this.clientsService.findOne(filters.clientId) : null;
+      const resolvedClient = filters.clientId ? await this.clientsService.findByIdentifier(filters.clientId) : null;
       const acceptableClientIds = filters.clientId
         ? new Set([filters.clientId, resolvedClient?.id, resolvedClient?.registeredNumber].filter(Boolean).map(String))
         : null;
@@ -478,6 +478,8 @@ export class LetterGenerationService {
         this.LETTERS_CATEGORY,
         letter.id,
         letter,
+        undefined,
+        letter.clientId,
       );
       this.logger.debug(`Saved generated letter record: ${letter.id}`);
     } catch (error) {

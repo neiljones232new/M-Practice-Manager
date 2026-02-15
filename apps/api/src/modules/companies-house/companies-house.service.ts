@@ -23,7 +23,6 @@ import {
   CreateComplianceItemDto,
 } from './interfaces/companies-house.interface';
 import { Client, CreateClientDto } from '../clients/interfaces/client.interface';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CompaniesHouseService {
@@ -44,7 +43,34 @@ export class CompaniesHouseService {
     private readonly servicesService: ServicesService,
   ) {
     // Try to get API key from environment first, then from integration config
-    this.apiKey = this.configService.get<string>('COMPANIES_HOUSE_API_KEY');
+    this.apiKey = this.sanitizeApiKey(this.configService.get<string>('COMPANIES_HOUSE_API_KEY')) || '';
+  }
+
+  private sanitizeApiKey(rawKey?: string | null): string | null {
+    const key = String(rawKey || '').trim();
+    if (!key) return null;
+
+    const normalized = key.toLowerCase();
+    const knownPlaceholders = [
+      'your-companies-house-api-key',
+      'your_companies_house_api_key',
+      'your-api-key',
+      'api-key-here',
+      'change-me',
+      'changeme',
+      'dummy',
+      'test-key',
+    ];
+
+    if (
+      knownPlaceholders.includes(normalized) ||
+      normalized.startsWith('your-') ||
+      normalized.startsWith('replace-')
+    ) {
+      return null;
+    }
+
+    return key;
   }
 
   private normalizeOfficerKey(officer: any): string {
@@ -90,12 +116,14 @@ export class CompaniesHouseService {
   }
 
   private async getAuthHeaders() {
-    let apiKey = this.apiKey;
+    let apiKey = this.sanitizeApiKey(this.apiKey);
     
     // If no environment API key, try to get from integration config
     if (!apiKey) {
       try {
-        apiKey = await this.integrationConfigService.getDecryptedApiKey('COMPANIES_HOUSE');
+        apiKey = this.sanitizeApiKey(
+          await this.integrationConfigService.getDecryptedApiKey('COMPANIES_HOUSE')
+        );
       } catch (error) {
         this.logger.warn('Could not load integration config', error);
       }
@@ -460,7 +488,6 @@ export class CompaniesHouseService {
         if (options?.createOfficerClients) {
           try {
             const directorClient = await this.clientsService.create({
-              id: uuidv4(),
               name: officer.name,
               type: 'INDIVIDUAL',
               portfolioCode: options.portfolioCode || 1,

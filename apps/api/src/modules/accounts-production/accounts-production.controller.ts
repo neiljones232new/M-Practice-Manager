@@ -228,13 +228,18 @@ export class AccountsProductionController {
   ): Promise<void> {
     try {
       // Verify user has access to this accounts set
-      await this.accountsProductionService.getAccountsSet(id);
+      const accountsSet = await this.accountsProductionService.getAccountsSet(id);
       
       if (!req.user || !req.user.id) {
         throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
       }
 
-      const fileBuffer = await this.accountsOutputService.getOutputFile(id, 'html', filename);
+      const fileBuffer = await this.accountsOutputService.getOutputFile(
+        accountsSet.clientId,
+        id,
+        'html',
+        filename,
+      );
       res.setHeader('Content-Type', 'text/html');
       res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
       res.send(fileBuffer);
@@ -255,13 +260,18 @@ export class AccountsProductionController {
   ): Promise<void> {
     try {
       // Verify user has access to this accounts set
-      await this.accountsProductionService.getAccountsSet(id);
+      const accountsSet = await this.accountsProductionService.getAccountsSet(id);
       
       if (!req.user || !req.user.id) {
         throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
       }
 
-      const fileBuffer = await this.accountsOutputService.getOutputFile(id, 'pdf', filename);
+      const fileBuffer = await this.accountsOutputService.getOutputFile(
+        accountsSet.clientId,
+        id,
+        'pdf',
+        filename,
+      );
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
       res.send(fileBuffer);

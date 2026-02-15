@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePortfolioDto, UpdatePortfolioDto, MergePortfoliosDto } from './dto';
 
@@ -14,50 +14,72 @@ export interface Portfolio {
 
 @Injectable()
 export class PortfoliosService {
+  private readonly logger = new Logger(PortfoliosService.name);
+
   constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<Portfolio[]> {
-    let portfolios = await (this.prisma as any).portfolio.findMany({
-      orderBy: { code: 'asc' },
-    });
-
-    if (!portfolios.length) {
-      await (this.prisma as any).portfolio.create({
-        data: {
-          code: 1,
-          name: 'Main Portfolio',
-          description: 'Default client portfolio',
-        },
-      });
-      portfolios = await (this.prisma as any).portfolio.findMany({
+    try {
+      let portfolios = await (this.prisma as any).portfolio.findMany({
         orderBy: { code: 'asc' },
       });
+
+      if (!portfolios.length) {
+        // Use upsert to avoid race conditions when multiple concurrent requests
+        // try to bootstrap the default portfolio at the same time.
+        await (this.prisma as any).portfolio.upsert({
+          where: { code: 1 },
+          update: {},
+          create: {
+            code: 1,
+            name: 'Main Portfolio',
+            description: 'Default client portfolio',
+          },
+        });
+        portfolios = await (this.prisma as any).portfolio.findMany({
+          orderBy: { code: 'asc' },
+        });
+      }
+
+      const counts = await (this.prisma as any).client.groupBy({
+        by: ['portfolioCode'],
+        _count: { _all: true },
+      });
+      const countMap = new Map<number, number>(
+        counts.map((c: any) => [c.portfolioCode, c._count._all])
+      );
+
+      return portfolios.map((p: any) => ({
+        ...p,
+        enabled: true,
+        clientCount: countMap.get(p.code) ?? 0,
+      }));
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable while loading portfolios; returning default portfolio');
+        return [this.getDefaultPortfolio()];
+      }
+      throw error;
     }
-
-    const counts = await (this.prisma as any).client.groupBy({
-      by: ['portfolioCode'],
-      _count: { _all: true },
-    });
-    const countMap = new Map<number, number>(
-      counts.map((c: any) => [c.portfolioCode, c._count._all])
-    );
-
-    return portfolios.map((p: any) => ({
-      ...p,
-      enabled: true,
-      clientCount: countMap.get(p.code) ?? 0,
-    }));
   }
 
   async findOne(code: number): Promise<Portfolio> {
-    const portfolio = await (this.prisma as any).portfolio.findUnique({ where: { code } });
-    if (!portfolio) throw new NotFoundException(`Portfolio with code ${code} not found`);
+    try {
+      const portfolio = await (this.prisma as any).portfolio.findUnique({ where: { code } });
+      if (!portfolio) throw new NotFoundException(`Portfolio with code ${code} not found`);
 
-    const clientCount = await (this.prisma as any).client.count({
-      where: { portfolioCode: code },
-    });
+      const clientCount = await (this.prisma as any).client.count({
+        where: { portfolioCode: code },
+      });
 
-    return { ...portfolio, enabled: true, clientCount };
+      return { ...portfolio, enabled: true, clientCount };
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error) && code === 1) {
+        this.logger.warn('Database unavailable while loading portfolio 1; returning default portfolio');
+        return this.getDefaultPortfolio();
+      }
+      throw error;
+    }
   }
 
   async create(createPortfolioDto: CreatePortfolioDto): Promise<Portfolio> {
@@ -131,17 +153,29 @@ export class PortfoliosService {
     totalClients: number;
     avgClientsPerPortfolio: number;
   }> {
-    const [totalPortfolios, totalClients] = await Promise.all([
-      (this.prisma as any).portfolio.count(),
-      (this.prisma as any).client.count(),
-    ]);
+    try {
+      const [totalPortfolios, totalClients] = await Promise.all([
+        (this.prisma as any).portfolio.count(),
+        (this.prisma as any).client.count(),
+      ]);
 
-    return {
-      totalPortfolios,
-      totalClients,
-      avgClientsPerPortfolio:
-        totalPortfolios > 0 ? Math.round(totalClients / totalPortfolios) : 0,
-    };
+      return {
+        totalPortfolios,
+        totalClients,
+        avgClientsPerPortfolio:
+          totalPortfolios > 0 ? Math.round(totalClients / totalPortfolios) : 0,
+      };
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable while loading portfolio stats; returning safe defaults');
+        return {
+          totalPortfolios: 1,
+          totalClients: 0,
+          avgClientsPerPortfolio: 0,
+        };
+      }
+      throw error;
+    }
   }
 
   async merge(mergeDto: MergePortfoliosDto): Promise<Portfolio> {
@@ -196,17 +230,53 @@ export class PortfoliosService {
   }
 
   async getClientsInPortfolio(code: number, page: number, limit: number) {
-    const total = await (this.prisma as any).client.count({
-      where: { portfolioCode: code },
-    });
-    const totalPages = limit > 0 ? Math.ceil(total / limit) : 1;
-    const clients = await (this.prisma as any).client.findMany({
-      where: { portfolioCode: code },
-      skip: (page - 1) * limit,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    });
+    try {
+      const total = await (this.prisma as any).client.count({
+        where: { portfolioCode: code },
+      });
+      const totalPages = limit > 0 ? Math.ceil(total / limit) : 1;
+      const clients = await (this.prisma as any).client.findMany({
+        where: { portfolioCode: code },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      });
 
-    return { clients, total, page, limit, totalPages };
+      return { clients, total, page, limit, totalPages };
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading clients for portfolio ${code}; returning empty result`);
+        return { clients: [], total: 0, page, limit, totalPages: 0 };
+      }
+      throw error;
+    }
+  }
+
+  private getDefaultPortfolio(): Portfolio {
+    const now = new Date();
+    return {
+      code: 1,
+      name: 'Main Portfolio',
+      description: 'Default client portfolio',
+      enabled: true,
+      clientCount: 0,
+      createdAt: now,
+      updatedAt: now,
+    };
+  }
+
+  private isDatabaseUnavailableError(error: unknown): boolean {
+    if (!error) return false;
+    const message = error instanceof Error ? error.message : String(error);
+    const lowered = message.toLowerCase();
+    return (
+      lowered.includes("can't reach database server") ||
+      lowered.includes('failed to connect to database') ||
+      lowered.includes('connection refused') ||
+      lowered.includes('database is unavailable') ||
+      lowered.includes('prismaclientinitializationerror') ||
+      lowered.includes('does not exist') ||
+      lowered.includes('timeout')
+    );
   }
 }

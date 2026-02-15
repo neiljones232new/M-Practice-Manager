@@ -7,7 +7,7 @@
  * - Exposes axios-like get/post/put/delete for convenience
  */
 
-export const DEFAULT_API = 'http://127.0.0.1:3001/api/v1';
+export const DEFAULT_API = 'http://localhost:3001/api/v1';
 export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || DEFAULT_API).replace(/\/+$/, '');
 
 import type { Client, ClientContext, Service, Task } from './types';
@@ -54,7 +54,7 @@ export interface AuthResponse {
 }
 
 interface AxiosLikeClient {
-  get(url: string, config?: { params?: any }): Promise<any>;
+  get(url: string, config?: { params?: any; [key: string]: any }): Promise<any>;
   post(url: string, data?: any, config?: any): Promise<any>;
   put(url: string, data?: any, config?: any): Promise<any>;
   patch(url: string, data?: any, config?: any): Promise<any>;
@@ -153,6 +153,7 @@ class ApiClient {
         // Log full diagnostic info in non-production for easier debugging
         if (process.env.NODE_ENV !== 'production' && !suppressErrorLog) {
           console.error('[API ERROR RESPONSE]', endpoint, {
+            method: config.method || 'GET',
             status: response.status,
             statusText: response.statusText,
             body: bodyText,
@@ -178,6 +179,7 @@ class ApiClient {
       // Connection errors occur when the server is not running or unreachable
       if (err instanceof TypeError && (
         err.message.includes('fetch') || 
+        err.message.includes('Load failed') ||
         err.message.includes('Failed to fetch') ||
         err.message.includes('NetworkError') ||
         err.message.includes('Network request failed')
@@ -185,18 +187,24 @@ class ApiClient {
         const connectionError = new Error(
           'Unable to connect to server. Please ensure the API server is running on port 3001.'
         );
-        console.error('[API CONNECTION ERROR]', endpoint, connectionError.message);
+        if (!suppressErrorLog) {
+          console.error('[API CONNECTION ERROR]', endpoint, connectionError.message);
+        }
         throw connectionError;
       }
 
       // If it's already an Error with a message, re-throw it
       if (err instanceof Error) {
-        console.error('[API ERROR]', endpoint, err.message);
+        if (!suppressErrorLog) {
+          console.error('[API ERROR]', endpoint, err.message);
+        }
         throw err;
       }
 
       // Fallback for unknown error types
-      console.error('[API ERROR]', endpoint, err);
+      if (!suppressErrorLog) {
+        console.error('[API ERROR]', endpoint, err);
+      }
       throw new Error('An unexpected error occurred. Please try again.');
     }
   }
@@ -359,9 +367,14 @@ const apiClientInstance = new ApiClient();
 export const api = new Proxy(apiClientInstance, {
   get(target, prop) {
     if (prop === 'get') {
-      return (url: string, config?: { params?: any }) => {
-        const query = new URLSearchParams(config?.params || {}).toString();
-        return target.get(`${url}${query ? `?${query}` : ''}`);
+      return (url: string, config?: { params?: any; [key: string]: any }) => {
+        const params = config?.params || {};
+        const query = new URLSearchParams(params).toString();
+        const separator = url.includes('?') ? '&' : '?';
+        const endpoint = `${url}${query ? `${separator}${query}` : ''}`;
+        const options = { ...(config || {}) };
+        delete (options as any).params;
+        return target.get(endpoint, options);
       };
     }
     const val = (target as any)[prop];

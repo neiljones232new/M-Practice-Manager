@@ -8,11 +8,12 @@ import * as puppeteer from 'puppeteer';
 import { AccountsSet } from './interfaces/accounts-set.interface';
 import { FinancialCalculationService } from './financial-calculation.service';
 import { ClientsService } from '../clients/clients.service';
+import { findPracticeManagerRoot, resolveStorageRoot } from '../../common/utils/storage-path.util';
 
 @Injectable()
 export class AccountsOutputService {
   private readonly logger = new Logger(AccountsOutputService.name);
-  private readonly outputsPath: string;
+  private readonly legacyOutputsPath: string;
   private readonly templatesPath: string;
   private readonly storageRoot: string;
   private readonly repoRoot: string;
@@ -22,17 +23,12 @@ export class AccountsOutputService {
     private readonly calculationService: FinancialCalculationService,
     private readonly clientsService: ClientsService,
   ) {
-    const repoRoot = this.findRepositoryRoot();
+    const repoRoot = findPracticeManagerRoot();
     this.repoRoot = repoRoot;
-    const configuredStoragePath = this.configService.get<string>('STORAGE_PATH');
-    const resolvedStoragePath = configuredStoragePath
-      ? (path.isAbsolute(configuredStoragePath)
-          ? configuredStoragePath
-          : path.resolve(repoRoot, configuredStoragePath))
-      : path.join(repoRoot, 'storage');
-    // Use absolute path for outputs to make them easily accessible
-    this.outputsPath = path.resolve(resolvedStoragePath, 'outputs');
-    this.storageRoot = path.dirname(this.outputsPath);
+    const resolvedStoragePath = resolveStorageRoot(this.configService);
+    this.storageRoot = path.resolve(resolvedStoragePath);
+    // Legacy output root kept as fallback for older files.
+    this.legacyOutputsPath = path.join(this.storageRoot, 'outputs');
 
     const templateCandidates = [
       path.join(repoRoot, 'apps', 'api', 'src', 'modules', 'accounts-production', 'templates'),
@@ -60,37 +56,44 @@ export class AccountsOutputService {
     }
     
     this.logger.log(`Using templates path: ${this.templatesPath}`);
-    this.logger.log(`Using outputs path: ${this.outputsPath}`);
+    this.logger.log(`Using storage path: ${this.storageRoot}`);
     
     this.ensureDirectories();
     this.registerHandlebarsHelpers();
   }
 
-  private findRepositoryRoot(): string {
-    let cursor = __dirname;
-    const root = path.parse(cursor).root;
-    while (cursor !== root) {
-      if (existsSync(path.join(cursor, 'apps')) && existsSync(path.join(cursor, 'storage'))) {
-        return cursor;
-      }
-      cursor = path.dirname(cursor);
-    }
-    return process.cwd();
-  }
-
   private async ensureDirectories(): Promise<void> {
     try {
-      if (!existsSync(this.outputsPath)) {
-        await fs.mkdir(this.outputsPath, { recursive: true });
-      }
-      if (!existsSync(path.join(this.outputsPath, 'html'))) {
-        await fs.mkdir(path.join(this.outputsPath, 'html'), { recursive: true });
-      }
-      if (!existsSync(path.join(this.outputsPath, 'pdf'))) {
-        await fs.mkdir(path.join(this.outputsPath, 'pdf'), { recursive: true });
+      const clientsRoot = path.join(this.storageRoot, 'clients');
+      if (!existsSync(clientsRoot)) {
+        await fs.mkdir(clientsRoot, { recursive: true });
       }
     } catch (error) {
       this.logger.error('Failed to create output directories:', error);
+    }
+  }
+
+  private getClientOutputsPath(clientId: string): string {
+    return path.join(this.storageRoot, 'clients', clientId, 'accounts-sets', 'outputs');
+  }
+
+  private getClientOutputTypePath(clientId: string, type: 'html' | 'pdf'): string {
+    return path.join(this.getClientOutputsPath(clientId), type);
+  }
+
+  private async ensureClientOutputDirectories(clientId: string): Promise<void> {
+    const outputsPath = this.getClientOutputsPath(clientId);
+    const htmlPath = this.getClientOutputTypePath(clientId, 'html');
+    const pdfPath = this.getClientOutputTypePath(clientId, 'pdf');
+
+    if (!existsSync(outputsPath)) {
+      await fs.mkdir(outputsPath, { recursive: true });
+    }
+    if (!existsSync(htmlPath)) {
+      await fs.mkdir(htmlPath, { recursive: true });
+    }
+    if (!existsSync(pdfPath)) {
+      await fs.mkdir(pdfPath, { recursive: true });
     }
   }
 
@@ -177,6 +180,7 @@ export class AccountsOutputService {
   ): Promise<{ htmlUrl: string; pdfUrl: string }> {
     try {
       this.logger.log(`Generating outputs for accounts set ${accountsSet.id}`);
+      await this.ensureClientOutputDirectories(accountsSet.clientId);
 
       // Prepare template data
       const templateData = await this.prepareTemplateData(accountsSet);
@@ -187,13 +191,13 @@ export class AccountsOutputService {
       // Generate HTML
       const htmlContent = await this.generateHTML(templateData);
       const htmlFilename = `${baseFilename}.html`;
-      const htmlPath = path.join(this.outputsPath, 'html', htmlFilename);
+      const htmlPath = path.join(this.getClientOutputTypePath(accountsSet.clientId, 'html'), htmlFilename);
       await fs.writeFile(htmlPath, htmlContent, 'utf8');
       this.logger.log(`HTML file saved to: ${htmlPath}`);
 
       // Generate PDF from HTML
       const pdfFilename = `${baseFilename}.pdf`;
-      const pdfPath = path.join(this.outputsPath, 'pdf', pdfFilename);
+      const pdfPath = path.join(this.getClientOutputTypePath(accountsSet.clientId, 'pdf'), pdfFilename);
       await this.generatePDF(htmlContent, pdfPath);
       this.logger.log(`PDF file saved to: ${pdfPath}`);
 
@@ -221,7 +225,7 @@ export class AccountsOutputService {
       // Extract filenames from URLs
       if (accountsSet.outputs.htmlUrl) {
         const htmlFilename = path.basename(accountsSet.outputs.htmlUrl);
-        const htmlPath = path.join(this.outputsPath, 'html', htmlFilename);
+        const htmlPath = path.join(this.getClientOutputTypePath(accountsSet.clientId, 'html'), htmlFilename);
         if (existsSync(htmlPath)) {
           await fs.unlink(htmlPath);
         }
@@ -229,7 +233,7 @@ export class AccountsOutputService {
 
       if (accountsSet.outputs.pdfUrl) {
         const pdfFilename = path.basename(accountsSet.outputs.pdfUrl);
-        const pdfPath = path.join(this.outputsPath, 'pdf', pdfFilename);
+        const pdfPath = path.join(this.getClientOutputTypePath(accountsSet.clientId, 'pdf'), pdfFilename);
         if (existsSync(pdfPath)) {
           await fs.unlink(pdfPath);
         }
@@ -1120,13 +1124,23 @@ Generated: ${this.formatDate(new Date().toISOString())}
       .slice(0, 80) || 'Client';
   }
 
-  async getOutputFile(accountsSetId: string, type: 'html' | 'pdf', filename: string): Promise<Buffer> {
-    const filePath = path.join(this.outputsPath, type, filename);
-    
-    if (!existsSync(filePath)) {
-      throw new Error(`Output file not found: ${filename}`);
+  async getOutputFile(
+    clientId: string,
+    accountsSetId: string,
+    type: 'html' | 'pdf',
+    filename: string,
+  ): Promise<Buffer> {
+    const clientScopedPath = path.join(this.getClientOutputTypePath(clientId, type), filename);
+    if (existsSync(clientScopedPath)) {
+      return fs.readFile(clientScopedPath);
     }
 
-    return fs.readFile(filePath);
+    // Legacy fallback for outputs created before client-scoped layout.
+    const legacyPath = path.join(this.legacyOutputsPath, type, filename);
+    if (existsSync(legacyPath)) {
+      return fs.readFile(legacyPath);
+    }
+
+    throw new Error(`Output file not found for accounts set ${accountsSetId}: ${filename}`);
   }
 }

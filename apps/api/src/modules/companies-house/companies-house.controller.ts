@@ -62,6 +62,17 @@ export class CompaniesHouseController {
     return this.companiesHouseService.importCompany(importData);
   }
 
+  @Post('import/:companyNumber')
+  async importCompanyByNumber(
+    @Param('companyNumber') companyNumber: string,
+    @Body() importData: Omit<CompaniesHouseImportData, 'companyNumber'>,
+  ): Promise<Client> {
+    return this.companiesHouseService.importCompany({
+      ...importData,
+      companyNumber,
+    } as CompaniesHouseImportData);
+  }
+
   @Post('sync/:clientId')
   async syncCompanyData(@Param('clientId') clientId: string): Promise<{ message: string }> {
     await this.companiesHouseService.syncCompanyData(clientId);

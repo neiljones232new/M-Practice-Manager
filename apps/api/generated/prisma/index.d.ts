@@ -209,6 +209,18 @@ export const ClientStatus: {
 export type ClientStatus = (typeof ClientStatus)[keyof typeof ClientStatus]
 
 
+export const HMRCRegistrationStatus: {
+  NOT_REGISTERED: 'NOT_REGISTERED',
+  NOT_APPLICABLE: 'NOT_APPLICABLE',
+  APPLIED_FOR: 'APPLIED_FOR',
+  REGISTERED: 'REGISTERED',
+  DEREGISTERED: 'DEREGISTERED',
+  MISSING_DATA: 'MISSING_DATA'
+};
+
+export type HMRCRegistrationStatus = (typeof HMRCRegistrationStatus)[keyof typeof HMRCRegistrationStatus]
+
+
 export const LifecycleStatus: {
   PROSPECT: 'PROSPECT',
   ONBOARDING: 'ONBOARDING',
@@ -362,6 +374,10 @@ export const ClientType: typeof $Enums.ClientType
 export type ClientStatus = $Enums.ClientStatus
 
 export const ClientStatus: typeof $Enums.ClientStatus
+
+export type HMRCRegistrationStatus = $Enums.HMRCRegistrationStatus
+
+export const HMRCRegistrationStatus: typeof $Enums.HMRCRegistrationStatus
 
 export type LifecycleStatus = $Enums.LifecycleStatus
 
@@ -9086,6 +9102,7 @@ export namespace Prisma {
 
   export type RefBucketMinAggregateOutputType = {
     id: string | null
+    practiceId: string | null
     portfolioCode: number | null
     alpha: string | null
     nextIndex: number | null
@@ -9095,6 +9112,7 @@ export namespace Prisma {
 
   export type RefBucketMaxAggregateOutputType = {
     id: string | null
+    practiceId: string | null
     portfolioCode: number | null
     alpha: string | null
     nextIndex: number | null
@@ -9104,6 +9122,7 @@ export namespace Prisma {
 
   export type RefBucketCountAggregateOutputType = {
     id: number
+    practiceId: number
     portfolioCode: number
     alpha: number
     nextIndex: number
@@ -9125,6 +9144,7 @@ export namespace Prisma {
 
   export type RefBucketMinAggregateInputType = {
     id?: true
+    practiceId?: true
     portfolioCode?: true
     alpha?: true
     nextIndex?: true
@@ -9134,6 +9154,7 @@ export namespace Prisma {
 
   export type RefBucketMaxAggregateInputType = {
     id?: true
+    practiceId?: true
     portfolioCode?: true
     alpha?: true
     nextIndex?: true
@@ -9143,6 +9164,7 @@ export namespace Prisma {
 
   export type RefBucketCountAggregateInputType = {
     id?: true
+    practiceId?: true
     portfolioCode?: true
     alpha?: true
     nextIndex?: true
@@ -9239,6 +9261,7 @@ export namespace Prisma {
 
   export type RefBucketGroupByOutputType = {
     id: string
+    practiceId: string
     portfolioCode: number
     alpha: string
     nextIndex: number
@@ -9267,6 +9290,7 @@ export namespace Prisma {
 
   export type RefBucketSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    practiceId?: boolean
     portfolioCode?: boolean
     alpha?: boolean
     nextIndex?: boolean
@@ -9277,6 +9301,7 @@ export namespace Prisma {
 
   export type RefBucketSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    practiceId?: boolean
     portfolioCode?: boolean
     alpha?: boolean
     nextIndex?: boolean
@@ -9287,6 +9312,7 @@ export namespace Prisma {
 
   export type RefBucketSelectScalar = {
     id?: boolean
+    practiceId?: boolean
     portfolioCode?: boolean
     alpha?: boolean
     nextIndex?: boolean
@@ -9308,6 +9334,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      practiceId: string
       portfolioCode: number
       alpha: string
       nextIndex: number
@@ -9708,6 +9735,7 @@ export namespace Prisma {
    */ 
   interface RefBucketFieldRefs {
     readonly id: FieldRef<"RefBucket", 'String'>
+    readonly practiceId: FieldRef<"RefBucket", 'String'>
     readonly portfolioCode: FieldRef<"RefBucket", 'Int'>
     readonly alpha: FieldRef<"RefBucket", 'String'>
     readonly nextIndex: FieldRef<"RefBucket", 'Int'>
@@ -15118,6 +15146,7 @@ export namespace Prisma {
   }
 
   export type ClientAvgAggregateOutputType = {
+    connectedOrder: number | null
     accountsAccountingReferenceDay: number | null
     accountsAccountingReferenceMonth: number | null
     portfolioCode: number | null
@@ -15126,6 +15155,7 @@ export namespace Prisma {
   }
 
   export type ClientSumAggregateOutputType = {
+    connectedOrder: number | null
     accountsAccountingReferenceDay: number | null
     accountsAccountingReferenceMonth: number | null
     portfolioCode: number | null
@@ -15135,9 +15165,15 @@ export namespace Prisma {
 
   export type ClientMinAggregateOutputType = {
     id: string | null
+    clientRef: string | null
+    baseClientRef: string | null
     name: string | null
     type: $Enums.ClientType | null
     status: $Enums.ClientStatus | null
+    practiceId: string | null
+    isConnectedParty: boolean | null
+    connectedOrder: number | null
+    connectedPrincipalId: string | null
     mainEmail: string | null
     mainPhone: string | null
     registeredNumber: string | null
@@ -15149,14 +15185,14 @@ export namespace Prisma {
     eoriNumber: string | null
     mtdVatEnabled: boolean | null
     mtdItsaEnabled: boolean | null
-    hmrcCtStatus: string | null
-    hmrcSaStatus: string | null
-    hmrcVatStatus: string | null
-    hmrcPayeStatus: string | null
-    hmrcCisStatus: string | null
-    hmrcMtdVatStatus: string | null
-    hmrcMtdItsaStatus: string | null
-    hmrcEoriStatus: string | null
+    hmrcCtStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus: $Enums.HMRCRegistrationStatus | null
     incorporationDate: Date | null
     yearEnd: Date | null
     accountsNextDue: Date | null
@@ -15177,9 +15213,15 @@ export namespace Prisma {
 
   export type ClientMaxAggregateOutputType = {
     id: string | null
+    clientRef: string | null
+    baseClientRef: string | null
     name: string | null
     type: $Enums.ClientType | null
     status: $Enums.ClientStatus | null
+    practiceId: string | null
+    isConnectedParty: boolean | null
+    connectedOrder: number | null
+    connectedPrincipalId: string | null
     mainEmail: string | null
     mainPhone: string | null
     registeredNumber: string | null
@@ -15191,14 +15233,14 @@ export namespace Prisma {
     eoriNumber: string | null
     mtdVatEnabled: boolean | null
     mtdItsaEnabled: boolean | null
-    hmrcCtStatus: string | null
-    hmrcSaStatus: string | null
-    hmrcVatStatus: string | null
-    hmrcPayeStatus: string | null
-    hmrcCisStatus: string | null
-    hmrcMtdVatStatus: string | null
-    hmrcMtdItsaStatus: string | null
-    hmrcEoriStatus: string | null
+    hmrcCtStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus: $Enums.HMRCRegistrationStatus | null
     incorporationDate: Date | null
     yearEnd: Date | null
     accountsNextDue: Date | null
@@ -15219,9 +15261,15 @@ export namespace Prisma {
 
   export type ClientCountAggregateOutputType = {
     id: number
+    clientRef: number
+    baseClientRef: number
     name: number
     type: number
     status: number
+    practiceId: number
+    isConnectedParty: number
+    connectedOrder: number
+    connectedPrincipalId: number
     mainEmail: number
     mainPhone: number
     registeredNumber: number
@@ -15262,6 +15310,7 @@ export namespace Prisma {
 
 
   export type ClientAvgAggregateInputType = {
+    connectedOrder?: true
     accountsAccountingReferenceDay?: true
     accountsAccountingReferenceMonth?: true
     portfolioCode?: true
@@ -15270,6 +15319,7 @@ export namespace Prisma {
   }
 
   export type ClientSumAggregateInputType = {
+    connectedOrder?: true
     accountsAccountingReferenceDay?: true
     accountsAccountingReferenceMonth?: true
     portfolioCode?: true
@@ -15279,9 +15329,15 @@ export namespace Prisma {
 
   export type ClientMinAggregateInputType = {
     id?: true
+    clientRef?: true
+    baseClientRef?: true
     name?: true
     type?: true
     status?: true
+    practiceId?: true
+    isConnectedParty?: true
+    connectedOrder?: true
+    connectedPrincipalId?: true
     mainEmail?: true
     mainPhone?: true
     registeredNumber?: true
@@ -15321,9 +15377,15 @@ export namespace Prisma {
 
   export type ClientMaxAggregateInputType = {
     id?: true
+    clientRef?: true
+    baseClientRef?: true
     name?: true
     type?: true
     status?: true
+    practiceId?: true
+    isConnectedParty?: true
+    connectedOrder?: true
+    connectedPrincipalId?: true
     mainEmail?: true
     mainPhone?: true
     registeredNumber?: true
@@ -15363,9 +15425,15 @@ export namespace Prisma {
 
   export type ClientCountAggregateInputType = {
     id?: true
+    clientRef?: true
+    baseClientRef?: true
     name?: true
     type?: true
     status?: true
+    practiceId?: true
+    isConnectedParty?: true
+    connectedOrder?: true
+    connectedPrincipalId?: true
     mainEmail?: true
     mainPhone?: true
     registeredNumber?: true
@@ -15492,9 +15560,15 @@ export namespace Prisma {
 
   export type ClientGroupByOutputType = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status: $Enums.ClientStatus
+    practiceId: string
+    isConnectedParty: boolean
+    connectedOrder: number | null
+    connectedPrincipalId: string | null
     mainEmail: string | null
     mainPhone: string | null
     registeredNumber: string | null
@@ -15506,14 +15580,14 @@ export namespace Prisma {
     eoriNumber: string | null
     mtdVatEnabled: boolean
     mtdItsaEnabled: boolean
-    hmrcCtStatus: string | null
-    hmrcSaStatus: string | null
-    hmrcVatStatus: string | null
-    hmrcPayeStatus: string | null
-    hmrcCisStatus: string | null
-    hmrcMtdVatStatus: string | null
-    hmrcMtdItsaStatus: string | null
-    hmrcEoriStatus: string | null
+    hmrcCtStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus: $Enums.HMRCRegistrationStatus | null
     incorporationDate: Date | null
     yearEnd: Date | null
     accountsNextDue: Date | null
@@ -15553,9 +15627,15 @@ export namespace Prisma {
 
   export type ClientSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    clientRef?: boolean
+    baseClientRef?: boolean
     name?: boolean
     type?: boolean
     status?: boolean
+    practiceId?: boolean
+    isConnectedParty?: boolean
+    connectedOrder?: boolean
+    connectedPrincipalId?: boolean
     mainEmail?: boolean
     mainPhone?: boolean
     registeredNumber?: boolean
@@ -15611,9 +15691,15 @@ export namespace Prisma {
 
   export type ClientSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    clientRef?: boolean
+    baseClientRef?: boolean
     name?: boolean
     type?: boolean
     status?: boolean
+    practiceId?: boolean
+    isConnectedParty?: boolean
+    connectedOrder?: boolean
+    connectedPrincipalId?: boolean
     mainEmail?: boolean
     mainPhone?: boolean
     registeredNumber?: boolean
@@ -15655,9 +15741,15 @@ export namespace Prisma {
 
   export type ClientSelectScalar = {
     id?: boolean
+    clientRef?: boolean
+    baseClientRef?: boolean
     name?: boolean
     type?: boolean
     status?: boolean
+    practiceId?: boolean
+    isConnectedParty?: boolean
+    connectedOrder?: boolean
+    connectedPrincipalId?: boolean
     mainEmail?: boolean
     mainPhone?: boolean
     registeredNumber?: boolean
@@ -15739,9 +15831,15 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      clientRef: string
+      baseClientRef: string
       name: string
       type: $Enums.ClientType
       status: $Enums.ClientStatus
+      practiceId: string
+      isConnectedParty: boolean
+      connectedOrder: number | null
+      connectedPrincipalId: string | null
       mainEmail: string | null
       mainPhone: string | null
       registeredNumber: string | null
@@ -15753,14 +15851,14 @@ export namespace Prisma {
       eoriNumber: string | null
       mtdVatEnabled: boolean
       mtdItsaEnabled: boolean
-      hmrcCtStatus: string | null
-      hmrcSaStatus: string | null
-      hmrcVatStatus: string | null
-      hmrcPayeStatus: string | null
-      hmrcCisStatus: string | null
-      hmrcMtdVatStatus: string | null
-      hmrcMtdItsaStatus: string | null
-      hmrcEoriStatus: string | null
+      hmrcCtStatus: $Enums.HMRCRegistrationStatus | null
+      hmrcSaStatus: $Enums.HMRCRegistrationStatus | null
+      hmrcVatStatus: $Enums.HMRCRegistrationStatus | null
+      hmrcPayeStatus: $Enums.HMRCRegistrationStatus | null
+      hmrcCisStatus: $Enums.HMRCRegistrationStatus | null
+      hmrcMtdVatStatus: $Enums.HMRCRegistrationStatus | null
+      hmrcMtdItsaStatus: $Enums.HMRCRegistrationStatus | null
+      hmrcEoriStatus: $Enums.HMRCRegistrationStatus | null
       incorporationDate: Date | null
       yearEnd: Date | null
       accountsNextDue: Date | null
@@ -16186,9 +16284,15 @@ export namespace Prisma {
    */ 
   interface ClientFieldRefs {
     readonly id: FieldRef<"Client", 'String'>
+    readonly clientRef: FieldRef<"Client", 'String'>
+    readonly baseClientRef: FieldRef<"Client", 'String'>
     readonly name: FieldRef<"Client", 'String'>
     readonly type: FieldRef<"Client", 'ClientType'>
     readonly status: FieldRef<"Client", 'ClientStatus'>
+    readonly practiceId: FieldRef<"Client", 'String'>
+    readonly isConnectedParty: FieldRef<"Client", 'Boolean'>
+    readonly connectedOrder: FieldRef<"Client", 'Int'>
+    readonly connectedPrincipalId: FieldRef<"Client", 'String'>
     readonly mainEmail: FieldRef<"Client", 'String'>
     readonly mainPhone: FieldRef<"Client", 'String'>
     readonly registeredNumber: FieldRef<"Client", 'String'>
@@ -16200,14 +16304,14 @@ export namespace Prisma {
     readonly eoriNumber: FieldRef<"Client", 'String'>
     readonly mtdVatEnabled: FieldRef<"Client", 'Boolean'>
     readonly mtdItsaEnabled: FieldRef<"Client", 'Boolean'>
-    readonly hmrcCtStatus: FieldRef<"Client", 'String'>
-    readonly hmrcSaStatus: FieldRef<"Client", 'String'>
-    readonly hmrcVatStatus: FieldRef<"Client", 'String'>
-    readonly hmrcPayeStatus: FieldRef<"Client", 'String'>
-    readonly hmrcCisStatus: FieldRef<"Client", 'String'>
-    readonly hmrcMtdVatStatus: FieldRef<"Client", 'String'>
-    readonly hmrcMtdItsaStatus: FieldRef<"Client", 'String'>
-    readonly hmrcEoriStatus: FieldRef<"Client", 'String'>
+    readonly hmrcCtStatus: FieldRef<"Client", 'HMRCRegistrationStatus'>
+    readonly hmrcSaStatus: FieldRef<"Client", 'HMRCRegistrationStatus'>
+    readonly hmrcVatStatus: FieldRef<"Client", 'HMRCRegistrationStatus'>
+    readonly hmrcPayeStatus: FieldRef<"Client", 'HMRCRegistrationStatus'>
+    readonly hmrcCisStatus: FieldRef<"Client", 'HMRCRegistrationStatus'>
+    readonly hmrcMtdVatStatus: FieldRef<"Client", 'HMRCRegistrationStatus'>
+    readonly hmrcMtdItsaStatus: FieldRef<"Client", 'HMRCRegistrationStatus'>
+    readonly hmrcEoriStatus: FieldRef<"Client", 'HMRCRegistrationStatus'>
     readonly incorporationDate: FieldRef<"Client", 'DateTime'>
     readonly yearEnd: FieldRef<"Client", 'DateTime'>
     readonly accountsNextDue: FieldRef<"Client", 'DateTime'>
@@ -39947,6 +40051,7 @@ export namespace Prisma {
 
   export const RefBucketScalarFieldEnum: {
     id: 'id',
+    practiceId: 'practiceId',
     portfolioCode: 'portfolioCode',
     alpha: 'alpha',
     nextIndex: 'nextIndex',
@@ -40026,9 +40131,15 @@ export namespace Prisma {
 
   export const ClientScalarFieldEnum: {
     id: 'id',
+    clientRef: 'clientRef',
+    baseClientRef: 'baseClientRef',
     name: 'name',
     type: 'type',
     status: 'status',
+    practiceId: 'practiceId',
+    isConnectedParty: 'isConnectedParty',
+    connectedOrder: 'connectedOrder',
+    connectedPrincipalId: 'connectedPrincipalId',
     mainEmail: 'mainEmail',
     mainPhone: 'mainPhone',
     registeredNumber: 'registeredNumber',
@@ -40685,6 +40796,20 @@ export namespace Prisma {
    * Reference to a field of type 'ClientStatus[]'
    */
   export type ListEnumClientStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClientStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'HMRCRegistrationStatus'
+   */
+  export type EnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HMRCRegistrationStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'HMRCRegistrationStatus[]'
+   */
+  export type ListEnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HMRCRegistrationStatus[]'>
     
 
 
@@ -41494,6 +41619,7 @@ export namespace Prisma {
     OR?: RefBucketWhereInput[]
     NOT?: RefBucketWhereInput | RefBucketWhereInput[]
     id?: StringFilter<"RefBucket"> | string
+    practiceId?: StringFilter<"RefBucket"> | string
     portfolioCode?: IntFilter<"RefBucket"> | number
     alpha?: StringFilter<"RefBucket"> | string
     nextIndex?: IntFilter<"RefBucket"> | number
@@ -41504,6 +41630,7 @@ export namespace Prisma {
 
   export type RefBucketOrderByWithRelationInput = {
     id?: SortOrder
+    practiceId?: SortOrder
     portfolioCode?: SortOrder
     alpha?: SortOrder
     nextIndex?: SortOrder
@@ -41514,20 +41641,22 @@ export namespace Prisma {
 
   export type RefBucketWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    portfolioCode_alpha?: RefBucketPortfolioCodeAlphaCompoundUniqueInput
+    practiceId_portfolioCode_alpha?: RefBucketPracticeIdPortfolioCodeAlphaCompoundUniqueInput
     AND?: RefBucketWhereInput | RefBucketWhereInput[]
     OR?: RefBucketWhereInput[]
     NOT?: RefBucketWhereInput | RefBucketWhereInput[]
+    practiceId?: StringFilter<"RefBucket"> | string
     portfolioCode?: IntFilter<"RefBucket"> | number
     alpha?: StringFilter<"RefBucket"> | string
     nextIndex?: IntFilter<"RefBucket"> | number
     createdAt?: DateTimeFilter<"RefBucket"> | Date | string
     updatedAt?: DateTimeFilter<"RefBucket"> | Date | string
     portfolio?: XOR<PortfolioRelationFilter, PortfolioWhereInput>
-  }, "id" | "portfolioCode_alpha">
+  }, "id" | "practiceId_portfolioCode_alpha">
 
   export type RefBucketOrderByWithAggregationInput = {
     id?: SortOrder
+    practiceId?: SortOrder
     portfolioCode?: SortOrder
     alpha?: SortOrder
     nextIndex?: SortOrder
@@ -41545,6 +41674,7 @@ export namespace Prisma {
     OR?: RefBucketScalarWhereWithAggregatesInput[]
     NOT?: RefBucketScalarWhereWithAggregatesInput | RefBucketScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"RefBucket"> | string
+    practiceId?: StringWithAggregatesFilter<"RefBucket"> | string
     portfolioCode?: IntWithAggregatesFilter<"RefBucket"> | number
     alpha?: StringWithAggregatesFilter<"RefBucket"> | string
     nextIndex?: IntWithAggregatesFilter<"RefBucket"> | number
@@ -41921,9 +42051,15 @@ export namespace Prisma {
     OR?: ClientWhereInput[]
     NOT?: ClientWhereInput | ClientWhereInput[]
     id?: StringFilter<"Client"> | string
+    clientRef?: StringFilter<"Client"> | string
+    baseClientRef?: StringFilter<"Client"> | string
     name?: StringFilter<"Client"> | string
     type?: EnumClientTypeFilter<"Client"> | $Enums.ClientType
     status?: EnumClientStatusFilter<"Client"> | $Enums.ClientStatus
+    practiceId?: StringFilter<"Client"> | string
+    isConnectedParty?: BoolFilter<"Client"> | boolean
+    connectedOrder?: IntNullableFilter<"Client"> | number | null
+    connectedPrincipalId?: StringNullableFilter<"Client"> | string | null
     mainEmail?: StringNullableFilter<"Client"> | string | null
     mainPhone?: StringNullableFilter<"Client"> | string | null
     registeredNumber?: StringNullableFilter<"Client"> | string | null
@@ -41935,14 +42071,14 @@ export namespace Prisma {
     eoriNumber?: StringNullableFilter<"Client"> | string | null
     mtdVatEnabled?: BoolFilter<"Client"> | boolean
     mtdItsaEnabled?: BoolFilter<"Client"> | boolean
-    hmrcCtStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcSaStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcVatStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcPayeStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcCisStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcMtdVatStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcMtdItsaStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcEoriStatus?: StringNullableFilter<"Client"> | string | null
+    hmrcCtStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     yearEnd?: DateTimeNullableFilter<"Client"> | Date | string | null
     accountsNextDue?: DateTimeNullableFilter<"Client"> | Date | string | null
@@ -41978,9 +42114,15 @@ export namespace Prisma {
 
   export type ClientOrderByWithRelationInput = {
     id?: SortOrder
+    clientRef?: SortOrder
+    baseClientRef?: SortOrder
     name?: SortOrder
     type?: SortOrder
     status?: SortOrder
+    practiceId?: SortOrder
+    isConnectedParty?: SortOrder
+    connectedOrder?: SortOrderInput | SortOrder
+    connectedPrincipalId?: SortOrderInput | SortOrder
     mainEmail?: SortOrderInput | SortOrder
     mainPhone?: SortOrderInput | SortOrder
     registeredNumber?: SortOrderInput | SortOrder
@@ -42041,25 +42183,32 @@ export namespace Prisma {
     payeReference?: string
     cisUtr?: string
     eoriNumber?: string
+    practiceId_portfolioCode_clientRef?: ClientPracticeIdPortfolioCodeClientRefCompoundUniqueInput
     AND?: ClientWhereInput | ClientWhereInput[]
     OR?: ClientWhereInput[]
     NOT?: ClientWhereInput | ClientWhereInput[]
+    clientRef?: StringFilter<"Client"> | string
+    baseClientRef?: StringFilter<"Client"> | string
     name?: StringFilter<"Client"> | string
     type?: EnumClientTypeFilter<"Client"> | $Enums.ClientType
     status?: EnumClientStatusFilter<"Client"> | $Enums.ClientStatus
+    practiceId?: StringFilter<"Client"> | string
+    isConnectedParty?: BoolFilter<"Client"> | boolean
+    connectedOrder?: IntNullableFilter<"Client"> | number | null
+    connectedPrincipalId?: StringNullableFilter<"Client"> | string | null
     mainEmail?: StringNullableFilter<"Client"> | string | null
     mainPhone?: StringNullableFilter<"Client"> | string | null
     accountsOfficeReference?: StringNullableFilter<"Client"> | string | null
     mtdVatEnabled?: BoolFilter<"Client"> | boolean
     mtdItsaEnabled?: BoolFilter<"Client"> | boolean
-    hmrcCtStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcSaStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcVatStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcPayeStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcCisStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcMtdVatStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcMtdItsaStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcEoriStatus?: StringNullableFilter<"Client"> | string | null
+    hmrcCtStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     yearEnd?: DateTimeNullableFilter<"Client"> | Date | string | null
     accountsNextDue?: DateTimeNullableFilter<"Client"> | Date | string | null
@@ -42091,13 +42240,19 @@ export namespace Prisma {
     services?: ServiceListRelationFilter
     tasks?: TaskListRelationFilter
     taxCalculations?: TaxCalculationListRelationFilter
-  }, "id" | "registeredNumber" | "utrNumber" | "vatNumber" | "payeReference" | "cisUtr" | "eoriNumber">
+  }, "id" | "registeredNumber" | "utrNumber" | "vatNumber" | "payeReference" | "cisUtr" | "eoriNumber" | "practiceId_portfolioCode_clientRef">
 
   export type ClientOrderByWithAggregationInput = {
     id?: SortOrder
+    clientRef?: SortOrder
+    baseClientRef?: SortOrder
     name?: SortOrder
     type?: SortOrder
     status?: SortOrder
+    practiceId?: SortOrder
+    isConnectedParty?: SortOrder
+    connectedOrder?: SortOrderInput | SortOrder
+    connectedPrincipalId?: SortOrderInput | SortOrder
     mainEmail?: SortOrderInput | SortOrder
     mainPhone?: SortOrderInput | SortOrder
     registeredNumber?: SortOrderInput | SortOrder
@@ -42145,9 +42300,15 @@ export namespace Prisma {
     OR?: ClientScalarWhereWithAggregatesInput[]
     NOT?: ClientScalarWhereWithAggregatesInput | ClientScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Client"> | string
+    clientRef?: StringWithAggregatesFilter<"Client"> | string
+    baseClientRef?: StringWithAggregatesFilter<"Client"> | string
     name?: StringWithAggregatesFilter<"Client"> | string
     type?: EnumClientTypeWithAggregatesFilter<"Client"> | $Enums.ClientType
     status?: EnumClientStatusWithAggregatesFilter<"Client"> | $Enums.ClientStatus
+    practiceId?: StringWithAggregatesFilter<"Client"> | string
+    isConnectedParty?: BoolWithAggregatesFilter<"Client"> | boolean
+    connectedOrder?: IntNullableWithAggregatesFilter<"Client"> | number | null
+    connectedPrincipalId?: StringNullableWithAggregatesFilter<"Client"> | string | null
     mainEmail?: StringNullableWithAggregatesFilter<"Client"> | string | null
     mainPhone?: StringNullableWithAggregatesFilter<"Client"> | string | null
     registeredNumber?: StringNullableWithAggregatesFilter<"Client"> | string | null
@@ -42159,14 +42320,14 @@ export namespace Prisma {
     eoriNumber?: StringNullableWithAggregatesFilter<"Client"> | string | null
     mtdVatEnabled?: BoolWithAggregatesFilter<"Client"> | boolean
     mtdItsaEnabled?: BoolWithAggregatesFilter<"Client"> | boolean
-    hmrcCtStatus?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    hmrcSaStatus?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    hmrcVatStatus?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    hmrcPayeStatus?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    hmrcCisStatus?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    hmrcMtdVatStatus?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    hmrcMtdItsaStatus?: StringNullableWithAggregatesFilter<"Client"> | string | null
-    hmrcEoriStatus?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    hmrcCtStatus?: EnumHMRCRegistrationStatusNullableWithAggregatesFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: EnumHMRCRegistrationStatusNullableWithAggregatesFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: EnumHMRCRegistrationStatusNullableWithAggregatesFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: EnumHMRCRegistrationStatusNullableWithAggregatesFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: EnumHMRCRegistrationStatusNullableWithAggregatesFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: EnumHMRCRegistrationStatusNullableWithAggregatesFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: EnumHMRCRegistrationStatusNullableWithAggregatesFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: EnumHMRCRegistrationStatusNullableWithAggregatesFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     yearEnd?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     accountsNextDue?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
@@ -45268,6 +45429,7 @@ export namespace Prisma {
 
   export type RefBucketCreateInput = {
     id?: string
+    practiceId?: string
     alpha: string
     nextIndex?: number
     createdAt?: Date | string
@@ -45277,6 +45439,7 @@ export namespace Prisma {
 
   export type RefBucketUncheckedCreateInput = {
     id?: string
+    practiceId?: string
     portfolioCode: number
     alpha: string
     nextIndex?: number
@@ -45286,6 +45449,7 @@ export namespace Prisma {
 
   export type RefBucketUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    practiceId?: StringFieldUpdateOperationsInput | string
     alpha?: StringFieldUpdateOperationsInput | string
     nextIndex?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -45295,6 +45459,7 @@ export namespace Prisma {
 
   export type RefBucketUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    practiceId?: StringFieldUpdateOperationsInput | string
     portfolioCode?: IntFieldUpdateOperationsInput | number
     alpha?: StringFieldUpdateOperationsInput | string
     nextIndex?: IntFieldUpdateOperationsInput | number
@@ -45304,6 +45469,7 @@ export namespace Prisma {
 
   export type RefBucketCreateManyInput = {
     id?: string
+    practiceId?: string
     portfolioCode: number
     alpha: string
     nextIndex?: number
@@ -45313,6 +45479,7 @@ export namespace Prisma {
 
   export type RefBucketUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    practiceId?: StringFieldUpdateOperationsInput | string
     alpha?: StringFieldUpdateOperationsInput | string
     nextIndex?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -45321,6 +45488,7 @@ export namespace Prisma {
 
   export type RefBucketUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    practiceId?: StringFieldUpdateOperationsInput | string
     portfolioCode?: IntFieldUpdateOperationsInput | number
     alpha?: StringFieldUpdateOperationsInput | string
     nextIndex?: IntFieldUpdateOperationsInput | number
@@ -45730,9 +45898,15 @@ export namespace Prisma {
 
   export type ClientCreateInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -45744,14 +45918,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -45785,9 +45959,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -45799,14 +45979,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -45840,9 +46020,15 @@ export namespace Prisma {
 
   export type ClientUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45854,14 +46040,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -45895,9 +46081,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45909,14 +46101,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -45950,9 +46142,15 @@ export namespace Prisma {
 
   export type ClientCreateManyInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -45964,14 +46162,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -45992,9 +46190,15 @@ export namespace Prisma {
 
   export type ClientUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46006,14 +46210,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -46032,9 +46236,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46046,14 +46256,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -49507,13 +49717,15 @@ export namespace Prisma {
     isNot?: PortfolioWhereInput
   }
 
-  export type RefBucketPortfolioCodeAlphaCompoundUniqueInput = {
+  export type RefBucketPracticeIdPortfolioCodeAlphaCompoundUniqueInput = {
+    practiceId: string
     portfolioCode: number
     alpha: string
   }
 
   export type RefBucketCountOrderByAggregateInput = {
     id?: SortOrder
+    practiceId?: SortOrder
     portfolioCode?: SortOrder
     alpha?: SortOrder
     nextIndex?: SortOrder
@@ -49528,6 +49740,7 @@ export namespace Prisma {
 
   export type RefBucketMaxOrderByAggregateInput = {
     id?: SortOrder
+    practiceId?: SortOrder
     portfolioCode?: SortOrder
     alpha?: SortOrder
     nextIndex?: SortOrder
@@ -49537,6 +49750,7 @@ export namespace Prisma {
 
   export type RefBucketMinOrderByAggregateInput = {
     id?: SortOrder
+    practiceId?: SortOrder
     portfolioCode?: SortOrder
     alpha?: SortOrder
     nextIndex?: SortOrder
@@ -49836,6 +50050,13 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type EnumHMRCRegistrationStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.HMRCRegistrationStatus | EnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.HMRCRegistrationStatus[] | ListEnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.HMRCRegistrationStatus[] | ListEnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumHMRCRegistrationStatusNullableFilter<$PrismaModel> | $Enums.HMRCRegistrationStatus | null
+  }
+
   export type CalendarEventListRelationFilter = {
     every?: CalendarEventWhereInput
     some?: CalendarEventWhereInput
@@ -49926,11 +50147,23 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type ClientPracticeIdPortfolioCodeClientRefCompoundUniqueInput = {
+    practiceId: string
+    portfolioCode: number
+    clientRef: string
+  }
+
   export type ClientCountOrderByAggregateInput = {
     id?: SortOrder
+    clientRef?: SortOrder
+    baseClientRef?: SortOrder
     name?: SortOrder
     type?: SortOrder
     status?: SortOrder
+    practiceId?: SortOrder
+    isConnectedParty?: SortOrder
+    connectedOrder?: SortOrder
+    connectedPrincipalId?: SortOrder
     mainEmail?: SortOrder
     mainPhone?: SortOrder
     registeredNumber?: SortOrder
@@ -49969,6 +50202,7 @@ export namespace Prisma {
   }
 
   export type ClientAvgOrderByAggregateInput = {
+    connectedOrder?: SortOrder
     accountsAccountingReferenceDay?: SortOrder
     accountsAccountingReferenceMonth?: SortOrder
     portfolioCode?: SortOrder
@@ -49978,9 +50212,15 @@ export namespace Prisma {
 
   export type ClientMaxOrderByAggregateInput = {
     id?: SortOrder
+    clientRef?: SortOrder
+    baseClientRef?: SortOrder
     name?: SortOrder
     type?: SortOrder
     status?: SortOrder
+    practiceId?: SortOrder
+    isConnectedParty?: SortOrder
+    connectedOrder?: SortOrder
+    connectedPrincipalId?: SortOrder
     mainEmail?: SortOrder
     mainPhone?: SortOrder
     registeredNumber?: SortOrder
@@ -50020,9 +50260,15 @@ export namespace Prisma {
 
   export type ClientMinOrderByAggregateInput = {
     id?: SortOrder
+    clientRef?: SortOrder
+    baseClientRef?: SortOrder
     name?: SortOrder
     type?: SortOrder
     status?: SortOrder
+    practiceId?: SortOrder
+    isConnectedParty?: SortOrder
+    connectedOrder?: SortOrder
+    connectedPrincipalId?: SortOrder
     mainEmail?: SortOrder
     mainPhone?: SortOrder
     registeredNumber?: SortOrder
@@ -50061,6 +50307,7 @@ export namespace Prisma {
   }
 
   export type ClientSumOrderByAggregateInput = {
+    connectedOrder?: SortOrder
     accountsAccountingReferenceDay?: SortOrder
     accountsAccountingReferenceMonth?: SortOrder
     portfolioCode?: SortOrder
@@ -50102,6 +50349,16 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type EnumHMRCRegistrationStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.HMRCRegistrationStatus | EnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.HMRCRegistrationStatus[] | ListEnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.HMRCRegistrationStatus[] | ListEnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumHMRCRegistrationStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.HMRCRegistrationStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumHMRCRegistrationStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumHMRCRegistrationStatusNullableFilter<$PrismaModel>
   }
 
   export type EnumLifecycleStatusFilter<$PrismaModel = never> = {
@@ -52647,6 +52904,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput = {
+    set?: $Enums.HMRCRegistrationStatus | null
+  }
+
   export type AccountsSetUpdateManyWithoutClientNestedInput = {
     create?: XOR<AccountsSetCreateWithoutClientInput, AccountsSetUncheckedCreateWithoutClientInput> | AccountsSetCreateWithoutClientInput[] | AccountsSetUncheckedCreateWithoutClientInput[]
     connectOrCreate?: AccountsSetCreateOrConnectWithoutClientInput | AccountsSetCreateOrConnectWithoutClientInput[]
@@ -54193,6 +54454,13 @@ export namespace Prisma {
     not?: NestedEnumClientStatusFilter<$PrismaModel> | $Enums.ClientStatus
   }
 
+  export type NestedEnumHMRCRegistrationStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.HMRCRegistrationStatus | EnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.HMRCRegistrationStatus[] | ListEnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.HMRCRegistrationStatus[] | ListEnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumHMRCRegistrationStatusNullableFilter<$PrismaModel> | $Enums.HMRCRegistrationStatus | null
+  }
+
   export type NestedEnumClientTypeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ClientType | EnumClientTypeFieldRefInput<$PrismaModel>
     in?: $Enums.ClientType[] | ListEnumClientTypeFieldRefInput<$PrismaModel>
@@ -54238,6 +54506,16 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumHMRCRegistrationStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.HMRCRegistrationStatus | EnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.HMRCRegistrationStatus[] | ListEnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.HMRCRegistrationStatus[] | ListEnumHMRCRegistrationStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumHMRCRegistrationStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.HMRCRegistrationStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumHMRCRegistrationStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumHMRCRegistrationStatusNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumLifecycleStatusFilter<$PrismaModel = never> = {
@@ -55360,9 +55638,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutPortfolioInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -55374,14 +55658,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -55414,9 +55698,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutPortfolioInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -55428,14 +55718,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -55478,6 +55768,7 @@ export namespace Prisma {
 
   export type RefBucketCreateWithoutPortfolioInput = {
     id?: string
+    practiceId?: string
     alpha: string
     nextIndex?: number
     createdAt?: Date | string
@@ -55486,6 +55777,7 @@ export namespace Prisma {
 
   export type RefBucketUncheckedCreateWithoutPortfolioInput = {
     id?: string
+    practiceId?: string
     alpha: string
     nextIndex?: number
     createdAt?: Date | string
@@ -55523,9 +55815,15 @@ export namespace Prisma {
     OR?: ClientScalarWhereInput[]
     NOT?: ClientScalarWhereInput | ClientScalarWhereInput[]
     id?: StringFilter<"Client"> | string
+    clientRef?: StringFilter<"Client"> | string
+    baseClientRef?: StringFilter<"Client"> | string
     name?: StringFilter<"Client"> | string
     type?: EnumClientTypeFilter<"Client"> | $Enums.ClientType
     status?: EnumClientStatusFilter<"Client"> | $Enums.ClientStatus
+    practiceId?: StringFilter<"Client"> | string
+    isConnectedParty?: BoolFilter<"Client"> | boolean
+    connectedOrder?: IntNullableFilter<"Client"> | number | null
+    connectedPrincipalId?: StringNullableFilter<"Client"> | string | null
     mainEmail?: StringNullableFilter<"Client"> | string | null
     mainPhone?: StringNullableFilter<"Client"> | string | null
     registeredNumber?: StringNullableFilter<"Client"> | string | null
@@ -55537,14 +55835,14 @@ export namespace Prisma {
     eoriNumber?: StringNullableFilter<"Client"> | string | null
     mtdVatEnabled?: BoolFilter<"Client"> | boolean
     mtdItsaEnabled?: BoolFilter<"Client"> | boolean
-    hmrcCtStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcSaStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcVatStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcPayeStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcCisStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcMtdVatStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcMtdItsaStatus?: StringNullableFilter<"Client"> | string | null
-    hmrcEoriStatus?: StringNullableFilter<"Client"> | string | null
+    hmrcCtStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: EnumHMRCRegistrationStatusNullableFilter<"Client"> | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: DateTimeNullableFilter<"Client"> | Date | string | null
     yearEnd?: DateTimeNullableFilter<"Client"> | Date | string | null
     accountsNextDue?: DateTimeNullableFilter<"Client"> | Date | string | null
@@ -55584,6 +55882,7 @@ export namespace Prisma {
     OR?: RefBucketScalarWhereInput[]
     NOT?: RefBucketScalarWhereInput | RefBucketScalarWhereInput[]
     id?: StringFilter<"RefBucket"> | string
+    practiceId?: StringFilter<"RefBucket"> | string
     portfolioCode?: IntFilter<"RefBucket"> | number
     alpha?: StringFilter<"RefBucket"> | string
     nextIndex?: IntFilter<"RefBucket"> | number
@@ -58062,9 +58361,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutClientProfileInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -58076,14 +58381,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -58116,9 +58421,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutClientProfileInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -58130,14 +58441,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -58186,9 +58497,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutClientProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58200,14 +58517,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -58240,9 +58557,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutClientProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58254,14 +58577,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -58294,9 +58617,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutAddressInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -58308,14 +58637,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -58348,9 +58677,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutAddressInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -58362,14 +58697,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -58822,9 +59157,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutServicesInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -58836,14 +59177,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -58876,9 +59217,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutServicesInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -58890,14 +59237,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -59002,9 +59349,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutServicesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59016,14 +59369,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -59056,9 +59409,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutServicesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59070,14 +59429,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -59126,9 +59485,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutComplianceItemsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -59140,14 +59505,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -59180,9 +59545,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutComplianceItemsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -59194,14 +59565,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -59285,9 +59656,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutComplianceItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59299,14 +59676,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -59339,9 +59716,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutComplianceItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59353,14 +59736,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -59479,9 +59862,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutTasksInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -59493,14 +59882,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -59533,9 +59922,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutTasksInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -59547,14 +59942,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -59734,9 +60129,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59748,14 +60149,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -59788,9 +60189,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59802,14 +60209,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60060,9 +60467,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutDocumentsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -60074,14 +60487,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -60114,9 +60527,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutDocumentsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -60128,14 +60547,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -60229,9 +60648,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60243,14 +60668,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60283,9 +60708,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60297,14 +60728,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60688,9 +61119,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutPartiesInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -60702,14 +61139,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -60742,9 +61179,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutPartiesInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -60756,14 +61199,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -60835,9 +61278,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutPartiesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60849,14 +61298,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60889,9 +61338,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutPartiesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60903,14 +61358,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60972,9 +61427,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutAccountsSetsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -60986,14 +61447,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -61026,9 +61487,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutAccountsSetsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -61040,14 +61507,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -61186,9 +61653,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutAccountsSetsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -61200,14 +61673,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61240,9 +61713,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutAccountsSetsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -61254,14 +61733,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61396,9 +61875,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutCompaniesHouseDataInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -61410,14 +61895,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -61450,9 +61935,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutCompaniesHouseDataInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -61464,14 +61955,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -61520,9 +62011,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutCompaniesHouseDataInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -61534,14 +62031,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61574,9 +62071,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutCompaniesHouseDataInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -61588,14 +62091,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61628,9 +62131,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutFilingsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -61642,14 +62151,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -61682,9 +62191,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutFilingsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -61696,14 +62211,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -61752,9 +62267,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutFilingsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -61766,14 +62287,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61806,9 +62327,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutFilingsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -61820,14 +62347,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -61898,9 +62425,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutTaxCalculationsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -61912,14 +62445,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -61952,9 +62485,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutTaxCalculationsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -61966,14 +62505,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -62078,9 +62617,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutTaxCalculationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62092,14 +62637,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -62132,9 +62677,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutTaxCalculationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62146,14 +62697,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -62368,9 +62919,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutGeneratedReportsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -62382,14 +62939,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -62422,9 +62979,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutGeneratedReportsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -62436,14 +62999,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -62545,9 +63108,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutGeneratedReportsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62559,14 +63128,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -62599,9 +63168,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutGeneratedReportsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62613,14 +63188,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -62653,9 +63228,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutCalendarEventsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -62667,14 +63248,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -62707,9 +63288,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutCalendarEventsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -62721,14 +63308,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -62777,9 +63364,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutCalendarEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62791,14 +63384,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -62831,9 +63424,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutCalendarEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62845,14 +63444,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -62885,9 +63484,15 @@ export namespace Prisma {
 
   export type ClientCreateWithoutAuditEventsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -62899,14 +63504,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -62939,9 +63544,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutAuditEventsInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -62953,14 +63564,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -63009,9 +63620,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutAuditEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63023,14 +63640,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63063,9 +63680,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutAuditEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63077,14 +63700,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63213,9 +63836,15 @@ export namespace Prisma {
 
   export type ClientCreateManyPortfolioInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -63227,14 +63856,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -63254,6 +63883,7 @@ export namespace Prisma {
 
   export type RefBucketCreateManyPortfolioInput = {
     id?: string
+    practiceId?: string
     alpha: string
     nextIndex?: number
     createdAt?: Date | string
@@ -63262,9 +63892,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63276,14 +63912,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63316,9 +63952,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63330,14 +63972,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63370,9 +64012,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63384,14 +64032,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63411,6 +64059,7 @@ export namespace Prisma {
 
   export type RefBucketUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    practiceId?: StringFieldUpdateOperationsInput | string
     alpha?: StringFieldUpdateOperationsInput | string
     nextIndex?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63419,6 +64068,7 @@ export namespace Prisma {
 
   export type RefBucketUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    practiceId?: StringFieldUpdateOperationsInput | string
     alpha?: StringFieldUpdateOperationsInput | string
     nextIndex?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63427,6 +64077,7 @@ export namespace Prisma {
 
   export type RefBucketUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    practiceId?: StringFieldUpdateOperationsInput | string
     alpha?: StringFieldUpdateOperationsInput | string
     nextIndex?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64645,9 +65296,15 @@ export namespace Prisma {
 
   export type ClientCreateManyAddressInput = {
     id: string
+    clientRef: string
+    baseClientRef: string
     name: string
     type: $Enums.ClientType
     status?: $Enums.ClientStatus
+    practiceId?: string
+    isConnectedParty?: boolean
+    connectedOrder?: number | null
+    connectedPrincipalId?: string | null
     mainEmail?: string | null
     mainPhone?: string | null
     registeredNumber?: string | null
@@ -64659,14 +65316,14 @@ export namespace Prisma {
     eoriNumber?: string | null
     mtdVatEnabled?: boolean
     mtdItsaEnabled?: boolean
-    hmrcCtStatus?: string | null
-    hmrcSaStatus?: string | null
-    hmrcVatStatus?: string | null
-    hmrcPayeStatus?: string | null
-    hmrcCisStatus?: string | null
-    hmrcMtdVatStatus?: string | null
-    hmrcMtdItsaStatus?: string | null
-    hmrcEoriStatus?: string | null
+    hmrcCtStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: $Enums.HMRCRegistrationStatus | null
     incorporationDate?: Date | string | null
     yearEnd?: Date | string | null
     accountsNextDue?: Date | string | null
@@ -64699,9 +65356,15 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutAddressInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64713,14 +65376,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -64753,9 +65416,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutAddressInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64767,14 +65436,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -64807,9 +65476,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateManyWithoutAddressInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientRef?: StringFieldUpdateOperationsInput | string
+    baseClientRef?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    practiceId?: StringFieldUpdateOperationsInput | string
+    isConnectedParty?: BoolFieldUpdateOperationsInput | boolean
+    connectedOrder?: NullableIntFieldUpdateOperationsInput | number | null
+    connectedPrincipalId?: NullableStringFieldUpdateOperationsInput | string | null
     mainEmail?: NullableStringFieldUpdateOperationsInput | string | null
     mainPhone?: NullableStringFieldUpdateOperationsInput | string | null
     registeredNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64821,14 +65496,14 @@ export namespace Prisma {
     eoriNumber?: NullableStringFieldUpdateOperationsInput | string | null
     mtdVatEnabled?: BoolFieldUpdateOperationsInput | boolean
     mtdItsaEnabled?: BoolFieldUpdateOperationsInput | boolean
-    hmrcCtStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcSaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcPayeStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcCisStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdVatStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcMtdItsaStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    hmrcEoriStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    hmrcCtStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcSaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcPayeStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcCisStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdVatStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcMtdItsaStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
+    hmrcEoriStatus?: NullableEnumHMRCRegistrationStatusFieldUpdateOperationsInput | $Enums.HMRCRegistrationStatus | null
     incorporationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     yearEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accountsNextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

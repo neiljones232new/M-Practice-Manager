@@ -7,6 +7,7 @@ import * as path from 'path';
 import { existsSync } from 'fs';
 import * as crypto from 'crypto';
 import * as mime from 'mime-types';
+import { resolveStorageRoot } from '../../common/utils/storage-path.util';
 import {
   Document,
   DocumentCategory,
@@ -42,7 +43,7 @@ export class DocumentsService {
     private prisma: PrismaService,
     private clientsService: ClientsService,
   ) {
-    const storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
+    const storagePath = resolveStorageRoot(this.configService);
     this.documentsPath = path.join(storagePath, 'documents', 'files');
     this.initializeDocumentStorage();
   }

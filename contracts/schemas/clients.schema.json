@@ -1,0 +1,39 @@
+{
+  "entity": "clients",
+  "prismaModel": {
+    "file": "apps/api/prisma/schema.prisma",
+    "name": "Client"
+  },
+  "apiInterface": {
+    "file": "apps/api/src/modules/clients/interfaces/client.interface.ts",
+    "name": "Client"
+  },
+  "webInterface": {
+    "file": "apps/web/src/lib/types.ts",
+    "name": "Client"
+  },
+  "controller": {
+    "file": "apps/api/src/modules/clients/clients.controller.ts",
+    "basePath": "/clients"
+  },
+  "requiredRoutes": [
+    "GET /clients",
+    "GET /clients/search",
+    "GET /clients/:id",
+    "POST /clients",
+    "PUT /clients/:id",
+    "DELETE /clients/:id"
+  ],
+  "apiDerivedFields": [
+    "address"
+  ],
+  "webDerivedFields": [
+    "address"
+  ],
+  "requiredWebFields": [
+    "id",
+    "name",
+    "type",
+    "status"
+  ]
+}

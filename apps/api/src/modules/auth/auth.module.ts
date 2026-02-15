@@ -11,11 +11,13 @@ import { PortfolioGuard } from './guards/portfolio.guard';
 
 import { AuditModule } from '../audit/audit.module';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { FileStorageModule } from '../file-storage/file-storage.module';
 
 @Module({
   imports: [
     PrismaModule,
     AuditModule,
+    FileStorageModule,
   ],
 
   controllers: [

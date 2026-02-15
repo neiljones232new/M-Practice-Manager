@@ -5,6 +5,7 @@ import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { existsSync } from 'fs';
+import { resolveStorageRoot } from '../../common/utils/storage-path.util';
 
 const execAsync = promisify(exec);
 
@@ -42,7 +43,7 @@ export class ServerLifecycleService {
   private startTime: Date = new Date();
 
   constructor(private configService: ConfigService) {
-    this.storagePath = this.configService.get<string>('STORAGE_PATH') || './mdj-data';
+    this.storagePath = resolveStorageRoot(this.configService);
     const cwd = process.cwd();
     const repoRoot = cwd.endsWith(path.join('apps', 'api')) ? path.resolve(cwd, '..', '..') : cwd;
     const composeCandidates = [

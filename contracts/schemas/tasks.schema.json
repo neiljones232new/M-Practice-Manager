@@ -1,0 +1,36 @@
+{
+  "entity": "tasks",
+  "prismaModel": {
+    "file": "apps/api/prisma/schema.prisma",
+    "name": "Task"
+  },
+  "apiInterface": {
+    "file": "apps/api/src/modules/tasks/interfaces/task.interface.ts",
+    "name": "Task"
+  },
+  "webInterface": {
+    "file": "apps/web/src/lib/types.ts",
+    "name": "Task"
+  },
+  "controller": {
+    "file": "apps/api/src/modules/tasks/tasks.controller.ts",
+    "basePath": "/tasks"
+  },
+  "requiredRoutes": [
+    "GET /tasks",
+    "GET /tasks/:id",
+    "POST /tasks",
+    "PUT /tasks/:id",
+    "DELETE /tasks/:id"
+  ],
+  "apiDerivedFields": [
+    "assignee"
+  ],
+  "webDerivedFields": [],
+  "requiredWebFields": [
+    "id",
+    "title",
+    "status",
+    "priority"
+  ]
+}

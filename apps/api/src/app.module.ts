@@ -24,16 +24,25 @@ import { TaxCalculationsModule } from './modules/tax-calculations/tax-calculatio
 import { AccountsProductionModule } from './modules/accounts-production/accounts-production.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { StaffModule } from './modules/staff/staff.module';
+import { PeopleModule } from './modules/people/people.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { InternalController } from './modules/internal/internal.controller';
+import * as path from 'path';
+import { findPracticeManagerRoot } from './common/utils/storage-path.util';
+
+const practiceManagerRoot = findPracticeManagerRoot();
+const envFilePath = [
+  path.join(practiceManagerRoot, 'apps', 'api', '.env'),
+  path.join(practiceManagerRoot, '.env'),
+];
 
 @Module({
   imports: [
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `${process.cwd()}/.env`,
+      envFilePath,
       cache: true,
     }),
 
@@ -73,6 +82,7 @@ import { InternalController } from './modules/internal/internal.controller';
     TaxCalculationsModule,
     AccountsProductionModule,
     StaffModule,
+    PeopleModule,
   ],
   controllers: [AppController, InternalController],
   providers: [AppService],

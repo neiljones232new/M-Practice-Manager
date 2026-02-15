@@ -1,6 +1,5 @@
 import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { FileStorageService } from './file-storage.service';
-import { getValidPortfolioCodes } from '../../common/constants/portfolio.constants';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { existsSync } from 'fs';
@@ -161,14 +160,18 @@ export class SearchService {
   async rebuildClientIndex(): Promise<void> {
     try {
       const entries: ClientIndexEntry[] = [];
-      const portfolioCodes = getValidPortfolioCodes();
-      for (const portfolioCode of portfolioCodes) {
-        const files = (await this.fileStorageService.listFiles('clients', portfolioCode)) || [];
-        for (const id of files) {
-          const data = await this.fileStorageService.readJson<any>('clients', id, portfolioCode);
-          if (data) {
-            entries.push(this.buildClientIndexEntry(data, id, portfolioCode));
-          }
+      const files = (await this.fileStorageService.listFiles('clients')) || [];
+      for (const id of files) {
+        const data = await this.fileStorageService.readJson<any>('clients', id);
+        if (data) {
+          const portfolioCode = Number(data?.portfolioCode);
+          entries.push(
+            this.buildClientIndexEntry(
+              data,
+              id,
+              Number.isFinite(portfolioCode) ? portfolioCode : undefined,
+            ),
+          );
         }
       }
       this.clientIndex = entries;
@@ -179,9 +182,11 @@ export class SearchService {
   }
 
   private async updateClientIndexEntry(id: string, data: any, portfolioCode?: number): Promise<void> {
-    const updatedEntry = this.buildClientIndexEntry(data, id, portfolioCode);
+    const inferredPortfolioCode = Number(data?.portfolioCode);
+    const effectivePortfolioCode = portfolioCode ?? (Number.isFinite(inferredPortfolioCode) ? inferredPortfolioCode : undefined);
+    const updatedEntry = this.buildClientIndexEntry(data, id, effectivePortfolioCode);
     const matchIndex = this.clientIndex.findIndex(
-      (entry) => entry.id === id && entry.portfolioCode === portfolioCode
+      (entry) => entry.id === id && entry.portfolioCode === effectivePortfolioCode
     );
     if (matchIndex >= 0) {
       this.clientIndex[matchIndex] = updatedEntry;
@@ -193,9 +198,9 @@ export class SearchService {
 
   private async removeClientIndexEntry(id: string, portfolioCode?: number): Promise<void> {
     const originalLength = this.clientIndex.length;
-    this.clientIndex = this.clientIndex.filter(
-      (entry) => !(entry.id === id && entry.portfolioCode === portfolioCode)
-    );
+    this.clientIndex = portfolioCode === undefined
+      ? this.clientIndex.filter((entry) => entry.id !== id)
+      : this.clientIndex.filter((entry) => !(entry.id === id && entry.portfolioCode === portfolioCode));
     if (this.clientIndex.length !== originalLength) {
       await this.saveClientIndex();
     }
@@ -242,16 +247,18 @@ export class SearchService {
       const newIndex: SearchIndex = {};
       
       if (category === 'clients') {
-        // Handle portfolio-based clients
-        const portfolioCodes = getValidPortfolioCodes();
-        for (const portfolioCode of portfolioCodes) {
-          const files = await this.fileStorageService.listFiles(category, portfolioCode);
-          
-          for (const id of files) {
-            const data = await this.fileStorageService.readJson(category, id, portfolioCode);
-            if (data) {
-              this.indexDocument(newIndex, category, id, data, portfolioCode);
-            }
+        const files = await this.fileStorageService.listFiles(category);
+        for (const id of files) {
+          const data = await this.fileStorageService.readJson<any>(category, id);
+          if (data) {
+            const portfolioCode = Number(data?.portfolioCode);
+            this.indexDocument(
+              newIndex,
+              category,
+              id,
+              data,
+              Number.isFinite(portfolioCode) ? portfolioCode : undefined,
+            );
           }
         }
       } else {

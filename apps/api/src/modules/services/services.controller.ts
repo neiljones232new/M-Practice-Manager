@@ -23,6 +23,7 @@ import { TasksService } from '../tasks/tasks.service';
 import { ComplianceService } from '../filings/compliance.service';
 import { 
   Service, 
+  ServiceStatus,
   CreateServiceDto, 
   UpdateServiceDto,
   ServiceFilters,
@@ -194,7 +195,7 @@ export class ServicesController {
   @ApiOperation({ summary: 'Update service status' })
   async updateServiceStatus(
     @Param('id') id: string, 
-    @Body() body: { status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' }
+    @Body() body: { status: ServiceStatus }
   ) {
     return this.servicesService.updateStatus(id, body.status);
   }

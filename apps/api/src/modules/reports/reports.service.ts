@@ -7,6 +7,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { existsSync } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import { resolveStorageRoot } from '../../common/utils/storage-path.util';
 import {
   GeneratedReport,
   Client,
@@ -64,26 +65,43 @@ interface ReportBranding {
 @Injectable()
 export class ReportsService {
   private readonly logger = new Logger(ReportsService.name);
-  private readonly reportsPath: string;
+  private readonly storagePath: string;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly databaseService: DatabaseService,
     private readonly taxCalculationsService: TaxCalculationsService,
   ) {
-    const storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
-    this.reportsPath = path.join(storagePath, 'reports');
+    this.storagePath = resolveStorageRoot(this.configService);
     this.ensureReportsDirectory();
   }
 
   private async ensureReportsDirectory(): Promise<void> {
     try {
-      if (!existsSync(this.reportsPath)) {
-        await fs.mkdir(this.reportsPath, { recursive: true });
+      const clientsPath = path.join(this.storagePath, 'clients');
+      if (!existsSync(clientsPath)) {
+        await fs.mkdir(clientsPath, { recursive: true });
       }
     } catch (error) {
       this.logger.error('Failed to create reports directory:', error);
     }
+  }
+
+  private sanitizeStorageSegment(value?: string): string {
+    return String(value || 'unknown')
+      .trim()
+      .replace(/[^a-zA-Z0-9_-]+/g, '_')
+      .replace(/^_+|_+$/g, '')
+      .slice(0, 80) || 'unknown';
+  }
+
+  private async ensureClientReportsDirectory(clientId?: string): Promise<string> {
+    const storageId = this.sanitizeStorageSegment(clientId);
+    const reportsPath = path.join(this.storagePath, 'clients', storageId, 'reports');
+    if (!existsSync(reportsPath)) {
+      await fs.mkdir(reportsPath, { recursive: true });
+    }
+    return reportsPath;
   }
 
   /**
@@ -124,11 +142,13 @@ export class ReportsService {
 
       let filePath: string;
       let content: any;
+      const clientReportsPath = await this.ensureClientReportsDirectory(config.clientId);
 
       if (config.format === 'PDF') {
         const pdfResult = await this.generateClientPackPDF(reportData, {
           includeBranding: config.includeBranding,
           includeCharts: config.includeCharts,
+          outputPath: clientReportsPath,
         });
         
         if (!pdfResult.success) {
@@ -140,7 +160,7 @@ export class ReportsService {
       } else {
         const html = await this.generateClientPackHTML(reportData);
         const htmlFileName = `client-pack-${client.companyNumber}-${Date.now()}.html`;
-        filePath = path.join(this.reportsPath, htmlFileName);
+        filePath = path.join(clientReportsPath, htmlFileName);
         await fs.writeFile(filePath, html, 'utf8');
         content = { html };
       }
@@ -210,11 +230,13 @@ export class ReportsService {
 
       let filePath: string;
       let content: any;
+      const clientReportsPath = await this.ensureClientReportsDirectory(config.clientId);
 
       if (config.format === 'PDF') {
         const pdfResult = await this.generateTaxStrategyPDF(reportData, {
           includeBranding: config.includeBranding,
           includeCharts: config.includeCharts,
+          outputPath: clientReportsPath,
         });
         
         if (!pdfResult.success) {
@@ -226,7 +248,7 @@ export class ReportsService {
       } else {
         const html = await this.generateTaxStrategyHTML(reportData);
         const htmlFileName = `tax-strategy-${client.companyNumber}-${Date.now()}.html`;
-        filePath = path.join(this.reportsPath, htmlFileName);
+        filePath = path.join(clientReportsPath, htmlFileName);
         await fs.writeFile(filePath, html, 'utf8');
         content = { html };
       }
@@ -280,10 +302,12 @@ export class ReportsService {
 
       let filePath: string;
       let content: any;
+      const clientReportsPath = await this.ensureClientReportsDirectory(config.clientId);
 
       if (config.format === 'PDF') {
         const pdfResult = await this.generateCompanyProfilePDF(reportData, {
           includeBranding: config.includeBranding,
+          outputPath: clientReportsPath,
         });
         
         if (!pdfResult.success) {
@@ -295,7 +319,7 @@ export class ReportsService {
       } else {
         const html = await this.generateCompanyProfileHTML(reportData);
         const htmlFileName = `company-profile-${client.companyNumber}-${Date.now()}.html`;
-        filePath = path.join(this.reportsPath, htmlFileName);
+        filePath = path.join(clientReportsPath, htmlFileName);
         await fs.writeFile(filePath, html, 'utf8');
         content = { html };
       }
@@ -377,7 +401,11 @@ export class ReportsService {
       const html = await this.generateClientPackHTML(data);
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const fileName = `client-pack-${data.client.companyNumber}-${timestamp}.pdf`;
-      const outputPath = path.join(this.reportsPath, fileName);
+      const outputDir = options.outputPath || path.join(this.storagePath, 'clients', 'unknown', 'reports');
+      if (!existsSync(outputDir)) {
+        await fs.mkdir(outputDir, { recursive: true });
+      }
+      const outputPath = path.join(outputDir, fileName);
 
       browser = await puppeteer.launch({ 
         headless: true,
@@ -445,7 +473,11 @@ export class ReportsService {
       const html = await this.generateTaxStrategyHTML(data);
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const fileName = `tax-strategy-${data.client.companyNumber}-${timestamp}.pdf`;
-      const outputPath = path.join(this.reportsPath, fileName);
+      const outputDir = options.outputPath || path.join(this.storagePath, 'clients', 'unknown', 'reports');
+      if (!existsSync(outputDir)) {
+        await fs.mkdir(outputDir, { recursive: true });
+      }
+      const outputPath = path.join(outputDir, fileName);
 
       browser = await puppeteer.launch({ 
         headless: true,
@@ -502,7 +534,11 @@ export class ReportsService {
       const html = await this.generateCompanyProfileHTML(data);
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const fileName = `company-profile-${data.client.companyNumber}-${timestamp}.pdf`;
-      const outputPath = path.join(this.reportsPath, fileName);
+      const outputDir = options.outputPath || path.join(this.storagePath, 'clients', 'unknown', 'reports');
+      if (!existsSync(outputDir)) {
+        await fs.mkdir(outputDir, { recursive: true });
+      }
+      const outputPath = path.join(outputDir, fileName);
 
       browser = await puppeteer.launch({ 
         headless: true,
@@ -977,7 +1013,7 @@ ${pages.join('\n')}
     };
 
     try {
-      const storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
+      const storagePath = resolveStorageRoot(this.configService);
       const configDir = path.join(storagePath, 'config');
       const settingsPath = path.join(configDir, 'practice-settings.json');
       const logoPath = path.join(configDir, 'branding-logo.json');

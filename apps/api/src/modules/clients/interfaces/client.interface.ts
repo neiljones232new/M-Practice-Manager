@@ -2,6 +2,13 @@ export type ClientType = 'COMPANY' | 'INDIVIDUAL' | 'SOLE_TRADER' | 'PARTNERSHIP
 export type ClientStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
 export type LifecycleStatus = 'PROSPECT' | 'ONBOARDING' | 'ACTIVE' | 'DORMANT' | 'CEASED';
 export type VatStagger = 'A' | 'B' | 'C' | 'NONE';
+export type HMRCRegistrationStatus =
+  | 'NOT_REGISTERED'
+  | 'NOT_APPLICABLE'
+  | 'APPLIED_FOR'
+  | 'REGISTERED'
+  | 'DEREGISTERED'
+  | 'MISSING_DATA';
 
 export interface Address {
   id: string;
@@ -33,9 +40,15 @@ export interface UpdateAddressDto {
 
 export interface Client {
   id: string;
+  clientRef: string;
+  baseClientRef: string;
   name: string;
   type: ClientType;
   status: ClientStatus;
+  practiceId: string;
+  isConnectedParty: boolean;
+  connectedOrder?: number;
+  connectedPrincipalId?: string;
   portfolioCode: number;
   mainEmail?: string;
   mainPhone?: string;
@@ -52,14 +65,14 @@ export interface Client {
 
   mtdVatEnabled: boolean;
   mtdItsaEnabled: boolean;
-  hmrcCtStatus?: string;
-  hmrcSaStatus?: string;
-  hmrcVatStatus?: string;
-  hmrcPayeStatus?: string;
-  hmrcCisStatus?: string;
-  hmrcMtdVatStatus?: string;
-  hmrcMtdItsaStatus?: string;
-  hmrcEoriStatus?: string;
+  hmrcCtStatus?: HMRCRegistrationStatus;
+  hmrcSaStatus?: HMRCRegistrationStatus;
+  hmrcVatStatus?: HMRCRegistrationStatus;
+  hmrcPayeStatus?: HMRCRegistrationStatus;
+  hmrcCisStatus?: HMRCRegistrationStatus;
+  hmrcMtdVatStatus?: HMRCRegistrationStatus;
+  hmrcMtdItsaStatus?: HMRCRegistrationStatus;
+  hmrcEoriStatus?: HMRCRegistrationStatus;
 
   incorporationDate?: Date;
   yearEnd?: Date;
@@ -81,9 +94,15 @@ export interface Client {
 
 export interface CreateClientDto {
   id?: string;
+  clientRef?: string;
+  baseClientRef?: string;
   name: string;
   type: ClientType;
   status?: ClientStatus;
+  practiceId?: string;
+  isConnectedParty?: boolean;
+  connectedOrder?: number;
+  connectedPrincipalId?: string;
   portfolioCode: number;
   mainEmail?: string;
   mainPhone?: string;
@@ -99,14 +118,14 @@ export interface CreateClientDto {
 
   mtdVatEnabled?: boolean;
   mtdItsaEnabled?: boolean;
-  hmrcCtStatus?: string;
-  hmrcSaStatus?: string;
-  hmrcVatStatus?: string;
-  hmrcPayeStatus?: string;
-  hmrcCisStatus?: string;
-  hmrcMtdVatStatus?: string;
-  hmrcMtdItsaStatus?: string;
-  hmrcEoriStatus?: string;
+  hmrcCtStatus?: HMRCRegistrationStatus;
+  hmrcSaStatus?: HMRCRegistrationStatus;
+  hmrcVatStatus?: HMRCRegistrationStatus;
+  hmrcPayeStatus?: HMRCRegistrationStatus;
+  hmrcCisStatus?: HMRCRegistrationStatus;
+  hmrcMtdVatStatus?: HMRCRegistrationStatus;
+  hmrcMtdItsaStatus?: HMRCRegistrationStatus;
+  hmrcEoriStatus?: HMRCRegistrationStatus;
 
   incorporationDate?: Date;
   yearEnd?: Date;
@@ -128,6 +147,12 @@ export interface UpdateClientDto {
   name?: string;
   type?: ClientType;
   status?: ClientStatus;
+  clientRef?: string;
+  baseClientRef?: string;
+  practiceId?: string;
+  isConnectedParty?: boolean;
+  connectedOrder?: number;
+  connectedPrincipalId?: string;
   portfolioCode?: number;
   mainEmail?: string;
   mainPhone?: string;
@@ -143,14 +168,14 @@ export interface UpdateClientDto {
 
   mtdVatEnabled?: boolean;
   mtdItsaEnabled?: boolean;
-  hmrcCtStatus?: string;
-  hmrcSaStatus?: string;
-  hmrcVatStatus?: string;
-  hmrcPayeStatus?: string;
-  hmrcCisStatus?: string;
-  hmrcMtdVatStatus?: string;
-  hmrcMtdItsaStatus?: string;
-  hmrcEoriStatus?: string;
+  hmrcCtStatus?: HMRCRegistrationStatus;
+  hmrcSaStatus?: HMRCRegistrationStatus;
+  hmrcVatStatus?: HMRCRegistrationStatus;
+  hmrcPayeStatus?: HMRCRegistrationStatus;
+  hmrcCisStatus?: HMRCRegistrationStatus;
+  hmrcMtdVatStatus?: HMRCRegistrationStatus;
+  hmrcMtdItsaStatus?: HMRCRegistrationStatus;
+  hmrcEoriStatus?: HMRCRegistrationStatus;
 
   incorporationDate?: Date;
   yearEnd?: Date;

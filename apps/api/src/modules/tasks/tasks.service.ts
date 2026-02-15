@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, Optional, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Optional, Inject, forwardRef, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ClientsService } from '../clients/clients.service';
 import { ServicesService } from '../services/services.service';
@@ -13,6 +13,9 @@ import {
   CreateServiceTemplateDto,
   UpdateServiceTemplateDto,
 } from './interfaces/task.interface';
+
+const TASK_STATUS_VALUES = ['TODO', 'IN_PROGRESS', 'REVIEW', 'COMPLETED', 'CANCELLED'] as const;
+const TASK_PRIORITY_VALUES = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] as const;
 
 @Injectable()
 export class TasksService {
@@ -29,33 +32,34 @@ export class TasksService {
   ) {}
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
-    if (createTaskDto.clientId) {
-      const client = await this.clientsService.findByIdentifier(createTaskDto.clientId);
+    const normalizedCreateDto = this.normalizeTaskPayload(createTaskDto);
+    if (normalizedCreateDto.clientId) {
+      const client = await this.clientsService.findByIdentifier(normalizedCreateDto.clientId);
       if (!client) {
-        throw new NotFoundException(`Client with ID ${createTaskDto.clientId} not found`);
+        throw new NotFoundException(`Client with ID ${normalizedCreateDto.clientId} not found`);
       }
-      createTaskDto.clientId = client.id;
+      normalizedCreateDto.clientId = client.id;
     }
 
-    if (createTaskDto.serviceId) {
-      const service = await this.servicesService.findOne(createTaskDto.serviceId);
+    if (normalizedCreateDto.serviceId) {
+      const service = await this.servicesService.findOne(normalizedCreateDto.serviceId);
       if (!service) {
-        throw new NotFoundException(`Service with ID ${createTaskDto.serviceId} not found`);
+        throw new NotFoundException(`Service with ID ${normalizedCreateDto.serviceId} not found`);
       }
     }
 
     const task = await (this.prisma as any).task.create({
       data: {
-        title: createTaskDto.title,
-        clientId: createTaskDto.clientId,
-        serviceId: createTaskDto.serviceId,
-        description: createTaskDto.description,
-        dueDate: createTaskDto.dueDate,
-        assigneeId: createTaskDto.assigneeId,
-        creatorId: createTaskDto.creatorId,
-        status: createTaskDto.status || 'TODO',
-        priority: createTaskDto.priority || 'MEDIUM',
-        tags: createTaskDto.tags || [],
+        title: normalizedCreateDto.title,
+        clientId: normalizedCreateDto.clientId,
+        serviceId: normalizedCreateDto.serviceId,
+        description: normalizedCreateDto.description,
+        dueDate: normalizedCreateDto.dueDate,
+        assigneeId: normalizedCreateDto.assigneeId,
+        creatorId: normalizedCreateDto.creatorId,
+        status: normalizedCreateDto.status || 'TODO',
+        priority: normalizedCreateDto.priority || 'MEDIUM',
+        tags: normalizedCreateDto.tags || [],
       },
     });
 
@@ -64,45 +68,54 @@ export class TasksService {
   }
 
   async findAll(filters: TaskFilters = {}): Promise<Task[]> {
-    const where: any = {};
+    try {
+      const normalizedFilters = this.normalizeTaskFilters(filters);
+      const where: any = {};
 
-    if (filters.clientId) {
-      const resolvedClientId = await this.clientsService.resolveClientId(filters.clientId);
-      where.clientId = resolvedClientId || filters.clientId;
+      if (normalizedFilters.clientId) {
+        const resolvedClientId = await this.clientsService.resolveClientId(normalizedFilters.clientId);
+        where.clientId = resolvedClientId || normalizedFilters.clientId;
+      }
+      if (normalizedFilters.serviceId) where.serviceId = normalizedFilters.serviceId;
+      if (normalizedFilters.assigneeId) where.assigneeId = normalizedFilters.assigneeId;
+      if (normalizedFilters.status) where.status = normalizedFilters.status;
+      if (normalizedFilters.priority) where.priority = normalizedFilters.priority;
+
+      if (normalizedFilters.dueBefore || normalizedFilters.dueAfter) {
+        where.dueDate = {};
+        if (normalizedFilters.dueBefore) where.dueDate.lte = normalizedFilters.dueBefore;
+        if (normalizedFilters.dueAfter) where.dueDate.gte = normalizedFilters.dueAfter;
+      }
+
+      if (normalizedFilters.portfolioCode) {
+        const clients = await this.clientsService.findByPortfolio(normalizedFilters.portfolioCode);
+        const ids = clients.map((c) => c.id);
+        where.clientId = { in: ids };
+      }
+
+      if (normalizedFilters.search) {
+        where.OR = [
+          { title: { contains: normalizedFilters.search, mode: 'insensitive' } },
+          { description: { contains: normalizedFilters.search, mode: 'insensitive' } },
+        ];
+      }
+
+      const skip = normalizedFilters.offset !== undefined ? Number(normalizedFilters.offset) : 0;
+      const take = normalizedFilters.limit !== undefined ? Number(normalizedFilters.limit) : 100;
+
+      return await (this.prisma as any).task.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: Number.isFinite(skip) ? skip : 0,
+        take: Number.isFinite(take) ? take : 100,
+      });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable while loading tasks; returning empty list');
+        return [];
+      }
+      throw error;
     }
-    if (filters.serviceId) where.serviceId = filters.serviceId;
-    if (filters.assigneeId) where.assigneeId = filters.assigneeId;
-    if (filters.status) where.status = filters.status;
-    if (filters.priority) where.priority = filters.priority;
-
-    if (filters.dueBefore || filters.dueAfter) {
-      where.dueDate = {};
-      if (filters.dueBefore) where.dueDate.lte = filters.dueBefore;
-      if (filters.dueAfter) where.dueDate.gte = filters.dueAfter;
-    }
-
-    if (filters.portfolioCode) {
-      const clients = await this.clientsService.findByPortfolio(filters.portfolioCode);
-      const ids = clients.map((c) => c.id);
-      where.clientId = { in: ids };
-    }
-
-    if (filters.search) {
-      where.OR = [
-        { title: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
-      ];
-    }
-
-    const skip = filters.offset !== undefined ? Number(filters.offset) : 0;
-    const take = filters.limit !== undefined ? Number(filters.limit) : 100;
-
-    return (this.prisma as any).task.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      skip: Number.isFinite(skip) ? skip : 0,
-      take: Number.isFinite(take) ? take : 100,
-    });
   }
 
   async findAllWithClientDetails(
@@ -131,52 +144,100 @@ export class TasksService {
   }
 
   async findOne(id: string): Promise<Task | null> {
-    return (this.prisma as any).task.findUnique({ where: { id } });
+    try {
+      return await (this.prisma as any).task.findUnique({ where: { id } });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading task ${id}`);
+        return null;
+      }
+      throw error;
+    }
   }
 
   async findByClient(clientId: string): Promise<Task[]> {
-    const resolvedClientId = await this.clientsService.resolveClientId(clientId);
-    return (this.prisma as any).task.findMany({
-      where: { clientId: resolvedClientId || clientId },
-      orderBy: { createdAt: 'desc' },
-    });
+    try {
+      const resolvedClientId = await this.clientsService.resolveClientId(clientId);
+      return await (this.prisma as any).task.findMany({
+        where: { clientId: resolvedClientId || clientId },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading tasks for client ${clientId}`);
+        return [];
+      }
+      throw error;
+    }
   }
 
   async findByService(serviceId: string): Promise<Task[]> {
-    return (this.prisma as any).task.findMany({
-      where: { serviceId },
-      orderBy: { createdAt: 'desc' },
-    });
+    try {
+      return await (this.prisma as any).task.findMany({
+        where: { serviceId },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading tasks for service ${serviceId}`);
+        return [];
+      }
+      throw error;
+    }
   }
 
   async findByAssignee(assigneeId: string): Promise<Task[]> {
-    return (this.prisma as any).task.findMany({
-      where: { assigneeId },
-      orderBy: { createdAt: 'desc' },
-    });
+    try {
+      return await (this.prisma as any).task.findMany({
+        where: { assigneeId },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading tasks for assignee ${assigneeId}`);
+        return [];
+      }
+      throw error;
+    }
   }
 
   async findOverdue(): Promise<Task[]> {
-    const now = new Date();
-    return (this.prisma as any).task.findMany({
-      where: {
-        dueDate: { lt: now },
-        status: { notIn: ['COMPLETED', 'CANCELLED'] },
-      },
-      orderBy: { dueDate: 'asc' },
-    });
+    try {
+      const now = new Date();
+      return await (this.prisma as any).task.findMany({
+        where: {
+          dueDate: { lt: now },
+          status: { notIn: ['COMPLETED', 'CANCELLED'] },
+        },
+        orderBy: { dueDate: 'asc' },
+      });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable while loading overdue tasks');
+        return [];
+      }
+      throw error;
+    }
   }
 
   async findDueSoon(days: number = 7): Promise<Task[]> {
-    const now = new Date();
-    const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
-    return (this.prisma as any).task.findMany({
-      where: {
-        dueDate: { gte: now, lte: futureDate },
-        status: { notIn: ['COMPLETED', 'CANCELLED'] },
-      },
-      orderBy: { dueDate: 'asc' },
-    });
+    try {
+      const now = new Date();
+      const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+      return await (this.prisma as any).task.findMany({
+        where: {
+          dueDate: { gte: now, lte: futureDate },
+          status: { notIn: ['COMPLETED', 'CANCELLED'] },
+        },
+        orderBy: { dueDate: 'asc' },
+      });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable while loading due-soon tasks');
+        return [];
+      }
+      throw error;
+    }
   }
 
   async update(id: string, updateTaskDto: UpdateTaskDto): Promise<Task> {
@@ -184,11 +245,12 @@ export class TasksService {
     if (!existing) {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
+    const normalizedUpdateDto = this.normalizeTaskPayload(updateTaskDto);
 
     const updated = await (this.prisma as any).task.update({
       where: { id },
       data: {
-        ...updateTaskDto,
+        ...normalizedUpdateDto,
       },
     });
 
@@ -364,14 +426,17 @@ export class TasksService {
     }
   }
 
-  private async findServiceTemplateByKindAndFrequency(serviceKind: string, frequency: string): Promise<ServiceTemplate | null> {
+  private async findServiceTemplateByKindAndFrequency(serviceKind: string, frequency?: string): Promise<ServiceTemplate | null> {
+    if (!frequency) {
+      return null;
+    }
     const templates = await this.findAllServiceTemplates();
     return templates.find(
       (t) => t.serviceKind === serviceKind && t.frequency === (frequency as any)
     ) || null;
   }
 
-  private advanceDate(date: Date, frequency: string): Date {
+  private advanceDate(date: Date, frequency?: string): Date {
     const d = new Date(date);
     switch (frequency) {
       case 'WEEKLY':
@@ -490,10 +555,19 @@ export class TasksService {
   }
 
   async findAllServiceTemplates(): Promise<ServiceTemplate[]> {
-    const templates = await (this.prisma as any).serviceTemplate.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: { taskTemplates: true },
-    });
+    let templates: any[] = [];
+    try {
+      templates = await (this.prisma as any).serviceTemplate.findMany({
+        orderBy: { createdAt: 'desc' },
+        include: { taskTemplates: true },
+      });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable while loading service templates; returning empty list');
+        return [];
+      }
+      throw error;
+    }
 
     return templates.map((t: any) => ({
       id: t.id,
@@ -517,10 +591,19 @@ export class TasksService {
   }
 
   async findServiceTemplate(id: string): Promise<ServiceTemplate | null> {
-    const t = await (this.prisma as any).serviceTemplate.findUnique({
-      where: { id },
-      include: { taskTemplates: true },
-    });
+    let t: any = null;
+    try {
+      t = await (this.prisma as any).serviceTemplate.findUnique({
+        where: { id },
+        include: { taskTemplates: true },
+      });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading service template ${id}`);
+        return null;
+      }
+      throw error;
+    }
 
     if (!t) return null;
     return {
@@ -600,5 +683,110 @@ export class TasksService {
 
   private generateId(): string {
     return `task_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  }
+
+  private normalizeTaskFilters(filters: TaskFilters): TaskFilters {
+    const normalized: TaskFilters = {
+      ...filters,
+    };
+    if (normalized.status !== undefined) {
+      normalized.status = this.normalizeEnumField(
+        normalized.status,
+        'status',
+        TASK_STATUS_VALUES,
+      ) as TaskFilters['status'];
+    }
+    if (normalized.priority !== undefined) {
+      normalized.priority = this.normalizeEnumField(
+        normalized.priority,
+        'priority',
+        TASK_PRIORITY_VALUES,
+      ) as TaskFilters['priority'];
+    }
+    if (normalized.portfolioCode !== undefined) {
+      const code = Number(normalized.portfolioCode);
+      if (!Number.isFinite(code)) {
+        throw new BadRequestException('portfolioCode must be a number');
+      }
+      normalized.portfolioCode = code;
+    }
+    if (Object.prototype.hasOwnProperty.call(normalized, 'dueBefore')) {
+      normalized.dueBefore = this.parseOptionalDate(normalized.dueBefore, 'dueBefore') as Date | undefined;
+    }
+    if (Object.prototype.hasOwnProperty.call(normalized, 'dueAfter')) {
+      normalized.dueAfter = this.parseOptionalDate(normalized.dueAfter, 'dueAfter') as Date | undefined;
+    }
+    return normalized;
+  }
+
+  private normalizeTaskPayload(payload: CreateTaskDto | UpdateTaskDto): any {
+    const normalized: Record<string, any> = { ...payload };
+    if (Object.prototype.hasOwnProperty.call(normalized, 'dueDate')) {
+      normalized.dueDate = this.parseOptionalDate(normalized.dueDate, 'dueDate');
+    }
+    if (normalized.status !== undefined) {
+      const status = this.normalizeEnumField(normalized.status, 'status', TASK_STATUS_VALUES);
+      if (!status) {
+        throw new BadRequestException('status cannot be empty');
+      }
+      normalized.status = status;
+    }
+    if (normalized.priority !== undefined) {
+      const priority = this.normalizeEnumField(normalized.priority, 'priority', TASK_PRIORITY_VALUES);
+      if (!priority) {
+        throw new BadRequestException('priority cannot be empty');
+      }
+      normalized.priority = priority;
+    }
+    return normalized;
+  }
+
+  private normalizeEnumField(
+    value: unknown,
+    fieldName: string,
+    allowedValues: readonly string[],
+  ): string | undefined {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value !== 'string') {
+      throw new BadRequestException(`${fieldName} must be a string`);
+    }
+    const normalized = value.trim().toUpperCase();
+    if (!normalized) return undefined;
+    if (!allowedValues.includes(normalized)) {
+      throw new BadRequestException(`${fieldName} must be one of: ${allowedValues.join(', ')}`);
+    }
+    return normalized;
+  }
+
+  private parseOptionalDate(value: unknown, fieldName: string): Date | null | undefined {
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (value instanceof Date) {
+      if (Number.isNaN(value.getTime())) {
+        throw new BadRequestException(`Invalid date for ${fieldName}`);
+      }
+      return value;
+    }
+    if (typeof value !== 'string') {
+      throw new BadRequestException(`${fieldName} must be a valid date string`);
+    }
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const parsed = new Date(trimmed);
+    if (Number.isNaN(parsed.getTime())) {
+      throw new BadRequestException(`Invalid date for ${fieldName}`);
+    }
+    return parsed;
+  }
+
+  private isDatabaseUnavailableError(error: unknown): boolean {
+    const message = String((error as any)?.message || error || '').toLowerCase();
+    return (
+      message.includes("can't reach database server")
+      || message.includes('prismaclientinitializationerror')
+      || message.includes('connection refused')
+      || message.includes('timed out')
+      || message.includes('database connection failed')
+    );
   }
 }

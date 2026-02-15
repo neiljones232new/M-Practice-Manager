@@ -6,6 +6,7 @@ import { MigrationService } from '../database/migration.service';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { existsSync } from 'fs';
+import { resolveStorageRoot } from '../../common/utils/storage-path.util';
 
 export interface CleanupPlan {
   filesToMigrate: FileAuditResult[];
@@ -44,7 +45,7 @@ export class FileCleanupService {
     private databaseService: DatabaseService,
     private migrationService: MigrationService
   ) {
-    this.storagePath = this.configService.get<string>('STORAGE_PATH') || '../../storage';
+    this.storagePath = resolveStorageRoot(this.configService);
   }
 
   /**

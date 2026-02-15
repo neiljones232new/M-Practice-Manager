@@ -1,0 +1,36 @@
+{
+  "entity": "services",
+  "prismaModel": {
+    "file": "apps/api/prisma/schema.prisma",
+    "name": "Service"
+  },
+  "apiInterface": {
+    "file": "apps/api/src/modules/services/interfaces/service.interface.ts",
+    "name": "Service"
+  },
+  "webInterface": {
+    "file": "apps/web/src/lib/types.ts",
+    "name": "Service"
+  },
+  "controller": {
+    "file": "apps/api/src/modules/services/services.controller.ts",
+    "basePath": "/services"
+  },
+  "requiredRoutes": [
+    "GET /services",
+    "GET /services/search",
+    "GET /services/:id",
+    "POST /services",
+    "PUT /services/:id",
+    "DELETE /services/:id"
+  ],
+  "apiDerivedFields": [],
+  "webDerivedFields": [
+    "eligibility"
+  ],
+  "requiredWebFields": [
+    "id",
+    "kind",
+    "status"
+  ]
+}

@@ -123,14 +123,18 @@ export class ClientPartyService {
   }
 
   async create(createClientPartyDto: CreateClientPartyDto): Promise<ClientParty> {
-    await this.validateClientExists(createClientPartyDto.clientId);
+    const resolvedClientId = await this.clientsService.resolveClientId(createClientPartyDto.clientId);
+    if (!resolvedClientId) {
+      throw new NotFoundException(`Client with ID ${createClientPartyDto.clientId} not found`);
+    }
+    await this.validateClientExists(resolvedClientId);
     if (createClientPartyDto.personId) {
       await this.validatePersonExists(createClientPartyDto.personId);
     }
 
     if (createClientPartyDto.personId) {
       const existingRelationship = await this.findByClientAndPerson(
-        createClientPartyDto.clientId,
+        resolvedClientId,
         createClientPartyDto.personId,
         createClientPartyDto.role
       );
@@ -142,11 +146,11 @@ export class ClientPartyService {
       }
     }
 
-    const suffixLetter = createClientPartyDto.suffixLetter || (await this.generateSuffixLetter(createClientPartyDto.clientId));
+    const suffixLetter = createClientPartyDto.suffixLetter || (await this.generateSuffixLetter(resolvedClientId));
 
     const created = await (this.prisma as any).clientParty.create({
       data: {
-        clientId: createClientPartyDto.clientId,
+        clientId: resolvedClientId,
         personId: createClientPartyDto.personId,
         role: createClientPartyDto.role ? this.parsePartyRole(createClientPartyDto.role) : undefined,
         ownershipPercent: createClientPartyDto.ownershipPercent,

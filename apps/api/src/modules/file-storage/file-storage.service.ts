@@ -5,6 +5,7 @@ import * as path from 'path';
 import { existsSync } from 'fs';
 import * as crypto from 'crypto';
 import { EncryptionService, EncryptedData } from '../security/services/encryption.service';
+import { resolveStorageRoot } from '../../common/utils/storage-path.util';
 
 export interface FileStorageTransaction {
   id: string;
@@ -43,7 +44,16 @@ export class FileStorageService {
   private readonly activeLocks = new Set<string>();
   private readonly pendingTransactions = new Map<string, FileStorageTransaction>();
   private readonly clientScopedMap = new Map<string, string>();
-  private readonly clientScopedCategories = new Set(['services', 'client-parties', 'compliance', 'people']);
+  private readonly clientScopedCategories = new Set(['generated-letters']);
+  // Startup should only pre-create categories that are still actively used by runtime modules.
+  private readonly initializedCategories = [
+    'clients',
+    'users',
+    'config',
+    'events',
+    'tax-calculations',
+    'monitoring',
+  ] as const;
 
   private searchService: any; // Will be injected later to avoid circular dependency
 
@@ -61,24 +71,7 @@ export class FileStorageService {
   }
 
   private resolveStoragePath(): string {
-    const configured = this.configService.get<string>('STORAGE_PATH');
-    const repoRoot = this.findRepositoryRoot();
-    if (configured) {
-      return path.isAbsolute(configured) ? configured : path.resolve(repoRoot, configured);
-    }
-    return path.join(repoRoot, 'storage');
-  }
-
-  private findRepositoryRoot(): string {
-    let cursor = __dirname;
-    const root = path.parse(cursor).root;
-    while (cursor !== root) {
-      if (existsSync(path.join(cursor, 'apps')) && existsSync(path.join(cursor, 'storage'))) {
-        return cursor;
-      }
-      cursor = path.dirname(cursor);
-    }
-    return process.cwd();
+    return resolveStorageRoot(this.configService);
   }
 
   setSearchService(searchService: any): void {
@@ -94,50 +87,11 @@ export class FileStorageService {
       await this.ensureDirectory(this.indexPath);
       await this.ensureDirectory(this.lockPath);
       
-      // Create structured directory hierarchy as per design
-      const categories = [
-        'clients',
-        'staff',
-        'people', 
-        'client-parties',
-        'services',
-        'tasks',
-        'service-templates',
-        'task-templates',
-        'calendar',
-        'documents',
-        'compliance',
-        'events',
-        'config',
-        'templates',
-        'tax-calculations'
-      ];
+      // Create required category directories
+      const categories = this.initializedCategories;
 
       for (const category of categories) {
         await this.ensureDirectory(path.join(this.storagePath, category));
-        
-        // Create portfolio subdirectories for clients
-      if (category === 'clients') {
-        for (let i = 1; i <= 10; i++) {
-          await this.ensureDirectory(path.join(this.storagePath, category, `portfolio-${i}`));
-        }
-      }
-        
-        // Create specialized subdirectories
-        if (category === 'calendar') {
-          await this.ensureDirectory(path.join(this.storagePath, category, 'events'));
-        }
-        
-        if (category === 'documents') {
-          await this.ensureDirectory(path.join(this.storagePath, category, 'files'));
-          await this.ensureDirectory(path.join(this.storagePath, category, 'metadata'));
-        }
-
-        if (category === 'templates') {
-          await this.ensureDirectory(path.join(this.storagePath, category, 'files'));
-          await this.ensureDirectory(path.join(this.storagePath, category, 'metadata'));
-          await this.ensureDirectory(path.join(this.storagePath, category, 'history'));
-        }
       }
 
       // Initialize index files
@@ -221,7 +175,7 @@ export class FileStorageService {
         const files = await fs.readdir(categoryDir);
         for (const file of files) {
           if (!file.endsWith('.json')) continue;
-          const resourceId = file.replace(/\\.json$/, '');
+          const resourceId = file.replace(/\.json$/, '');
           this.clientScopedMap.set(resourceId, clientId);
         }
       }
@@ -476,28 +430,10 @@ export class FileStorageService {
       const entries = await fs.readdir(categoryPath, { withFileTypes: true });
 
       for (const entry of entries) {
-        if (entry.isDirectory()) {
-          if (entry.name.startsWith('portfolio-')) continue;
-          const clientFile = path.join(categoryPath, entry.name, 'client.json');
-          if (existsSync(clientFile)) {
-            refs.add(entry.name);
-          }
+        if (!entry.isDirectory()) {
           continue;
         }
-
-        if (entry.isFile() && entry.name.endsWith('.json') && !entry.name.includes('index.json')) {
-          refs.add(entry.name.replace('.json', ''));
-        }
-      }
-
-      const portfolioCodes = portfolioCode ? [portfolioCode] : Array.from({ length: 10 }, (_, i) => i + 1);
-      for (const code of portfolioCodes) {
-        const legacyPath = path.join(categoryPath, `portfolio-${code}`);
-        if (!existsSync(legacyPath)) continue;
-        const legacyFiles = await fs.readdir(legacyPath);
-        legacyFiles
-          .filter(file => file.endsWith('.json') && !file.includes('index.json'))
-          .forEach(file => refs.add(file.replace('.json', '')));
+        refs.add(entry.name);
       }
 
       const allRefs = Array.from(refs);
@@ -509,7 +445,12 @@ export class FileStorageService {
       for (const ref of allRefs) {
         const data = await this.readJson<any>('clients', ref);
         const dataPortfolio = this.resolveClientPortfolioCode(data);
-        if (data && dataPortfolio !== null && dataPortfolio === portfolioCode) {
+        if (dataPortfolio !== null && dataPortfolio === portfolioCode) {
+          filtered.push(ref);
+          continue;
+        }
+        const parsedFromRef = Number(String(ref).match(/^\d+/)?.[0]);
+        if (Number.isFinite(parsedFromRef) && parsedFromRef === portfolioCode) {
           filtered.push(ref);
         }
       }
@@ -705,13 +646,6 @@ export class FileStorageService {
     return path.join(this.getClientDirectory(clientId), 'client.json');
   }
 
-  private getLegacyClientFilePath(clientId: string, portfolioCode?: number): string {
-    if (portfolioCode) {
-      return path.join(this.storagePath, 'clients', `portfolio-${portfolioCode}`, `${clientId}.json`);
-    }
-    return path.join(this.storagePath, 'clients', `${clientId}.json`);
-  }
-
   private resolveClientPortfolioCode(data: any): number | null {
     const direct = Number(data?.portfolioCode);
     if (Number.isFinite(direct)) {
@@ -726,39 +660,11 @@ export class FileStorageService {
       return primaryPath;
     }
 
-    if (portfolioCode) {
-      const legacyPortfolioPath = this.getLegacyClientFilePath(clientId, portfolioCode);
-      if (existsSync(legacyPortfolioPath)) {
-        return legacyPortfolioPath;
-      }
-    }
-
-    const legacyRootPath = this.getLegacyClientFilePath(clientId);
-    if (existsSync(legacyRootPath)) {
-      return legacyRootPath;
-    }
-
-    if (!portfolioCode) {
-      for (let i = 1; i <= 10; i++) {
-        const legacyPath = this.getLegacyClientFilePath(clientId, i);
-        if (existsSync(legacyPath)) {
-          return legacyPath;
-        }
-      }
-    }
-
     return null;
   }
 
   private getClientDeletePaths(clientId: string): string[] {
-    const paths = new Set<string>();
-    paths.add(this.getClientFilePath(clientId));
-    paths.add(this.getLegacyClientFilePath(clientId));
-    for (let i = 1; i <= 10; i++) {
-      paths.add(this.getLegacyClientFilePath(clientId, i));
-    }
-
-    return Array.from(paths);
+    return [this.getClientFilePath(clientId)];
   }
 
   private async acquireLock(lockKey: string): Promise<void> {
@@ -799,7 +705,7 @@ export class FileStorageService {
   }
 
   private async initializeIndexes(): Promise<void> {
-    const categories = ['clients', 'staff', 'people', 'client-parties', 'services', 'tasks', 'service-templates', 'task-templates', 'calendar', 'documents', 'compliance', 'events', 'templates', 'tax-calculations'];
+    const categories = Array.from(this.initializedCategories);
     
     for (const category of categories) {
       const indexFile = path.join(this.indexPath, `${category}.json`);
@@ -1136,18 +1042,22 @@ export class FileStorageService {
     };
 
     try {
-      const categories = ['clients', 'staff', 'people', 'client-parties', 'services', 'tasks', 'service-templates', 'task-templates', 'calendar', 'documents', 'compliance', 'events', 'config', 'templates', 'tax-calculations'];
+      const categories = Array.from(this.initializedCategories);
       
       for (const category of categories) {
         if (category === 'clients') {
-          let clientCount = 0;
-          for (let i = 1; i <= 10; i++) {
-            const files = await this.listFiles(category, i);
-            stats.portfolios[i] = files.length;
-            clientCount += files.length;
+          const refs = await this.listFiles(category);
+          stats.categories[category] = refs.length;
+          stats.totalFiles += refs.length;
+
+          for (const ref of refs) {
+            const data = await this.readJson<any>('clients', ref);
+            const portfolioCode = this.resolveClientPortfolioCode(data);
+            if (portfolioCode === null) {
+              continue;
+            }
+            stats.portfolios[portfolioCode] = (stats.portfolios[portfolioCode] || 0) + 1;
           }
-          stats.categories[category] = clientCount;
-          stats.totalFiles += clientCount;
         } else {
           const files = await this.listFiles(category);
           stats.categories[category] = files.length;

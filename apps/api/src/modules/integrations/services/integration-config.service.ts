@@ -19,6 +19,33 @@ export class IntegrationConfigService {
     private readonly fileStorageService: FileStorageService,
   ) {}
 
+  private normalizeApiKey(rawValue?: string | null): string | null {
+    const key = String(rawValue || '').trim();
+    if (!key) return null;
+
+    const normalized = key.toLowerCase();
+    const knownPlaceholders = [
+      'your-api-key',
+      'api-key-here',
+      'change-me',
+      'changeme',
+      'dummy',
+      'test-key',
+      'your-companies-house-api-key',
+      'your-openai-api-key',
+    ];
+
+    if (
+      knownPlaceholders.includes(normalized) ||
+      normalized.startsWith('your-') ||
+      normalized.startsWith('replace-')
+    ) {
+      return null;
+    }
+
+    return key;
+  }
+
   // ============================================================
   // ⚙️ INTEGRATION CONFIG MANAGEMENT
   // ============================================================
@@ -289,10 +316,17 @@ export class IntegrationConfigService {
       updatedAt: new Date(),
     };
     const model = (this.prisma as any).practiceConfig;
-    if (!model) {
+    const useStorageFallback = !model || config.id === 'practice-settings';
+    if (useStorageFallback) {
       await this.writePracticeSettingsToStorage(updated);
     } else {
-      await model.update({ where: { id: config.id }, data: { settings: updated } });
+      try {
+        await model.update({ where: { id: config.id }, data: { settings: updated } });
+      } catch (error) {
+        if (!this.isDatabaseUnavailableError(error)) throw error;
+        this.logger.warn('Database unavailable while updating practice settings; writing to file storage');
+        await this.writePracticeSettingsToStorage(updated);
+      }
     }
 
     return this.attachPortfolioStats({
@@ -315,13 +349,20 @@ export class IntegrationConfigService {
       if (!dataUrl) {
         const config = await this.ensurePracticeConfig();
         const model = (this.prisma as any).practiceConfig;
-        if (!model) {
+        const useStorageFallback = !model || config.id === 'practice-settings';
+        if (useStorageFallback) {
           await this.writeBrandingLogoToStorage(null);
         } else {
-          await model.update({
-            where: { id: config.id },
-            data: { brandingLogoDataUrl: null },
-          });
+          try {
+            await model.update({
+              where: { id: config.id },
+              data: { brandingLogoDataUrl: null },
+            });
+          } catch (error) {
+            if (!this.isDatabaseUnavailableError(error)) throw error;
+            this.logger.warn('Database unavailable while clearing branding logo; writing to file storage');
+            await this.writeBrandingLogoToStorage(null);
+          }
         }
         return null;
       }
@@ -331,13 +372,20 @@ export class IntegrationConfigService {
       }
       const config = await this.ensurePracticeConfig();
       const model = (this.prisma as any).practiceConfig;
-      if (!model) {
+      const useStorageFallback = !model || config.id === 'practice-settings';
+      if (useStorageFallback) {
         await this.writeBrandingLogoToStorage(dataUrl);
       } else {
-        await model.update({
-          where: { id: config.id },
-          data: { brandingLogoDataUrl: dataUrl },
-        });
+        try {
+          await model.update({
+            where: { id: config.id },
+            data: { brandingLogoDataUrl: dataUrl },
+          });
+        } catch (error) {
+          if (!this.isDatabaseUnavailableError(error)) throw error;
+          this.logger.warn('Database unavailable while saving branding logo; writing to file storage');
+          await this.writeBrandingLogoToStorage(dataUrl);
+        }
       }
       return dataUrl;
     } catch (e) {
@@ -359,12 +407,21 @@ export class IntegrationConfigService {
       }
       return stored;
     }
-
-    const data = await model.findMany({ orderBy: { name: 'asc' } });
-    if (!Array.isArray(data) || data.length === 0) {
-      return this.initializeDefaultIntegrations();
+    try {
+      const data = await model.findMany({ orderBy: { name: 'asc' } });
+      if (!Array.isArray(data) || data.length === 0) {
+        return this.initializeDefaultIntegrations();
+      }
+      return data;
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable while reading integrations; using file storage fallback');
+        const stored = await this.readIntegrationsFromStorage();
+        if (stored.length) return stored;
+        return this.initializeDefaultIntegrations();
+      }
+      throw error;
     }
-    return data;
   }
 
   // ============================================================
@@ -372,37 +429,41 @@ export class IntegrationConfigService {
   // ============================================================
 
   private async initializeDefaultIntegrations(): Promise<IntegrationConfig[]> {
+    const openAiApiKey = this.normalizeApiKey(process.env.OPENAI_API_KEY);
+    const companiesHouseApiKey = this.normalizeApiKey(process.env.COMPANIES_HOUSE_API_KEY);
+    const govNotifyApiKey = this.normalizeApiKey(process.env.GOVUK_NOTIFY_API_KEY);
+
     const defaults: Array<Omit<IntegrationConfig, 'id'>> = [
       {
         name: 'OpenAI GPT',
         type: 'OPENAI',
-        enabled: !!process.env.OPENAI_API_KEY,
-        apiKey: process.env.OPENAI_API_KEY || undefined,
+        enabled: !!openAiApiKey,
+        apiKey: openAiApiKey || undefined,
         baseUrl: 'https://api.openai.com/v1',
         settings: { model: 'gpt-4' },
-        status: process.env.OPENAI_API_KEY ? 'CONNECTED' : 'DISCONNECTED',
+        status: openAiApiKey ? 'CONNECTED' : 'DISCONNECTED',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         name: 'Companies House',
         type: 'COMPANIES_HOUSE',
-        enabled: !!process.env.COMPANIES_HOUSE_API_KEY,
-        apiKey: process.env.COMPANIES_HOUSE_API_KEY || undefined,
+        enabled: !!companiesHouseApiKey,
+        apiKey: companiesHouseApiKey || undefined,
         baseUrl: 'https://api.company-information.service.gov.uk',
         settings: { rateLimit: 600 },
-        status: process.env.COMPANIES_HOUSE_API_KEY ? 'CONNECTED' : 'DISCONNECTED',
+        status: companiesHouseApiKey ? 'CONNECTED' : 'DISCONNECTED',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         name: 'GOV.UK Notify',
         type: 'GOV_NOTIFY',
-        enabled: !!process.env.GOVUK_NOTIFY_API_KEY,
-        apiKey: process.env.GOVUK_NOTIFY_API_KEY || undefined,
+        enabled: !!govNotifyApiKey,
+        apiKey: govNotifyApiKey || undefined,
         baseUrl: 'https://api.notifications.service.gov.uk',
         settings: {},
-        status: process.env.GOVUK_NOTIFY_API_KEY ? 'CONNECTED' : 'DISCONNECTED',
+        status: govNotifyApiKey ? 'CONNECTED' : 'DISCONNECTED',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -475,39 +536,60 @@ export class IntegrationConfigService {
         brandingLogoDataUrl,
       };
     }
+    try {
+      let config = await model.findFirst();
+      if (config) return config;
 
-    let config = await model.findFirst();
-    if (config) return config;
-
-    const defaults = await this.initializeDefaultPracticeSettings();
-    config = await model.create({
-      data: { settings: defaults, brandingLogoDataUrl: null },
-    });
-    return config;
+      const defaults = await this.initializeDefaultPracticeSettings();
+      config = await model.create({
+        data: { settings: defaults, brandingLogoDataUrl: null },
+      });
+      return config;
+    } catch (error) {
+      if (!this.isDatabaseUnavailableError(error)) {
+        throw error;
+      }
+      this.logger.warn('Database unavailable while loading practice config; using file storage fallback');
+      const settings = (await this.readPracticeSettingsFromStorage()) || (await this.initializeDefaultPracticeSettings());
+      const brandingLogoDataUrl = await this.readBrandingLogoFromStorage();
+      return {
+        id: 'practice-settings',
+        settings,
+        brandingLogoDataUrl,
+      };
+    }
   }
 
   private async attachPortfolioStats(settings: PracticeSettings): Promise<PracticeSettings> {
-    const portfolios = await (this.prisma as any).portfolio.findMany({
-      orderBy: { code: 'asc' },
-    });
-    const counts = await (this.prisma as any).client.groupBy({
-      by: ['portfolioCode'],
-      _count: { _all: true },
-    });
-    const countMap = new Map<number, number>(
-      counts.map((c: any) => [c.portfolioCode, c._count._all])
-    );
+    try {
+      const portfolios = await (this.prisma as any).portfolio.findMany({
+        orderBy: { code: 'asc' },
+      });
+      const counts = await (this.prisma as any).client.groupBy({
+        by: ['portfolioCode'],
+        _count: { _all: true },
+      });
+      const countMap = new Map<number, number>(
+        counts.map((c: any) => [c.portfolioCode, c._count._all])
+      );
 
-    return {
-      ...settings,
-      portfolios: portfolios.map((p: any) => ({
-        code: p.code,
-        name: p.name,
-        description: p.description,
-        enabled: true,
-        clientCount: countMap.get(p.code) ?? 0,
-      })),
-    };
+      return {
+        ...settings,
+        portfolios: portfolios.map((p: any) => ({
+          code: p.code,
+          name: p.name,
+          description: p.description,
+          enabled: true,
+          clientCount: countMap.get(p.code) ?? 0,
+        })),
+      };
+    } catch (error) {
+      if (!this.isDatabaseUnavailableError(error)) {
+        throw error;
+      }
+      this.logger.warn('Database unavailable while loading portfolio stats; returning cached/static settings');
+      return settings;
+    }
   }
 
   private createDefaultIntegrationFallback(id: string): IntegrationConfig {
@@ -523,6 +605,17 @@ export class IntegrationConfigService {
       createdAt: now,
       updatedAt: now,
     };
+  }
+
+  private isDatabaseUnavailableError(error: unknown): boolean {
+    const message = String((error as any)?.message || error || '').toLowerCase();
+    return (
+      message.includes("can't reach database server")
+      || message.includes('prismaclientinitializationerror')
+      || message.includes('connection refused')
+      || message.includes('timed out')
+      || message.includes('database connection failed')
+    );
   }
 
   private async readIntegrationsFromStorage(): Promise<IntegrationConfig[]> {

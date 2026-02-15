@@ -21,31 +21,63 @@ export class PersonService {
   }
 
   async findAll(): Promise<Person[]> {
-    return (this.prisma as any).person.findMany({ orderBy: { createdAt: 'desc' } });
+    try {
+      return await (this.prisma as any).person.findMany({ orderBy: { createdAt: 'desc' } });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn('Database unavailable while loading people; returning empty list');
+        return [];
+      }
+      throw error;
+    }
   }
 
   async findOne(id: string): Promise<Person | null> {
-    return (this.prisma as any).person.findUnique({ where: { id } });
+    try {
+      return await (this.prisma as any).person.findUnique({ where: { id } });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading person ${id}`);
+        return null;
+      }
+      throw error;
+    }
   }
 
   async findByEmail(email: string): Promise<Person | null> {
-    return (this.prisma as any).person.findUnique({ where: { email } });
+    try {
+      return await (this.prisma as any).person.findUnique({ where: { email } });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading person by email ${email}`);
+        return null;
+      }
+      throw error;
+    }
   }
 
   async search(query: string): Promise<Person[]> {
     const q = query.trim();
     if (!q) return [];
-    return (this.prisma as any).person.findMany({
-      where: {
-        OR: [
-          { fullName: { contains: q, mode: 'insensitive' } },
-          { email: { contains: q, mode: 'insensitive' } },
-          { phone: { contains: q, mode: 'insensitive' } },
-        ],
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    });
+    try {
+      return await (this.prisma as any).person.findMany({
+        where: {
+          OR: [
+            { fullName: { contains: q, mode: 'insensitive' } },
+            { email: { contains: q, mode: 'insensitive' } },
+            { phone: { contains: q, mode: 'insensitive' } },
+          ],
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+      });
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while searching people for query "${q}"`);
+        return [];
+      }
+      throw error;
+    }
   }
 
   async update(id: string, updatePersonDto: UpdatePersonDto): Promise<Person> {
@@ -80,10 +112,32 @@ export class PersonService {
   }
 
   async findAssociatedClients(personId: string): Promise<string[]> {
-    const parties = await (this.prisma as any).clientParty.findMany({
-      where: { personId },
-      select: { clientId: true },
-    });
-    return parties.map((p: any) => p.clientId);
+    try {
+      const parties = await (this.prisma as any).clientParty.findMany({
+        where: { personId },
+        select: { clientId: true },
+      });
+      return parties.map((p: any) => p.clientId);
+    } catch (error) {
+      if (this.isDatabaseUnavailableError(error)) {
+        this.logger.warn(`Database unavailable while loading associated clients for person ${personId}`);
+        return [];
+      }
+      throw error;
+    }
+  }
+
+  private isDatabaseUnavailableError(error: unknown): boolean {
+    if (!error) return false;
+    const message = error instanceof Error ? error.message : String(error);
+    const lowered = message.toLowerCase();
+    return (
+      lowered.includes("can't reach database server") ||
+      lowered.includes('failed to connect to database') ||
+      lowered.includes('connection refused') ||
+      lowered.includes('database is unavailable') ||
+      lowered.includes('prismaclientinitializationerror') ||
+      lowered.includes('timeout')
+    );
   }
 }

@@ -98,7 +98,7 @@ type FormState = {
   selfAssessmentFiled?: boolean;
   linkedCompanyNumber?: string | null;
   directorRole?: string | null;
-  clientType?: string | null;
+  companyType?: string | null;
 };
 
 const toDateInput = (value?: string | Date | null) => {
@@ -223,7 +223,7 @@ export default function EditClientPage() {
           addressPostcode: node?.address?.postcode || '',
           addressCountry: node?.address?.country || '',
 
-          mainContactName: pickValue(profile.mainContactName, node?.mainContact),
+          mainContactName: profile.mainContactName ?? null,
           contactPosition: pickValue(profile.contactPosition, (node as any)?.contactPosition),
           mainEmail: pickValue(node?.mainEmail, (profile as any)?.email),
           mainPhone: pickValue(node?.mainPhone, (profile as any)?.telephone),
@@ -292,7 +292,7 @@ export default function EditClientPage() {
           selfAssessmentFiled: pickValue(profile.selfAssessmentFiled, (node as any)?.selfAssessmentFiled) ?? false,
           linkedCompanyNumber: pickValue(profile.linkedCompanyNumber, (node as any)?.linkedCompanyNumber),
           directorRole: pickValue(profile.directorRole, (node as any)?.directorRole),
-          clientType: pickValue(profile.clientType, (node as any)?.clientType),
+          companyType: pickValue(profile.companyType, (node as any)?.companyType),
         });
       } catch (e: any) {
         if (on) setError(e?.message || 'Failed to load client');
@@ -340,6 +340,7 @@ export default function EditClientPage() {
         status: form.status,
         registeredNumber: normalizeText(form.registeredNumber),
         utrNumber: normalizeText(form.utrNumber),
+        accountsOfficeReference: normalizeText(form.accountsOfficeReference),
         incorporationDate: form.incorporationDate || undefined,
         accountsAccountingReferenceDay: form.accountsAccountingReferenceDay ?? undefined,
         accountsAccountingReferenceMonth: form.accountsAccountingReferenceMonth ?? undefined,
@@ -397,7 +398,6 @@ export default function EditClientPage() {
         vatQuarter: normalizeText(form.vatQuarter),
         payeReference: normalizeText(form.payeReference),
         payeAccountsOfficeReference: normalizeText(form.payeAccountsOfficeReference),
-        accountsOfficeReference: normalizeText(form.accountsOfficeReference),
         cisRegistered: form.cisRegistered ?? false,
         cisUtr: normalizeText(form.cisUtr),
         payrollRtiRequired: form.payrollRtiRequired ?? false,
@@ -420,7 +420,7 @@ export default function EditClientPage() {
         selfAssessmentFiled: form.selfAssessmentFiled ?? false,
         linkedCompanyNumber: normalizeText(form.linkedCompanyNumber),
         directorRole: normalizeText(form.directorRole),
-        clientType: normalizeText(form.clientType),
+        companyType: normalizeText(form.companyType),
       };
 
       await api.put(`/clients/${context.node.id}`, nodePayload);
@@ -755,8 +755,8 @@ export default function EditClientPage() {
                 <div className="v"><input className="input-mdj" value={form.linkedCompanyNumber || ''} onChange={(e) => setField('linkedCompanyNumber', e.target.value)} /></div>
                 <div className="k">Director Role</div>
                 <div className="v"><input className="input-mdj" value={form.directorRole || ''} onChange={(e) => setField('directorRole', e.target.value)} /></div>
-                <div className="k">Client Type (Personal)</div>
-                <div className="v"><input className="input-mdj" value={form.clientType || ''} onChange={(e) => setField('clientType', e.target.value)} /></div>
+                <div className="k">Company Type (Personal)</div>
+                <div className="v"><input className="input-mdj" value={form.companyType || ''} onChange={(e) => setField('companyType', e.target.value)} /></div>
               </div>
             </ClientFormSection>
 

@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import { existsSync } from 'fs';
 import { Client, TaxCalculationResult, OperationResult } from './interfaces/database.interface';
+import { resolveStorageRoot } from '../../common/utils/storage-path.util';
 
 export interface MigrationStats {
   clientsMigrated: number;
@@ -27,8 +28,17 @@ export class MigrationService {
     private databaseService: DatabaseService,
     private fileStorageService: FileStorageService
   ) {
-    this.storagePath = this.configService.get<string>('STORAGE_PATH') || './mdj-data';
+    this.storagePath = resolveStorageRoot(this.configService);
     this.backupPath = path.join(this.storagePath, 'migration-backup');
+  }
+
+  private shouldCreateMigrationBackup(): boolean {
+    const raw = this.configService.get<string>('MIGRATION_CREATE_STORAGE_SNAPSHOT');
+    if (raw === undefined || raw === null) {
+      return false;
+    }
+    const normalized = String(raw).trim().toLowerCase();
+    return ['1', 'true', 'yes', 'on'].includes(normalized);
   }
 
   async migrateAllData(): Promise<MigrationStats> {
@@ -44,8 +54,13 @@ export class MigrationService {
     this.logger.log('Starting data migration from JSON to SQLite...');
 
     try {
-      // Create backup before migration
-      await this.createMigrationBackup();
+      // Full storage snapshots are disabled by default.
+      // Enable MIGRATION_CREATE_STORAGE_SNAPSHOT=true to opt in.
+      if (this.shouldCreateMigrationBackup()) {
+        await this.createMigrationBackup();
+      } else {
+        this.logger.log('Skipping migration storage snapshot backup.');
+      }
 
       // Test database connection
       const connectionTest = await this.databaseService.testConnection();

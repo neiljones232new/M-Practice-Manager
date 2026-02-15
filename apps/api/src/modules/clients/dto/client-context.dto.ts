@@ -70,7 +70,6 @@ export interface ClientProfileSubset {
   selfAssessmentTaxYear?: string;
   linkedCompanyNumber?: string;
   directorRole?: string;
-  clientType?: string;
   companyStatusDetail?: string;
   jurisdiction?: string;
   registeredOfficeFull?: string;
@@ -249,7 +248,6 @@ export function buildClientContext(
     selfAssessmentTaxYear: getValue('selfAssessmentTaxYear'),
     linkedCompanyNumber: getValue('linkedCompanyNumber'),
     directorRole: getValue('directorRole'),
-    clientType: getValue('clientType'),
     companyStatusDetail: getValue('companyStatusDetail'),
     jurisdiction: getValue('jurisdiction'),
     registeredOfficeFull: getValue('registeredOfficeFull'),

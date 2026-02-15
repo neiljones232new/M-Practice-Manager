@@ -1,11 +1,14 @@
+export type ServiceFrequency = 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+export type ServiceStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+
 export interface Service {
   id: string;
   clientId: string;
   kind: string; // 'Accounts', 'VAT', 'Payroll', etc.
-  frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+  frequency?: ServiceFrequency;
   fee: number;
   annualized: number; // Calculated annual fee
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status: ServiceStatus;
   nextDue?: Date;
   description?: string;
   createdAt: Date;
@@ -15,8 +18,8 @@ export interface Service {
 export interface ServiceFilters {
   clientId?: string;
   kind?: string;
-  frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
-  status?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  frequency?: ServiceFrequency;
+  status?: ServiceStatus;
   portfolioCode?: number;
   search?: string;
   limit?: number;
@@ -26,18 +29,18 @@ export interface ServiceFilters {
 export interface CreateServiceDto {
   clientId: string;
   kind: string;
-  frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+  frequency: ServiceFrequency;
   fee: number;
-  status?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status?: ServiceStatus;
   nextDue?: Date;
   description?: string;
 }
 
 export interface UpdateServiceDto {
   kind?: string;
-  frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+  frequency?: ServiceFrequency;
   fee?: number;
-  status?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status?: ServiceStatus;
   nextDue?: Date;
   description?: string;
 }

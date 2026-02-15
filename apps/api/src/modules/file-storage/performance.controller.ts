@@ -5,6 +5,7 @@ import { CacheService } from './cache.service';
 import { CompressionService } from './compression.service';
 import { CleanupService } from './cleanup.service';
 import { ConfigService } from '@nestjs/config';
+import { findPracticeManagerRoot, resolvePathWithinPracticeManager, resolveStorageRoot } from '../../common/utils/storage-path.util';
 
 @ApiTags('Performance')
 @Controller('performance')
@@ -16,6 +17,17 @@ export class PerformanceController {
     private readonly cleanupService: CleanupService,
     private readonly configService: ConfigService,
   ) {}
+
+  private resolveDataDir(pathOverride?: string): string {
+    if (pathOverride) {
+      try {
+        return resolvePathWithinPracticeManager(pathOverride, findPracticeManagerRoot());
+      } catch {
+        return resolveStorageRoot(this.configService);
+      }
+    }
+    return resolveStorageRoot(this.configService);
+  }
 
   @Get('cache/stats')
   @ApiOperation({ summary: 'Get cache statistics' })
@@ -41,7 +53,7 @@ export class PerformanceController {
   @ApiOperation({ summary: 'Get compression statistics' })
   @ApiQuery({ name: 'path', required: false, description: 'Directory path to analyze' })
   async getCompressionStats(@Query('path') path?: string) {
-    const dataDir = path || this.configService.get('DATA_DIR', './mdj-data');
+    const dataDir = this.resolveDataDir(path);
     return this.compressionService.getCompressionStats(dataDir);
   }
 
@@ -49,7 +61,7 @@ export class PerformanceController {
   @ApiOperation({ summary: 'Compress data directory' })
   @ApiQuery({ name: 'path', required: false, description: 'Directory path to compress' })
   async compressDirectory(@Query('path') path?: string) {
-    const dataDir = path || this.configService.get('DATA_DIR', './mdj-data');
+    const dataDir = this.resolveDataDir(path);
     
     await this.compressionService.compressDirectory(dataDir, {
       extensions: ['.json', '.log', '.txt'],
@@ -64,7 +76,7 @@ export class PerformanceController {
   @ApiOperation({ summary: 'Get cleanup statistics' })
   @ApiQuery({ name: 'path', required: false, description: 'Directory path to analyze' })
   async getCleanupStats(@Query('path') path?: string) {
-    const dataDir = path || this.configService.get('DATA_DIR', './mdj-data');
+    const dataDir = this.resolveDataDir(path);
     return this.cleanupService.getCleanupStats(dataDir);
   }
 
@@ -76,7 +88,7 @@ export class PerformanceController {
     @Query('path') path?: string,
     @Query('maxAge') maxAge?: number
   ) {
-    const dataDir = path || this.configService.get('DATA_DIR', './mdj-data');
+    const dataDir = this.resolveDataDir(path);
     const maxAgeMs = (maxAge || 30) * 24 * 60 * 60 * 1000;
 
     await this.cleanupService.cleanupOldFiles(dataDir, {
@@ -95,7 +107,7 @@ export class PerformanceController {
     @Query('path') path?: string,
     @Query('maxSize') maxSize?: number
   ) {
-    const dataDir = path || this.configService.get('DATA_DIR', './mdj-data');
+    const dataDir = this.resolveDataDir(path);
     const maxSizeBytes = (maxSize || 100) * 1024 * 1024;
 
     await this.cleanupService.cleanupLargeFiles(dataDir, {
@@ -114,7 +126,7 @@ export class PerformanceController {
     @Query('path') path?: string,
     @Query('keepCount') keepCount?: number
   ) {
-    const dataDir = path || this.configService.get('DATA_DIR', './mdj-data');
+    const dataDir = this.resolveDataDir(path);
 
     await this.cleanupService.cleanupExcessFiles(dataDir, {
       keepCount: keepCount || 10,
@@ -128,7 +140,7 @@ export class PerformanceController {
   @ApiOperation({ summary: 'Clean up empty directories' })
   @ApiQuery({ name: 'path', required: false, description: 'Directory path to clean' })
   async cleanupEmptyDirectories(@Query('path') path?: string) {
-    const dataDir = path || this.configService.get('DATA_DIR', './mdj-data');
+    const dataDir = this.resolveDataDir(path);
     await this.cleanupService.cleanupEmptyDirectories(dataDir);
     return { message: 'Empty directories cleanup completed' };
   }
@@ -137,7 +149,7 @@ export class PerformanceController {
   @ApiOperation({ summary: 'Perform full cleanup' })
   @ApiQuery({ name: 'path', required: false, description: 'Directory path to clean' })
   async performFullCleanup(@Query('path') path?: string) {
-    const dataDir = path || this.configService.get('DATA_DIR', './mdj-data');
+    const dataDir = this.resolveDataDir(path);
     
     await this.cleanupService.performFullCleanup(dataDir, {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -152,7 +164,7 @@ export class PerformanceController {
   @Get('system/stats')
   @ApiOperation({ summary: 'Get system performance statistics' })
   async getSystemStats() {
-    const dataDir = this.configService.get('DATA_DIR', './mdj-data');
+    const dataDir = this.resolveDataDir();
     
     const [cacheStats, compressionStats, cleanupStats] = await Promise.all([
       this.cacheService.getStats(),
