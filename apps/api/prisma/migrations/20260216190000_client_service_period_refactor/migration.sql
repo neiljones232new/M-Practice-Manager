@@ -14,7 +14,7 @@ ADD COLUMN     "periodEnd" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN     "periodStart" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN     "templateId" TEXT,
 DROP COLUMN "status",
-ADD COLUMN     "status" "ServiceStatus" NOT NULL DEFAULT 'DRAFT';
+ADD COLUMN     "status" "ServiceStatus" NOT NULL DEFAULT 'ACTIVE';
 
 -- AlterTable
 ALTER TABLE "tasks" ADD COLUMN     "clientServiceId" TEXT;

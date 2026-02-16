@@ -443,6 +443,10 @@ exports.Prisma.AddressScalarFieldEnum = {
 exports.Prisma.ServiceScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
+  templateId: 'templateId',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  cycleNumber: 'cycleNumber',
   kind: 'kind',
   frequency: 'frequency',
   fee: 'fee',
@@ -458,10 +462,15 @@ exports.Prisma.ComplianceItemScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
   serviceId: 'serviceId',
+  clientServiceId: 'clientServiceId',
   type: 'type',
   description: 'description',
   dueDate: 'dueDate',
   status: 'status',
+  internalStatus: 'internalStatus',
+  externalStatus: 'externalStatus',
+  mismatch: 'mismatch',
+  filedAt: 'filedAt',
   source: 'source',
   reference: 'reference',
   period: 'period',
@@ -474,6 +483,7 @@ exports.Prisma.TaskScalarFieldEnum = {
   title: 'title',
   clientId: 'clientId',
   serviceId: 'serviceId',
+  clientServiceId: 'clientServiceId',
   description: 'description',
   dueDate: 'dueDate',
   assigneeId: 'assigneeId',
@@ -801,6 +811,13 @@ exports.VatStagger = exports.$Enums.VatStagger = {
   B: 'B',
   C: 'C',
   NONE: 'NONE'
+};
+
+exports.ServiceStatus = exports.$Enums.ServiceStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  SUSPENDED: 'SUSPENDED'
 };
 
 exports.ComplianceStatus = exports.$Enums.ComplianceStatus = {

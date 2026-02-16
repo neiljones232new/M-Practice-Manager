@@ -242,6 +242,16 @@ export const VatStagger: {
 export type VatStagger = (typeof VatStagger)[keyof typeof VatStagger]
 
 
+export const ServiceStatus: {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  SUSPENDED: 'SUSPENDED'
+};
+
+export type ServiceStatus = (typeof ServiceStatus)[keyof typeof ServiceStatus]
+
+
 export const ComplianceStatus: {
   PENDING: 'PENDING',
   FILED: 'FILED',
@@ -386,6 +396,10 @@ export const LifecycleStatus: typeof $Enums.LifecycleStatus
 export type VatStagger = $Enums.VatStagger
 
 export const VatStagger: typeof $Enums.VatStagger
+
+export type ServiceStatus = $Enums.ServiceStatus
+
+export const ServiceStatus: typeof $Enums.ServiceStatus
 
 export type ComplianceStatus = $Enums.ComplianceStatus
 
@@ -4102,12 +4116,16 @@ export namespace Prisma {
 
   export type ServiceCountOutputType = {
     complianceItems: number
+    complianceByServiceRef: number
     tasks: number
+    clientServiceTasks: number
   }
 
   export type ServiceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     complianceItems?: boolean | ServiceCountOutputTypeCountComplianceItemsArgs
+    complianceByServiceRef?: boolean | ServiceCountOutputTypeCountComplianceByServiceRefArgs
     tasks?: boolean | ServiceCountOutputTypeCountTasksArgs
+    clientServiceTasks?: boolean | ServiceCountOutputTypeCountClientServiceTasksArgs
   }
 
   // Custom InputTypes
@@ -4131,7 +4149,21 @@ export namespace Prisma {
   /**
    * ServiceCountOutputType without action
    */
+  export type ServiceCountOutputTypeCountComplianceByServiceRefArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ComplianceItemWhereInput
+  }
+
+  /**
+   * ServiceCountOutputType without action
+   */
   export type ServiceCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
+  }
+
+  /**
+   * ServiceCountOutputType without action
+   */
+  export type ServiceCountOutputTypeCountClientServiceTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskWhereInput
   }
 
@@ -4141,10 +4173,12 @@ export namespace Prisma {
    */
 
   export type ServiceTemplateCountOutputType = {
+    services: number
     taskTemplates: number
   }
 
   export type ServiceTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    services?: boolean | ServiceTemplateCountOutputTypeCountServicesArgs
     taskTemplates?: boolean | ServiceTemplateCountOutputTypeCountTaskTemplatesArgs
   }
 
@@ -4157,6 +4191,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the ServiceTemplateCountOutputType
      */
     select?: ServiceTemplateCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ServiceTemplateCountOutputType without action
+   */
+  export type ServiceTemplateCountOutputTypeCountServicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServiceWhereInput
   }
 
   /**
@@ -19964,11 +20005,13 @@ export namespace Prisma {
   }
 
   export type ServiceAvgAggregateOutputType = {
+    cycleNumber: number | null
     fee: Decimal | null
     annualized: Decimal | null
   }
 
   export type ServiceSumAggregateOutputType = {
+    cycleNumber: number | null
     fee: Decimal | null
     annualized: Decimal | null
   }
@@ -19976,11 +20019,15 @@ export namespace Prisma {
   export type ServiceMinAggregateOutputType = {
     id: string | null
     clientId: string | null
+    templateId: string | null
+    periodStart: Date | null
+    periodEnd: Date | null
+    cycleNumber: number | null
     kind: string | null
     frequency: string | null
     fee: Decimal | null
     annualized: Decimal | null
-    status: string | null
+    status: $Enums.ServiceStatus | null
     nextDue: Date | null
     description: string | null
     createdAt: Date | null
@@ -19990,11 +20037,15 @@ export namespace Prisma {
   export type ServiceMaxAggregateOutputType = {
     id: string | null
     clientId: string | null
+    templateId: string | null
+    periodStart: Date | null
+    periodEnd: Date | null
+    cycleNumber: number | null
     kind: string | null
     frequency: string | null
     fee: Decimal | null
     annualized: Decimal | null
-    status: string | null
+    status: $Enums.ServiceStatus | null
     nextDue: Date | null
     description: string | null
     createdAt: Date | null
@@ -20004,6 +20055,10 @@ export namespace Prisma {
   export type ServiceCountAggregateOutputType = {
     id: number
     clientId: number
+    templateId: number
+    periodStart: number
+    periodEnd: number
+    cycleNumber: number
     kind: number
     frequency: number
     fee: number
@@ -20018,11 +20073,13 @@ export namespace Prisma {
 
 
   export type ServiceAvgAggregateInputType = {
+    cycleNumber?: true
     fee?: true
     annualized?: true
   }
 
   export type ServiceSumAggregateInputType = {
+    cycleNumber?: true
     fee?: true
     annualized?: true
   }
@@ -20030,6 +20087,10 @@ export namespace Prisma {
   export type ServiceMinAggregateInputType = {
     id?: true
     clientId?: true
+    templateId?: true
+    periodStart?: true
+    periodEnd?: true
+    cycleNumber?: true
     kind?: true
     frequency?: true
     fee?: true
@@ -20044,6 +20105,10 @@ export namespace Prisma {
   export type ServiceMaxAggregateInputType = {
     id?: true
     clientId?: true
+    templateId?: true
+    periodStart?: true
+    periodEnd?: true
+    cycleNumber?: true
     kind?: true
     frequency?: true
     fee?: true
@@ -20058,6 +20123,10 @@ export namespace Prisma {
   export type ServiceCountAggregateInputType = {
     id?: true
     clientId?: true
+    templateId?: true
+    periodStart?: true
+    periodEnd?: true
+    cycleNumber?: true
     kind?: true
     frequency?: true
     fee?: true
@@ -20159,11 +20228,15 @@ export namespace Prisma {
   export type ServiceGroupByOutputType = {
     id: string
     clientId: string
+    templateId: string | null
+    periodStart: Date
+    periodEnd: Date
+    cycleNumber: number | null
     kind: string
     frequency: string | null
     fee: Decimal | null
     annualized: Decimal | null
-    status: string
+    status: $Enums.ServiceStatus
     nextDue: Date | null
     description: string | null
     createdAt: Date
@@ -20192,6 +20265,10 @@ export namespace Prisma {
   export type ServiceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     clientId?: boolean
+    templateId?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    cycleNumber?: boolean
     kind?: boolean
     frequency?: boolean
     fee?: boolean
@@ -20202,14 +20279,21 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     complianceItems?: boolean | Service$complianceItemsArgs<ExtArgs>
+    complianceByServiceRef?: boolean | Service$complianceByServiceRefArgs<ExtArgs>
     client?: boolean | ClientDefaultArgs<ExtArgs>
+    template?: boolean | Service$templateArgs<ExtArgs>
     tasks?: boolean | Service$tasksArgs<ExtArgs>
+    clientServiceTasks?: boolean | Service$clientServiceTasksArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["service"]>
 
   export type ServiceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     clientId?: boolean
+    templateId?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    cycleNumber?: boolean
     kind?: boolean
     frequency?: boolean
     fee?: boolean
@@ -20220,11 +20304,16 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
+    template?: boolean | Service$templateArgs<ExtArgs>
   }, ExtArgs["result"]["service"]>
 
   export type ServiceSelectScalar = {
     id?: boolean
     clientId?: boolean
+    templateId?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    cycleNumber?: boolean
     kind?: boolean
     frequency?: boolean
     fee?: boolean
@@ -20238,29 +20327,40 @@ export namespace Prisma {
 
   export type ServiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     complianceItems?: boolean | Service$complianceItemsArgs<ExtArgs>
+    complianceByServiceRef?: boolean | Service$complianceByServiceRefArgs<ExtArgs>
     client?: boolean | ClientDefaultArgs<ExtArgs>
+    template?: boolean | Service$templateArgs<ExtArgs>
     tasks?: boolean | Service$tasksArgs<ExtArgs>
+    clientServiceTasks?: boolean | Service$clientServiceTasksArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ServiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
+    template?: boolean | Service$templateArgs<ExtArgs>
   }
 
   export type $ServicePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Service"
     objects: {
       complianceItems: Prisma.$ComplianceItemPayload<ExtArgs>[]
+      complianceByServiceRef: Prisma.$ComplianceItemPayload<ExtArgs>[]
       client: Prisma.$ClientPayload<ExtArgs>
+      template: Prisma.$ServiceTemplatePayload<ExtArgs> | null
       tasks: Prisma.$TaskPayload<ExtArgs>[]
+      clientServiceTasks: Prisma.$TaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       clientId: string
+      templateId: string | null
+      periodStart: Date
+      periodEnd: Date
+      cycleNumber: number | null
       kind: string
       frequency: string | null
       fee: Prisma.Decimal | null
       annualized: Prisma.Decimal | null
-      status: string
+      status: $Enums.ServiceStatus
       nextDue: Date | null
       description: string | null
       createdAt: Date
@@ -20630,8 +20730,11 @@ export namespace Prisma {
   export interface Prisma__ServiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     complianceItems<T extends Service$complianceItemsArgs<ExtArgs> = {}>(args?: Subset<T, Service$complianceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComplianceItemPayload<ExtArgs>, T, "findMany"> | Null>
+    complianceByServiceRef<T extends Service$complianceByServiceRefArgs<ExtArgs> = {}>(args?: Subset<T, Service$complianceByServiceRefArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComplianceItemPayload<ExtArgs>, T, "findMany"> | Null>
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    template<T extends Service$templateArgs<ExtArgs> = {}>(args?: Subset<T, Service$templateArgs<ExtArgs>>): Prisma__ServiceTemplateClient<$Result.GetResult<Prisma.$ServiceTemplatePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     tasks<T extends Service$tasksArgs<ExtArgs> = {}>(args?: Subset<T, Service$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
+    clientServiceTasks<T extends Service$clientServiceTasksArgs<ExtArgs> = {}>(args?: Subset<T, Service$clientServiceTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20663,11 +20766,15 @@ export namespace Prisma {
   interface ServiceFieldRefs {
     readonly id: FieldRef<"Service", 'String'>
     readonly clientId: FieldRef<"Service", 'String'>
+    readonly templateId: FieldRef<"Service", 'String'>
+    readonly periodStart: FieldRef<"Service", 'DateTime'>
+    readonly periodEnd: FieldRef<"Service", 'DateTime'>
+    readonly cycleNumber: FieldRef<"Service", 'Int'>
     readonly kind: FieldRef<"Service", 'String'>
     readonly frequency: FieldRef<"Service", 'String'>
     readonly fee: FieldRef<"Service", 'Decimal'>
     readonly annualized: FieldRef<"Service", 'Decimal'>
-    readonly status: FieldRef<"Service", 'String'>
+    readonly status: FieldRef<"Service", 'ServiceStatus'>
     readonly nextDue: FieldRef<"Service", 'DateTime'>
     readonly description: FieldRef<"Service", 'String'>
     readonly createdAt: FieldRef<"Service", 'DateTime'>
@@ -21010,9 +21117,64 @@ export namespace Prisma {
   }
 
   /**
+   * Service.complianceByServiceRef
+   */
+  export type Service$complianceByServiceRefArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ComplianceItem
+     */
+    select?: ComplianceItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ComplianceItemInclude<ExtArgs> | null
+    where?: ComplianceItemWhereInput
+    orderBy?: ComplianceItemOrderByWithRelationInput | ComplianceItemOrderByWithRelationInput[]
+    cursor?: ComplianceItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ComplianceItemScalarFieldEnum | ComplianceItemScalarFieldEnum[]
+  }
+
+  /**
+   * Service.template
+   */
+  export type Service$templateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServiceTemplate
+     */
+    select?: ServiceTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceTemplateInclude<ExtArgs> | null
+    where?: ServiceTemplateWhereInput
+  }
+
+  /**
    * Service.tasks
    */
   export type Service$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Task
+     */
+    select?: TaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskInclude<ExtArgs> | null
+    where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
+  }
+
+  /**
+   * Service.clientServiceTasks
+   */
+  export type Service$clientServiceTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Task
      */
@@ -21058,10 +21220,15 @@ export namespace Prisma {
     id: string | null
     clientId: string | null
     serviceId: string | null
+    clientServiceId: string | null
     type: string | null
     description: string | null
     dueDate: Date | null
     status: $Enums.ComplianceStatus | null
+    internalStatus: $Enums.ComplianceStatus | null
+    externalStatus: $Enums.ComplianceStatus | null
+    mismatch: boolean | null
+    filedAt: Date | null
     source: $Enums.ComplianceSource | null
     reference: string | null
     period: string | null
@@ -21073,10 +21240,15 @@ export namespace Prisma {
     id: string | null
     clientId: string | null
     serviceId: string | null
+    clientServiceId: string | null
     type: string | null
     description: string | null
     dueDate: Date | null
     status: $Enums.ComplianceStatus | null
+    internalStatus: $Enums.ComplianceStatus | null
+    externalStatus: $Enums.ComplianceStatus | null
+    mismatch: boolean | null
+    filedAt: Date | null
     source: $Enums.ComplianceSource | null
     reference: string | null
     period: string | null
@@ -21088,10 +21260,15 @@ export namespace Prisma {
     id: number
     clientId: number
     serviceId: number
+    clientServiceId: number
     type: number
     description: number
     dueDate: number
     status: number
+    internalStatus: number
+    externalStatus: number
+    mismatch: number
+    filedAt: number
     source: number
     reference: number
     period: number
@@ -21105,10 +21282,15 @@ export namespace Prisma {
     id?: true
     clientId?: true
     serviceId?: true
+    clientServiceId?: true
     type?: true
     description?: true
     dueDate?: true
     status?: true
+    internalStatus?: true
+    externalStatus?: true
+    mismatch?: true
+    filedAt?: true
     source?: true
     reference?: true
     period?: true
@@ -21120,10 +21302,15 @@ export namespace Prisma {
     id?: true
     clientId?: true
     serviceId?: true
+    clientServiceId?: true
     type?: true
     description?: true
     dueDate?: true
     status?: true
+    internalStatus?: true
+    externalStatus?: true
+    mismatch?: true
+    filedAt?: true
     source?: true
     reference?: true
     period?: true
@@ -21135,10 +21322,15 @@ export namespace Prisma {
     id?: true
     clientId?: true
     serviceId?: true
+    clientServiceId?: true
     type?: true
     description?: true
     dueDate?: true
     status?: true
+    internalStatus?: true
+    externalStatus?: true
+    mismatch?: true
+    filedAt?: true
     source?: true
     reference?: true
     period?: true
@@ -21223,10 +21415,15 @@ export namespace Prisma {
     id: string
     clientId: string
     serviceId: string | null
+    clientServiceId: string | null
     type: string
     description: string
     dueDate: Date | null
     status: $Enums.ComplianceStatus
+    internalStatus: $Enums.ComplianceStatus
+    externalStatus: $Enums.ComplianceStatus | null
+    mismatch: boolean
+    filedAt: Date | null
     source: $Enums.ComplianceSource
     reference: string | null
     period: string | null
@@ -21255,10 +21452,15 @@ export namespace Prisma {
     id?: boolean
     clientId?: boolean
     serviceId?: boolean
+    clientServiceId?: boolean
     type?: boolean
     description?: boolean
     dueDate?: boolean
     status?: boolean
+    internalStatus?: boolean
+    externalStatus?: boolean
+    mismatch?: boolean
+    filedAt?: boolean
     source?: boolean
     reference?: boolean
     period?: boolean
@@ -21266,16 +21468,22 @@ export namespace Prisma {
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
     service?: boolean | ComplianceItem$serviceArgs<ExtArgs>
+    clientService?: boolean | ComplianceItem$clientServiceArgs<ExtArgs>
   }, ExtArgs["result"]["complianceItem"]>
 
   export type ComplianceItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     clientId?: boolean
     serviceId?: boolean
+    clientServiceId?: boolean
     type?: boolean
     description?: boolean
     dueDate?: boolean
     status?: boolean
+    internalStatus?: boolean
+    externalStatus?: boolean
+    mismatch?: boolean
+    filedAt?: boolean
     source?: boolean
     reference?: boolean
     period?: boolean
@@ -21283,16 +21491,22 @@ export namespace Prisma {
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
     service?: boolean | ComplianceItem$serviceArgs<ExtArgs>
+    clientService?: boolean | ComplianceItem$clientServiceArgs<ExtArgs>
   }, ExtArgs["result"]["complianceItem"]>
 
   export type ComplianceItemSelectScalar = {
     id?: boolean
     clientId?: boolean
     serviceId?: boolean
+    clientServiceId?: boolean
     type?: boolean
     description?: boolean
     dueDate?: boolean
     status?: boolean
+    internalStatus?: boolean
+    externalStatus?: boolean
+    mismatch?: boolean
+    filedAt?: boolean
     source?: boolean
     reference?: boolean
     period?: boolean
@@ -21303,10 +21517,12 @@ export namespace Prisma {
   export type ComplianceItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     service?: boolean | ComplianceItem$serviceArgs<ExtArgs>
+    clientService?: boolean | ComplianceItem$clientServiceArgs<ExtArgs>
   }
   export type ComplianceItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     service?: boolean | ComplianceItem$serviceArgs<ExtArgs>
+    clientService?: boolean | ComplianceItem$clientServiceArgs<ExtArgs>
   }
 
   export type $ComplianceItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21314,15 +21530,21 @@ export namespace Prisma {
     objects: {
       client: Prisma.$ClientPayload<ExtArgs>
       service: Prisma.$ServicePayload<ExtArgs> | null
+      clientService: Prisma.$ServicePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       clientId: string
       serviceId: string | null
+      clientServiceId: string | null
       type: string
       description: string
       dueDate: Date | null
       status: $Enums.ComplianceStatus
+      internalStatus: $Enums.ComplianceStatus
+      externalStatus: $Enums.ComplianceStatus | null
+      mismatch: boolean
+      filedAt: Date | null
       source: $Enums.ComplianceSource
       reference: string | null
       period: string | null
@@ -21694,6 +21916,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     service<T extends ComplianceItem$serviceArgs<ExtArgs> = {}>(args?: Subset<T, ComplianceItem$serviceArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    clientService<T extends ComplianceItem$clientServiceArgs<ExtArgs> = {}>(args?: Subset<T, ComplianceItem$clientServiceArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -21726,10 +21949,15 @@ export namespace Prisma {
     readonly id: FieldRef<"ComplianceItem", 'String'>
     readonly clientId: FieldRef<"ComplianceItem", 'String'>
     readonly serviceId: FieldRef<"ComplianceItem", 'String'>
+    readonly clientServiceId: FieldRef<"ComplianceItem", 'String'>
     readonly type: FieldRef<"ComplianceItem", 'String'>
     readonly description: FieldRef<"ComplianceItem", 'String'>
     readonly dueDate: FieldRef<"ComplianceItem", 'DateTime'>
     readonly status: FieldRef<"ComplianceItem", 'ComplianceStatus'>
+    readonly internalStatus: FieldRef<"ComplianceItem", 'ComplianceStatus'>
+    readonly externalStatus: FieldRef<"ComplianceItem", 'ComplianceStatus'>
+    readonly mismatch: FieldRef<"ComplianceItem", 'Boolean'>
+    readonly filedAt: FieldRef<"ComplianceItem", 'DateTime'>
     readonly source: FieldRef<"ComplianceItem", 'ComplianceSource'>
     readonly reference: FieldRef<"ComplianceItem", 'String'>
     readonly period: FieldRef<"ComplianceItem", 'String'>
@@ -22068,6 +22296,21 @@ export namespace Prisma {
   }
 
   /**
+   * ComplianceItem.clientService
+   */
+  export type ComplianceItem$clientServiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Service
+     */
+    select?: ServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceInclude<ExtArgs> | null
+    where?: ServiceWhereInput
+  }
+
+  /**
    * ComplianceItem without action
    */
   export type ComplianceItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -22097,6 +22340,7 @@ export namespace Prisma {
     title: string | null
     clientId: string | null
     serviceId: string | null
+    clientServiceId: string | null
     description: string | null
     dueDate: Date | null
     assigneeId: string | null
@@ -22112,6 +22356,7 @@ export namespace Prisma {
     title: string | null
     clientId: string | null
     serviceId: string | null
+    clientServiceId: string | null
     description: string | null
     dueDate: Date | null
     assigneeId: string | null
@@ -22127,6 +22372,7 @@ export namespace Prisma {
     title: number
     clientId: number
     serviceId: number
+    clientServiceId: number
     description: number
     dueDate: number
     assigneeId: number
@@ -22145,6 +22391,7 @@ export namespace Prisma {
     title?: true
     clientId?: true
     serviceId?: true
+    clientServiceId?: true
     description?: true
     dueDate?: true
     assigneeId?: true
@@ -22160,6 +22407,7 @@ export namespace Prisma {
     title?: true
     clientId?: true
     serviceId?: true
+    clientServiceId?: true
     description?: true
     dueDate?: true
     assigneeId?: true
@@ -22175,6 +22423,7 @@ export namespace Prisma {
     title?: true
     clientId?: true
     serviceId?: true
+    clientServiceId?: true
     description?: true
     dueDate?: true
     assigneeId?: true
@@ -22264,6 +22513,7 @@ export namespace Prisma {
     title: string
     clientId: string | null
     serviceId: string | null
+    clientServiceId: string | null
     description: string | null
     dueDate: Date | null
     assigneeId: string | null
@@ -22297,6 +22547,7 @@ export namespace Prisma {
     title?: boolean
     clientId?: boolean
     serviceId?: boolean
+    clientServiceId?: boolean
     description?: boolean
     dueDate?: boolean
     assigneeId?: boolean
@@ -22310,6 +22561,7 @@ export namespace Prisma {
     client?: boolean | Task$clientArgs<ExtArgs>
     creator?: boolean | Task$creatorArgs<ExtArgs>
     service?: boolean | Task$serviceArgs<ExtArgs>
+    clientService?: boolean | Task$clientServiceArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
   export type TaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -22317,6 +22569,7 @@ export namespace Prisma {
     title?: boolean
     clientId?: boolean
     serviceId?: boolean
+    clientServiceId?: boolean
     description?: boolean
     dueDate?: boolean
     assigneeId?: boolean
@@ -22330,6 +22583,7 @@ export namespace Prisma {
     client?: boolean | Task$clientArgs<ExtArgs>
     creator?: boolean | Task$creatorArgs<ExtArgs>
     service?: boolean | Task$serviceArgs<ExtArgs>
+    clientService?: boolean | Task$clientServiceArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
   export type TaskSelectScalar = {
@@ -22337,6 +22591,7 @@ export namespace Prisma {
     title?: boolean
     clientId?: boolean
     serviceId?: boolean
+    clientServiceId?: boolean
     description?: boolean
     dueDate?: boolean
     assigneeId?: boolean
@@ -22353,12 +22608,14 @@ export namespace Prisma {
     client?: boolean | Task$clientArgs<ExtArgs>
     creator?: boolean | Task$creatorArgs<ExtArgs>
     service?: boolean | Task$serviceArgs<ExtArgs>
+    clientService?: boolean | Task$clientServiceArgs<ExtArgs>
   }
   export type TaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     assignee?: boolean | Task$assigneeArgs<ExtArgs>
     client?: boolean | Task$clientArgs<ExtArgs>
     creator?: boolean | Task$creatorArgs<ExtArgs>
     service?: boolean | Task$serviceArgs<ExtArgs>
+    clientService?: boolean | Task$clientServiceArgs<ExtArgs>
   }
 
   export type $TaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -22368,12 +22625,14 @@ export namespace Prisma {
       client: Prisma.$ClientPayload<ExtArgs> | null
       creator: Prisma.$UserPayload<ExtArgs> | null
       service: Prisma.$ServicePayload<ExtArgs> | null
+      clientService: Prisma.$ServicePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
       clientId: string | null
       serviceId: string | null
+      clientServiceId: string | null
       description: string | null
       dueDate: Date | null
       assigneeId: string | null
@@ -22751,6 +23010,7 @@ export namespace Prisma {
     client<T extends Task$clientArgs<ExtArgs> = {}>(args?: Subset<T, Task$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     creator<T extends Task$creatorArgs<ExtArgs> = {}>(args?: Subset<T, Task$creatorArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     service<T extends Task$serviceArgs<ExtArgs> = {}>(args?: Subset<T, Task$serviceArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    clientService<T extends Task$clientServiceArgs<ExtArgs> = {}>(args?: Subset<T, Task$clientServiceArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -22784,6 +23044,7 @@ export namespace Prisma {
     readonly title: FieldRef<"Task", 'String'>
     readonly clientId: FieldRef<"Task", 'String'>
     readonly serviceId: FieldRef<"Task", 'String'>
+    readonly clientServiceId: FieldRef<"Task", 'String'>
     readonly description: FieldRef<"Task", 'String'>
     readonly dueDate: FieldRef<"Task", 'DateTime'>
     readonly assigneeId: FieldRef<"Task", 'String'>
@@ -23171,6 +23432,21 @@ export namespace Prisma {
   }
 
   /**
+   * Task.clientService
+   */
+  export type Task$clientServiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Service
+     */
+    select?: ServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceInclude<ExtArgs> | null
+    where?: ServiceWhereInput
+  }
+
+  /**
    * Task without action
    */
   export type TaskDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23369,6 +23645,7 @@ export namespace Prisma {
     pricingModel?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    services?: boolean | ServiceTemplate$servicesArgs<ExtArgs>
     taskTemplates?: boolean | ServiceTemplate$taskTemplatesArgs<ExtArgs>
     _count?: boolean | ServiceTemplateCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["serviceTemplate"]>
@@ -23396,6 +23673,7 @@ export namespace Prisma {
   }
 
   export type ServiceTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    services?: boolean | ServiceTemplate$servicesArgs<ExtArgs>
     taskTemplates?: boolean | ServiceTemplate$taskTemplatesArgs<ExtArgs>
     _count?: boolean | ServiceTemplateCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -23404,6 +23682,7 @@ export namespace Prisma {
   export type $ServiceTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ServiceTemplate"
     objects: {
+      services: Prisma.$ServicePayload<ExtArgs>[]
       taskTemplates: Prisma.$ServiceTemplateTaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -23779,6 +24058,7 @@ export namespace Prisma {
    */
   export interface Prisma__ServiceTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    services<T extends ServiceTemplate$servicesArgs<ExtArgs> = {}>(args?: Subset<T, ServiceTemplate$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany"> | Null>
     taskTemplates<T extends ServiceTemplate$taskTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, ServiceTemplate$taskTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServiceTemplateTaskPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -24128,6 +24408,26 @@ export namespace Prisma {
      * Filter which ServiceTemplates to delete
      */
     where?: ServiceTemplateWhereInput
+  }
+
+  /**
+   * ServiceTemplate.services
+   */
+  export type ServiceTemplate$servicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Service
+     */
+    select?: ServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceInclude<ExtArgs> | null
+    where?: ServiceWhereInput
+    orderBy?: ServiceOrderByWithRelationInput | ServiceOrderByWithRelationInput[]
+    cursor?: ServiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ServiceScalarFieldEnum | ServiceScalarFieldEnum[]
   }
 
   /**
@@ -40292,6 +40592,10 @@ export namespace Prisma {
   export const ServiceScalarFieldEnum: {
     id: 'id',
     clientId: 'clientId',
+    templateId: 'templateId',
+    periodStart: 'periodStart',
+    periodEnd: 'periodEnd',
+    cycleNumber: 'cycleNumber',
     kind: 'kind',
     frequency: 'frequency',
     fee: 'fee',
@@ -40310,10 +40614,15 @@ export namespace Prisma {
     id: 'id',
     clientId: 'clientId',
     serviceId: 'serviceId',
+    clientServiceId: 'clientServiceId',
     type: 'type',
     description: 'description',
     dueDate: 'dueDate',
     status: 'status',
+    internalStatus: 'internalStatus',
+    externalStatus: 'externalStatus',
+    mismatch: 'mismatch',
+    filedAt: 'filedAt',
     source: 'source',
     reference: 'reference',
     period: 'period',
@@ -40329,6 +40638,7 @@ export namespace Prisma {
     title: 'title',
     clientId: 'clientId',
     serviceId: 'serviceId',
+    clientServiceId: 'clientServiceId',
     description: 'description',
     dueDate: 'dueDate',
     assigneeId: 'assigneeId',
@@ -40838,6 +41148,20 @@ export namespace Prisma {
    * Reference to a field of type 'VatStagger[]'
    */
   export type ListEnumVatStaggerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VatStagger[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ServiceStatus'
+   */
+  export type EnumServiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ServiceStatus[]'
+   */
+  export type ListEnumServiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceStatus[]'>
     
 
 
@@ -42905,23 +43229,34 @@ export namespace Prisma {
     NOT?: ServiceWhereInput | ServiceWhereInput[]
     id?: StringFilter<"Service"> | string
     clientId?: StringFilter<"Service"> | string
+    templateId?: StringNullableFilter<"Service"> | string | null
+    periodStart?: DateTimeFilter<"Service"> | Date | string
+    periodEnd?: DateTimeFilter<"Service"> | Date | string
+    cycleNumber?: IntNullableFilter<"Service"> | number | null
     kind?: StringFilter<"Service"> | string
     frequency?: StringNullableFilter<"Service"> | string | null
     fee?: DecimalNullableFilter<"Service"> | Decimal | DecimalJsLike | number | string | null
     annualized?: DecimalNullableFilter<"Service"> | Decimal | DecimalJsLike | number | string | null
-    status?: StringFilter<"Service"> | string
+    status?: EnumServiceStatusFilter<"Service"> | $Enums.ServiceStatus
     nextDue?: DateTimeNullableFilter<"Service"> | Date | string | null
     description?: StringNullableFilter<"Service"> | string | null
     createdAt?: DateTimeFilter<"Service"> | Date | string
     updatedAt?: DateTimeFilter<"Service"> | Date | string
     complianceItems?: ComplianceItemListRelationFilter
+    complianceByServiceRef?: ComplianceItemListRelationFilter
     client?: XOR<ClientRelationFilter, ClientWhereInput>
+    template?: XOR<ServiceTemplateNullableRelationFilter, ServiceTemplateWhereInput> | null
     tasks?: TaskListRelationFilter
+    clientServiceTasks?: TaskListRelationFilter
   }
 
   export type ServiceOrderByWithRelationInput = {
     id?: SortOrder
     clientId?: SortOrder
+    templateId?: SortOrderInput | SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    cycleNumber?: SortOrderInput | SortOrder
     kind?: SortOrder
     frequency?: SortOrderInput | SortOrder
     fee?: SortOrderInput | SortOrder
@@ -42932,33 +43267,48 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     complianceItems?: ComplianceItemOrderByRelationAggregateInput
+    complianceByServiceRef?: ComplianceItemOrderByRelationAggregateInput
     client?: ClientOrderByWithRelationInput
+    template?: ServiceTemplateOrderByWithRelationInput
     tasks?: TaskOrderByRelationAggregateInput
+    clientServiceTasks?: TaskOrderByRelationAggregateInput
   }
 
   export type ServiceWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    clientId_templateId_periodStart?: ServiceClientIdTemplateIdPeriodStartCompoundUniqueInput
     AND?: ServiceWhereInput | ServiceWhereInput[]
     OR?: ServiceWhereInput[]
     NOT?: ServiceWhereInput | ServiceWhereInput[]
     clientId?: StringFilter<"Service"> | string
+    templateId?: StringNullableFilter<"Service"> | string | null
+    periodStart?: DateTimeFilter<"Service"> | Date | string
+    periodEnd?: DateTimeFilter<"Service"> | Date | string
+    cycleNumber?: IntNullableFilter<"Service"> | number | null
     kind?: StringFilter<"Service"> | string
     frequency?: StringNullableFilter<"Service"> | string | null
     fee?: DecimalNullableFilter<"Service"> | Decimal | DecimalJsLike | number | string | null
     annualized?: DecimalNullableFilter<"Service"> | Decimal | DecimalJsLike | number | string | null
-    status?: StringFilter<"Service"> | string
+    status?: EnumServiceStatusFilter<"Service"> | $Enums.ServiceStatus
     nextDue?: DateTimeNullableFilter<"Service"> | Date | string | null
     description?: StringNullableFilter<"Service"> | string | null
     createdAt?: DateTimeFilter<"Service"> | Date | string
     updatedAt?: DateTimeFilter<"Service"> | Date | string
     complianceItems?: ComplianceItemListRelationFilter
+    complianceByServiceRef?: ComplianceItemListRelationFilter
     client?: XOR<ClientRelationFilter, ClientWhereInput>
+    template?: XOR<ServiceTemplateNullableRelationFilter, ServiceTemplateWhereInput> | null
     tasks?: TaskListRelationFilter
-  }, "id">
+    clientServiceTasks?: TaskListRelationFilter
+  }, "id" | "clientId_templateId_periodStart">
 
   export type ServiceOrderByWithAggregationInput = {
     id?: SortOrder
     clientId?: SortOrder
+    templateId?: SortOrderInput | SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    cycleNumber?: SortOrderInput | SortOrder
     kind?: SortOrder
     frequency?: SortOrderInput | SortOrder
     fee?: SortOrderInput | SortOrder
@@ -42981,11 +43331,15 @@ export namespace Prisma {
     NOT?: ServiceScalarWhereWithAggregatesInput | ServiceScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Service"> | string
     clientId?: StringWithAggregatesFilter<"Service"> | string
+    templateId?: StringNullableWithAggregatesFilter<"Service"> | string | null
+    periodStart?: DateTimeWithAggregatesFilter<"Service"> | Date | string
+    periodEnd?: DateTimeWithAggregatesFilter<"Service"> | Date | string
+    cycleNumber?: IntNullableWithAggregatesFilter<"Service"> | number | null
     kind?: StringWithAggregatesFilter<"Service"> | string
     frequency?: StringNullableWithAggregatesFilter<"Service"> | string | null
     fee?: DecimalNullableWithAggregatesFilter<"Service"> | Decimal | DecimalJsLike | number | string | null
     annualized?: DecimalNullableWithAggregatesFilter<"Service"> | Decimal | DecimalJsLike | number | string | null
-    status?: StringWithAggregatesFilter<"Service"> | string
+    status?: EnumServiceStatusWithAggregatesFilter<"Service"> | $Enums.ServiceStatus
     nextDue?: DateTimeNullableWithAggregatesFilter<"Service"> | Date | string | null
     description?: StringNullableWithAggregatesFilter<"Service"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Service"> | Date | string
@@ -42999,10 +43353,15 @@ export namespace Prisma {
     id?: StringFilter<"ComplianceItem"> | string
     clientId?: StringFilter<"ComplianceItem"> | string
     serviceId?: StringNullableFilter<"ComplianceItem"> | string | null
+    clientServiceId?: StringNullableFilter<"ComplianceItem"> | string | null
     type?: StringFilter<"ComplianceItem"> | string
     description?: StringFilter<"ComplianceItem"> | string
     dueDate?: DateTimeNullableFilter<"ComplianceItem"> | Date | string | null
     status?: EnumComplianceStatusFilter<"ComplianceItem"> | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFilter<"ComplianceItem"> | $Enums.ComplianceStatus
+    externalStatus?: EnumComplianceStatusNullableFilter<"ComplianceItem"> | $Enums.ComplianceStatus | null
+    mismatch?: BoolFilter<"ComplianceItem"> | boolean
+    filedAt?: DateTimeNullableFilter<"ComplianceItem"> | Date | string | null
     source?: EnumComplianceSourceFilter<"ComplianceItem"> | $Enums.ComplianceSource
     reference?: StringNullableFilter<"ComplianceItem"> | string | null
     period?: StringNullableFilter<"ComplianceItem"> | string | null
@@ -43010,16 +43369,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ComplianceItem"> | Date | string
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     service?: XOR<ServiceNullableRelationFilter, ServiceWhereInput> | null
+    clientService?: XOR<ServiceNullableRelationFilter, ServiceWhereInput> | null
   }
 
   export type ComplianceItemOrderByWithRelationInput = {
     id?: SortOrder
     clientId?: SortOrder
     serviceId?: SortOrderInput | SortOrder
+    clientServiceId?: SortOrderInput | SortOrder
     type?: SortOrder
     description?: SortOrder
     dueDate?: SortOrderInput | SortOrder
     status?: SortOrder
+    internalStatus?: SortOrder
+    externalStatus?: SortOrderInput | SortOrder
+    mismatch?: SortOrder
+    filedAt?: SortOrderInput | SortOrder
     source?: SortOrder
     reference?: SortOrderInput | SortOrder
     period?: SortOrderInput | SortOrder
@@ -43027,10 +43392,12 @@ export namespace Prisma {
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
     service?: ServiceOrderByWithRelationInput
+    clientService?: ServiceOrderByWithRelationInput
   }
 
   export type ComplianceItemWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    clientServiceId?: string
     AND?: ComplianceItemWhereInput | ComplianceItemWhereInput[]
     OR?: ComplianceItemWhereInput[]
     NOT?: ComplianceItemWhereInput | ComplianceItemWhereInput[]
@@ -43040,6 +43407,10 @@ export namespace Prisma {
     description?: StringFilter<"ComplianceItem"> | string
     dueDate?: DateTimeNullableFilter<"ComplianceItem"> | Date | string | null
     status?: EnumComplianceStatusFilter<"ComplianceItem"> | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFilter<"ComplianceItem"> | $Enums.ComplianceStatus
+    externalStatus?: EnumComplianceStatusNullableFilter<"ComplianceItem"> | $Enums.ComplianceStatus | null
+    mismatch?: BoolFilter<"ComplianceItem"> | boolean
+    filedAt?: DateTimeNullableFilter<"ComplianceItem"> | Date | string | null
     source?: EnumComplianceSourceFilter<"ComplianceItem"> | $Enums.ComplianceSource
     reference?: StringNullableFilter<"ComplianceItem"> | string | null
     period?: StringNullableFilter<"ComplianceItem"> | string | null
@@ -43047,16 +43418,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ComplianceItem"> | Date | string
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     service?: XOR<ServiceNullableRelationFilter, ServiceWhereInput> | null
-  }, "id">
+    clientService?: XOR<ServiceNullableRelationFilter, ServiceWhereInput> | null
+  }, "id" | "clientServiceId">
 
   export type ComplianceItemOrderByWithAggregationInput = {
     id?: SortOrder
     clientId?: SortOrder
     serviceId?: SortOrderInput | SortOrder
+    clientServiceId?: SortOrderInput | SortOrder
     type?: SortOrder
     description?: SortOrder
     dueDate?: SortOrderInput | SortOrder
     status?: SortOrder
+    internalStatus?: SortOrder
+    externalStatus?: SortOrderInput | SortOrder
+    mismatch?: SortOrder
+    filedAt?: SortOrderInput | SortOrder
     source?: SortOrder
     reference?: SortOrderInput | SortOrder
     period?: SortOrderInput | SortOrder
@@ -43074,10 +43451,15 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"ComplianceItem"> | string
     clientId?: StringWithAggregatesFilter<"ComplianceItem"> | string
     serviceId?: StringNullableWithAggregatesFilter<"ComplianceItem"> | string | null
+    clientServiceId?: StringNullableWithAggregatesFilter<"ComplianceItem"> | string | null
     type?: StringWithAggregatesFilter<"ComplianceItem"> | string
     description?: StringWithAggregatesFilter<"ComplianceItem"> | string
     dueDate?: DateTimeNullableWithAggregatesFilter<"ComplianceItem"> | Date | string | null
     status?: EnumComplianceStatusWithAggregatesFilter<"ComplianceItem"> | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusWithAggregatesFilter<"ComplianceItem"> | $Enums.ComplianceStatus
+    externalStatus?: EnumComplianceStatusNullableWithAggregatesFilter<"ComplianceItem"> | $Enums.ComplianceStatus | null
+    mismatch?: BoolWithAggregatesFilter<"ComplianceItem"> | boolean
+    filedAt?: DateTimeNullableWithAggregatesFilter<"ComplianceItem"> | Date | string | null
     source?: EnumComplianceSourceWithAggregatesFilter<"ComplianceItem"> | $Enums.ComplianceSource
     reference?: StringNullableWithAggregatesFilter<"ComplianceItem"> | string | null
     period?: StringNullableWithAggregatesFilter<"ComplianceItem"> | string | null
@@ -43093,6 +43475,7 @@ export namespace Prisma {
     title?: StringFilter<"Task"> | string
     clientId?: StringNullableFilter<"Task"> | string | null
     serviceId?: StringNullableFilter<"Task"> | string | null
+    clientServiceId?: StringNullableFilter<"Task"> | string | null
     description?: StringNullableFilter<"Task"> | string | null
     dueDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     assigneeId?: StringNullableFilter<"Task"> | string | null
@@ -43106,6 +43489,7 @@ export namespace Prisma {
     client?: XOR<ClientNullableRelationFilter, ClientWhereInput> | null
     creator?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     service?: XOR<ServiceNullableRelationFilter, ServiceWhereInput> | null
+    clientService?: XOR<ServiceNullableRelationFilter, ServiceWhereInput> | null
   }
 
   export type TaskOrderByWithRelationInput = {
@@ -43113,6 +43497,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrderInput | SortOrder
     serviceId?: SortOrderInput | SortOrder
+    clientServiceId?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
     assigneeId?: SortOrderInput | SortOrder
@@ -43126,6 +43511,7 @@ export namespace Prisma {
     client?: ClientOrderByWithRelationInput
     creator?: UserOrderByWithRelationInput
     service?: ServiceOrderByWithRelationInput
+    clientService?: ServiceOrderByWithRelationInput
   }
 
   export type TaskWhereUniqueInput = Prisma.AtLeast<{
@@ -43136,6 +43522,7 @@ export namespace Prisma {
     title?: StringFilter<"Task"> | string
     clientId?: StringNullableFilter<"Task"> | string | null
     serviceId?: StringNullableFilter<"Task"> | string | null
+    clientServiceId?: StringNullableFilter<"Task"> | string | null
     description?: StringNullableFilter<"Task"> | string | null
     dueDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     assigneeId?: StringNullableFilter<"Task"> | string | null
@@ -43149,6 +43536,7 @@ export namespace Prisma {
     client?: XOR<ClientNullableRelationFilter, ClientWhereInput> | null
     creator?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     service?: XOR<ServiceNullableRelationFilter, ServiceWhereInput> | null
+    clientService?: XOR<ServiceNullableRelationFilter, ServiceWhereInput> | null
   }, "id">
 
   export type TaskOrderByWithAggregationInput = {
@@ -43156,6 +43544,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrderInput | SortOrder
     serviceId?: SortOrderInput | SortOrder
+    clientServiceId?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
     assigneeId?: SortOrderInput | SortOrder
@@ -43178,6 +43567,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Task"> | string
     clientId?: StringNullableWithAggregatesFilter<"Task"> | string | null
     serviceId?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    clientServiceId?: StringNullableWithAggregatesFilter<"Task"> | string | null
     description?: StringNullableWithAggregatesFilter<"Task"> | string | null
     dueDate?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     assigneeId?: StringNullableWithAggregatesFilter<"Task"> | string | null
@@ -43201,6 +43591,7 @@ export namespace Prisma {
     pricingModel?: StringFilter<"ServiceTemplate"> | string
     createdAt?: DateTimeFilter<"ServiceTemplate"> | Date | string
     updatedAt?: DateTimeFilter<"ServiceTemplate"> | Date | string
+    services?: ServiceListRelationFilter
     taskTemplates?: ServiceTemplateTaskListRelationFilter
   }
 
@@ -43213,6 +43604,7 @@ export namespace Prisma {
     pricingModel?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    services?: ServiceOrderByRelationAggregateInput
     taskTemplates?: ServiceTemplateTaskOrderByRelationAggregateInput
   }
 
@@ -43228,6 +43620,7 @@ export namespace Prisma {
     pricingModel?: StringFilter<"ServiceTemplate"> | string
     createdAt?: DateTimeFilter<"ServiceTemplate"> | Date | string
     updatedAt?: DateTimeFilter<"ServiceTemplate"> | Date | string
+    services?: ServiceListRelationFilter
     taskTemplates?: ServiceTemplateTaskListRelationFilter
   }, "id">
 
@@ -47016,76 +47409,104 @@ export namespace Prisma {
 
   export type ServiceCreateInput = {
     id?: string
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     complianceItems?: ComplianceItemCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemCreateNestedManyWithoutClientServiceInput
     client: ClientCreateNestedOneWithoutServicesInput
+    template?: ServiceTemplateCreateNestedOneWithoutServicesInput
     tasks?: TaskCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskCreateNestedManyWithoutClientServiceInput
   }
 
   export type ServiceUncheckedCreateInput = {
     id?: string
     clientId: string
+    templateId?: string | null
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     complianceItems?: ComplianceItemUncheckedCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemUncheckedCreateNestedManyWithoutClientServiceInput
     tasks?: TaskUncheckedCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskUncheckedCreateNestedManyWithoutClientServiceInput
   }
 
   export type ServiceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     complianceItems?: ComplianceItemUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUpdateManyWithoutClientServiceNestedInput
     client?: ClientUpdateOneRequiredWithoutServicesNestedInput
+    template?: ServiceTemplateUpdateOneWithoutServicesNestedInput
     tasks?: TaskUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUpdateManyWithoutClientServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     complianceItems?: ComplianceItemUncheckedUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUncheckedUpdateManyWithoutClientServiceNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUncheckedUpdateManyWithoutClientServiceNestedInput
   }
 
   export type ServiceCreateManyInput = {
     id?: string
     clientId: string
+    templateId?: string | null
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
@@ -47094,11 +47515,14 @@ export namespace Prisma {
 
   export type ServiceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47108,11 +47532,15 @@ export namespace Prisma {
   export type ServiceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47125,6 +47553,10 @@ export namespace Prisma {
     description: string
     dueDate?: Date | string | null
     status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
     source: $Enums.ComplianceSource
     reference?: string | null
     period?: string | null
@@ -47132,16 +47564,22 @@ export namespace Prisma {
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutComplianceItemsInput
     service?: ServiceCreateNestedOneWithoutComplianceItemsInput
+    clientService?: ServiceCreateNestedOneWithoutComplianceByServiceRefInput
   }
 
   export type ComplianceItemUncheckedCreateInput = {
     id?: string
     clientId: string
     serviceId?: string | null
+    clientServiceId?: string | null
     type: string
     description: string
     dueDate?: Date | string | null
     status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
     source: $Enums.ComplianceSource
     reference?: string | null
     period?: string | null
@@ -47155,6 +47593,10 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47162,16 +47604,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutComplianceItemsNestedInput
     service?: ServiceUpdateOneWithoutComplianceItemsNestedInput
+    clientService?: ServiceUpdateOneWithoutComplianceByServiceRefNestedInput
   }
 
   export type ComplianceItemUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47183,10 +47631,15 @@ export namespace Prisma {
     id?: string
     clientId: string
     serviceId?: string | null
+    clientServiceId?: string | null
     type: string
     description: string
     dueDate?: Date | string | null
     status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
     source: $Enums.ComplianceSource
     reference?: string | null
     period?: string | null
@@ -47200,6 +47653,10 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47211,10 +47668,15 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47236,6 +47698,7 @@ export namespace Prisma {
     client?: ClientCreateNestedOneWithoutTasksInput
     creator?: UserCreateNestedOneWithoutCreatedTasksInput
     service?: ServiceCreateNestedOneWithoutTasksInput
+    clientService?: ServiceCreateNestedOneWithoutClientServiceTasksInput
   }
 
   export type TaskUncheckedCreateInput = {
@@ -47243,6 +47706,7 @@ export namespace Prisma {
     title: string
     clientId?: string | null
     serviceId?: string | null
+    clientServiceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     assigneeId?: string | null
@@ -47268,6 +47732,7 @@ export namespace Prisma {
     client?: ClientUpdateOneWithoutTasksNestedInput
     creator?: UserUpdateOneWithoutCreatedTasksNestedInput
     service?: ServiceUpdateOneWithoutTasksNestedInput
+    clientService?: ServiceUpdateOneWithoutClientServiceTasksNestedInput
   }
 
   export type TaskUncheckedUpdateInput = {
@@ -47275,6 +47740,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47291,6 +47757,7 @@ export namespace Prisma {
     title: string
     clientId?: string | null
     serviceId?: string | null
+    clientServiceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     assigneeId?: string | null
@@ -47319,6 +47786,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47339,6 +47807,7 @@ export namespace Prisma {
     pricingModel?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    services?: ServiceCreateNestedManyWithoutTemplateInput
     taskTemplates?: ServiceTemplateTaskCreateNestedManyWithoutServiceTemplateInput
   }
 
@@ -47351,6 +47820,7 @@ export namespace Prisma {
     pricingModel?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    services?: ServiceUncheckedCreateNestedManyWithoutTemplateInput
     taskTemplates?: ServiceTemplateTaskUncheckedCreateNestedManyWithoutServiceTemplateInput
   }
 
@@ -47363,6 +47833,7 @@ export namespace Prisma {
     pricingModel?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    services?: ServiceUpdateManyWithoutTemplateNestedInput
     taskTemplates?: ServiceTemplateTaskUpdateManyWithoutServiceTemplateNestedInput
   }
 
@@ -47375,6 +47846,7 @@ export namespace Prisma {
     pricingModel?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    services?: ServiceUncheckedUpdateManyWithoutTemplateNestedInput
     taskTemplates?: ServiceTemplateTaskUncheckedUpdateManyWithoutServiceTemplateNestedInput
   }
 
@@ -50734,9 +51206,31 @@ export namespace Prisma {
     country?: SortOrder
   }
 
+  export type EnumServiceStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ServiceStatus | EnumServiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ServiceStatus[] | ListEnumServiceStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ServiceStatus[] | ListEnumServiceStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumServiceStatusFilter<$PrismaModel> | $Enums.ServiceStatus
+  }
+
+  export type ServiceTemplateNullableRelationFilter = {
+    is?: ServiceTemplateWhereInput | null
+    isNot?: ServiceTemplateWhereInput | null
+  }
+
+  export type ServiceClientIdTemplateIdPeriodStartCompoundUniqueInput = {
+    clientId: string
+    templateId: string
+    periodStart: Date | string
+  }
+
   export type ServiceCountOrderByAggregateInput = {
     id?: SortOrder
     clientId?: SortOrder
+    templateId?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    cycleNumber?: SortOrder
     kind?: SortOrder
     frequency?: SortOrder
     fee?: SortOrder
@@ -50749,6 +51243,7 @@ export namespace Prisma {
   }
 
   export type ServiceAvgOrderByAggregateInput = {
+    cycleNumber?: SortOrder
     fee?: SortOrder
     annualized?: SortOrder
   }
@@ -50756,6 +51251,10 @@ export namespace Prisma {
   export type ServiceMaxOrderByAggregateInput = {
     id?: SortOrder
     clientId?: SortOrder
+    templateId?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    cycleNumber?: SortOrder
     kind?: SortOrder
     frequency?: SortOrder
     fee?: SortOrder
@@ -50770,6 +51269,10 @@ export namespace Prisma {
   export type ServiceMinOrderByAggregateInput = {
     id?: SortOrder
     clientId?: SortOrder
+    templateId?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    cycleNumber?: SortOrder
     kind?: SortOrder
     frequency?: SortOrder
     fee?: SortOrder
@@ -50782,8 +51285,19 @@ export namespace Prisma {
   }
 
   export type ServiceSumOrderByAggregateInput = {
+    cycleNumber?: SortOrder
     fee?: SortOrder
     annualized?: SortOrder
+  }
+
+  export type EnumServiceStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ServiceStatus | EnumServiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ServiceStatus[] | ListEnumServiceStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ServiceStatus[] | ListEnumServiceStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumServiceStatusWithAggregatesFilter<$PrismaModel> | $Enums.ServiceStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumServiceStatusFilter<$PrismaModel>
+    _max?: NestedEnumServiceStatusFilter<$PrismaModel>
   }
 
   export type EnumComplianceStatusFilter<$PrismaModel = never> = {
@@ -50791,6 +51305,13 @@ export namespace Prisma {
     in?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumComplianceStatusFilter<$PrismaModel> | $Enums.ComplianceStatus
+  }
+
+  export type EnumComplianceStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ComplianceStatus | EnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumComplianceStatusNullableFilter<$PrismaModel> | $Enums.ComplianceStatus | null
   }
 
   export type EnumComplianceSourceFilter<$PrismaModel = never> = {
@@ -50809,10 +51330,15 @@ export namespace Prisma {
     id?: SortOrder
     clientId?: SortOrder
     serviceId?: SortOrder
+    clientServiceId?: SortOrder
     type?: SortOrder
     description?: SortOrder
     dueDate?: SortOrder
     status?: SortOrder
+    internalStatus?: SortOrder
+    externalStatus?: SortOrder
+    mismatch?: SortOrder
+    filedAt?: SortOrder
     source?: SortOrder
     reference?: SortOrder
     period?: SortOrder
@@ -50824,10 +51350,15 @@ export namespace Prisma {
     id?: SortOrder
     clientId?: SortOrder
     serviceId?: SortOrder
+    clientServiceId?: SortOrder
     type?: SortOrder
     description?: SortOrder
     dueDate?: SortOrder
     status?: SortOrder
+    internalStatus?: SortOrder
+    externalStatus?: SortOrder
+    mismatch?: SortOrder
+    filedAt?: SortOrder
     source?: SortOrder
     reference?: SortOrder
     period?: SortOrder
@@ -50839,10 +51370,15 @@ export namespace Prisma {
     id?: SortOrder
     clientId?: SortOrder
     serviceId?: SortOrder
+    clientServiceId?: SortOrder
     type?: SortOrder
     description?: SortOrder
     dueDate?: SortOrder
     status?: SortOrder
+    internalStatus?: SortOrder
+    externalStatus?: SortOrder
+    mismatch?: SortOrder
+    filedAt?: SortOrder
     source?: SortOrder
     reference?: SortOrder
     period?: SortOrder
@@ -50858,6 +51394,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumComplianceStatusFilter<$PrismaModel>
     _max?: NestedEnumComplianceStatusFilter<$PrismaModel>
+  }
+
+  export type EnumComplianceStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ComplianceStatus | EnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumComplianceStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.ComplianceStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumComplianceStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumComplianceStatusNullableFilter<$PrismaModel>
   }
 
   export type EnumComplianceSourceWithAggregatesFilter<$PrismaModel = never> = {
@@ -50899,6 +51445,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrder
     serviceId?: SortOrder
+    clientServiceId?: SortOrder
     description?: SortOrder
     dueDate?: SortOrder
     assigneeId?: SortOrder
@@ -50915,6 +51462,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrder
     serviceId?: SortOrder
+    clientServiceId?: SortOrder
     description?: SortOrder
     dueDate?: SortOrder
     assigneeId?: SortOrder
@@ -50930,6 +51478,7 @@ export namespace Prisma {
     title?: SortOrder
     clientId?: SortOrder
     serviceId?: SortOrder
+    clientServiceId?: SortOrder
     description?: SortOrder
     dueDate?: SortOrder
     assigneeId?: SortOrder
@@ -53419,16 +53968,36 @@ export namespace Prisma {
     connect?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
   }
 
+  export type ComplianceItemCreateNestedManyWithoutClientServiceInput = {
+    create?: XOR<ComplianceItemCreateWithoutClientServiceInput, ComplianceItemUncheckedCreateWithoutClientServiceInput> | ComplianceItemCreateWithoutClientServiceInput[] | ComplianceItemUncheckedCreateWithoutClientServiceInput[]
+    connectOrCreate?: ComplianceItemCreateOrConnectWithoutClientServiceInput | ComplianceItemCreateOrConnectWithoutClientServiceInput[]
+    createMany?: ComplianceItemCreateManyClientServiceInputEnvelope
+    connect?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+  }
+
   export type ClientCreateNestedOneWithoutServicesInput = {
     create?: XOR<ClientCreateWithoutServicesInput, ClientUncheckedCreateWithoutServicesInput>
     connectOrCreate?: ClientCreateOrConnectWithoutServicesInput
     connect?: ClientWhereUniqueInput
   }
 
+  export type ServiceTemplateCreateNestedOneWithoutServicesInput = {
+    create?: XOR<ServiceTemplateCreateWithoutServicesInput, ServiceTemplateUncheckedCreateWithoutServicesInput>
+    connectOrCreate?: ServiceTemplateCreateOrConnectWithoutServicesInput
+    connect?: ServiceTemplateWhereUniqueInput
+  }
+
   export type TaskCreateNestedManyWithoutServiceInput = {
     create?: XOR<TaskCreateWithoutServiceInput, TaskUncheckedCreateWithoutServiceInput> | TaskCreateWithoutServiceInput[] | TaskUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutServiceInput | TaskCreateOrConnectWithoutServiceInput[]
     createMany?: TaskCreateManyServiceInputEnvelope
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type TaskCreateNestedManyWithoutClientServiceInput = {
+    create?: XOR<TaskCreateWithoutClientServiceInput, TaskUncheckedCreateWithoutClientServiceInput> | TaskCreateWithoutClientServiceInput[] | TaskUncheckedCreateWithoutClientServiceInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutClientServiceInput | TaskCreateOrConnectWithoutClientServiceInput[]
+    createMany?: TaskCreateManyClientServiceInputEnvelope
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
@@ -53439,11 +54008,29 @@ export namespace Prisma {
     connect?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
   }
 
+  export type ComplianceItemUncheckedCreateNestedManyWithoutClientServiceInput = {
+    create?: XOR<ComplianceItemCreateWithoutClientServiceInput, ComplianceItemUncheckedCreateWithoutClientServiceInput> | ComplianceItemCreateWithoutClientServiceInput[] | ComplianceItemUncheckedCreateWithoutClientServiceInput[]
+    connectOrCreate?: ComplianceItemCreateOrConnectWithoutClientServiceInput | ComplianceItemCreateOrConnectWithoutClientServiceInput[]
+    createMany?: ComplianceItemCreateManyClientServiceInputEnvelope
+    connect?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+  }
+
   export type TaskUncheckedCreateNestedManyWithoutServiceInput = {
     create?: XOR<TaskCreateWithoutServiceInput, TaskUncheckedCreateWithoutServiceInput> | TaskCreateWithoutServiceInput[] | TaskUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutServiceInput | TaskCreateOrConnectWithoutServiceInput[]
     createMany?: TaskCreateManyServiceInputEnvelope
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type TaskUncheckedCreateNestedManyWithoutClientServiceInput = {
+    create?: XOR<TaskCreateWithoutClientServiceInput, TaskUncheckedCreateWithoutClientServiceInput> | TaskCreateWithoutClientServiceInput[] | TaskUncheckedCreateWithoutClientServiceInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutClientServiceInput | TaskCreateOrConnectWithoutClientServiceInput[]
+    createMany?: TaskCreateManyClientServiceInputEnvelope
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type EnumServiceStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ServiceStatus
   }
 
   export type ComplianceItemUpdateManyWithoutServiceNestedInput = {
@@ -53460,12 +54047,36 @@ export namespace Prisma {
     deleteMany?: ComplianceItemScalarWhereInput | ComplianceItemScalarWhereInput[]
   }
 
+  export type ComplianceItemUpdateManyWithoutClientServiceNestedInput = {
+    create?: XOR<ComplianceItemCreateWithoutClientServiceInput, ComplianceItemUncheckedCreateWithoutClientServiceInput> | ComplianceItemCreateWithoutClientServiceInput[] | ComplianceItemUncheckedCreateWithoutClientServiceInput[]
+    connectOrCreate?: ComplianceItemCreateOrConnectWithoutClientServiceInput | ComplianceItemCreateOrConnectWithoutClientServiceInput[]
+    upsert?: ComplianceItemUpsertWithWhereUniqueWithoutClientServiceInput | ComplianceItemUpsertWithWhereUniqueWithoutClientServiceInput[]
+    createMany?: ComplianceItemCreateManyClientServiceInputEnvelope
+    set?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+    disconnect?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+    delete?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+    connect?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+    update?: ComplianceItemUpdateWithWhereUniqueWithoutClientServiceInput | ComplianceItemUpdateWithWhereUniqueWithoutClientServiceInput[]
+    updateMany?: ComplianceItemUpdateManyWithWhereWithoutClientServiceInput | ComplianceItemUpdateManyWithWhereWithoutClientServiceInput[]
+    deleteMany?: ComplianceItemScalarWhereInput | ComplianceItemScalarWhereInput[]
+  }
+
   export type ClientUpdateOneRequiredWithoutServicesNestedInput = {
     create?: XOR<ClientCreateWithoutServicesInput, ClientUncheckedCreateWithoutServicesInput>
     connectOrCreate?: ClientCreateOrConnectWithoutServicesInput
     upsert?: ClientUpsertWithoutServicesInput
     connect?: ClientWhereUniqueInput
     update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutServicesInput, ClientUpdateWithoutServicesInput>, ClientUncheckedUpdateWithoutServicesInput>
+  }
+
+  export type ServiceTemplateUpdateOneWithoutServicesNestedInput = {
+    create?: XOR<ServiceTemplateCreateWithoutServicesInput, ServiceTemplateUncheckedCreateWithoutServicesInput>
+    connectOrCreate?: ServiceTemplateCreateOrConnectWithoutServicesInput
+    upsert?: ServiceTemplateUpsertWithoutServicesInput
+    disconnect?: ServiceTemplateWhereInput | boolean
+    delete?: ServiceTemplateWhereInput | boolean
+    connect?: ServiceTemplateWhereUniqueInput
+    update?: XOR<XOR<ServiceTemplateUpdateToOneWithWhereWithoutServicesInput, ServiceTemplateUpdateWithoutServicesInput>, ServiceTemplateUncheckedUpdateWithoutServicesInput>
   }
 
   export type TaskUpdateManyWithoutServiceNestedInput = {
@@ -53479,6 +54090,20 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
     update?: TaskUpdateWithWhereUniqueWithoutServiceInput | TaskUpdateWithWhereUniqueWithoutServiceInput[]
     updateMany?: TaskUpdateManyWithWhereWithoutServiceInput | TaskUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
+  export type TaskUpdateManyWithoutClientServiceNestedInput = {
+    create?: XOR<TaskCreateWithoutClientServiceInput, TaskUncheckedCreateWithoutClientServiceInput> | TaskCreateWithoutClientServiceInput[] | TaskUncheckedCreateWithoutClientServiceInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutClientServiceInput | TaskCreateOrConnectWithoutClientServiceInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutClientServiceInput | TaskUpsertWithWhereUniqueWithoutClientServiceInput[]
+    createMany?: TaskCreateManyClientServiceInputEnvelope
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutClientServiceInput | TaskUpdateWithWhereUniqueWithoutClientServiceInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutClientServiceInput | TaskUpdateManyWithWhereWithoutClientServiceInput[]
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
@@ -53496,6 +54121,20 @@ export namespace Prisma {
     deleteMany?: ComplianceItemScalarWhereInput | ComplianceItemScalarWhereInput[]
   }
 
+  export type ComplianceItemUncheckedUpdateManyWithoutClientServiceNestedInput = {
+    create?: XOR<ComplianceItemCreateWithoutClientServiceInput, ComplianceItemUncheckedCreateWithoutClientServiceInput> | ComplianceItemCreateWithoutClientServiceInput[] | ComplianceItemUncheckedCreateWithoutClientServiceInput[]
+    connectOrCreate?: ComplianceItemCreateOrConnectWithoutClientServiceInput | ComplianceItemCreateOrConnectWithoutClientServiceInput[]
+    upsert?: ComplianceItemUpsertWithWhereUniqueWithoutClientServiceInput | ComplianceItemUpsertWithWhereUniqueWithoutClientServiceInput[]
+    createMany?: ComplianceItemCreateManyClientServiceInputEnvelope
+    set?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+    disconnect?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+    delete?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+    connect?: ComplianceItemWhereUniqueInput | ComplianceItemWhereUniqueInput[]
+    update?: ComplianceItemUpdateWithWhereUniqueWithoutClientServiceInput | ComplianceItemUpdateWithWhereUniqueWithoutClientServiceInput[]
+    updateMany?: ComplianceItemUpdateManyWithWhereWithoutClientServiceInput | ComplianceItemUpdateManyWithWhereWithoutClientServiceInput[]
+    deleteMany?: ComplianceItemScalarWhereInput | ComplianceItemScalarWhereInput[]
+  }
+
   export type TaskUncheckedUpdateManyWithoutServiceNestedInput = {
     create?: XOR<TaskCreateWithoutServiceInput, TaskUncheckedCreateWithoutServiceInput> | TaskCreateWithoutServiceInput[] | TaskUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutServiceInput | TaskCreateOrConnectWithoutServiceInput[]
@@ -53507,6 +54146,20 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
     update?: TaskUpdateWithWhereUniqueWithoutServiceInput | TaskUpdateWithWhereUniqueWithoutServiceInput[]
     updateMany?: TaskUpdateManyWithWhereWithoutServiceInput | TaskUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
+  export type TaskUncheckedUpdateManyWithoutClientServiceNestedInput = {
+    create?: XOR<TaskCreateWithoutClientServiceInput, TaskUncheckedCreateWithoutClientServiceInput> | TaskCreateWithoutClientServiceInput[] | TaskUncheckedCreateWithoutClientServiceInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutClientServiceInput | TaskCreateOrConnectWithoutClientServiceInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutClientServiceInput | TaskUpsertWithWhereUniqueWithoutClientServiceInput[]
+    createMany?: TaskCreateManyClientServiceInputEnvelope
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutClientServiceInput | TaskUpdateWithWhereUniqueWithoutClientServiceInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutClientServiceInput | TaskUpdateManyWithWhereWithoutClientServiceInput[]
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
@@ -53522,8 +54175,18 @@ export namespace Prisma {
     connect?: ServiceWhereUniqueInput
   }
 
+  export type ServiceCreateNestedOneWithoutComplianceByServiceRefInput = {
+    create?: XOR<ServiceCreateWithoutComplianceByServiceRefInput, ServiceUncheckedCreateWithoutComplianceByServiceRefInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutComplianceByServiceRefInput
+    connect?: ServiceWhereUniqueInput
+  }
+
   export type EnumComplianceStatusFieldUpdateOperationsInput = {
     set?: $Enums.ComplianceStatus
+  }
+
+  export type NullableEnumComplianceStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ComplianceStatus | null
   }
 
   export type EnumComplianceSourceFieldUpdateOperationsInput = {
@@ -53546,6 +54209,16 @@ export namespace Prisma {
     delete?: ServiceWhereInput | boolean
     connect?: ServiceWhereUniqueInput
     update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutComplianceItemsInput, ServiceUpdateWithoutComplianceItemsInput>, ServiceUncheckedUpdateWithoutComplianceItemsInput>
+  }
+
+  export type ServiceUpdateOneWithoutComplianceByServiceRefNestedInput = {
+    create?: XOR<ServiceCreateWithoutComplianceByServiceRefInput, ServiceUncheckedCreateWithoutComplianceByServiceRefInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutComplianceByServiceRefInput
+    upsert?: ServiceUpsertWithoutComplianceByServiceRefInput
+    disconnect?: ServiceWhereInput | boolean
+    delete?: ServiceWhereInput | boolean
+    connect?: ServiceWhereUniqueInput
+    update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutComplianceByServiceRefInput, ServiceUpdateWithoutComplianceByServiceRefInput>, ServiceUncheckedUpdateWithoutComplianceByServiceRefInput>
   }
 
   export type TaskCreatetagsInput = {
@@ -53573,6 +54246,12 @@ export namespace Prisma {
   export type ServiceCreateNestedOneWithoutTasksInput = {
     create?: XOR<ServiceCreateWithoutTasksInput, ServiceUncheckedCreateWithoutTasksInput>
     connectOrCreate?: ServiceCreateOrConnectWithoutTasksInput
+    connect?: ServiceWhereUniqueInput
+  }
+
+  export type ServiceCreateNestedOneWithoutClientServiceTasksInput = {
+    create?: XOR<ServiceCreateWithoutClientServiceTasksInput, ServiceUncheckedCreateWithoutClientServiceTasksInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutClientServiceTasksInput
     connect?: ServiceWhereUniqueInput
   }
 
@@ -53629,8 +54308,25 @@ export namespace Prisma {
     update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutTasksInput, ServiceUpdateWithoutTasksInput>, ServiceUncheckedUpdateWithoutTasksInput>
   }
 
+  export type ServiceUpdateOneWithoutClientServiceTasksNestedInput = {
+    create?: XOR<ServiceCreateWithoutClientServiceTasksInput, ServiceUncheckedCreateWithoutClientServiceTasksInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutClientServiceTasksInput
+    upsert?: ServiceUpsertWithoutClientServiceTasksInput
+    disconnect?: ServiceWhereInput | boolean
+    delete?: ServiceWhereInput | boolean
+    connect?: ServiceWhereUniqueInput
+    update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutClientServiceTasksInput, ServiceUpdateWithoutClientServiceTasksInput>, ServiceUncheckedUpdateWithoutClientServiceTasksInput>
+  }
+
   export type ServiceTemplateCreateappliesToInput = {
     set: string[]
+  }
+
+  export type ServiceCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<ServiceCreateWithoutTemplateInput, ServiceUncheckedCreateWithoutTemplateInput> | ServiceCreateWithoutTemplateInput[] | ServiceUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutTemplateInput | ServiceCreateOrConnectWithoutTemplateInput[]
+    createMany?: ServiceCreateManyTemplateInputEnvelope
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
   }
 
   export type ServiceTemplateTaskCreateNestedManyWithoutServiceTemplateInput = {
@@ -53638,6 +54334,13 @@ export namespace Prisma {
     connectOrCreate?: ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput | ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput[]
     createMany?: ServiceTemplateTaskCreateManyServiceTemplateInputEnvelope
     connect?: ServiceTemplateTaskWhereUniqueInput | ServiceTemplateTaskWhereUniqueInput[]
+  }
+
+  export type ServiceUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<ServiceCreateWithoutTemplateInput, ServiceUncheckedCreateWithoutTemplateInput> | ServiceCreateWithoutTemplateInput[] | ServiceUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutTemplateInput | ServiceCreateOrConnectWithoutTemplateInput[]
+    createMany?: ServiceCreateManyTemplateInputEnvelope
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
   }
 
   export type ServiceTemplateTaskUncheckedCreateNestedManyWithoutServiceTemplateInput = {
@@ -53652,6 +54355,20 @@ export namespace Prisma {
     push?: string | string[]
   }
 
+  export type ServiceUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<ServiceCreateWithoutTemplateInput, ServiceUncheckedCreateWithoutTemplateInput> | ServiceCreateWithoutTemplateInput[] | ServiceUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutTemplateInput | ServiceCreateOrConnectWithoutTemplateInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutTemplateInput | ServiceUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: ServiceCreateManyTemplateInputEnvelope
+    set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutTemplateInput | ServiceUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutTemplateInput | ServiceUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
+  }
+
   export type ServiceTemplateTaskUpdateManyWithoutServiceTemplateNestedInput = {
     create?: XOR<ServiceTemplateTaskCreateWithoutServiceTemplateInput, ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput> | ServiceTemplateTaskCreateWithoutServiceTemplateInput[] | ServiceTemplateTaskUncheckedCreateWithoutServiceTemplateInput[]
     connectOrCreate?: ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput | ServiceTemplateTaskCreateOrConnectWithoutServiceTemplateInput[]
@@ -53664,6 +54381,20 @@ export namespace Prisma {
     update?: ServiceTemplateTaskUpdateWithWhereUniqueWithoutServiceTemplateInput | ServiceTemplateTaskUpdateWithWhereUniqueWithoutServiceTemplateInput[]
     updateMany?: ServiceTemplateTaskUpdateManyWithWhereWithoutServiceTemplateInput | ServiceTemplateTaskUpdateManyWithWhereWithoutServiceTemplateInput[]
     deleteMany?: ServiceTemplateTaskScalarWhereInput | ServiceTemplateTaskScalarWhereInput[]
+  }
+
+  export type ServiceUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<ServiceCreateWithoutTemplateInput, ServiceUncheckedCreateWithoutTemplateInput> | ServiceCreateWithoutTemplateInput[] | ServiceUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutTemplateInput | ServiceCreateOrConnectWithoutTemplateInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutTemplateInput | ServiceUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: ServiceCreateManyTemplateInputEnvelope
+    set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutTemplateInput | ServiceUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutTemplateInput | ServiceUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
   }
 
   export type ServiceTemplateTaskUncheckedUpdateManyWithoutServiceTemplateNestedInput = {
@@ -54552,11 +55283,35 @@ export namespace Prisma {
     _max?: NestedEnumVatStaggerFilter<$PrismaModel>
   }
 
+  export type NestedEnumServiceStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ServiceStatus | EnumServiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ServiceStatus[] | ListEnumServiceStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ServiceStatus[] | ListEnumServiceStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumServiceStatusFilter<$PrismaModel> | $Enums.ServiceStatus
+  }
+
+  export type NestedEnumServiceStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ServiceStatus | EnumServiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ServiceStatus[] | ListEnumServiceStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ServiceStatus[] | ListEnumServiceStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumServiceStatusWithAggregatesFilter<$PrismaModel> | $Enums.ServiceStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumServiceStatusFilter<$PrismaModel>
+    _max?: NestedEnumServiceStatusFilter<$PrismaModel>
+  }
+
   export type NestedEnumComplianceStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ComplianceStatus | EnumComplianceStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumComplianceStatusFilter<$PrismaModel> | $Enums.ComplianceStatus
+  }
+
+  export type NestedEnumComplianceStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ComplianceStatus | EnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumComplianceStatusNullableFilter<$PrismaModel> | $Enums.ComplianceStatus | null
   }
 
   export type NestedEnumComplianceSourceFilter<$PrismaModel = never> = {
@@ -54574,6 +55329,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumComplianceStatusFilter<$PrismaModel>
     _max?: NestedEnumComplianceStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumComplianceStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ComplianceStatus | EnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ComplianceStatus[] | ListEnumComplianceStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumComplianceStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.ComplianceStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumComplianceStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumComplianceStatusNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumComplianceSourceWithAggregatesFilter<$PrismaModel = never> = {
@@ -56194,6 +56959,7 @@ export namespace Prisma {
     client?: ClientCreateNestedOneWithoutTasksInput
     creator?: UserCreateNestedOneWithoutCreatedTasksInput
     service?: ServiceCreateNestedOneWithoutTasksInput
+    clientService?: ServiceCreateNestedOneWithoutClientServiceTasksInput
   }
 
   export type TaskUncheckedCreateWithoutAssigneeInput = {
@@ -56201,6 +56967,7 @@ export namespace Prisma {
     title: string
     clientId?: string | null
     serviceId?: string | null
+    clientServiceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     creatorId?: string | null
@@ -56234,6 +57001,7 @@ export namespace Prisma {
     assignee?: UserCreateNestedOneWithoutAssignedTasksInput
     client?: ClientCreateNestedOneWithoutTasksInput
     service?: ServiceCreateNestedOneWithoutTasksInput
+    clientService?: ServiceCreateNestedOneWithoutClientServiceTasksInput
   }
 
   export type TaskUncheckedCreateWithoutCreatorInput = {
@@ -56241,6 +57009,7 @@ export namespace Prisma {
     title: string
     clientId?: string | null
     serviceId?: string | null
+    clientServiceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     assigneeId?: string | null
@@ -56528,6 +57297,7 @@ export namespace Prisma {
     title?: StringFilter<"Task"> | string
     clientId?: StringNullableFilter<"Task"> | string | null
     serviceId?: StringNullableFilter<"Task"> | string | null
+    clientServiceId?: StringNullableFilter<"Task"> | string | null
     description?: StringNullableFilter<"Task"> | string | null
     dueDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     assigneeId?: StringNullableFilter<"Task"> | string | null
@@ -57417,21 +58187,31 @@ export namespace Prisma {
     description: string
     dueDate?: Date | string | null
     status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
     source: $Enums.ComplianceSource
     reference?: string | null
     period?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     service?: ServiceCreateNestedOneWithoutComplianceItemsInput
+    clientService?: ServiceCreateNestedOneWithoutComplianceByServiceRefInput
   }
 
   export type ComplianceItemUncheckedCreateWithoutClientInput = {
     id?: string
     serviceId?: string | null
+    clientServiceId?: string | null
     type: string
     description: string
     dueDate?: Date | string | null
     status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
     source: $Enums.ComplianceSource
     reference?: string | null
     period?: string | null
@@ -57607,32 +58387,44 @@ export namespace Prisma {
 
   export type ServiceCreateWithoutClientInput = {
     id?: string
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     complianceItems?: ComplianceItemCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemCreateNestedManyWithoutClientServiceInput
+    template?: ServiceTemplateCreateNestedOneWithoutServicesInput
     tasks?: TaskCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskCreateNestedManyWithoutClientServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutClientInput = {
     id?: string
+    templateId?: string | null
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     complianceItems?: ComplianceItemUncheckedCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemUncheckedCreateNestedManyWithoutClientServiceInput
     tasks?: TaskUncheckedCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskUncheckedCreateNestedManyWithoutClientServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutClientInput = {
@@ -57658,12 +58450,14 @@ export namespace Prisma {
     assignee?: UserCreateNestedOneWithoutAssignedTasksInput
     creator?: UserCreateNestedOneWithoutCreatedTasksInput
     service?: ServiceCreateNestedOneWithoutTasksInput
+    clientService?: ServiceCreateNestedOneWithoutClientServiceTasksInput
   }
 
   export type TaskUncheckedCreateWithoutClientInput = {
     id?: string
     title: string
     serviceId?: string | null
+    clientServiceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     assigneeId?: string | null
@@ -58139,10 +58933,15 @@ export namespace Prisma {
     id?: StringFilter<"ComplianceItem"> | string
     clientId?: StringFilter<"ComplianceItem"> | string
     serviceId?: StringNullableFilter<"ComplianceItem"> | string | null
+    clientServiceId?: StringNullableFilter<"ComplianceItem"> | string | null
     type?: StringFilter<"ComplianceItem"> | string
     description?: StringFilter<"ComplianceItem"> | string
     dueDate?: DateTimeNullableFilter<"ComplianceItem"> | Date | string | null
     status?: EnumComplianceStatusFilter<"ComplianceItem"> | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFilter<"ComplianceItem"> | $Enums.ComplianceStatus
+    externalStatus?: EnumComplianceStatusNullableFilter<"ComplianceItem"> | $Enums.ComplianceStatus | null
+    mismatch?: BoolFilter<"ComplianceItem"> | boolean
+    filedAt?: DateTimeNullableFilter<"ComplianceItem"> | Date | string | null
     source?: EnumComplianceSourceFilter<"ComplianceItem"> | $Enums.ComplianceSource
     reference?: StringNullableFilter<"ComplianceItem"> | string | null
     period?: StringNullableFilter<"ComplianceItem"> | string | null
@@ -58293,11 +59092,15 @@ export namespace Prisma {
     NOT?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
     id?: StringFilter<"Service"> | string
     clientId?: StringFilter<"Service"> | string
+    templateId?: StringNullableFilter<"Service"> | string | null
+    periodStart?: DateTimeFilter<"Service"> | Date | string
+    periodEnd?: DateTimeFilter<"Service"> | Date | string
+    cycleNumber?: IntNullableFilter<"Service"> | number | null
     kind?: StringFilter<"Service"> | string
     frequency?: StringNullableFilter<"Service"> | string | null
     fee?: DecimalNullableFilter<"Service"> | Decimal | DecimalJsLike | number | string | null
     annualized?: DecimalNullableFilter<"Service"> | Decimal | DecimalJsLike | number | string | null
-    status?: StringFilter<"Service"> | string
+    status?: EnumServiceStatusFilter<"Service"> | $Enums.ServiceStatus
     nextDue?: DateTimeNullableFilter<"Service"> | Date | string | null
     description?: StringNullableFilter<"Service"> | string | null
     createdAt?: DateTimeFilter<"Service"> | Date | string
@@ -59123,21 +59926,31 @@ export namespace Prisma {
     description: string
     dueDate?: Date | string | null
     status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
     source: $Enums.ComplianceSource
     reference?: string | null
     period?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutComplianceItemsInput
+    clientService?: ServiceCreateNestedOneWithoutComplianceByServiceRefInput
   }
 
   export type ComplianceItemUncheckedCreateWithoutServiceInput = {
     id?: string
     clientId: string
+    clientServiceId?: string | null
     type: string
     description: string
     dueDate?: Date | string | null
     status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
     source: $Enums.ComplianceSource
     reference?: string | null
     period?: string | null
@@ -59152,6 +59965,54 @@ export namespace Prisma {
 
   export type ComplianceItemCreateManyServiceInputEnvelope = {
     data: ComplianceItemCreateManyServiceInput | ComplianceItemCreateManyServiceInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ComplianceItemCreateWithoutClientServiceInput = {
+    id?: string
+    type: string
+    description: string
+    dueDate?: Date | string | null
+    status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
+    source: $Enums.ComplianceSource
+    reference?: string | null
+    period?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client: ClientCreateNestedOneWithoutComplianceItemsInput
+    service?: ServiceCreateNestedOneWithoutComplianceItemsInput
+  }
+
+  export type ComplianceItemUncheckedCreateWithoutClientServiceInput = {
+    id?: string
+    clientId: string
+    serviceId?: string | null
+    type: string
+    description: string
+    dueDate?: Date | string | null
+    status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
+    source: $Enums.ComplianceSource
+    reference?: string | null
+    period?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ComplianceItemCreateOrConnectWithoutClientServiceInput = {
+    where: ComplianceItemWhereUniqueInput
+    create: XOR<ComplianceItemCreateWithoutClientServiceInput, ComplianceItemUncheckedCreateWithoutClientServiceInput>
+  }
+
+  export type ComplianceItemCreateManyClientServiceInputEnvelope = {
+    data: ComplianceItemCreateManyClientServiceInput | ComplianceItemCreateManyClientServiceInput[]
     skipDuplicates?: boolean
   }
 
@@ -59280,6 +60141,35 @@ export namespace Prisma {
     create: XOR<ClientCreateWithoutServicesInput, ClientUncheckedCreateWithoutServicesInput>
   }
 
+  export type ServiceTemplateCreateWithoutServicesInput = {
+    id?: string
+    serviceKind: string
+    frequency: string
+    appliesTo?: ServiceTemplateCreateappliesToInput | string[]
+    complianceImpact?: boolean
+    pricingModel?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    taskTemplates?: ServiceTemplateTaskCreateNestedManyWithoutServiceTemplateInput
+  }
+
+  export type ServiceTemplateUncheckedCreateWithoutServicesInput = {
+    id?: string
+    serviceKind: string
+    frequency: string
+    appliesTo?: ServiceTemplateCreateappliesToInput | string[]
+    complianceImpact?: boolean
+    pricingModel?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    taskTemplates?: ServiceTemplateTaskUncheckedCreateNestedManyWithoutServiceTemplateInput
+  }
+
+  export type ServiceTemplateCreateOrConnectWithoutServicesInput = {
+    where: ServiceTemplateWhereUniqueInput
+    create: XOR<ServiceTemplateCreateWithoutServicesInput, ServiceTemplateUncheckedCreateWithoutServicesInput>
+  }
+
   export type TaskCreateWithoutServiceInput = {
     id?: string
     title: string
@@ -59293,12 +60183,14 @@ export namespace Prisma {
     assignee?: UserCreateNestedOneWithoutAssignedTasksInput
     client?: ClientCreateNestedOneWithoutTasksInput
     creator?: UserCreateNestedOneWithoutCreatedTasksInput
+    clientService?: ServiceCreateNestedOneWithoutClientServiceTasksInput
   }
 
   export type TaskUncheckedCreateWithoutServiceInput = {
     id?: string
     title: string
     clientId?: string | null
+    clientServiceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     assigneeId?: string | null
@@ -59320,6 +60212,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TaskCreateWithoutClientServiceInput = {
+    id?: string
+    title: string
+    description?: string | null
+    dueDate?: Date | string | null
+    status?: $Enums.TaskStatus
+    priority?: $Enums.Priority
+    tags?: TaskCreatetagsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignee?: UserCreateNestedOneWithoutAssignedTasksInput
+    client?: ClientCreateNestedOneWithoutTasksInput
+    creator?: UserCreateNestedOneWithoutCreatedTasksInput
+    service?: ServiceCreateNestedOneWithoutTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutClientServiceInput = {
+    id?: string
+    title: string
+    clientId?: string | null
+    serviceId?: string | null
+    description?: string | null
+    dueDate?: Date | string | null
+    assigneeId?: string | null
+    creatorId?: string | null
+    status?: $Enums.TaskStatus
+    priority?: $Enums.Priority
+    tags?: TaskCreatetagsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaskCreateOrConnectWithoutClientServiceInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutClientServiceInput, TaskUncheckedCreateWithoutClientServiceInput>
+  }
+
+  export type TaskCreateManyClientServiceInputEnvelope = {
+    data: TaskCreateManyClientServiceInput | TaskCreateManyClientServiceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ComplianceItemUpsertWithWhereUniqueWithoutServiceInput = {
     where: ComplianceItemWhereUniqueInput
     update: XOR<ComplianceItemUpdateWithoutServiceInput, ComplianceItemUncheckedUpdateWithoutServiceInput>
@@ -59334,6 +60268,22 @@ export namespace Prisma {
   export type ComplianceItemUpdateManyWithWhereWithoutServiceInput = {
     where: ComplianceItemScalarWhereInput
     data: XOR<ComplianceItemUpdateManyMutationInput, ComplianceItemUncheckedUpdateManyWithoutServiceInput>
+  }
+
+  export type ComplianceItemUpsertWithWhereUniqueWithoutClientServiceInput = {
+    where: ComplianceItemWhereUniqueInput
+    update: XOR<ComplianceItemUpdateWithoutClientServiceInput, ComplianceItemUncheckedUpdateWithoutClientServiceInput>
+    create: XOR<ComplianceItemCreateWithoutClientServiceInput, ComplianceItemUncheckedCreateWithoutClientServiceInput>
+  }
+
+  export type ComplianceItemUpdateWithWhereUniqueWithoutClientServiceInput = {
+    where: ComplianceItemWhereUniqueInput
+    data: XOR<ComplianceItemUpdateWithoutClientServiceInput, ComplianceItemUncheckedUpdateWithoutClientServiceInput>
+  }
+
+  export type ComplianceItemUpdateManyWithWhereWithoutClientServiceInput = {
+    where: ComplianceItemScalarWhereInput
+    data: XOR<ComplianceItemUpdateManyMutationInput, ComplianceItemUncheckedUpdateManyWithoutClientServiceInput>
   }
 
   export type ClientUpsertWithoutServicesInput = {
@@ -59467,6 +60417,41 @@ export namespace Prisma {
     taxCalculations?: TaxCalculationUncheckedUpdateManyWithoutClientNestedInput
   }
 
+  export type ServiceTemplateUpsertWithoutServicesInput = {
+    update: XOR<ServiceTemplateUpdateWithoutServicesInput, ServiceTemplateUncheckedUpdateWithoutServicesInput>
+    create: XOR<ServiceTemplateCreateWithoutServicesInput, ServiceTemplateUncheckedCreateWithoutServicesInput>
+    where?: ServiceTemplateWhereInput
+  }
+
+  export type ServiceTemplateUpdateToOneWithWhereWithoutServicesInput = {
+    where?: ServiceTemplateWhereInput
+    data: XOR<ServiceTemplateUpdateWithoutServicesInput, ServiceTemplateUncheckedUpdateWithoutServicesInput>
+  }
+
+  export type ServiceTemplateUpdateWithoutServicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceKind?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    appliesTo?: ServiceTemplateUpdateappliesToInput | string[]
+    complianceImpact?: BoolFieldUpdateOperationsInput | boolean
+    pricingModel?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskTemplates?: ServiceTemplateTaskUpdateManyWithoutServiceTemplateNestedInput
+  }
+
+  export type ServiceTemplateUncheckedUpdateWithoutServicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceKind?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    appliesTo?: ServiceTemplateUpdateappliesToInput | string[]
+    complianceImpact?: BoolFieldUpdateOperationsInput | boolean
+    pricingModel?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskTemplates?: ServiceTemplateTaskUncheckedUpdateManyWithoutServiceTemplateNestedInput
+  }
+
   export type TaskUpsertWithWhereUniqueWithoutServiceInput = {
     where: TaskWhereUniqueInput
     update: XOR<TaskUpdateWithoutServiceInput, TaskUncheckedUpdateWithoutServiceInput>
@@ -59481,6 +60466,22 @@ export namespace Prisma {
   export type TaskUpdateManyWithWhereWithoutServiceInput = {
     where: TaskScalarWhereInput
     data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutServiceInput>
+  }
+
+  export type TaskUpsertWithWhereUniqueWithoutClientServiceInput = {
+    where: TaskWhereUniqueInput
+    update: XOR<TaskUpdateWithoutClientServiceInput, TaskUncheckedUpdateWithoutClientServiceInput>
+    create: XOR<TaskCreateWithoutClientServiceInput, TaskUncheckedCreateWithoutClientServiceInput>
+  }
+
+  export type TaskUpdateWithWhereUniqueWithoutClientServiceInput = {
+    where: TaskWhereUniqueInput
+    data: XOR<TaskUpdateWithoutClientServiceInput, TaskUncheckedUpdateWithoutClientServiceInput>
+  }
+
+  export type TaskUpdateManyWithWhereWithoutClientServiceInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutClientServiceInput>
   }
 
   export type ClientCreateWithoutComplianceItemsInput = {
@@ -59610,37 +60611,96 @@ export namespace Prisma {
 
   export type ServiceCreateWithoutComplianceItemsInput = {
     id?: string
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    complianceByServiceRef?: ComplianceItemCreateNestedManyWithoutClientServiceInput
     client: ClientCreateNestedOneWithoutServicesInput
+    template?: ServiceTemplateCreateNestedOneWithoutServicesInput
     tasks?: TaskCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskCreateNestedManyWithoutClientServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutComplianceItemsInput = {
     id?: string
     clientId: string
+    templateId?: string | null
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    complianceByServiceRef?: ComplianceItemUncheckedCreateNestedManyWithoutClientServiceInput
     tasks?: TaskUncheckedCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskUncheckedCreateNestedManyWithoutClientServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutComplianceItemsInput = {
     where: ServiceWhereUniqueInput
     create: XOR<ServiceCreateWithoutComplianceItemsInput, ServiceUncheckedCreateWithoutComplianceItemsInput>
+  }
+
+  export type ServiceCreateWithoutComplianceByServiceRefInput = {
+    id?: string
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
+    kind: string
+    frequency?: string | null
+    fee?: Decimal | DecimalJsLike | number | string | null
+    annualized?: Decimal | DecimalJsLike | number | string | null
+    status?: $Enums.ServiceStatus
+    nextDue?: Date | string | null
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    complianceItems?: ComplianceItemCreateNestedManyWithoutServiceInput
+    client: ClientCreateNestedOneWithoutServicesInput
+    template?: ServiceTemplateCreateNestedOneWithoutServicesInput
+    tasks?: TaskCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskCreateNestedManyWithoutClientServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutComplianceByServiceRefInput = {
+    id?: string
+    clientId: string
+    templateId?: string | null
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
+    kind: string
+    frequency?: string | null
+    fee?: Decimal | DecimalJsLike | number | string | null
+    annualized?: Decimal | DecimalJsLike | number | string | null
+    status?: $Enums.ServiceStatus
+    nextDue?: Date | string | null
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    complianceItems?: ComplianceItemUncheckedCreateNestedManyWithoutServiceInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskUncheckedCreateNestedManyWithoutClientServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutComplianceByServiceRefInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutComplianceByServiceRefInput, ServiceUncheckedCreateWithoutComplianceByServiceRefInput>
   }
 
   export type ClientUpsertWithoutComplianceItemsInput = {
@@ -59787,32 +60847,97 @@ export namespace Prisma {
 
   export type ServiceUpdateWithoutComplianceItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    complianceByServiceRef?: ComplianceItemUpdateManyWithoutClientServiceNestedInput
     client?: ClientUpdateOneRequiredWithoutServicesNestedInput
+    template?: ServiceTemplateUpdateOneWithoutServicesNestedInput
     tasks?: TaskUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUpdateManyWithoutClientServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutComplianceItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    complianceByServiceRef?: ComplianceItemUncheckedUpdateManyWithoutClientServiceNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUncheckedUpdateManyWithoutClientServiceNestedInput
+  }
+
+  export type ServiceUpsertWithoutComplianceByServiceRefInput = {
+    update: XOR<ServiceUpdateWithoutComplianceByServiceRefInput, ServiceUncheckedUpdateWithoutComplianceByServiceRefInput>
+    create: XOR<ServiceCreateWithoutComplianceByServiceRefInput, ServiceUncheckedCreateWithoutComplianceByServiceRefInput>
+    where?: ServiceWhereInput
+  }
+
+  export type ServiceUpdateToOneWithWhereWithoutComplianceByServiceRefInput = {
+    where?: ServiceWhereInput
+    data: XOR<ServiceUpdateWithoutComplianceByServiceRefInput, ServiceUncheckedUpdateWithoutComplianceByServiceRefInput>
+  }
+
+  export type ServiceUpdateWithoutComplianceByServiceRefInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    kind?: StringFieldUpdateOperationsInput | string
+    frequency?: NullableStringFieldUpdateOperationsInput | string | null
+    fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+    nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    complianceItems?: ComplianceItemUpdateManyWithoutServiceNestedInput
+    client?: ClientUpdateOneRequiredWithoutServicesNestedInput
+    template?: ServiceTemplateUpdateOneWithoutServicesNestedInput
+    tasks?: TaskUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUpdateManyWithoutClientServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutComplianceByServiceRefInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    kind?: StringFieldUpdateOperationsInput | string
+    frequency?: NullableStringFieldUpdateOperationsInput | string | null
+    fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+    nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    complianceItems?: ComplianceItemUncheckedUpdateManyWithoutServiceNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUncheckedUpdateManyWithoutClientServiceNestedInput
   }
 
   export type UserCreateWithoutAssignedTasksInput = {
@@ -60032,37 +61157,96 @@ export namespace Prisma {
 
   export type ServiceCreateWithoutTasksInput = {
     id?: string
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     complianceItems?: ComplianceItemCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemCreateNestedManyWithoutClientServiceInput
     client: ClientCreateNestedOneWithoutServicesInput
+    template?: ServiceTemplateCreateNestedOneWithoutServicesInput
+    clientServiceTasks?: TaskCreateNestedManyWithoutClientServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutTasksInput = {
     id?: string
     clientId: string
+    templateId?: string | null
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     complianceItems?: ComplianceItemUncheckedCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemUncheckedCreateNestedManyWithoutClientServiceInput
+    clientServiceTasks?: TaskUncheckedCreateNestedManyWithoutClientServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutTasksInput = {
     where: ServiceWhereUniqueInput
     create: XOR<ServiceCreateWithoutTasksInput, ServiceUncheckedCreateWithoutTasksInput>
+  }
+
+  export type ServiceCreateWithoutClientServiceTasksInput = {
+    id?: string
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
+    kind: string
+    frequency?: string | null
+    fee?: Decimal | DecimalJsLike | number | string | null
+    annualized?: Decimal | DecimalJsLike | number | string | null
+    status?: $Enums.ServiceStatus
+    nextDue?: Date | string | null
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    complianceItems?: ComplianceItemCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemCreateNestedManyWithoutClientServiceInput
+    client: ClientCreateNestedOneWithoutServicesInput
+    template?: ServiceTemplateCreateNestedOneWithoutServicesInput
+    tasks?: TaskCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutClientServiceTasksInput = {
+    id?: string
+    clientId: string
+    templateId?: string | null
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
+    kind: string
+    frequency?: string | null
+    fee?: Decimal | DecimalJsLike | number | string | null
+    annualized?: Decimal | DecimalJsLike | number | string | null
+    status?: $Enums.ServiceStatus
+    nextDue?: Date | string | null
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    complianceItems?: ComplianceItemUncheckedCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemUncheckedCreateNestedManyWithoutClientServiceInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutClientServiceTasksInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutClientServiceTasksInput, ServiceUncheckedCreateWithoutClientServiceTasksInput>
   }
 
   export type UserUpsertWithoutAssignedTasksInput = {
@@ -60311,32 +61495,149 @@ export namespace Prisma {
 
   export type ServiceUpdateWithoutTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     complianceItems?: ComplianceItemUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUpdateManyWithoutClientServiceNestedInput
     client?: ClientUpdateOneRequiredWithoutServicesNestedInput
+    template?: ServiceTemplateUpdateOneWithoutServicesNestedInput
+    clientServiceTasks?: TaskUpdateManyWithoutClientServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     complianceItems?: ComplianceItemUncheckedUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUncheckedUpdateManyWithoutClientServiceNestedInput
+    clientServiceTasks?: TaskUncheckedUpdateManyWithoutClientServiceNestedInput
+  }
+
+  export type ServiceUpsertWithoutClientServiceTasksInput = {
+    update: XOR<ServiceUpdateWithoutClientServiceTasksInput, ServiceUncheckedUpdateWithoutClientServiceTasksInput>
+    create: XOR<ServiceCreateWithoutClientServiceTasksInput, ServiceUncheckedCreateWithoutClientServiceTasksInput>
+    where?: ServiceWhereInput
+  }
+
+  export type ServiceUpdateToOneWithWhereWithoutClientServiceTasksInput = {
+    where?: ServiceWhereInput
+    data: XOR<ServiceUpdateWithoutClientServiceTasksInput, ServiceUncheckedUpdateWithoutClientServiceTasksInput>
+  }
+
+  export type ServiceUpdateWithoutClientServiceTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    kind?: StringFieldUpdateOperationsInput | string
+    frequency?: NullableStringFieldUpdateOperationsInput | string | null
+    fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+    nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    complianceItems?: ComplianceItemUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUpdateManyWithoutClientServiceNestedInput
+    client?: ClientUpdateOneRequiredWithoutServicesNestedInput
+    template?: ServiceTemplateUpdateOneWithoutServicesNestedInput
+    tasks?: TaskUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutClientServiceTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    kind?: StringFieldUpdateOperationsInput | string
+    frequency?: NullableStringFieldUpdateOperationsInput | string | null
+    fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+    nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    complianceItems?: ComplianceItemUncheckedUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUncheckedUpdateManyWithoutClientServiceNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceCreateWithoutTemplateInput = {
+    id?: string
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
+    kind: string
+    frequency?: string | null
+    fee?: Decimal | DecimalJsLike | number | string | null
+    annualized?: Decimal | DecimalJsLike | number | string | null
+    status?: $Enums.ServiceStatus
+    nextDue?: Date | string | null
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    complianceItems?: ComplianceItemCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemCreateNestedManyWithoutClientServiceInput
+    client: ClientCreateNestedOneWithoutServicesInput
+    tasks?: TaskCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskCreateNestedManyWithoutClientServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutTemplateInput = {
+    id?: string
+    clientId: string
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
+    kind: string
+    frequency?: string | null
+    fee?: Decimal | DecimalJsLike | number | string | null
+    annualized?: Decimal | DecimalJsLike | number | string | null
+    status?: $Enums.ServiceStatus
+    nextDue?: Date | string | null
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    complianceItems?: ComplianceItemUncheckedCreateNestedManyWithoutServiceInput
+    complianceByServiceRef?: ComplianceItemUncheckedCreateNestedManyWithoutClientServiceInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutServiceInput
+    clientServiceTasks?: TaskUncheckedCreateNestedManyWithoutClientServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutTemplateInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutTemplateInput, ServiceUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type ServiceCreateManyTemplateInputEnvelope = {
+    data: ServiceCreateManyTemplateInput | ServiceCreateManyTemplateInput[]
+    skipDuplicates?: boolean
   }
 
   export type ServiceTemplateTaskCreateWithoutServiceTemplateInput = {
@@ -60371,6 +61672,22 @@ export namespace Prisma {
   export type ServiceTemplateTaskCreateManyServiceTemplateInputEnvelope = {
     data: ServiceTemplateTaskCreateManyServiceTemplateInput | ServiceTemplateTaskCreateManyServiceTemplateInput[]
     skipDuplicates?: boolean
+  }
+
+  export type ServiceUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: ServiceWhereUniqueInput
+    update: XOR<ServiceUpdateWithoutTemplateInput, ServiceUncheckedUpdateWithoutTemplateInput>
+    create: XOR<ServiceCreateWithoutTemplateInput, ServiceUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type ServiceUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: ServiceWhereUniqueInput
+    data: XOR<ServiceUpdateWithoutTemplateInput, ServiceUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type ServiceUpdateManyWithWhereWithoutTemplateInput = {
+    where: ServiceScalarWhereInput
+    data: XOR<ServiceUpdateManyMutationInput, ServiceUncheckedUpdateManyWithoutTemplateInput>
   }
 
   export type ServiceTemplateTaskUpsertWithWhereUniqueWithoutServiceTemplateInput = {
@@ -60414,6 +61731,7 @@ export namespace Prisma {
     pricingModel?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    services?: ServiceCreateNestedManyWithoutTemplateInput
   }
 
   export type ServiceTemplateUncheckedCreateWithoutTaskTemplatesInput = {
@@ -60425,6 +61743,7 @@ export namespace Prisma {
     pricingModel?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    services?: ServiceUncheckedCreateNestedManyWithoutTemplateInput
   }
 
   export type ServiceTemplateCreateOrConnectWithoutTaskTemplatesInput = {
@@ -60452,6 +61771,7 @@ export namespace Prisma {
     pricingModel?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    services?: ServiceUpdateManyWithoutTemplateNestedInput
   }
 
   export type ServiceTemplateUncheckedUpdateWithoutTaskTemplatesInput = {
@@ -60463,6 +61783,7 @@ export namespace Prisma {
     pricingModel?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    services?: ServiceUncheckedUpdateManyWithoutTemplateNestedInput
   }
 
   export type ClientCreateWithoutDocumentsInput = {
@@ -64174,6 +65495,7 @@ export namespace Prisma {
     title: string
     clientId?: string | null
     serviceId?: string | null
+    clientServiceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     creatorId?: string | null
@@ -64189,6 +65511,7 @@ export namespace Prisma {
     title: string
     clientId?: string | null
     serviceId?: string | null
+    clientServiceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     assigneeId?: string | null
@@ -64480,6 +65803,7 @@ export namespace Prisma {
     client?: ClientUpdateOneWithoutTasksNestedInput
     creator?: UserUpdateOneWithoutCreatedTasksNestedInput
     service?: ServiceUpdateOneWithoutTasksNestedInput
+    clientService?: ServiceUpdateOneWithoutClientServiceTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutAssigneeInput = {
@@ -64487,6 +65811,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     creatorId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64502,6 +65827,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     creatorId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64525,6 +65851,7 @@ export namespace Prisma {
     assignee?: UserUpdateOneWithoutAssignedTasksNestedInput
     client?: ClientUpdateOneWithoutTasksNestedInput
     service?: ServiceUpdateOneWithoutTasksNestedInput
+    clientService?: ServiceUpdateOneWithoutClientServiceTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutCreatorInput = {
@@ -64532,6 +65859,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64547,6 +65875,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64654,10 +65983,15 @@ export namespace Prisma {
   export type ComplianceItemCreateManyClientInput = {
     id?: string
     serviceId?: string | null
+    clientServiceId?: string | null
     type: string
     description: string
     dueDate?: Date | string | null
     status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
     source: $Enums.ComplianceSource
     reference?: string | null
     period?: string | null
@@ -64725,11 +66059,15 @@ export namespace Prisma {
 
   export type ServiceCreateManyClientInput = {
     id?: string
+    templateId?: string | null
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
     kind: string
     frequency?: string | null
     fee?: Decimal | DecimalJsLike | number | string | null
     annualized?: Decimal | DecimalJsLike | number | string | null
-    status?: string
+    status?: $Enums.ServiceStatus
     nextDue?: Date | string | null
     description?: string | null
     createdAt?: Date | string
@@ -64740,6 +66078,7 @@ export namespace Prisma {
     id?: string
     title: string
     serviceId?: string | null
+    clientServiceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     assigneeId?: string | null
@@ -64935,21 +66274,31 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     service?: ServiceUpdateOneWithoutComplianceItemsNestedInput
+    clientService?: ServiceUpdateOneWithoutComplianceByServiceRefNestedInput
   }
 
   export type ComplianceItemUncheckedUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64960,10 +66309,15 @@ export namespace Prisma {
   export type ComplianceItemUncheckedUpdateManyWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65147,41 +66501,57 @@ export namespace Prisma {
 
   export type ServiceUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     complianceItems?: ComplianceItemUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUpdateManyWithoutClientServiceNestedInput
+    template?: ServiceTemplateUpdateOneWithoutServicesNestedInput
     tasks?: TaskUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUpdateManyWithoutClientServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     complianceItems?: ComplianceItemUncheckedUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUncheckedUpdateManyWithoutClientServiceNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUncheckedUpdateManyWithoutClientServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateManyWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
     kind?: StringFieldUpdateOperationsInput | string
     frequency?: NullableStringFieldUpdateOperationsInput | string | null
     fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
     nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65201,12 +66571,14 @@ export namespace Prisma {
     assignee?: UserUpdateOneWithoutAssignedTasksNestedInput
     creator?: UserUpdateOneWithoutCreatedTasksNestedInput
     service?: ServiceUpdateOneWithoutTasksNestedInput
+    clientService?: ServiceUpdateOneWithoutClientServiceTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65222,6 +66594,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65563,10 +66936,34 @@ export namespace Prisma {
   export type ComplianceItemCreateManyServiceInput = {
     id?: string
     clientId: string
+    clientServiceId?: string | null
     type: string
     description: string
     dueDate?: Date | string | null
     status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
+    source: $Enums.ComplianceSource
+    reference?: string | null
+    period?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ComplianceItemCreateManyClientServiceInput = {
+    id?: string
+    clientId: string
+    serviceId?: string | null
+    type: string
+    description: string
+    dueDate?: Date | string | null
+    status?: $Enums.ComplianceStatus
+    internalStatus?: $Enums.ComplianceStatus
+    externalStatus?: $Enums.ComplianceStatus | null
+    mismatch?: boolean
+    filedAt?: Date | string | null
     source: $Enums.ComplianceSource
     reference?: string | null
     period?: string | null
@@ -65578,6 +66975,23 @@ export namespace Prisma {
     id?: string
     title: string
     clientId?: string | null
+    clientServiceId?: string | null
+    description?: string | null
+    dueDate?: Date | string | null
+    assigneeId?: string | null
+    creatorId?: string | null
+    status?: $Enums.TaskStatus
+    priority?: $Enums.Priority
+    tags?: TaskCreatetagsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaskCreateManyClientServiceInput = {
+    id?: string
+    title: string
+    clientId?: string | null
+    serviceId?: string | null
     description?: string | null
     dueDate?: Date | string | null
     assigneeId?: string | null
@@ -65595,21 +67009,31 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutComplianceItemsNestedInput
+    clientService?: ServiceUpdateOneWithoutComplianceByServiceRefNestedInput
   }
 
   export type ComplianceItemUncheckedUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65620,10 +67044,72 @@ export namespace Prisma {
   export type ComplianceItemUncheckedUpdateManyWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    period?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ComplianceItemUpdateWithoutClientServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    period?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneRequiredWithoutComplianceItemsNestedInput
+    service?: ServiceUpdateOneWithoutComplianceItemsNestedInput
+  }
+
+  export type ComplianceItemUncheckedUpdateWithoutClientServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
+    reference?: NullableStringFieldUpdateOperationsInput | string | null
+    period?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ComplianceItemUncheckedUpdateManyWithoutClientServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    internalStatus?: EnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus
+    externalStatus?: NullableEnumComplianceStatusFieldUpdateOperationsInput | $Enums.ComplianceStatus | null
+    mismatch?: BoolFieldUpdateOperationsInput | boolean
+    filedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     source?: EnumComplianceSourceFieldUpdateOperationsInput | $Enums.ComplianceSource
     reference?: NullableStringFieldUpdateOperationsInput | string | null
     period?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65644,12 +67130,14 @@ export namespace Prisma {
     assignee?: UserUpdateOneWithoutAssignedTasksNestedInput
     client?: ClientUpdateOneWithoutTasksNestedInput
     creator?: UserUpdateOneWithoutCreatedTasksNestedInput
+    clientService?: ServiceUpdateOneWithoutClientServiceTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65665,6 +67153,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientServiceId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65674,6 +67163,71 @@ export namespace Prisma {
     tags?: TaskUpdatetagsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaskUpdateWithoutClientServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: TaskUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignee?: UserUpdateOneWithoutAssignedTasksNestedInput
+    client?: ClientUpdateOneWithoutTasksNestedInput
+    creator?: UserUpdateOneWithoutCreatedTasksNestedInput
+    service?: ServiceUpdateOneWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutClientServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: TaskUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaskUncheckedUpdateManyWithoutClientServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    creatorId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    tags?: TaskUpdatetagsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ServiceCreateManyTemplateInput = {
+    id?: string
+    clientId: string
+    periodStart?: Date | string
+    periodEnd?: Date | string
+    cycleNumber?: number | null
+    kind: string
+    frequency?: string | null
+    fee?: Decimal | DecimalJsLike | number | string | null
+    annualized?: Decimal | DecimalJsLike | number | string | null
+    status?: $Enums.ServiceStatus
+    nextDue?: Date | string | null
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ServiceTemplateTaskCreateManyServiceTemplateInput = {
@@ -65686,6 +67240,65 @@ export namespace Prisma {
     assigneeId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type ServiceUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    kind?: StringFieldUpdateOperationsInput | string
+    frequency?: NullableStringFieldUpdateOperationsInput | string | null
+    fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+    nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    complianceItems?: ComplianceItemUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUpdateManyWithoutClientServiceNestedInput
+    client?: ClientUpdateOneRequiredWithoutServicesNestedInput
+    tasks?: TaskUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUpdateManyWithoutClientServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    kind?: StringFieldUpdateOperationsInput | string
+    frequency?: NullableStringFieldUpdateOperationsInput | string | null
+    fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+    nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    complianceItems?: ComplianceItemUncheckedUpdateManyWithoutServiceNestedInput
+    complianceByServiceRef?: ComplianceItemUncheckedUpdateManyWithoutClientServiceNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutServiceNestedInput
+    clientServiceTasks?: TaskUncheckedUpdateManyWithoutClientServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateManyWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    cycleNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    kind?: StringFieldUpdateOperationsInput | string
+    frequency?: NullableStringFieldUpdateOperationsInput | string | null
+    fee?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    annualized?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: EnumServiceStatusFieldUpdateOperationsInput | $Enums.ServiceStatus
+    nextDue?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ServiceTemplateTaskUpdateWithoutServiceTemplateInput = {
