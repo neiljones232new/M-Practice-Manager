@@ -329,6 +329,10 @@ export class CompaniesHouseService {
         client = await this.clientsService.create(createClientDto);
       }
 
+      if (Array.isArray(importData.services) && importData.services.length > 0) {
+        await this.createDraftServicesFromImport(client.id, importData.services);
+      }
+
       // Import officers if requested
       if (importData.importOfficers) {
         await this.importCompanyOfficers(client.id, importData.companyNumber, {
@@ -553,84 +557,10 @@ export class CompaniesHouseService {
 
     // Create accounts filing compliance item
     if (companyDetails.accounts?.next_due) {
-      // Attempt to find matching service for Annual Accounts
       const matchingService = await this.findMatchingService(clientId, 'ANNUAL_ACCOUNTS');
-      
-      complianceItems.push({
-        clientId,
-        serviceId: matchingService?.id,
-        type: 'ANNUAL_ACCOUNTS',
-        description: 'Annual Accounts Filing',
-        dueDate: new Date(companyDetails.accounts.next_due),
-        status: companyDetails.accounts.overdue ? 'OVERDUE' : 'PENDING',
-        source: 'COMPANIES_HOUSE',
-        reference: companyDetails.company_number,
-        period: companyDetails.accounts.next_made_up_to,
-      });
-
       if (matchingService) {
-        this.logger.log(`Linked ANNUAL_ACCOUNTS compliance item to service ${matchingService.id} (${matchingService.kind})`);
-      } else {
-        this.logger.log(`No matching service found for ANNUAL_ACCOUNTS compliance item`);
-      }
-    }
-
-    // Create confirmation statement compliance item
-    if (companyDetails.confirmation_statement?.next_due) {
-      // Attempt to find matching service for Confirmation Statement
-      const matchingService = await this.findMatchingService(clientId, 'CONFIRMATION_STATEMENT');
-      
-      complianceItems.push({
-        clientId,
-        serviceId: matchingService?.id,
-        type: 'CONFIRMATION_STATEMENT',
-        description: 'Confirmation Statement Filing',
-        dueDate: new Date(companyDetails.confirmation_statement.next_due),
-        status: companyDetails.confirmation_statement.overdue ? 'OVERDUE' : 'PENDING',
-        source: 'COMPANIES_HOUSE',
-        reference: companyDetails.company_number,
-        period: companyDetails.confirmation_statement.last_made_up_to,
-      });
-
-      if (matchingService) {
-        this.logger.log(`Linked CONFIRMATION_STATEMENT compliance item to service ${matchingService.id} (${matchingService.kind})`);
-      } else {
-        this.logger.log(`No matching service found for CONFIRMATION_STATEMENT compliance item`);
-      }
-    }
-
-    // Save compliance items
-    for (const item of complianceItems) {
-      await this.complianceService.createComplianceItem(item);
-    }
-  }
-
-  private async updateComplianceItemsFromCompanyData(clientId: string, companyDetails: CompanyDetails): Promise<void> {
-    // Get existing compliance items for this client
-    const existingItems = await this.complianceService.getComplianceItemsByClient(clientId);
-    
-    // Update or create accounts filing item
-    if (companyDetails.accounts?.next_due) {
-      const accountsItem = existingItems.find(item => item.type === 'ANNUAL_ACCOUNTS');
-      
-      // Attempt to find matching service for Annual Accounts
-      const matchingService = await this.findMatchingService(clientId, 'ANNUAL_ACCOUNTS');
-      
-      if (accountsItem) {
-        await this.complianceService.updateComplianceItem(accountsItem.id, {
-          serviceId: matchingService?.id,
-          dueDate: new Date(companyDetails.accounts.next_due),
-          status: companyDetails.accounts.overdue ? 'OVERDUE' : 'PENDING',
-          period: companyDetails.accounts.next_made_up_to,
-        });
-
-        if (matchingService) {
-          this.logger.log(`Updated ANNUAL_ACCOUNTS compliance item ${accountsItem.id} with service link ${matchingService.id}`);
-        }
-      } else {
-        await this.complianceService.createComplianceItem({
-          clientId,
-          serviceId: matchingService?.id,
+        complianceItems.push({
+          clientServiceId: matchingService.id,
           type: 'ANNUAL_ACCOUNTS',
           description: 'Annual Accounts Filing',
           dueDate: new Date(companyDetails.accounts.next_due),
@@ -639,35 +569,18 @@ export class CompaniesHouseService {
           reference: companyDetails.company_number,
           period: companyDetails.accounts.next_made_up_to,
         });
-
-        if (matchingService) {
-          this.logger.log(`Created ANNUAL_ACCOUNTS compliance item linked to service ${matchingService.id}`);
-        }
+        this.logger.log(`Linked ANNUAL_ACCOUNTS compliance item to service ${matchingService.id} (${matchingService.kind})`);
+      } else {
+        this.logger.log('Skipped ANNUAL_ACCOUNTS compliance item because no matching service exists');
       }
     }
 
-    // Update or create confirmation statement item
+    // Create confirmation statement compliance item
     if (companyDetails.confirmation_statement?.next_due) {
-      const confirmationItem = existingItems.find(item => item.type === 'CONFIRMATION_STATEMENT');
-      
-      // Attempt to find matching service for Confirmation Statement
       const matchingService = await this.findMatchingService(clientId, 'CONFIRMATION_STATEMENT');
-      
-      if (confirmationItem) {
-        await this.complianceService.updateComplianceItem(confirmationItem.id, {
-          serviceId: matchingService?.id,
-          dueDate: new Date(companyDetails.confirmation_statement.next_due),
-          status: companyDetails.confirmation_statement.overdue ? 'OVERDUE' : 'PENDING',
-          period: companyDetails.confirmation_statement.last_made_up_to,
-        });
-
-        if (matchingService) {
-          this.logger.log(`Updated CONFIRMATION_STATEMENT compliance item ${confirmationItem.id} with service link ${matchingService.id}`);
-        }
-      } else {
-        await this.complianceService.createComplianceItem({
-          clientId,
-          serviceId: matchingService?.id,
+      if (matchingService) {
+        complianceItems.push({
+          clientServiceId: matchingService.id,
           type: 'CONFIRMATION_STATEMENT',
           description: 'Confirmation Statement Filing',
           dueDate: new Date(companyDetails.confirmation_statement.next_due),
@@ -676,11 +589,121 @@ export class CompaniesHouseService {
           reference: companyDetails.company_number,
           period: companyDetails.confirmation_statement.last_made_up_to,
         });
+        this.logger.log(`Linked CONFIRMATION_STATEMENT compliance item to service ${matchingService.id} (${matchingService.kind})`);
+      } else {
+        this.logger.log('Skipped CONFIRMATION_STATEMENT compliance item because no matching service exists');
+      }
+    }
 
-        if (matchingService) {
-          this.logger.log(`Created CONFIRMATION_STATEMENT compliance item linked to service ${matchingService.id}`);
+    for (const item of complianceItems) {
+      await this.complianceService.createComplianceItem(item);
+    }
+  }
+
+  private async updateComplianceItemsFromCompanyData(clientId: string, companyDetails: CompanyDetails): Promise<void> {
+    const services = await this.servicesService.findByClient(clientId);
+    const existingItemsByType = new Map<string, ComplianceItem>();
+
+    for (const service of services) {
+      const items = await this.complianceService.findByService(service.id);
+      for (const item of items) {
+        if (!existingItemsByType.has(item.type)) {
+          existingItemsByType.set(item.type, item);
         }
       }
+    }
+
+    if (companyDetails.accounts?.next_due) {
+      const accountsItem = existingItemsByType.get('ANNUAL_ACCOUNTS');
+      const matchingService = await this.findMatchingService(clientId, 'ANNUAL_ACCOUNTS');
+
+      if (!matchingService) {
+        this.logger.log('Skipped ANNUAL_ACCOUNTS compliance sync because no matching service exists');
+      } else if (accountsItem) {
+        await this.complianceService.updateComplianceItem(accountsItem.id, {
+          clientServiceId: matchingService.id,
+          dueDate: new Date(companyDetails.accounts.next_due),
+          status: companyDetails.accounts.overdue ? 'OVERDUE' : 'PENDING',
+          period: companyDetails.accounts.next_made_up_to,
+        });
+        this.logger.log(`Updated ANNUAL_ACCOUNTS compliance item ${accountsItem.id} with service link ${matchingService.id}`);
+      } else {
+        await this.complianceService.createComplianceItem({
+          clientServiceId: matchingService.id,
+          type: 'ANNUAL_ACCOUNTS',
+          description: 'Annual Accounts Filing',
+          dueDate: new Date(companyDetails.accounts.next_due),
+          status: companyDetails.accounts.overdue ? 'OVERDUE' : 'PENDING',
+          source: 'COMPANIES_HOUSE',
+          reference: companyDetails.company_number,
+          period: companyDetails.accounts.next_made_up_to,
+        });
+        this.logger.log(`Created ANNUAL_ACCOUNTS compliance item linked to service ${matchingService.id}`);
+      }
+    }
+
+    if (companyDetails.confirmation_statement?.next_due) {
+      const confirmationItem = existingItemsByType.get('CONFIRMATION_STATEMENT');
+      const matchingService = await this.findMatchingService(clientId, 'CONFIRMATION_STATEMENT');
+
+      if (!matchingService) {
+        this.logger.log('Skipped CONFIRMATION_STATEMENT compliance sync because no matching service exists');
+      } else if (confirmationItem) {
+        await this.complianceService.updateComplianceItem(confirmationItem.id, {
+          clientServiceId: matchingService.id,
+          dueDate: new Date(companyDetails.confirmation_statement.next_due),
+          status: companyDetails.confirmation_statement.overdue ? 'OVERDUE' : 'PENDING',
+          period: companyDetails.confirmation_statement.last_made_up_to,
+        });
+        this.logger.log(`Updated CONFIRMATION_STATEMENT compliance item ${confirmationItem.id} with service link ${matchingService.id}`);
+      } else {
+        await this.complianceService.createComplianceItem({
+          clientServiceId: matchingService.id,
+          type: 'CONFIRMATION_STATEMENT',
+          description: 'Confirmation Statement Filing',
+          dueDate: new Date(companyDetails.confirmation_statement.next_due),
+          status: companyDetails.confirmation_statement.overdue ? 'OVERDUE' : 'PENDING',
+          source: 'COMPANIES_HOUSE',
+          reference: companyDetails.company_number,
+          period: companyDetails.confirmation_statement.last_made_up_to,
+        });
+        this.logger.log(`Created CONFIRMATION_STATEMENT compliance item linked to service ${matchingService.id}`);
+      }
+    }
+  }
+
+  private async createDraftServicesFromImport(
+    clientId: string,
+    services: NonNullable<CompaniesHouseImportData['services']>,
+  ): Promise<void> {
+    const existingServices = await this.servicesService.findByClient(clientId);
+    const existingKeys = new Set(
+      existingServices.map(
+        (service) =>
+          `${String(service.kind || '').trim().toUpperCase()}::${String(service.frequency || '').trim().toUpperCase()}`,
+      ),
+    );
+
+    for (const serviceInput of services) {
+      const kind = String(serviceInput?.kind || '').trim();
+      const frequency = String(serviceInput?.frequency || '').trim().toUpperCase();
+      if (!kind || !frequency) continue;
+
+      const dedupeKey = `${kind.toUpperCase()}::${frequency}`;
+      if (existingKeys.has(dedupeKey)) continue;
+
+      await this.servicesService.create({
+        clientId,
+        templateId: serviceInput?.templateId,
+        kind,
+        frequency: serviceInput?.frequency as any,
+        fee: Number.isFinite(Number(serviceInput?.fee)) ? Number(serviceInput?.fee) : 0,
+        status: 'DRAFT',
+        nextDue: serviceInput?.nextDue ? new Date(serviceInput.nextDue) : undefined,
+        description: serviceInput?.description,
+      });
+
+      existingKeys.add(dedupeKey);
     }
   }
 
@@ -695,8 +718,8 @@ export class CompaniesHouseService {
       // Get all services for this client
       const services = await this.servicesService.findByClient(clientId);
       
-      // Filter to active services only
-      const activeServices = services.filter(s => s.status === 'ACTIVE');
+      // Prefer active services, but include drafts so compliance can anchor to the current period service.
+      const servicesInScope = services.filter((s) => s.status === 'ACTIVE' || s.status === 'DRAFT');
       
       // Map compliance type to service kind
       const serviceKindMapping: Record<string, string[]> = {
@@ -710,7 +733,7 @@ export class CompaniesHouseService {
       
       // Find first matching service
       for (const serviceKind of possibleServiceKinds) {
-        const matchingService = activeServices.find(s => 
+        const matchingService = servicesInScope.find(s => 
           s.kind.toLowerCase().includes(serviceKind.toLowerCase())
         );
         

@@ -197,6 +197,13 @@ const complianceAuthority = (source?: string | null) => {
   return 'Manual';
 };
 
+const resolveServiceRef = (value?: { clientServiceId?: string; serviceId?: string } | null): string | null => {
+  const id = value?.clientServiceId || value?.serviceId;
+  if (!id) return null;
+  const trimmed = String(id).trim();
+  return trimmed || null;
+};
+
 export default function ClientDetailsPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
@@ -982,15 +989,16 @@ export default function ClientDetailsPage() {
   }, [client, isCompanyClient]);
 
   const complianceObligations = useMemo(() => {
-    return compliance.filter((item: any) => Boolean(item?.dueDate) && Boolean(item?.serviceId));
+    return compliance.filter((item: any) => Boolean(item?.dueDate) && Boolean(resolveServiceRef(item)));
   }, [compliance]);
   const obligationsByServiceId = useMemo(() => {
     const map = new Map<string, Compliance[]>();
     complianceObligations.forEach((item) => {
-      if (!item.serviceId) return;
-      const current = map.get(item.serviceId) || [];
+      const serviceRef = resolveServiceRef(item);
+      if (!serviceRef) return;
+      const current = map.get(serviceRef) || [];
       current.push(item);
-      map.set(item.serviceId, current);
+      map.set(serviceRef, current);
     });
     return map;
   }, [complianceObligations]);
@@ -1139,8 +1147,9 @@ export default function ClientDetailsPage() {
     });
   };
   const linkedComplianceForTask = (task: Task) => {
-    if (!task?.serviceId) return null;
-    const candidates = complianceObligations.filter((item: any) => item?.serviceId === task.serviceId);
+    const serviceRef = resolveServiceRef(task);
+    if (!serviceRef) return null;
+    const candidates = complianceObligations.filter((item: any) => resolveServiceRef(item) === serviceRef);
     if (candidates.length === 0) return null;
     const title = String(task.title || '').toLowerCase();
     const match = candidates.find((item: any) =>
@@ -1955,7 +1964,8 @@ export default function ClientDetailsPage() {
                       const st = getTaskBadge(t.status);
                       const label = String(t.status || '').replace(/_/g, ' ').toLowerCase();
                       const origin = t.tags?.includes('auto-generated') ? 'Template' : 'Manual';
-                      const serviceLabel = t.serviceId ? (servicesById.get(t.serviceId)?.kind || '—') : '—';
+                      const taskServiceId = resolveServiceRef(t);
+                      const serviceLabel = taskServiceId ? (servicesById.get(taskServiceId)?.kind || '—') : '—';
                       const complianceItem = linkedComplianceForTask(t);
                       return (
                         <tr key={t.id}>
@@ -2011,7 +2021,8 @@ export default function ClientDetailsPage() {
                       const badge = getComplianceBadge(item.status);
                       const label = String(item.status || '').replace(/_/g, ' ').toLowerCase();
                       const linkedTasks = linkedTasksForCompliance(item);
-                      const serviceLabel = item?.serviceId ? (servicesById.get(item.serviceId)?.kind || '—') : '—';
+                      const complianceServiceId = resolveServiceRef(item);
+                      const serviceLabel = complianceServiceId ? (servicesById.get(complianceServiceId)?.kind || '—') : '—';
                       return (
                         <tr key={item.id}>
                           <td>

@@ -499,6 +499,7 @@ model ServiceTemplate {
   pricingModel     String                @default("per_period")
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
+  services         Service[]
   taskTemplates    ServiceTemplateTask[]
 
   @@index([serviceKind, frequency])

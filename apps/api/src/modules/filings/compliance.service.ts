@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Inject, forwardRef, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ClientsService } from '../clients/clients.service';
 import { ServicesService } from '../services/services.service';
@@ -18,27 +18,16 @@ export class ComplianceService {
 
   async createComplianceItem(createDto: CreateComplianceItemDto): Promise<ComplianceItem> {
     const resolvedServiceId = createDto.clientServiceId || createDto.serviceId;
-    let resolvedClientId: string | undefined;
-
-    if (resolvedServiceId) {
-      const service = await this.servicesService.findOne(resolvedServiceId);
-      if (!service) {
-        throw new NotFoundException(`Service with ID ${resolvedServiceId} not found`);
-      }
-      resolvedClientId = service.clientId;
+    if (!resolvedServiceId) {
+      throw new BadRequestException('clientServiceId is required to create compliance');
     }
 
-    if (!resolvedClientId && createDto.clientId) {
-      const client = await this.clientsService.findByIdentifier(createDto.clientId);
-      if (!client) {
-        throw new NotFoundException(`Client with ID ${createDto.clientId} not found`);
-      }
-      resolvedClientId = client.id;
+    const service = await this.servicesService.findOne(resolvedServiceId);
+    if (!service) {
+      throw new NotFoundException(`Service with ID ${resolvedServiceId} not found`);
     }
 
-    if (!resolvedClientId) {
-      throw new NotFoundException('clientId or clientServiceId is required to create compliance');
-    }
+    const resolvedClientId = service.clientId;
 
     const item = await (this.prisma as any).complianceItem.create({
       data: {
@@ -98,7 +87,12 @@ export class ComplianceService {
   async getComplianceItemsByClient(clientId: string): Promise<ComplianceItem[]> {
     const resolvedClientId = await this.clientsService.resolveClientId(clientId);
     return (this.prisma as any).complianceItem.findMany({
-      where: { clientId: resolvedClientId || clientId },
+      where: {
+        OR: [
+          { clientId: resolvedClientId || clientId },
+          { clientService: { clientId: resolvedClientId || clientId } },
+        ],
+      },
       orderBy: { dueDate: 'asc' },
     });
   }
@@ -120,13 +114,26 @@ export class ComplianceService {
 
     if (filters.clientId) {
       const resolvedClientId = await this.clientsService.resolveClientId(filters.clientId);
-      where.clientId = resolvedClientId || filters.clientId;
+      where.AND = [
+        ...(Array.isArray(where.AND) ? where.AND : []),
+        {
+          OR: [
+            { clientId: resolvedClientId || filters.clientId },
+            { clientService: { clientId: resolvedClientId || filters.clientId } },
+          ],
+        },
+      ];
     }
     const resolvedServiceId = filters.clientServiceId || filters.serviceId;
     if (resolvedServiceId) {
-      where.OR = [
-        { serviceId: resolvedServiceId },
-        { clientServiceId: resolvedServiceId },
+      where.AND = [
+        ...(Array.isArray(where.AND) ? where.AND : []),
+        {
+          OR: [
+            { serviceId: resolvedServiceId },
+            { clientServiceId: resolvedServiceId },
+          ],
+        },
       ];
     }
     if (filters.status) {
@@ -143,7 +150,15 @@ export class ComplianceService {
     if (filters.portfolioCode) {
       const clients = await this.clientsService.findByPortfolio(filters.portfolioCode);
       const ids = clients.map((c) => c.id);
-      where.clientId = { in: ids };
+      where.AND = [
+        ...(Array.isArray(where.AND) ? where.AND : []),
+        {
+          OR: [
+            { clientId: { in: ids } },
+            { clientService: { clientId: { in: ids } } },
+          ],
+        },
+      ];
     }
 
     return (this.prisma as any).complianceItem.findMany({
@@ -679,10 +694,22 @@ export class ComplianceService {
   private async findExistingComplianceItem(clientId: string, serviceId: string, type: string): Promise<ComplianceItem[]> {
     return (this.prisma as any).complianceItem.findMany({
       where: {
-        clientId,
-        serviceId,
         type,
         status: { not: 'FILED' },
+        AND: [
+          {
+            OR: [
+              { serviceId },
+              { clientServiceId: serviceId },
+            ],
+          },
+          {
+            OR: [
+              { clientId },
+              { clientService: { clientId } },
+            ],
+          },
+        ],
       },
       take: 5,
     });

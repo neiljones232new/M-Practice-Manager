@@ -337,11 +337,20 @@ export interface CompaniesHouseImportData {
   createComplianceItems?: boolean;
   createOfficerClients?: boolean; // also create each officer as an INDIVIDUAL client
   selfAssessmentFee?: number; // fee for Self Assessment service added to director clients
+  services?: Array<{
+    templateId?: string;
+    kind: string;
+    frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF';
+    fee?: number;
+    status?: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+    nextDue?: Date | string;
+    description?: string;
+  }>;
 }
 
 export interface ComplianceItem {
   id: string;
-  clientId: string; // Legacy compatibility
+  clientId?: string; // Legacy compatibility
   clientServiceId?: string;
   serviceId?: string; // Legacy compatibility alias for clientServiceId
   type: string;

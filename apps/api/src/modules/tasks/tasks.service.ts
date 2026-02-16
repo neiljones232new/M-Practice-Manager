@@ -33,24 +33,17 @@ export class TasksService {
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
     const normalizedCreateDto = this.normalizeTaskPayload(createTaskDto);
-    if (normalizedCreateDto.clientId) {
-      const client = await this.clientsService.findByIdentifier(normalizedCreateDto.clientId);
-      if (!client) {
-        throw new NotFoundException(`Client with ID ${normalizedCreateDto.clientId} not found`);
-      }
-      normalizedCreateDto.clientId = client.id;
-    }
-
     const clientServiceId = normalizedCreateDto.clientServiceId || normalizedCreateDto.serviceId;
-    if (clientServiceId) {
-      const service = await this.servicesService.findOne(clientServiceId);
-      if (!service) {
-        throw new NotFoundException(`Service with ID ${clientServiceId} not found`);
-      }
-      normalizedCreateDto.clientServiceId = service.id;
-      normalizedCreateDto.serviceId = service.id; // legacy alias
-      normalizedCreateDto.clientId = normalizedCreateDto.clientId || service.clientId;
+    if (!clientServiceId) {
+      throw new BadRequestException('clientServiceId is required to create a task');
     }
+    const service = await this.servicesService.findOne(clientServiceId);
+    if (!service) {
+      throw new NotFoundException(`Service with ID ${clientServiceId} not found`);
+    }
+    normalizedCreateDto.clientServiceId = service.id;
+    normalizedCreateDto.serviceId = service.id; // legacy alias
+    normalizedCreateDto.clientId = service.clientId;
 
     const task = await (this.prisma as any).task.create({
       data: {
@@ -79,7 +72,15 @@ export class TasksService {
 
       if (normalizedFilters.clientId) {
         const resolvedClientId = await this.clientsService.resolveClientId(normalizedFilters.clientId);
-        where.clientId = resolvedClientId || normalizedFilters.clientId;
+        where.AND = [
+          ...(Array.isArray(where.AND) ? where.AND : []),
+          {
+            OR: [
+              { clientId: resolvedClientId || normalizedFilters.clientId },
+              { clientService: { clientId: resolvedClientId || normalizedFilters.clientId } },
+            ],
+          },
+        ];
       }
       const clientServiceId = normalizedFilters.clientServiceId || normalizedFilters.serviceId;
       if (clientServiceId) {
@@ -106,7 +107,15 @@ export class TasksService {
       if (normalizedFilters.portfolioCode) {
         const clients = await this.clientsService.findByPortfolio(normalizedFilters.portfolioCode);
         const ids = clients.map((c) => c.id);
-        where.clientId = { in: ids };
+        where.AND = [
+          ...(Array.isArray(where.AND) ? where.AND : []),
+          {
+            OR: [
+              { clientId: { in: ids } },
+              { clientService: { clientId: { in: ids } } },
+            ],
+          },
+        ];
       }
 
       if (normalizedFilters.search) {
@@ -176,7 +185,12 @@ export class TasksService {
     try {
       const resolvedClientId = await this.clientsService.resolveClientId(clientId);
       return await (this.prisma as any).task.findMany({
-        where: { clientId: resolvedClientId || clientId },
+        where: {
+          OR: [
+            { clientId: resolvedClientId || clientId },
+            { clientService: { clientId: resolvedClientId || clientId } },
+          ],
+        },
         orderBy: { createdAt: 'desc' },
       });
     } catch (error) {

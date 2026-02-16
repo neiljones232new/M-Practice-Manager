@@ -323,6 +323,14 @@ export default function CompaniesHousePage() {
     }
     try {
       setImporting(true);
+      const selectedServices = serviceChoices
+        .filter((service) => service.selected)
+        .map((service) => ({
+          kind: service.kind,
+          frequency: service.frequency,
+          fee: Number(service.fee) || 0,
+          status: 'DRAFT' as const,
+        }));
       const client = await api.post<{ id: string }>(
         '/companies-house/import',
         {
@@ -331,22 +339,12 @@ export default function CompaniesHousePage() {
           // Always import officers as parties so they show under Directors
           importOfficers: true,
           createOfficerClients,
-          createComplianceItems: true,
+          createComplianceItems: selectedServices.length > 0,
+          services: selectedServices,
           // Add Self Assessment service to director clients if enabled
           selfAssessmentFee: (createOfficerClients && addPtrService) ? ptrFee : undefined,
         }
       );
-      // Create selected services
-      const chosen = serviceChoices.filter((s) => s.selected);
-      for (const s of chosen) {
-        await api.post('/services', {
-          clientId: client.id,
-          kind: s.kind,
-          frequency: s.frequency,
-          fee: Number(s.fee) || 0,
-          status: 'ACTIVE',
-        });
-      }
       // Notify and navigate to client
       try { new BroadcastChannel('mdj').postMessage({ topic: 'clients:changed' }); } catch {}
       window.location.href = `/clients/${client.id}`;
