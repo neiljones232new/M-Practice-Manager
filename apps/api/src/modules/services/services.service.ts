@@ -13,8 +13,8 @@ import {
   ServiceSummary,
 } from './interfaces/service.interface';
 
-const SERVICE_FREQUENCY_VALUES = ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY'] as const;
-const SERVICE_STATUS_VALUES = ['ACTIVE', 'INACTIVE', 'SUSPENDED'] as const;
+const SERVICE_FREQUENCY_VALUES = ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY', 'ONE_OFF'] as const;
+const SERVICE_STATUS_VALUES = ['DRAFT', 'ACTIVE', 'INACTIVE', 'SUSPENDED'] as const;
 
 @Injectable()
 export class ServicesService {
@@ -38,23 +38,37 @@ export class ServicesService {
       throw new NotFoundException(`Client with ID ${normalizedCreateDto.clientId} not found`);
     }
 
+    const { periodStart, periodEnd } = this.resolveServicePeriod(
+      normalizedCreateDto.frequency,
+      normalizedCreateDto.periodStart,
+      normalizedCreateDto.periodEnd,
+    );
     const annualized = this.calculateAnnualizedFee(normalizedCreateDto.fee, normalizedCreateDto.frequency);
+    const cycleNumber = await this.resolveCycleNumber(client.id, normalizedCreateDto.templateId);
+    const requestedStatus = normalizedCreateDto.status || 'DRAFT';
 
     const service = await (this.prisma as any).service.create({
       data: {
         clientId: client.id,
+        templateId: normalizedCreateDto.templateId,
+        periodStart,
+        periodEnd,
+        cycleNumber,
         kind: normalizedCreateDto.kind,
         frequency: normalizedCreateDto.frequency,
         fee: normalizedCreateDto.fee,
         annualized,
-        status: normalizedCreateDto.status || 'ACTIVE',
+        status: requestedStatus,
         nextDue: normalizedCreateDto.nextDue,
         description: normalizedCreateDto.description,
       },
     });
 
     this.logger.log(`Created service: ${service.kind} for client ${client.id} (${service.id})`);
-    return service;
+    if (requestedStatus === 'ACTIVE') {
+      return this.activateService(service.id);
+    }
+    return this.normalizeService(service);
   }
 
   async findAll(filters: ServiceFilters = {}): Promise<Service[]> {
@@ -88,7 +102,7 @@ export class ServicesService {
 
       const rows = await (this.prisma as any).service.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ periodStart: 'desc' }, { createdAt: 'desc' }],
         skip: Number.isFinite(skip) ? skip : 0,
         take: Number.isFinite(take) ? take : 100,
       });
@@ -121,7 +135,7 @@ export class ServicesService {
       const resolvedClientId = await this.clientsService.resolveClientId(clientId);
       const services = await (this.prisma as any).service.findMany({
         where: { clientId: resolvedClientId || clientId },
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ periodStart: 'desc' }, { createdAt: 'desc' }],
       });
 
       return services.map((service: any) => this.normalizeService(service));
@@ -270,7 +284,46 @@ export class ServicesService {
   }
 
   async updateStatus(id: string, status: ServiceStatus): Promise<Service> {
+    if (status === 'ACTIVE') {
+      return this.activateService(id);
+    }
     return this.update(id, { status });
+  }
+
+  async activateService(id: string): Promise<Service> {
+    const existing = await this.findOne(id);
+    if (!existing) {
+      throw new NotFoundException(`Service with ID ${id} not found`);
+    }
+
+    const updated =
+      existing.status === 'ACTIVE'
+        ? existing
+        : this.normalizeService(
+            await (this.prisma as any).service.update({
+              where: { id },
+              data: { status: 'ACTIVE' },
+            }),
+          );
+
+    // Operational work is generated only when a service becomes ACTIVE.
+    try {
+      await this.tasksService.generateTasksFromService(updated.id);
+    } catch (error) {
+      this.logger.warn(
+        `Task generation failed while activating service ${updated.id}: ${error?.message || error}`,
+      );
+    }
+
+    try {
+      await this.serviceComplianceIntegration.createComplianceItemsForService(updated.id);
+    } catch (error) {
+      this.logger.warn(
+        `Compliance generation failed while activating service ${updated.id}: ${error?.message || error}`,
+      );
+    }
+
+    return updated;
   }
 
   private calculateAnnualizedFee(fee: number, frequency?: ServiceFrequency): number {
@@ -283,6 +336,8 @@ export class ServicesService {
         return fee * 12;
       case 'WEEKLY':
         return fee * 52;
+      case 'ONE_OFF':
+        return fee;
       default:
         return fee;
     }
@@ -421,6 +476,36 @@ export class ServicesService {
       normalized.status = status;
     }
 
+    if (Object.prototype.hasOwnProperty.call(normalized, 'periodStart')) {
+      normalized.periodStart = this.parseOptionalDate(normalized.periodStart, 'periodStart');
+    }
+    if (Object.prototype.hasOwnProperty.call(normalized, 'periodEnd')) {
+      normalized.periodEnd = this.parseOptionalDate(normalized.periodEnd, 'periodEnd');
+    }
+
+    if (Object.prototype.hasOwnProperty.call(normalized, 'templateId')) {
+      if (normalized.templateId === null || normalized.templateId === undefined) {
+        normalized.templateId = undefined;
+      } else if (typeof normalized.templateId !== 'string') {
+        throw new BadRequestException('templateId must be a string');
+      } else {
+        const trimmed = normalized.templateId.trim();
+        normalized.templateId = trimmed || undefined;
+      }
+    }
+
+    if (Object.prototype.hasOwnProperty.call(normalized, 'cycleNumber')) {
+      if (normalized.cycleNumber === null || normalized.cycleNumber === undefined || normalized.cycleNumber === '') {
+        normalized.cycleNumber = undefined;
+      } else {
+        const cycleNumber = Number(normalized.cycleNumber);
+        if (!Number.isFinite(cycleNumber) || cycleNumber < 1) {
+          throw new BadRequestException('cycleNumber must be a positive number');
+        }
+        normalized.cycleNumber = Math.floor(cycleNumber);
+      }
+    }
+
     if (Object.prototype.hasOwnProperty.call(normalized, 'nextDue')) {
       normalized.nextDue = this.parseOptionalDate(normalized.nextDue, 'nextDue');
     }
@@ -434,6 +519,68 @@ export class ServicesService {
     }
 
     return normalized;
+  }
+
+  private resolveServicePeriod(
+    frequency: ServiceFrequency | undefined,
+    requestedStart?: Date | null,
+    requestedEnd?: Date | null,
+  ): { periodStart: Date; periodEnd: Date } {
+    const now = new Date();
+    const periodStart = requestedStart || now;
+    if (!frequency) {
+      return {
+        periodStart,
+        periodEnd: requestedEnd || periodStart,
+      };
+    }
+
+    if (requestedEnd) {
+      return { periodStart, periodEnd: requestedEnd };
+    }
+
+    return {
+      periodStart,
+      periodEnd: this.incrementPeriodEnd(periodStart, frequency),
+    };
+  }
+
+  private incrementPeriodEnd(periodStart: Date, frequency: ServiceFrequency): Date {
+    const end = new Date(periodStart);
+    switch (frequency) {
+      case 'MONTHLY':
+        end.setMonth(end.getMonth() + 1);
+        break;
+      case 'QUARTERLY':
+        end.setMonth(end.getMonth() + 3);
+        break;
+      case 'WEEKLY':
+        end.setDate(end.getDate() + 7);
+        break;
+      case 'ONE_OFF':
+        end.setDate(end.getDate() + 1);
+        break;
+      case 'ANNUAL':
+      default:
+        end.setFullYear(end.getFullYear() + 1);
+        break;
+    }
+    return end;
+  }
+
+  private async resolveCycleNumber(clientId: string, templateId?: string): Promise<number | undefined> {
+    if (!templateId) return undefined;
+    try {
+      const count = await (this.prisma as any).service.count({
+        where: {
+          clientId,
+          templateId,
+        },
+      });
+      return count + 1;
+    } catch {
+      return undefined;
+    }
   }
 
   private normalizeEnumField(

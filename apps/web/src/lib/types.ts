@@ -213,6 +213,7 @@ export interface Task {
   id: string;
   title: string;
   clientId?: string;
+  clientServiceId?: string;
   serviceId?: string;
   description?: string;
   dueDate?: string;
@@ -224,12 +225,16 @@ export interface Task {
   updatedAt?: string;
 }
 
-export type ServiceFrequency = 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
-export type ServiceStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+export type ServiceFrequency = 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF';
+export type ServiceStatus = 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 
 export interface Service {
   id: string;
   clientId?: string;
+  templateId?: string;
+  periodStart?: string;
+  periodEnd?: string;
+  cycleNumber?: number;
   kind: string;
   frequency?: ServiceFrequency;
   fee?: number;

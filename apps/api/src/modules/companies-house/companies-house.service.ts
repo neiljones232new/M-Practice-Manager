@@ -501,7 +501,7 @@ export class CompaniesHouseService {
                   kind: 'Self Assessment',
                   frequency: 'ANNUAL',
                   fee: options.selfAssessmentFee,
-                  status: 'ACTIVE',
+                  status: 'DRAFT',
                   description: 'Personal Tax Return',
                 });
                 this.logger.log(`Added Self Assessment service (£${options.selfAssessmentFee}) to director ${directorClient.id}`);

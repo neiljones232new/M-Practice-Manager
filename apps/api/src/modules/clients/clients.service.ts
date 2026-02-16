@@ -294,6 +294,206 @@ export class ClientsService {
     return created;
   }
 
+  async createFull(payload: {
+    client: CreateClientDto;
+    templateIds?: string[];
+    services?: Array<{
+      templateId?: string;
+      kind: string;
+      frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+      fee?: number;
+      status?: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+      nextDue?: string | Date;
+      description?: string;
+    }>;
+    directors?: Array<{
+      firstName?: string;
+      lastName?: string;
+      name?: string;
+      email?: string;
+      phone?: string;
+      role?: string;
+      primaryContact?: boolean;
+      appointedAt?: string | Date;
+      ownershipPercent?: number;
+    }>;
+    generateTasks?: boolean;
+  }): Promise<{ client: Client; services: string[]; directors: string[]; tasksGenerated: number }> {
+    if (!payload?.client) {
+      throw new BadRequestException('client payload is required');
+    }
+
+    const client = await this.create(payload.client);
+    const createdServiceIds: string[] = [];
+    const createdDirectorIds: string[] = [];
+
+    const services = Array.isArray(payload.services) ? payload.services : [];
+    if (services.length === 0 && Array.isArray(payload.templateIds) && payload.templateIds.length > 0) {
+      const templateServiceIds = await this.attachDraftServicesFromTemplates(client.id, payload.templateIds);
+      createdServiceIds.push(...templateServiceIds);
+    }
+    for (const serviceInput of services) {
+      const kind = String(serviceInput?.kind || '').trim();
+      if (!kind) continue;
+
+      const frequency = this.normalizeWorkFrequency(serviceInput?.frequency);
+      const fee = Number.isFinite(Number(serviceInput?.fee)) ? Number(serviceInput?.fee) : 0;
+      const periodStart = new Date();
+      const periodEnd = this.incrementPeriodEnd(periodStart, frequency);
+      const annualized = this.calculateAnnualizedFee(fee, frequency);
+      const nextDue = this.parseOptionalDate(serviceInput?.nextDue, 'nextDue');
+
+      const service = await (this.prisma as any).service.create({
+        data: {
+          clientId: client.id,
+          templateId: serviceInput?.templateId || undefined,
+          kind,
+          frequency,
+          fee,
+          annualized,
+          periodStart,
+          periodEnd,
+          cycleNumber: 1,
+          status: 'DRAFT',
+          nextDue: nextDue || undefined,
+          description: serviceInput?.description || undefined,
+        },
+      });
+
+      createdServiceIds.push(service.id);
+    }
+
+    const directors = Array.isArray(payload.directors) ? payload.directors : [];
+    for (const [index, director] of directors.entries()) {
+      const fullName = String(
+        director?.name ||
+          `${director?.firstName || ''} ${director?.lastName || ''}`.trim(),
+      ).trim();
+      if (!fullName) continue;
+
+      const person = await (this.prisma as any).person.create({
+        data: {
+          fullName,
+          email: director?.email || undefined,
+          phone: director?.phone || undefined,
+        },
+      });
+
+      const party = await (this.prisma as any).clientParty.create({
+        data: {
+          clientId: client.id,
+          personId: person.id,
+          role: String(director?.role || 'DIRECTOR').toUpperCase(),
+          ownershipPercent: director?.ownershipPercent ?? undefined,
+          appointedAt: this.parseOptionalDate(director?.appointedAt, 'appointedAt') || undefined,
+          primaryContact: director?.primaryContact ?? index === 0,
+          suffixLetter: undefined,
+        },
+      });
+
+      createdDirectorIds.push(party.id);
+    }
+
+    // Tasks are intentionally not generated at create time; only on service activation.
+    return {
+      client,
+      services: createdServiceIds,
+      directors: createdDirectorIds,
+      tasksGenerated: 0,
+    };
+  }
+
+  async getClientServicesWithWork(clientIdentifier: string): Promise<Array<any>> {
+    const resolvedId = await this.resolveClientId(clientIdentifier);
+    if (!resolvedId) {
+      throw new NotFoundException(`Client with ID ${clientIdentifier} not found`);
+    }
+
+    const services = await (this.prisma as any).service.findMany({
+      where: { clientId: resolvedId },
+      orderBy: [{ periodStart: 'desc' }, { createdAt: 'desc' }],
+    });
+
+    const results = [] as Array<any>;
+    for (const service of services) {
+      const [tasks, complianceItem] = await Promise.all([
+        (this.prisma as any).task.findMany({
+          where: {
+            OR: [
+              { clientServiceId: service.id },
+              { serviceId: service.id },
+            ],
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        (this.prisma as any).complianceItem.findFirst({
+          where: {
+            OR: [
+              { clientServiceId: service.id },
+              { serviceId: service.id },
+            ],
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+      ]);
+
+      results.push({
+        ...service,
+        tasks,
+        compliance: complianceItem || null,
+      });
+    }
+
+    return results;
+  }
+
+  async attachDraftServicesFromTemplates(clientId: string, templateIds: string[]): Promise<string[]> {
+    const uniqueTemplateIds = Array.from(
+      new Set((templateIds || []).map((id) => String(id || '').trim()).filter(Boolean)),
+    );
+    if (!uniqueTemplateIds.length) return [];
+
+    const templates = await (this.prisma as any).serviceTemplate.findMany({
+      where: { id: { in: uniqueTemplateIds } },
+    });
+
+    const createdIds: string[] = [];
+    const now = new Date();
+    for (const template of templates) {
+      const frequency = this.normalizeWorkFrequency(template.frequency);
+      const periodStart = now;
+      const periodEnd = this.incrementPeriodEnd(periodStart, frequency);
+
+      const existing = await (this.prisma as any).service.findFirst({
+        where: {
+          clientId,
+          templateId: template.id,
+          periodStart,
+        },
+      });
+      if (existing) continue;
+
+      const created = await (this.prisma as any).service.create({
+        data: {
+          clientId,
+          templateId: template.id,
+          kind: template.serviceKind,
+          frequency,
+          fee: 0,
+          annualized: 0,
+          periodStart,
+          periodEnd,
+          cycleNumber: 1,
+          status: 'DRAFT',
+          description: `Template: ${template.serviceKind}`,
+        },
+      });
+      createdIds.push(created.id);
+    }
+
+    return createdIds;
+  }
+
   async enrollDirector(
     clientId: string,
     payload: { name: string; email?: string; phone?: string },
@@ -1004,6 +1204,45 @@ export class ClientsService {
       ? surnameInitial(source)
       : normalizeCompanyInitial(source);
     return this.normalizeBucketAlpha(preferred) || 'X';
+  }
+
+  private normalizeWorkFrequency(value?: string): 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' {
+    const normalized = String(value || 'ANNUAL').toUpperCase().trim();
+    if (normalized === 'MONTHLY') return 'MONTHLY';
+    if (normalized === 'QUARTERLY') return 'QUARTERLY';
+    if (normalized === 'WEEKLY') return 'WEEKLY';
+    return 'ANNUAL';
+  }
+
+  private incrementPeriodEnd(
+    periodStart: Date,
+    frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY',
+  ): Date {
+    const end = new Date(periodStart);
+    if (frequency === 'MONTHLY') {
+      end.setMonth(end.getMonth() + 1);
+      return end;
+    }
+    if (frequency === 'QUARTERLY') {
+      end.setMonth(end.getMonth() + 3);
+      return end;
+    }
+    if (frequency === 'WEEKLY') {
+      end.setDate(end.getDate() + 7);
+      return end;
+    }
+    end.setFullYear(end.getFullYear() + 1);
+    return end;
+  }
+
+  private calculateAnnualizedFee(
+    fee: number,
+    frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY',
+  ): number {
+    if (frequency === 'MONTHLY') return fee * 12;
+    if (frequency === 'QUARTERLY') return fee * 4;
+    if (frequency === 'WEEKLY') return fee * 52;
+    return fee;
   }
 
   private isDatabaseUnavailableError(error: unknown): boolean {

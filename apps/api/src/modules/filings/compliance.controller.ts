@@ -29,7 +29,9 @@ export class ComplianceController {
 
   @Post()
   async createComplianceItem(@Body() createDto: CreateComplianceItemDto): Promise<ComplianceItem> {
-    this.logger.log(`Creating compliance item for client ${createDto.clientId}`);
+    this.logger.log(
+      `Creating compliance item for client ${createDto.clientId || 'n/a'} service ${createDto.clientServiceId || createDto.serviceId || 'n/a'}`,
+    );
     return this.complianceService.createComplianceItem(createDto);
   }
 
@@ -101,7 +103,9 @@ export class ComplianceController {
 
   @Post('manual')
   async createManualComplianceItem(@Body() createDto: CreateComplianceItemDto): Promise<ComplianceItem> {
-    this.logger.log(`Creating manual compliance item for client ${createDto.clientId}`);
+    this.logger.log(
+      `Creating manual compliance item for client ${createDto.clientId || 'n/a'} service ${createDto.clientServiceId || createDto.serviceId || 'n/a'}`,
+    );
     return this.complianceService.createManualComplianceItem(createDto);
   }
 

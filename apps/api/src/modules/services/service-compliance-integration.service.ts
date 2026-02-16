@@ -33,10 +33,28 @@ export class ServiceComplianceIntegrationService {
       return complianceItems;
     }
 
-    for (const complianceType of complianceMapping) {
+    // A service period has a single compliance record; choose the primary mapping.
+    for (const complianceType of complianceMapping.slice(0, 1)) {
       try {
+        const existing = await this.complianceService.findByService(service.id);
+        const current = existing.find((item) => item.clientServiceId === service.id || item.serviceId === service.id);
+        if (current) {
+          const updated = await this.complianceService.updateComplianceItem(current.id, {
+            clientServiceId: service.id,
+            serviceId: service.id,
+            dueDate: service.nextDue,
+            type: complianceType.type,
+            description: complianceType.description,
+            source: complianceType.source,
+            internalStatus: current.internalStatus || current.status || 'PENDING',
+          } as any);
+          complianceItems.push(updated);
+          continue;
+        }
+
         const item = await this.complianceService.createComplianceItem({
           clientId: service.clientId,
+          clientServiceId: service.id,
           serviceId: service.id,
           type: complianceType.type,
           description: complianceType.description,

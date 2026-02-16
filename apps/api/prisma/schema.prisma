@@ -412,62 +412,81 @@ model Address {
 }
 
 model Service {
-  id              String           @id @default(cuid())
-  clientId        String
-  kind            String
-  frequency       String?
-  fee             Decimal?
-  annualized      Decimal?
-  status          String           @default("ACTIVE")
-  nextDue         DateTime?
-  description     String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  complianceItems ComplianceItem[]
-  client          Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  tasks           Task[]
+  id                     String           @id @default(cuid())
+  clientId               String
+  templateId             String?
+  periodStart            DateTime         @default(now())
+  periodEnd              DateTime         @default(now())
+  cycleNumber            Int?
+  kind                   String
+  frequency              String?
+  fee                    Decimal?
+  annualized             Decimal?
+  status                 ServiceStatus    @default(DRAFT)
+  nextDue                DateTime?
+  description            String?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  complianceItems        ComplianceItem[] @relation("LegacyServiceCompliance")
+  complianceByServiceRef ComplianceItem[] @relation("ClientServiceCompliance")
+  client                 Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  template               ServiceTemplate? @relation(fields: [templateId], references: [id])
+  tasks                  Task[]           @relation("LegacyTaskService")
+  clientServiceTasks     Task[]           @relation("ClientServiceTask")
 
+  @@unique([clientId, templateId, periodStart], map: "uniq_client_template_period_start")
   @@map("services")
 }
 
 model ComplianceItem {
-  id          String           @id @default(cuid())
-  clientId    String
-  serviceId   String?
-  type        String
-  description String
-  dueDate     DateTime?
-  status      ComplianceStatus @default(PENDING)
-  source      ComplianceSource
-  reference   String?
-  period      String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  client      Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  service     Service?         @relation(fields: [serviceId], references: [id])
+  id              String           @id @default(cuid())
+  clientId        String
+  serviceId       String?
+  clientServiceId String?
+  type            String
+  description     String
+  dueDate         DateTime?
+  status          ComplianceStatus @default(PENDING)
+  internalStatus  ComplianceStatus @default(PENDING)
+  externalStatus  ComplianceStatus?
+  mismatch        Boolean          @default(false)
+  filedAt         DateTime?
+  source          ComplianceSource
+  reference       String?
+  period          String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  client          Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  service         Service?         @relation("LegacyServiceCompliance", fields: [serviceId], references: [id])
+  clientService   Service?         @relation("ClientServiceCompliance", fields: [clientServiceId], references: [id])
 
+  @@index([clientServiceId])
+  @@unique([clientServiceId], map: "uniq_compliance_client_service")
   @@map("compliance_items")
 }
 
 model Task {
-  id          String     @id @default(cuid())
-  title       String
-  clientId    String?
-  serviceId   String?
-  description String?
-  dueDate     DateTime?
-  assigneeId  String?
-  creatorId   String?
-  status      TaskStatus @default(TODO)
-  priority    Priority   @default(MEDIUM)
-  tags        String[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
-  client      Client?    @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  creator     User?      @relation("TaskCreator", fields: [creatorId], references: [id])
-  service     Service?   @relation(fields: [serviceId], references: [id])
+  id              String     @id @default(cuid())
+  title           String
+  clientId        String?
+  serviceId       String?
+  clientServiceId String?
+  description     String?
+  dueDate         DateTime?
+  assigneeId      String?
+  creatorId       String?
+  status          TaskStatus @default(TODO)
+  priority        Priority   @default(MEDIUM)
+  tags            String[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  assignee        User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  client          Client?    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  creator         User?      @relation("TaskCreator", fields: [creatorId], references: [id])
+  service         Service?   @relation("LegacyTaskService", fields: [serviceId], references: [id])
+  clientService   Service?   @relation("ClientServiceTask", fields: [clientServiceId], references: [id])
 
+  @@index([clientServiceId])
   @@map("tasks")
 }
 
@@ -848,6 +867,7 @@ enum ServiceFrequency {
 }
 
 enum ServiceStatus {
+  DRAFT
   ACTIVE
   INACTIVE
   SUSPENDED

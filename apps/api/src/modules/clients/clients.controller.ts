@@ -81,8 +81,49 @@ export class ClientsController {
   @Post()
   @ApiOperation({ summary: 'Create new client' })
   @ApiResponse({ status: 201, description: 'Client created successfully' })
-  async createClient(@Body() createClientDto: CreateClientDto): Promise<Client> {
-    return this.clientsService.create(createClientDto);
+  async createClient(@Body() body: CreateClientDto & { templateIds?: string[] }): Promise<Client> {
+    const { templateIds, ...createClientDto } = body || ({} as any);
+    const client = await this.clientsService.create(createClientDto as CreateClientDto);
+    if (Array.isArray(templateIds) && templateIds.length > 0) {
+      await this.clientsService.attachDraftServicesFromTemplates(client.id, templateIds);
+    }
+    return client;
+  }
+
+  @Post('create-full')
+  @ApiOperation({ summary: 'Create client with initial directors/services (draft services only)' })
+  async createFullClient(@Body() payload: {
+    client: CreateClientDto;
+    templateIds?: string[];
+    services?: Array<{
+      templateId?: string;
+      kind: string;
+      frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+      fee?: number;
+      status?: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+      nextDue?: string | Date;
+      description?: string;
+    }>;
+    directors?: Array<{
+      firstName?: string;
+      lastName?: string;
+      name?: string;
+      email?: string;
+      phone?: string;
+      role?: string;
+      primaryContact?: boolean;
+      appointedAt?: string | Date;
+      ownershipPercent?: number;
+    }>;
+    generateTasks?: boolean;
+  }) {
+    return this.clientsService.createFull(payload);
+  }
+
+  @Get(':id/services')
+  @ApiOperation({ summary: 'Get client services with nested tasks and compliance' })
+  async getClientServices(@Param('id') id: string) {
+    return this.clientsService.getClientServicesWithWork(id);
   }
 
   @Post(':id/enroll-director')

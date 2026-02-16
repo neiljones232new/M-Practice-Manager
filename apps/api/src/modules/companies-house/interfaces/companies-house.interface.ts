@@ -341,12 +341,17 @@ export interface CompaniesHouseImportData {
 
 export interface ComplianceItem {
   id: string;
-  clientId: string;
-  serviceId?: string;
+  clientId: string; // Legacy compatibility
+  clientServiceId?: string;
+  serviceId?: string; // Legacy compatibility alias for clientServiceId
   type: string;
   description: string;
   dueDate?: Date;
-  status: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
+  status: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT'; // Legacy compatibility
+  internalStatus?: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
+  externalStatus?: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
+  mismatch?: boolean;
+  filedAt?: Date;
   source: 'COMPANIES_HOUSE' | 'HMRC' | 'MANUAL';
   reference?: string;
   period?: string;
@@ -355,12 +360,17 @@ export interface ComplianceItem {
 }
 
 export interface CreateComplianceItemDto {
-  clientId: string;
-  serviceId?: string;
+  clientId?: string; // Legacy compatibility
+  clientServiceId?: string;
+  serviceId?: string; // Legacy compatibility alias for clientServiceId
   type: string;
   description: string;
   dueDate?: Date;
   status?: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
+  internalStatus?: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
+  externalStatus?: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
+  mismatch?: boolean;
+  filedAt?: Date;
   source: 'COMPANIES_HOUSE' | 'HMRC' | 'MANUAL';
   reference?: string;
   period?: string;

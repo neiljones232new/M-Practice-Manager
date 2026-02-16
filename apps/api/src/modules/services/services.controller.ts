@@ -200,6 +200,12 @@ export class ServicesController {
     return this.servicesService.updateStatus(id, body.status);
   }
 
+  @Post(':id/activate')
+  @ApiOperation({ summary: 'Activate service and generate operational work' })
+  async activateService(@Param('id') id: string) {
+    return this.servicesService.activateService(id);
+  }
+
   @Put(':id/next-due')
   @ApiOperation({ summary: 'Update service next due date' })
   async updateNextDueDate(

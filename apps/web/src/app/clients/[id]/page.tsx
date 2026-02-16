@@ -35,16 +35,21 @@ type Task = {
   status: 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELLED';
   dueDate?: string;
   tags?: string[];
+  clientServiceId?: string;
   serviceId?: string;
 };
 
 type Compliance = {
   id: string;
   clientId?: string;
+  clientServiceId?: string;
   serviceId?: string;
   type: string;
   description?: string;
   status: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
+  internalStatus?: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
+  externalStatus?: 'PENDING' | 'FILED' | 'OVERDUE' | 'EXEMPT';
+  mismatch?: boolean;
   dueDate?: string;
   period?: string;
   source?: 'COMPANIES_HOUSE' | 'HMRC' | 'MANUAL';
@@ -61,14 +66,20 @@ type Document = {
 
 type Service = {
   id: string;
+  templateId?: string;
+  periodStart?: string;
+  periodEnd?: string;
+  cycleNumber?: number;
   kind?: string;
   description?: string;
-  frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+  frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF';
   fee?: number;
   annualized?: number;
-  status?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status?: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   nextDue?: string;
   eligibility?: ServiceEligibility;
+  tasks?: Task[];
+  compliance?: Compliance | null;
 };
 
 type AccountsSet = {
@@ -243,13 +254,39 @@ export default function ClientDetailsPage() {
   const partiesDetails = useMemo(() => clientContext?.partiesDetails ?? [], [clientContext?.partiesDetails]);
   const isCompanyClient = client?.type === 'COMPANY' || client?.type === 'LLP';
   const showCompaniesHouse = isCompanyClient;
-  type TabKey = 'profile' | 'services' | 'accounts' | 'tax' | 'tasks' | 'compliance' | 'documents' | 'letters' | 'people' | 'ch';
-  const tabParam = searchParams?.get('tab') as TabKey | null;
-  const tab = useMemo<TabKey>(() => {
-    const candidate = tabParam ?? 'profile';
-    if (candidate === 'ch' && !showCompaniesHouse) return 'profile';
+  type WorkTab = 'services' | 'accounts' | 'tax' | 'tasks' | 'compliance' | 'documents' | 'letters';
+  type PrimaryTab = 'overview' | 'work' | 'companies';
+  type TabKey = 'profile' | 'services' | 'accounts' | 'tax' | 'tasks' | 'compliance' | 'documents' | 'letters' | 'ch';
+  const tabParam = searchParams?.get('tab') as PrimaryTab | null;
+  const workTabParam = searchParams?.get('workTab') as WorkTab | null;
+  const primaryTab = useMemo<PrimaryTab>(() => {
+    const candidate = (tabParam || 'overview') as PrimaryTab;
+    if (candidate === 'companies' && !showCompaniesHouse) return 'overview';
+    if (candidate !== 'overview' && candidate !== 'work' && candidate !== 'companies') {
+      return 'overview';
+    }
     return candidate;
   }, [tabParam, showCompaniesHouse]);
+  const workTab = useMemo<WorkTab>(() => {
+    const candidate = (workTabParam || 'services') as WorkTab;
+    if (
+      candidate === 'services' ||
+      candidate === 'accounts' ||
+      candidate === 'tax' ||
+      candidate === 'tasks' ||
+      candidate === 'compliance' ||
+      candidate === 'documents' ||
+      candidate === 'letters'
+    ) {
+      return candidate;
+    }
+    return 'services';
+  }, [workTabParam]);
+  const tab = useMemo<TabKey>(() => {
+    if (primaryTab === 'overview') return 'profile';
+    if (primaryTab === 'companies') return 'ch';
+    return workTab;
+  }, [primaryTab, workTab]);
 
 
   useEffect(() => {
@@ -277,25 +314,31 @@ export default function ClientDetailsPage() {
         });
 
         const effectiveId = c?.node?.id || clientId;
-        const [s, t, d, comp, ltrs, aSets, tCalcs] = await Promise.all([
-          api.get(`/services/client/${effectiveId}`).catch(() => []) as Promise<Service[]>,
-          api.get(`/tasks/client/${effectiveId}`).catch(() => []) as Promise<Task[]>,
+        const [serviceWork, d, ltrs, aSets, tCalcs] = await Promise.all([
+          api.get(`/clients/${effectiveId}/services`).catch(() => []) as Promise<Service[]>,
           api.get(`/documents/client/${effectiveId}`).catch(() => []) as Promise<any>,
-          api.get(`/compliance?clientId=${effectiveId}`).catch(() => []) as Promise<Compliance[]>,
           api.get(`/letters/client/${effectiveId}`).catch(() => []) as Promise<GeneratedLetter[]>,
           api.get(`/accounts-sets/client/${effectiveId}`).catch(() => []) as Promise<AccountsSet[]>,
           api.get(`/tax-calculations/client/${effectiveId}`).catch(() => []) as Promise<TaxCalculation[]>,
         ]);
 
         if (on) {
+          const normalizedServices = Array.isArray(serviceWork) ? serviceWork : [];
+          const aggregatedTasks = normalizedServices.flatMap((service) =>
+            Array.isArray(service.tasks) ? service.tasks : [],
+          );
+          const aggregatedCompliance = normalizedServices
+            .map((service) => service.compliance)
+            .filter(Boolean) as Compliance[];
+
           setClientContext(c);
           setPartyPeople({});
           peopleCacheRef.current = {};
-          setServices(Array.isArray(s) ? s : []);
-          setTasks(Array.isArray(t) ? t : []);
+          setServices(normalizedServices);
+          setTasks(aggregatedTasks);
           const docs = Array.isArray(d) ? d : Array.isArray(d?.data) ? d.data : [];
           setDocuments(docs);
-          setCompliance(Array.isArray(comp) ? comp : []);
+          setCompliance(aggregatedCompliance);
           setLetters(Array.isArray(ltrs) ? ltrs : []);
           setAccountsSets(Array.isArray(aSets) ? aSets : []);
           setTaxCalculations(Array.isArray(tCalcs) ? tCalcs : []);
@@ -352,12 +395,7 @@ export default function ClientDetailsPage() {
   // Load CH data when CH tab opens
   useEffect(() => {
     const num = client?.registeredNumber;
-    if (tab === 'people') {
-      const stored = (clientContext as any)?.companiesHouse?.officers;
-      setChOfficers(Array.isArray(stored) ? stored : []);
-      return;
-    }
-    if (tab !== 'ch' || !num) return;
+    if (primaryTab !== 'companies' || !num) return;
     let on = true;
     (async () => {
       try {
@@ -394,7 +432,7 @@ export default function ClientDetailsPage() {
       }
     })();
     return () => { on = false; };
-  }, [tab, client?.registeredNumber, clientContext]);
+  }, [primaryTab, client?.registeredNumber, clientContext]);
 
   const getTaskBadge = (status: Task['status']) => {
     const key = String(status || '').toUpperCase();
@@ -832,8 +870,10 @@ export default function ClientDetailsPage() {
 
       setTaskMessage({ text: message, error: false });
       if (client?.id) {
-        const refreshedTasks = await api.get<Task[]>(`/tasks/client/${client.id}`);
-        setTasks(Array.isArray(refreshedTasks) ? refreshedTasks : []);
+        const refreshedServices = await api.get<Service[]>(`/clients/${client.id}/services`).catch(() => []);
+        const nextServices = Array.isArray(refreshedServices) ? refreshedServices : [];
+        setServices(nextServices);
+        setTasks(nextServices.flatMap((service) => (Array.isArray(service.tasks) ? service.tasks : [])));
       }
     } catch (error: any) {
       setTaskMessage({ text: error?.message || 'Failed to generate tasks', error: true });
@@ -848,9 +888,10 @@ export default function ClientDetailsPage() {
     : (client?.utrNumber ? `UTR ${client.utrNumber}` : 'No UTR');
   const primaryDob = primaryPerson?.dateOfBirth ? new Date(primaryPerson.dateOfBirth).toLocaleDateString('en-GB') : '—';
   const primaryNationality = primaryPerson?.nationality || '—';
-  const tabKeys = showCompaniesHouse
-    ? (['profile', 'services', 'accounts', 'tax', 'tasks', 'compliance', 'documents', 'letters', 'people', 'ch'] as const)
-    : (['profile', 'services', 'accounts', 'tax', 'tasks', 'compliance', 'documents', 'letters', 'people'] as const);
+  const primaryTabKeys = showCompaniesHouse
+    ? (['overview', 'work', 'companies'] as const)
+    : (['overview', 'work'] as const);
+  const workTabKeys = ['services', 'accounts', 'tax', 'tasks', 'compliance', 'documents', 'letters'] as const;
   const officerRoles = new Set(['DIRECTOR', 'SHAREHOLDER', 'PARTNER', 'MEMBER', 'OWNER', 'UBO', 'SECRETARY']);
   const currentOfficersParties = useMemo(() => {
     return parties.filter((party) => {
@@ -1188,35 +1229,21 @@ export default function ClientDetailsPage() {
             {deleting ? 'Deleting…' : 'Delete Client'}
           </button>
         </div>
-        {/* Tabs */}
-        <nav className="mdj-tabs card-mdj" style={{ padding: 0, overflow: 'hidden', marginBottom: '1rem', position: 'sticky', top: '0.5rem', zIndex: 10 }}>
+        {/* Primary Tabs */}
+        <nav className="mdj-tabs card-mdj" style={{ padding: 0, overflow: 'hidden', marginBottom: '0.75rem', position: 'sticky', top: '0.5rem', zIndex: 10 }}>
           <div style={{ display: 'flex', gap: '0', borderBottom: '1px solid var(--border-subtle)', padding: 0, background: 'var(--surface-table-header)', flexWrap: 'wrap' }}>
-            {tabKeys.map((key) => {
+            {primaryTabKeys.map((key) => {
               const counts = {
-                profile: 0,
-                services: services.length,
-                accounts: accountsSets.length,
-                tax: taxCalculations.length,
-                tasks: tasks.length,
-                compliance: complianceObligations.length,
-                documents: documents.length,
-                letters: letters.length,
-                people: currentOfficersParties.length,
-                ch: chOfficers.length + chPscs.length + chFilings.length,
+                overview: 0,
+                work: services.length + tasks.length + complianceObligations.length,
+                companies: chOfficers.length + chPscs.length + chFilings.length,
               } as const;
-              const active = tab === key;
               const labels = {
-                profile: 'Profile',
-                services: 'Services',
-                accounts: 'Accounts',
-                tax: 'Tax',
-                tasks: 'Tasks',
-                compliance: 'Compliance',
-                documents: 'Documents',
-                letters: 'Letters',
-                people: 'People',
-                ch: 'Companies House',
-              };
+                overview: 'Overview',
+                work: 'Work',
+                companies: 'Companies House',
+              } as const;
+              const active = primaryTab === key;
               return (
                 <button
                   key={key}
@@ -1224,6 +1251,11 @@ export default function ClientDetailsPage() {
                   onClick={() => {
                     const params = new URLSearchParams(searchParams?.toString());
                     params.set('tab', key);
+                    if (key !== 'work') {
+                      params.delete('workTab');
+                    } else if (!params.get('workTab')) {
+                      params.set('workTab', workTab);
+                    }
                     router.push(`?${params.toString()}`);
                   }}
                   style={{
@@ -1250,6 +1282,65 @@ export default function ClientDetailsPage() {
             })}
           </div>
         </nav>
+
+        {/* Work Sub-tabs */}
+        {primaryTab === 'work' && (
+          <nav className="mdj-tabs card-mdj" style={{ padding: 0, overflow: 'hidden', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', gap: '0', borderBottom: '1px solid var(--border-subtle)', padding: 0, background: 'var(--surface-table-header)', flexWrap: 'wrap' }}>
+              {workTabKeys.map((key) => {
+                const counts = {
+                  services: services.length,
+                  accounts: accountsSets.length,
+                  tax: taxCalculations.length,
+                  tasks: tasks.length,
+                  compliance: complianceObligations.length,
+                  documents: documents.length,
+                  letters: letters.length,
+                } as const;
+                const labels = {
+                  services: 'Services',
+                  accounts: 'Accounts',
+                  tax: 'Tax',
+                  tasks: 'Tasks',
+                  compliance: 'Compliance',
+                  documents: 'Documents',
+                  letters: 'Letters',
+                } as const;
+                const active = workTab === key;
+                return (
+                  <button
+                    key={key}
+                    className={`tab ${active ? 'active' : ''}`}
+                    onClick={() => {
+                      const params = new URLSearchParams(searchParams?.toString());
+                      params.set('tab', 'work');
+                      params.set('workTab', key);
+                      router.push(`?${params.toString()}`);
+                    }}
+                    style={{
+                      padding: '10px 14px',
+                      border: 'none',
+                      background: active ? 'var(--status-info-bg)' : 'transparent',
+                      cursor: 'pointer',
+                      borderBottom: active ? '2px solid var(--brand-primary)' : '2px solid transparent',
+                      color: active ? 'var(--brand-primary-active)' : 'var(--text-secondary)',
+                      fontWeight: active ? 700 : 600,
+                      fontSize: '0.82rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <span>{labels[key]}</span>
+                    <span className={`count badge ${active ? 'primary' : 'default'}`} style={{ fontSize: '0.72rem' }}>
+                      {counts[key]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        )}
 
         {/* Main Grid */}
         <main className="mdj-grid two-col" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(260px, 1fr)', gap: '1.5rem', marginBottom: '1rem' }}>
@@ -2170,7 +2261,7 @@ export default function ClientDetailsPage() {
           </div>
         )}
 
-        {tab === 'people' && (
+        {primaryTab === 'companies' && (
           <div style={{ padding: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
               <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>
@@ -2273,7 +2364,7 @@ export default function ClientDetailsPage() {
           </div>
         )}
 
-        {showCompaniesHouse && tab === 'ch' && (
+        {showCompaniesHouse && primaryTab === 'companies' && (
           <div style={{ padding: '1rem' }}>
             {!client?.registeredNumber ? (
               <div style={{ color: 'var(--text-muted)' }}>No registered company number on this client.</div>

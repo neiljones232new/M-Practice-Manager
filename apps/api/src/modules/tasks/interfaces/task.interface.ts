@@ -4,8 +4,9 @@ export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export interface Task {
   id: string;
   title: string;
-  clientId?: string;
-  serviceId?: string;
+  clientId?: string; // Legacy compatibility
+  clientServiceId?: string;
+  serviceId?: string; // Legacy compatibility alias for clientServiceId
   description?: string;
   dueDate?: Date;
   assigneeId?: string;
@@ -20,7 +21,8 @@ export interface Task {
 
 export interface TaskFilters {
   clientId?: string;
-  serviceId?: string;
+  clientServiceId?: string;
+  serviceId?: string; // Legacy compatibility alias
   assigneeId?: string;
   status?: TaskStatus;
   priority?: TaskPriority;
@@ -34,8 +36,9 @@ export interface TaskFilters {
 
 export interface CreateTaskDto {
   title: string;
-  clientId?: string;
-  serviceId?: string;
+  clientId?: string; // Legacy compatibility
+  clientServiceId?: string;
+  serviceId?: string; // Legacy compatibility alias
   description?: string;
   dueDate?: Date;
   assigneeId?: string;
@@ -47,6 +50,7 @@ export interface CreateTaskDto {
 
 export interface UpdateTaskDto {
   title?: string;
+  clientServiceId?: string;
   description?: string;
   dueDate?: Date;
   assigneeId?: string;

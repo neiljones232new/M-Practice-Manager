@@ -17,20 +17,44 @@ export class ComplianceService {
   ) {}
 
   async createComplianceItem(createDto: CreateComplianceItemDto): Promise<ComplianceItem> {
-    const client = await this.clientsService.findByIdentifier(createDto.clientId);
-    if (!client) {
-      throw new NotFoundException(`Client with ID ${createDto.clientId} not found`);
+    const resolvedServiceId = createDto.clientServiceId || createDto.serviceId;
+    let resolvedClientId: string | undefined;
+
+    if (resolvedServiceId) {
+      const service = await this.servicesService.findOne(resolvedServiceId);
+      if (!service) {
+        throw new NotFoundException(`Service with ID ${resolvedServiceId} not found`);
+      }
+      resolvedClientId = service.clientId;
+    }
+
+    if (!resolvedClientId && createDto.clientId) {
+      const client = await this.clientsService.findByIdentifier(createDto.clientId);
+      if (!client) {
+        throw new NotFoundException(`Client with ID ${createDto.clientId} not found`);
+      }
+      resolvedClientId = client.id;
+    }
+
+    if (!resolvedClientId) {
+      throw new NotFoundException('clientId or clientServiceId is required to create compliance');
     }
 
     const item = await (this.prisma as any).complianceItem.create({
       data: {
         ...createDto,
-        clientId: client.id,
+        clientId: resolvedClientId,
+        serviceId: resolvedServiceId,
+        clientServiceId: resolvedServiceId,
         status: createDto.status || 'PENDING',
+        internalStatus: createDto.internalStatus || createDto.status || 'PENDING',
+        externalStatus: createDto.externalStatus,
+        mismatch: createDto.mismatch ?? false,
+        filedAt: createDto.filedAt,
       },
     });
 
-    this.logger.log(`Created compliance item ${item.id} for client ${createDto.clientId}`);
+    this.logger.log(`Created compliance item ${item.id} for client ${resolvedClientId}`);
     return item;
   }
 
@@ -44,11 +68,22 @@ export class ComplianceService {
 
   async updateComplianceItem(id: string, updateData: Partial<ComplianceItem>): Promise<ComplianceItem> {
     await this.getComplianceItem(id);
+    const resolvedServiceId = (updateData as any)?.clientServiceId || updateData.serviceId;
+    const normalizedUpdate: any = {
+      ...updateData,
+    };
+    if (resolvedServiceId !== undefined) {
+      normalizedUpdate.serviceId = resolvedServiceId;
+      normalizedUpdate.clientServiceId = resolvedServiceId;
+    }
+
+    if (normalizedUpdate.status && !normalizedUpdate.internalStatus) {
+      normalizedUpdate.internalStatus = normalizedUpdate.status;
+    }
+
     const updated = await (this.prisma as any).complianceItem.update({
       where: { id },
-      data: {
-        ...updateData,
-      },
+      data: normalizedUpdate,
     });
     this.logger.log(`Updated compliance item ${id}`);
     return updated;
@@ -75,6 +110,7 @@ export class ComplianceService {
   async findAll(filters: {
     portfolioCode?: number;
     clientId?: string;
+    clientServiceId?: string;
     serviceId?: string;
     status?: string | string[];
     dueDateFrom?: Date;
@@ -86,7 +122,13 @@ export class ComplianceService {
       const resolvedClientId = await this.clientsService.resolveClientId(filters.clientId);
       where.clientId = resolvedClientId || filters.clientId;
     }
-    if (filters.serviceId) where.serviceId = filters.serviceId;
+    const resolvedServiceId = filters.clientServiceId || filters.serviceId;
+    if (resolvedServiceId) {
+      where.OR = [
+        { serviceId: resolvedServiceId },
+        { clientServiceId: resolvedServiceId },
+      ];
+    }
     if (filters.status) {
       const statuses = Array.isArray(filters.status) ? filters.status : [filters.status];
       where.status = { in: statuses };
@@ -112,7 +154,12 @@ export class ComplianceService {
 
   async findByService(serviceId: string): Promise<ComplianceItem[]> {
     return (this.prisma as any).complianceItem.findMany({
-      where: { serviceId },
+      where: {
+        OR: [
+          { serviceId },
+          { clientServiceId: serviceId },
+        ],
+      },
       orderBy: { dueDate: 'asc' },
     });
   }
@@ -142,10 +189,14 @@ export class ComplianceService {
   }
 
   async markComplianceItemFiled(id: string, filedDate?: Date): Promise<ComplianceItem> {
-    return this.updateComplianceItem(id, {
+    const item = await this.updateComplianceItem(id, {
       status: 'FILED',
+      internalStatus: 'FILED',
+      filedAt: filedDate || new Date(),
       updatedAt: filedDate || new Date(),
     } as any);
+    await this.createNextDraftServiceFromFiledCompliance(item);
+    return item;
   }
 
   async markComplianceItemOverdue(id: string): Promise<ComplianceItem> {
@@ -255,12 +306,14 @@ export class ComplianceService {
   async createTaskFromComplianceItem(complianceItemId: string, assigneeId?: string): Promise<string> {
     const complianceItem = await this.getComplianceItem(complianceItemId);
 
-    const task = await (this.prisma as any).task.create({
-      data: {
-        clientId: complianceItem.clientId,
-        title: `${complianceItem.type.replace(/_/g, ' ')} - ${complianceItem.description}`,
-        description: `Compliance task for ${complianceItem.description}${complianceItem.period ? ` (Period: ${complianceItem.period})` : ''}`,
-        dueDate: complianceItem.dueDate ? new Date(complianceItem.dueDate) : undefined,
+      const task = await (this.prisma as any).task.create({
+        data: {
+          clientId: complianceItem.clientId,
+          clientServiceId: complianceItem.clientServiceId || complianceItem.serviceId,
+          serviceId: complianceItem.clientServiceId || complianceItem.serviceId,
+          title: `${complianceItem.type.replace(/_/g, ' ')} - ${complianceItem.description}`,
+          description: `Compliance task for ${complianceItem.description}${complianceItem.period ? ` (Period: ${complianceItem.period})` : ''}`,
+          dueDate: complianceItem.dueDate ? new Date(complianceItem.dueDate) : undefined,
         assigneeId,
         priority: this.getTaskPriorityFromComplianceStatus(complianceItem.status, complianceItem.dueDate),
         status: 'TODO',
@@ -309,6 +362,73 @@ export class ComplianceService {
       where: { tags: { has: `compliance:${complianceItemId}` } },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  private async createNextDraftServiceFromFiledCompliance(item: ComplianceItem): Promise<void> {
+    const serviceId = item.clientServiceId || item.serviceId;
+    if (!serviceId) return;
+
+    const currentService = await this.servicesService.findOne(serviceId);
+    if (!currentService) return;
+    if (!currentService.templateId) return;
+
+    const client = await this.clientsService.findOne(currentService.clientId);
+    if (!client || client.status !== 'ACTIVE') return;
+
+    const currentPeriodStart = new Date((currentService as any).periodStart || currentService.nextDue || new Date());
+    const currentPeriodEnd = new Date((currentService as any).periodEnd || currentService.nextDue || currentPeriodStart);
+    const nextPeriodStart = Number.isNaN(currentPeriodEnd.getTime()) ? currentPeriodStart : currentPeriodEnd;
+    const nextPeriodEnd = this.incrementPeriodEnd(nextPeriodStart, currentService.frequency);
+
+    const existingNext = await (this.prisma as any).service.findFirst({
+      where: {
+        clientId: currentService.clientId,
+        templateId: currentService.templateId,
+        periodStart: nextPeriodStart,
+      },
+    });
+
+    if (existingNext) return;
+
+    await (this.prisma as any).service.create({
+      data: {
+        clientId: currentService.clientId,
+        templateId: currentService.templateId,
+        kind: currentService.kind,
+        frequency: currentService.frequency,
+        fee: currentService.fee,
+        annualized: currentService.annualized,
+        periodStart: nextPeriodStart,
+        periodEnd: nextPeriodEnd,
+        cycleNumber: ((currentService as any).cycleNumber || 0) + 1,
+        status: 'DRAFT',
+        description: currentService.description,
+      },
+    });
+
+    this.logger.log(
+      `Created next draft service for client ${currentService.clientId} template ${currentService.templateId}`,
+    );
+  }
+
+  private incrementPeriodEnd(start: Date, frequency?: string): Date {
+    const end = new Date(start);
+    switch (String(frequency || '').toUpperCase()) {
+      case 'MONTHLY':
+        end.setMonth(end.getMonth() + 1);
+        break;
+      case 'QUARTERLY':
+        end.setMonth(end.getMonth() + 3);
+        break;
+      case 'WEEKLY':
+        end.setDate(end.getDate() + 7);
+        break;
+      case 'ANNUAL':
+      default:
+        end.setFullYear(end.getFullYear() + 1);
+        break;
+    }
+    return end;
   }
 
   async escalateOverdueCompliance(): Promise<{ escalated: number; tasksCreated: number }> {

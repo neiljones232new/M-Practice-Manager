@@ -41,17 +41,22 @@ export class TasksService {
       normalizedCreateDto.clientId = client.id;
     }
 
-    if (normalizedCreateDto.serviceId) {
-      const service = await this.servicesService.findOne(normalizedCreateDto.serviceId);
+    const clientServiceId = normalizedCreateDto.clientServiceId || normalizedCreateDto.serviceId;
+    if (clientServiceId) {
+      const service = await this.servicesService.findOne(clientServiceId);
       if (!service) {
-        throw new NotFoundException(`Service with ID ${normalizedCreateDto.serviceId} not found`);
+        throw new NotFoundException(`Service with ID ${clientServiceId} not found`);
       }
+      normalizedCreateDto.clientServiceId = service.id;
+      normalizedCreateDto.serviceId = service.id; // legacy alias
+      normalizedCreateDto.clientId = normalizedCreateDto.clientId || service.clientId;
     }
 
     const task = await (this.prisma as any).task.create({
       data: {
         title: normalizedCreateDto.title,
         clientId: normalizedCreateDto.clientId,
+        clientServiceId: normalizedCreateDto.clientServiceId || normalizedCreateDto.serviceId,
         serviceId: normalizedCreateDto.serviceId,
         description: normalizedCreateDto.description,
         dueDate: normalizedCreateDto.dueDate,
@@ -76,7 +81,18 @@ export class TasksService {
         const resolvedClientId = await this.clientsService.resolveClientId(normalizedFilters.clientId);
         where.clientId = resolvedClientId || normalizedFilters.clientId;
       }
-      if (normalizedFilters.serviceId) where.serviceId = normalizedFilters.serviceId;
+      const clientServiceId = normalizedFilters.clientServiceId || normalizedFilters.serviceId;
+      if (clientServiceId) {
+        where.AND = [
+          ...(Array.isArray(where.AND) ? where.AND : []),
+          {
+            OR: [
+              { clientServiceId },
+              { serviceId: clientServiceId },
+            ],
+          },
+        ];
+      }
       if (normalizedFilters.assigneeId) where.assigneeId = normalizedFilters.assigneeId;
       if (normalizedFilters.status) where.status = normalizedFilters.status;
       if (normalizedFilters.priority) where.priority = normalizedFilters.priority;
@@ -134,8 +150,9 @@ export class TasksService {
         clientIdentifier = client?.registeredNumber || client?.id;
         portfolioCode = client?.portfolioCode;
       }
-      if (task.serviceId) {
-        const service = await this.servicesService.findOne(task.serviceId);
+      const taskServiceId = task.clientServiceId || task.serviceId;
+      if (taskServiceId) {
+        const service = await this.servicesService.findOne(taskServiceId);
         serviceName = service?.kind;
       }
       result.push({ ...task, assignee: task.assigneeId, clientName, clientIdentifier, portfolioCode, serviceName });
@@ -174,7 +191,12 @@ export class TasksService {
   async findByService(serviceId: string): Promise<Task[]> {
     try {
       return await (this.prisma as any).task.findMany({
-        where: { serviceId },
+        where: {
+          OR: [
+            { serviceId },
+            { clientServiceId: serviceId },
+          ],
+        },
         orderBy: { createdAt: 'desc' },
       });
     } catch (error) {
@@ -284,6 +306,10 @@ export class TasksService {
     if (!service) {
       throw new NotFoundException(`Service with ID ${serviceId} not found`);
     }
+    if (service.status !== 'ACTIVE') {
+      this.logger.debug(`Skipping task generation for non-active service ${serviceId} (${service.status})`);
+      return [];
+    }
 
     const template = await this.findServiceTemplateByKindAndFrequency(service.kind, service.frequency);
     if (!template) return [];
@@ -295,7 +321,10 @@ export class TasksService {
         : undefined;
       const existing = await (this.prisma as any).task.findFirst({
         where: {
-          serviceId: service.id,
+          OR: [
+            { serviceId: service.id },
+            { clientServiceId: service.id },
+          ],
           title: taskTemplate.title,
           dueDate: dueDate ?? null,
           status: { notIn: ['CANCELLED'] },
@@ -308,6 +337,7 @@ export class TasksService {
         title: taskTemplate.title,
         description: taskTemplate.description,
         clientId: service.clientId,
+        clientServiceId: service.id,
         serviceId: service.id,
         dueDate,
         assigneeId: taskTemplate.assigneeId,
@@ -721,6 +751,12 @@ export class TasksService {
 
   private normalizeTaskPayload(payload: CreateTaskDto | UpdateTaskDto): any {
     const normalized: Record<string, any> = { ...payload };
+    if (normalized.clientServiceId === undefined && normalized.serviceId !== undefined) {
+      normalized.clientServiceId = normalized.serviceId;
+    }
+    if (normalized.serviceId === undefined && normalized.clientServiceId !== undefined) {
+      normalized.serviceId = normalized.clientServiceId;
+    }
     if (Object.prototype.hasOwnProperty.call(normalized, 'dueDate')) {
       normalized.dueDate = this.parseOptionalDate(normalized.dueDate, 'dueDate');
     }
