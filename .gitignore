@@ -28,3 +28,7 @@ apps/nest
 
 # Internal specs
 .kiro/
+.run/
+apps/api/src/modules.zip
+apps/web/src/app.zip
+apps/web/src/app/dashboard.zip
