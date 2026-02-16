@@ -1,5 +1,11 @@
 export type ServiceFrequency = 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF';
-export type ServiceStatus = 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+export type ServiceStatus =
+  | 'DRAFT'
+  | 'ACTIVE'
+  | 'AWAITING_FILING'
+  | 'READY_TO_CLOSE'
+  | 'COMPLETE'
+  | 'ARCHIVED';
 
 export interface Service {
   id: string;

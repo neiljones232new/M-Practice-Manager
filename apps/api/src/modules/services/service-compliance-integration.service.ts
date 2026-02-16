@@ -37,10 +37,9 @@ export class ServiceComplianceIntegrationService {
     for (const complianceType of complianceMapping.slice(0, 1)) {
       try {
         const existing = await this.complianceService.findByService(service.id);
-        const current = existing.find((item) => item.clientServiceId === service.id || item.serviceId === service.id);
+        const current = existing.find((item) => item.serviceId === service.id);
         if (current) {
           const updated = await this.complianceService.updateComplianceItem(current.id, {
-            clientServiceId: service.id,
             serviceId: service.id,
             dueDate: service.nextDue,
             type: complianceType.type,
@@ -53,8 +52,6 @@ export class ServiceComplianceIntegrationService {
         }
 
         const item = await this.complianceService.createComplianceItem({
-          clientId: service.clientId,
-          clientServiceId: service.id,
           serviceId: service.id,
           type: complianceType.type,
           description: complianceType.description,

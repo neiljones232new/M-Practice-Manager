@@ -30,7 +30,7 @@ export class ComplianceController {
   @Post()
   async createComplianceItem(@Body() createDto: CreateComplianceItemDto): Promise<ComplianceItem> {
     this.logger.log(
-      `Creating compliance item for client ${createDto.clientId || 'n/a'} service ${createDto.clientServiceId || createDto.serviceId || 'n/a'}`,
+      `Creating compliance item for service ${createDto.serviceId || 'n/a'}`,
     );
     return this.complianceService.createComplianceItem(createDto);
   }
@@ -65,12 +65,12 @@ export class ComplianceController {
     return allItems;
   }
 
-  @Get(':id')
+  @Get(':id([a-z0-9]{25})')
   async getComplianceItem(@Param('id') id: string): Promise<ComplianceItem> {
     return this.complianceService.getComplianceItem(id);
   }
 
-  @Put(':id')
+  @Put(':id([a-z0-9]{25})')
   async updateComplianceItem(
     @Param('id') id: string,
     @Body() updateData: Partial<ComplianceItem>,
@@ -79,13 +79,13 @@ export class ComplianceController {
     return this.complianceService.updateComplianceItem(id, updateData);
   }
 
-  @Delete(':id')
+  @Delete(':id([a-z0-9]{25})')
   async deleteComplianceItem(@Param('id') id: string): Promise<void> {
     this.logger.log(`Deleting compliance item ${id}`);
     return this.complianceService.deleteComplianceItem(id);
   }
 
-  @Put(':id/filed')
+  @Put(':id([a-z0-9]{25})/filed')
   async markComplianceItemFiled(
     @Param('id') id: string,
     @Body() body: { filedDate?: string },
@@ -95,7 +95,7 @@ export class ComplianceController {
     return this.complianceService.markComplianceItemFiled(id, filedDate);
   }
 
-  @Put(':id/overdue')
+  @Put(':id([a-z0-9]{25})/overdue')
   async markComplianceItemOverdue(@Param('id') id: string): Promise<ComplianceItem> {
     this.logger.log(`Marking compliance item ${id} as overdue`);
     return this.complianceService.markComplianceItemOverdue(id);
@@ -104,7 +104,7 @@ export class ComplianceController {
   @Post('manual')
   async createManualComplianceItem(@Body() createDto: CreateComplianceItemDto): Promise<ComplianceItem> {
     this.logger.log(
-      `Creating manual compliance item for client ${createDto.clientId || 'n/a'} service ${createDto.clientServiceId || createDto.serviceId || 'n/a'}`,
+      `Creating manual compliance item for service ${createDto.serviceId || 'n/a'}`,
     );
     return this.complianceService.createManualComplianceItem(createDto);
   }
@@ -158,7 +158,7 @@ export class ComplianceController {
     return this.complianceService.getComplianceStatistics(portfolio);
   }
 
-  @Post(':id/create-task')
+  @Post(':id([a-z0-9]{25})/create-task')
   async createTaskFromComplianceItem(
     @Param('id') id: string,
     @Body() body: { assigneeId?: string },
@@ -205,7 +205,7 @@ export class ComplianceController {
     return this.complianceService.getComplianceTaskRelationships();
   }
 
-  @Get(':id/tasks')
+  @Get(':id([a-z0-9]{25})/tasks')
   async getTasksForComplianceItem(@Param('id') id: string): Promise<any[]> {
     return this.complianceService.findTasksForComplianceItem(id);
   }
@@ -317,11 +317,11 @@ export class ComplianceController {
       
       this.logger.log(`Found ${totalFiles} total compliance items`);
       
-      // Group items by client + service + type to find duplicates
+      // Group items by service + type to find duplicates
       const itemGroups = new Map<string, ComplianceItem[]>();
       
       for (const item of allItems) {
-        const key = `${item.clientId}|${item.serviceId || 'no-service'}|${item.type}`;
+        const key = `${item.serviceId}|${item.type}`;
         if (!itemGroups.has(key)) {
           itemGroups.set(key, []);
         }

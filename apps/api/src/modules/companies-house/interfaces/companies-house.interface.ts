@@ -342,7 +342,7 @@ export interface CompaniesHouseImportData {
     kind: string;
     frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF';
     fee?: number;
-    status?: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+    status?: 'DRAFT' | 'ACTIVE' | 'AWAITING_FILING' | 'READY_TO_CLOSE' | 'COMPLETE' | 'ARCHIVED';
     nextDue?: Date | string;
     description?: string;
   }>;
@@ -350,9 +350,8 @@ export interface CompaniesHouseImportData {
 
 export interface ComplianceItem {
   id: string;
-  clientId?: string; // Legacy compatibility
-  clientServiceId?: string;
-  serviceId?: string; // Legacy compatibility alias for clientServiceId
+  clientId?: string;
+  serviceId: string;
   type: string;
   description: string;
   dueDate?: Date;
@@ -369,9 +368,7 @@ export interface ComplianceItem {
 }
 
 export interface CreateComplianceItemDto {
-  clientId?: string; // Legacy compatibility
-  clientServiceId?: string;
-  serviceId?: string; // Legacy compatibility alias for clientServiceId
+  serviceId: string;
   type: string;
   description: string;
   dueDate?: Date;

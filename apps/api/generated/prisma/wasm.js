@@ -292,7 +292,6 @@ exports.Prisma.AuthPasswordResetTokenScalarFieldEnum = {
 exports.Prisma.ClientScalarFieldEnum = {
   id: 'id',
   clientRef: 'clientRef',
-  baseClientRef: 'baseClientRef',
   name: 'name',
   type: 'type',
   status: 'status',
@@ -460,9 +459,7 @@ exports.Prisma.ServiceScalarFieldEnum = {
 
 exports.Prisma.ComplianceItemScalarFieldEnum = {
   id: 'id',
-  clientId: 'clientId',
   serviceId: 'serviceId',
-  clientServiceId: 'clientServiceId',
   type: 'type',
   description: 'description',
   dueDate: 'dueDate',
@@ -481,9 +478,7 @@ exports.Prisma.ComplianceItemScalarFieldEnum = {
 exports.Prisma.TaskScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  clientId: 'clientId',
   serviceId: 'serviceId',
-  clientServiceId: 'clientServiceId',
   description: 'description',
   dueDate: 'dueDate',
   assigneeId: 'assigneeId',
@@ -499,6 +494,11 @@ exports.Prisma.ServiceTemplateScalarFieldEnum = {
   id: 'id',
   serviceKind: 'serviceKind',
   frequency: 'frequency',
+  recurrenceType: 'recurrenceType',
+  recurrenceInterval: 'recurrenceInterval',
+  recurrenceUnit: 'recurrenceUnit',
+  triggerMode: 'triggerMode',
+  autoGenerateNext: 'autoGenerateNext',
   appliesTo: 'appliesTo',
   complianceImpact: 'complianceImpact',
   pricingModel: 'pricingModel',
@@ -816,8 +816,10 @@ exports.VatStagger = exports.$Enums.VatStagger = {
 exports.ServiceStatus = exports.$Enums.ServiceStatus = {
   DRAFT: 'DRAFT',
   ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
-  SUSPENDED: 'SUSPENDED'
+  AWAITING_FILING: 'AWAITING_FILING',
+  READY_TO_CLOSE: 'READY_TO_CLOSE',
+  COMPLETE: 'COMPLETE',
+  ARCHIVED: 'ARCHIVED'
 };
 
 exports.ComplianceStatus = exports.$Enums.ComplianceStatus = {
@@ -846,6 +848,23 @@ exports.Priority = exports.$Enums.Priority = {
   MEDIUM: 'MEDIUM',
   HIGH: 'HIGH',
   URGENT: 'URGENT'
+};
+
+exports.RecurrenceType = exports.$Enums.RecurrenceType = {
+  NONE: 'NONE',
+  STANDARD: 'STANDARD'
+};
+
+exports.RecurrenceUnit = exports.$Enums.RecurrenceUnit = {
+  DAY: 'DAY',
+  WEEK: 'WEEK',
+  MONTH: 'MONTH',
+  YEAR: 'YEAR'
+};
+
+exports.TriggerMode = exports.$Enums.TriggerMode = {
+  COMPLETION: 'COMPLETION',
+  DATE_BASED: 'DATE_BASED'
 };
 
 exports.DocumentCategory = exports.$Enums.DocumentCategory = {

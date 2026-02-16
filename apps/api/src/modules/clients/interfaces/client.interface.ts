@@ -41,7 +41,6 @@ export interface UpdateAddressDto {
 export interface Client {
   id: string;
   clientRef: string;
-  baseClientRef: string;
   name: string;
   type: ClientType;
   status: ClientStatus;
@@ -95,7 +94,6 @@ export interface Client {
 export interface CreateClientDto {
   id?: string;
   clientRef?: string;
-  baseClientRef?: string;
   name: string;
   type: ClientType;
   status?: ClientStatus;
@@ -148,7 +146,6 @@ export interface UpdateClientDto {
   type?: ClientType;
   status?: ClientStatus;
   clientRef?: string;
-  baseClientRef?: string;
   practiceId?: string;
   isConnectedParty?: boolean;
   connectedOrder?: number;
