@@ -50,8 +50,8 @@ export class ServicesController {
   @ApiOperation({ summary: 'Get all services with optional filters' })
   @ApiQuery({ name: 'clientId', required: false, type: String })
   @ApiQuery({ name: 'kind', required: false, type: String })
-  @ApiQuery({ name: 'frequency', required: false, enum: ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY'] })
-  @ApiQuery({ name: 'status', required: false, enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'] })
+  @ApiQuery({ name: 'frequency', required: false, enum: ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY', 'ONE_OFF'] })
+  @ApiQuery({ name: 'status', required: false, enum: ['DRAFT', 'ACTIVE', 'AWAITING_FILING', 'READY_TO_CLOSE', 'COMPLETE', 'ARCHIVED'] })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -169,15 +169,6 @@ export class ServicesController {
     };
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get service by ID' })
-  async findOneService(@Request() req: any, @Param('id') id: string) {
-    if (this.isDemoUser(req)) {
-      return null;
-    }
-    return this.servicesService.findOne(id);
-  }
-
   @Post()
   @ApiOperation({ summary: 'Create new service' })
   @ApiResponse({ status: 201, description: 'Service created successfully' })
@@ -227,8 +218,8 @@ export class ServicesController {
   @ApiOperation({ summary: 'Export services as CSV with practice meta and filters' })
   @ApiQuery({ name: 'clientId', required: false, type: String })
   @ApiQuery({ name: 'kind', required: false, type: String })
-  @ApiQuery({ name: 'frequency', required: false, enum: ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY'] })
-  @ApiQuery({ name: 'status', required: false, enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'] })
+  @ApiQuery({ name: 'frequency', required: false, enum: ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY', 'ONE_OFF'] })
+  @ApiQuery({ name: 'status', required: false, enum: ['DRAFT', 'ACTIVE', 'AWAITING_FILING', 'READY_TO_CLOSE', 'COMPLETE', 'ARCHIVED'] })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false, type: String })
   @Header('Content-Type', 'text/csv; charset=utf-8')
@@ -355,5 +346,14 @@ export class ServicesController {
       const pdfDoc = PdfMake.createPdf(docDefinition);
       pdfDoc.getBuffer((buffer: Buffer) => buffer ? resolve(buffer) : reject(new Error('PDF failed')));
     });
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get service by ID' })
+  async findOneService(@Request() req: any, @Param('id') id: string) {
+    if (this.isDemoUser(req)) {
+      return null;
+    }
+    return this.servicesService.findOne(id);
   }
 }

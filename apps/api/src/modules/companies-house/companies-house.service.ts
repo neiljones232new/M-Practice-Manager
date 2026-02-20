@@ -560,7 +560,7 @@ export class CompaniesHouseService {
       const matchingService = await this.findMatchingService(clientId, 'ANNUAL_ACCOUNTS');
       if (matchingService) {
         complianceItems.push({
-          clientServiceId: matchingService.id,
+          serviceId: matchingService.id,
           type: 'ANNUAL_ACCOUNTS',
           description: 'Annual Accounts Filing',
           dueDate: new Date(companyDetails.accounts.next_due),
@@ -580,7 +580,7 @@ export class CompaniesHouseService {
       const matchingService = await this.findMatchingService(clientId, 'CONFIRMATION_STATEMENT');
       if (matchingService) {
         complianceItems.push({
-          clientServiceId: matchingService.id,
+          serviceId: matchingService.id,
           type: 'CONFIRMATION_STATEMENT',
           description: 'Confirmation Statement Filing',
           dueDate: new Date(companyDetails.confirmation_statement.next_due),
@@ -621,7 +621,7 @@ export class CompaniesHouseService {
         this.logger.log('Skipped ANNUAL_ACCOUNTS compliance sync because no matching service exists');
       } else if (accountsItem) {
         await this.complianceService.updateComplianceItem(accountsItem.id, {
-          clientServiceId: matchingService.id,
+          serviceId: matchingService.id,
           dueDate: new Date(companyDetails.accounts.next_due),
           status: companyDetails.accounts.overdue ? 'OVERDUE' : 'PENDING',
           period: companyDetails.accounts.next_made_up_to,
@@ -629,7 +629,7 @@ export class CompaniesHouseService {
         this.logger.log(`Updated ANNUAL_ACCOUNTS compliance item ${accountsItem.id} with service link ${matchingService.id}`);
       } else {
         await this.complianceService.createComplianceItem({
-          clientServiceId: matchingService.id,
+          serviceId: matchingService.id,
           type: 'ANNUAL_ACCOUNTS',
           description: 'Annual Accounts Filing',
           dueDate: new Date(companyDetails.accounts.next_due),
@@ -650,7 +650,7 @@ export class CompaniesHouseService {
         this.logger.log('Skipped CONFIRMATION_STATEMENT compliance sync because no matching service exists');
       } else if (confirmationItem) {
         await this.complianceService.updateComplianceItem(confirmationItem.id, {
-          clientServiceId: matchingService.id,
+          serviceId: matchingService.id,
           dueDate: new Date(companyDetails.confirmation_statement.next_due),
           status: companyDetails.confirmation_statement.overdue ? 'OVERDUE' : 'PENDING',
           period: companyDetails.confirmation_statement.last_made_up_to,
@@ -658,7 +658,7 @@ export class CompaniesHouseService {
         this.logger.log(`Updated CONFIRMATION_STATEMENT compliance item ${confirmationItem.id} with service link ${matchingService.id}`);
       } else {
         await this.complianceService.createComplianceItem({
-          clientServiceId: matchingService.id,
+          serviceId: matchingService.id,
           type: 'CONFIRMATION_STATEMENT',
           description: 'Confirmation Statement Filing',
           dueDate: new Date(companyDetails.confirmation_statement.next_due),

@@ -229,9 +229,8 @@ model AuthPasswordResetToken {
 }
 
 model Client {
-  id                               String                  @id
-  clientRef                        String
-  baseClientRef                    String
+  id                               String                  @id @default(cuid())
+  clientRef                        String                  @unique
   name                             String
   type                             ClientType
   status                           ClientStatus            @default(ACTIVE)
@@ -281,21 +280,17 @@ model Client {
   address                          Address?                @relation(fields: [addressId], references: [id])
   portfolio                        Portfolio               @relation(fields: [portfolioCode], references: [code])
   companiesHouseData               CompaniesHouseData?
-  complianceItems                  ComplianceItem[]
   documents                        Document[]
   auditEvents                      Event[]                 @relation("ClientEvents")
   filings                          Filing[]
   generatedReports                 GeneratedReport[]
   services                         Service[]
-  tasks                            Task[]
   taxCalculations                  TaxCalculation[]
 
-  @@unique([practiceId, portfolioCode, clientRef])
   @@index([portfolioCode])
   @@index([name])
   @@index([registeredNumber])
   @@index([clientRef])
-  @@index([practiceId, portfolioCode, baseClientRef], map: "idx_client_baseRef_practice")
   @@index([connectedPrincipalId], map: "idx_client_connected_principal")
   @@map("clients")
 }
@@ -412,95 +407,89 @@ model Address {
 }
 
 model Service {
-  id                     String           @id @default(cuid())
-  clientId               String
-  templateId             String?
-  periodStart            DateTime         @default(now())
-  periodEnd              DateTime         @default(now())
-  cycleNumber            Int?
-  kind                   String
-  frequency              String?
-  fee                    Decimal?
-  annualized             Decimal?
-  status                 ServiceStatus    @default(DRAFT)
-  nextDue                DateTime?
-  description            String?
-  createdAt              DateTime         @default(now())
-  updatedAt              DateTime         @updatedAt
-  complianceItems        ComplianceItem[] @relation("LegacyServiceCompliance")
-  complianceByServiceRef ComplianceItem[] @relation("ClientServiceCompliance")
-  client                 Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  template               ServiceTemplate? @relation(fields: [templateId], references: [id])
-  tasks                  Task[]           @relation("LegacyTaskService")
-  clientServiceTasks     Task[]           @relation("ClientServiceTask")
+  id          String           @id @default(cuid())
+  clientId    String
+  templateId  String?
+  periodStart DateTime         @default(now())
+  periodEnd   DateTime         @default(now())
+  cycleNumber Int?
+  kind        String
+  frequency   String?
+  fee         Decimal?
+  annualized  Decimal?
+  status      ServiceStatus    @default(DRAFT)
+  nextDue     DateTime?
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  compliance  ComplianceItem?
+  client      Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  template    ServiceTemplate? @relation(fields: [templateId], references: [id])
+  tasks       Task[]
 
   @@unique([clientId, templateId, periodStart], map: "uniq_client_template_period_start")
   @@map("services")
 }
 
 model ComplianceItem {
-  id              String            @id @default(cuid())
-  clientId        String
-  serviceId       String?
-  clientServiceId String?
-  type            String
-  description     String
-  dueDate         DateTime?
-  status          ComplianceStatus  @default(PENDING)
-  internalStatus  ComplianceStatus  @default(PENDING)
-  externalStatus  ComplianceStatus?
-  mismatch        Boolean           @default(false)
-  filedAt         DateTime?
-  source          ComplianceSource
-  reference       String?
-  period          String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  client          Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  service         Service?          @relation("LegacyServiceCompliance", fields: [serviceId], references: [id])
-  clientService   Service?          @relation("ClientServiceCompliance", fields: [clientServiceId], references: [id])
+  id             String            @id @default(cuid())
+  serviceId      String            @unique
+  type           String
+  description    String
+  dueDate        DateTime?
+  status         ComplianceStatus  @default(PENDING)
+  internalStatus ComplianceStatus  @default(PENDING)
+  externalStatus ComplianceStatus?
+  mismatch       Boolean           @default(false)
+  filedAt        DateTime?
+  source         ComplianceSource
+  reference      String?
+  period         String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  service        Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
-  @@unique([clientServiceId], map: "uniq_compliance_client_service")
-  @@index([clientServiceId])
+  @@index([serviceId])
   @@map("compliance_items")
 }
 
 model Task {
-  id              String     @id @default(cuid())
-  title           String
-  clientId        String?
-  serviceId       String?
-  clientServiceId String?
-  description     String?
-  dueDate         DateTime?
-  assigneeId      String?
-  creatorId       String?
-  status          TaskStatus @default(TODO)
-  priority        Priority   @default(MEDIUM)
-  tags            String[]
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  assignee        User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
-  client          Client?    @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  creator         User?      @relation("TaskCreator", fields: [creatorId], references: [id])
-  service         Service?   @relation("LegacyTaskService", fields: [serviceId], references: [id])
-  clientService   Service?   @relation("ClientServiceTask", fields: [clientServiceId], references: [id])
+  id          String     @id @default(cuid())
+  title       String
+  serviceId   String
+  description String?
+  dueDate     DateTime?
+  assigneeId  String?
+  creatorId   String?
+  status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM)
+  tags        String[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  creator     User?      @relation("TaskCreator", fields: [creatorId], references: [id])
+  service     Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
-  @@index([clientServiceId])
+  @@index([serviceId])
   @@map("tasks")
 }
 
 model ServiceTemplate {
-  id               String                @id @default(cuid())
-  serviceKind      String
-  frequency        String
-  appliesTo        String[]
-  complianceImpact Boolean               @default(false)
-  pricingModel     String                @default("per_period")
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
-  services         Service[]
-  taskTemplates    ServiceTemplateTask[]
+  id                 String                @id @default(cuid())
+  serviceKind        String
+  frequency          String
+  recurrenceType     RecurrenceType        @default(STANDARD)
+  recurrenceInterval Int?
+  recurrenceUnit     RecurrenceUnit?
+  triggerMode        TriggerMode           @default(COMPLETION)
+  autoGenerateNext   Boolean               @default(true)
+  appliesTo          String[]
+  complianceImpact   Boolean               @default(false)
+  pricingModel       String                @default("per_period")
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  services           Service[]
+  taskTemplates      ServiceTemplateTask[]
 
   @@index([serviceKind, frequency])
   @@map("service_templates")
@@ -870,8 +859,27 @@ enum ServiceFrequency {
 enum ServiceStatus {
   DRAFT
   ACTIVE
-  INACTIVE
-  SUSPENDED
+  AWAITING_FILING
+  READY_TO_CLOSE
+  COMPLETE
+  ARCHIVED
+}
+
+enum RecurrenceType {
+  NONE
+  STANDARD
+}
+
+enum RecurrenceUnit {
+  DAY
+  WEEK
+  MONTH
+  YEAR
+}
+
+enum TriggerMode {
+  COMPLETION
+  DATE_BASED
 }
 
 enum ComplianceStatus {

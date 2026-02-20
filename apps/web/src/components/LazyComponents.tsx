@@ -1,32 +1,32 @@
 import { lazy } from 'react';
 
 // Lazy load page components
-export const LazyDashboard = lazy(() => import('../app/dashboard/page'));
-export const LazyClients = lazy(() => import('../app/clients/page'));
-export const LazyClientDetail = lazy(() => import('../app/clients/[id]/page'));
-export const LazyClientNew = lazy(() => import('../app/clients/new/page'));
-export const LazyPeople = lazy(() => import('../app/people/page'));
-export const LazyPeopleNew = lazy(() => import('../app/people/new/page'));
-export const LazyServices = lazy(() => import('../app/services/page'));
-export const LazyServiceDetail = lazy(() => import('../app/services/[id]/page'));
-export const LazyServiceNew = lazy(() => import('../app/services/new/page'));
-export const LazyTasks = lazy(() => import('../app/tasks/page'));
-export const LazyTaskDetail = lazy(() => import('../app/tasks/[id]/page'));
-export const LazyTaskNew = lazy(() => import('../app/tasks/new/page'));
-export const LazyCompliance = lazy(() => import('../app/compliance/page'));
-export const LazyComplianceDetail = lazy(() => import('../app/compliance/[id]/page'));
-export const LazyComplianceNew = lazy(() => import('../app/compliance/new/page'));
-export const LazyDocuments = lazy(() => import('../app/documents/page'));
-export const LazyDocumentDetail = lazy(() => import('../app/documents/[id]/page'));
-export const LazyDocumentReports = lazy(() => import('../app/documents/reports/page'));
-export const LazyCalendar = lazy(() => import('../app/calendar/page'));
-export const LazyCalendarEventDetail = lazy(() => import('../app/calendar/events/[id]/page'));
-export const LazyCalendarEventEdit = lazy(() => import('../app/calendar/events/[id]/edit/page'));
-export const LazyCalendarEventNew = lazy(() => import('../app/calendar/new/page'));
-export const LazyCompaniesHouse = lazy(() => import('../app/companies-house/page'));
-export const LazyCompaniesHouseSync = lazy(() => import('../app/companies-house/sync/page'));
-export const LazySettings = lazy(() => import('../app/settings/page'));
-export const LazyAudit = lazy(() => import('../app/audit/page'));
+export const LazyDashboard = lazy(() => import('../app/(app)/dashboard/page'));
+export const LazyClients = lazy(() => import('../app/(app)/clients/page'));
+export const LazyClientDetail = lazy(() => import('../app/(app)/clients/[id]/overview/page'));
+export const LazyClientNew = lazy(() => import('../app/(app)/clients/new/page'));
+export const LazyPeople = lazy(() => import('../app/(app)/people/page'));
+export const LazyPeopleNew = lazy(() => import('../app/(app)/people/new/page'));
+export const LazyServices = lazy(() => import('../app/(app)/services/page'));
+export const LazyServiceDetail = lazy(() => import('../app/(app)/services/[id]/page'));
+export const LazyServiceNew = lazy(() => import('../app/(app)/services/new/page'));
+export const LazyTasks = lazy(() => import('../app/(app)/tasks/page'));
+export const LazyTaskDetail = lazy(() => import('../app/(app)/tasks/[id]/page'));
+export const LazyTaskNew = lazy(() => import('../app/(app)/tasks/new/page'));
+export const LazyCompliance = lazy(() => import('../app/(app)/compliance/page'));
+export const LazyComplianceDetail = lazy(() => import('../app/(app)/compliance/[id]/page'));
+export const LazyComplianceNew = lazy(() => import('../app/(app)/compliance/new/page'));
+export const LazyDocuments = lazy(() => import('../app/(app)/documents/page'));
+export const LazyDocumentDetail = lazy(() => import('../app/(app)/documents/[id]/page'));
+export const LazyDocumentReports = lazy(() => import('../app/(app)/documents/reports/page'));
+export const LazyCalendar = lazy(() => import('../app/(app)/calendar/page'));
+export const LazyCalendarEventDetail = lazy(() => import('../app/(app)/calendar/events/[id]/page'));
+export const LazyCalendarEventEdit = lazy(() => import('../app/(app)/calendar/events/[id]/edit/page'));
+export const LazyCalendarEventNew = lazy(() => import('../app/(app)/calendar/new/page'));
+export const LazyCompaniesHouse = lazy(() => import('../app/(app)/companies-house/page'));
+export const LazyCompaniesHouseSync = lazy(() => import('../app/(app)/companies-house/sync/page'));
+export const LazySettings = lazy(() => import('../app/(app)/settings/page'));
+export const LazyAudit = lazy(() => import('../app/(app)/audit/page'));
 
 // Lazy load UI components
 export const LazyMDJAssist = lazy(() => import('./mdj-ui/MDJAssist').then(module => ({ default: module.MDJAssist })));

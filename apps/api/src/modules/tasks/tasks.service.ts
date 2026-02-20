@@ -31,25 +31,25 @@ export class TasksService {
     @Optional() private integrationConfig?: IntegrationConfigService,
   ) {}
 
+  private normalizeTaskRow(task: any): Task {
+    if (!task) return task;
+    return {
+      ...task,
+      clientId: task.clientId || task.service?.clientId,
+    };
+  }
+
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
-    const normalizedCreateDto = this.normalizeTaskPayload(createTaskDto);
-    const clientServiceId = normalizedCreateDto.clientServiceId || normalizedCreateDto.serviceId;
-    if (!clientServiceId) {
-      throw new BadRequestException('clientServiceId is required to create a task');
-    }
-    const service = await this.servicesService.findOne(clientServiceId);
+    const normalizedCreateDto = this.normalizeTaskPayload(createTaskDto, true);
+    const service = await this.servicesService.findOne(normalizedCreateDto.serviceId);
     if (!service) {
-      throw new NotFoundException(`Service with ID ${clientServiceId} not found`);
+      throw new NotFoundException(`Service with ID ${normalizedCreateDto.serviceId} not found`);
     }
-    normalizedCreateDto.clientServiceId = service.id;
-    normalizedCreateDto.serviceId = service.id; // legacy alias
-    normalizedCreateDto.clientId = service.clientId;
+    normalizedCreateDto.serviceId = service.id;
 
     const task = await (this.prisma as any).task.create({
       data: {
         title: normalizedCreateDto.title,
-        clientId: normalizedCreateDto.clientId,
-        clientServiceId: normalizedCreateDto.clientServiceId || normalizedCreateDto.serviceId,
         serviceId: normalizedCreateDto.serviceId,
         description: normalizedCreateDto.description,
         dueDate: normalizedCreateDto.dueDate,
@@ -62,7 +62,10 @@ export class TasksService {
     });
 
     this.logger.log(`Created task: ${task.title} (${task.id})`);
-    return task;
+    return this.normalizeTaskRow({
+      ...task,
+      service: { clientId: service.clientId },
+    });
   }
 
   async findAll(filters: TaskFilters = {}): Promise<Task[]> {
@@ -74,23 +77,14 @@ export class TasksService {
         const resolvedClientId = await this.clientsService.resolveClientId(normalizedFilters.clientId);
         where.AND = [
           ...(Array.isArray(where.AND) ? where.AND : []),
-          {
-            OR: [
-              { clientId: resolvedClientId || normalizedFilters.clientId },
-              { clientService: { clientId: resolvedClientId || normalizedFilters.clientId } },
-            ],
-          },
+          { service: { clientId: resolvedClientId || normalizedFilters.clientId } },
         ];
       }
-      const clientServiceId = normalizedFilters.clientServiceId || normalizedFilters.serviceId;
-      if (clientServiceId) {
+      if (normalizedFilters.serviceId) {
         where.AND = [
           ...(Array.isArray(where.AND) ? where.AND : []),
           {
-            OR: [
-              { clientServiceId },
-              { serviceId: clientServiceId },
-            ],
+            serviceId: normalizedFilters.serviceId,
           },
         ];
       }
@@ -109,12 +103,7 @@ export class TasksService {
         const ids = clients.map((c) => c.id);
         where.AND = [
           ...(Array.isArray(where.AND) ? where.AND : []),
-          {
-            OR: [
-              { clientId: { in: ids } },
-              { clientService: { clientId: { in: ids } } },
-            ],
-          },
+          { service: { clientId: { in: ids } } },
         ];
       }
 
@@ -128,12 +117,18 @@ export class TasksService {
       const skip = normalizedFilters.offset !== undefined ? Number(normalizedFilters.offset) : 0;
       const take = normalizedFilters.limit !== undefined ? Number(normalizedFilters.limit) : 100;
 
-      return await (this.prisma as any).task.findMany({
+      const rows = await (this.prisma as any).task.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip: Number.isFinite(skip) ? skip : 0,
         take: Number.isFinite(take) ? take : 100,
+        include: {
+          service: {
+            select: { clientId: true },
+          },
+        },
       });
+      return rows.map((task: any) => this.normalizeTaskRow(task));
     } catch (error) {
       if (this.isDatabaseUnavailableError(error)) {
         this.logger.warn('Database unavailable while loading tasks; returning empty list');
@@ -145,33 +140,68 @@ export class TasksService {
 
   async findAllWithClientDetails(
     filters: TaskFilters = {}
-  ): Promise<Array<Task & { clientName?: string; clientIdentifier?: string; portfolioCode?: number; assignee?: string; serviceName?: string }>> {
+  ): Promise<
+    Array<
+      Task & {
+        clientId?: string;
+        clientName?: string;
+        clientIdentifier?: string;
+        portfolioCode?: number;
+        assignee?: string;
+        serviceName?: string;
+      }
+    >
+  > {
     const tasks = await this.findAll(filters);
-    const result: Array<Task & { clientName?: string; clientIdentifier?: string; portfolioCode?: number; assignee?: string; serviceName?: string }> = [];
+    const result: Array<
+      Task & {
+        clientId?: string;
+        clientName?: string;
+        clientIdentifier?: string;
+        portfolioCode?: number;
+        assignee?: string;
+        serviceName?: string;
+      }
+    > = [];
     for (const task of tasks) {
+      let clientId: string | undefined;
       let clientName: string | undefined;
       let clientIdentifier: string | undefined;
       let portfolioCode: number | undefined;
       let serviceName: string | undefined;
-      if (task.clientId) {
-        const client = await this.clientsService.findOne(task.clientId);
+      if (task.serviceId) {
+        const service = await this.servicesService.findOne(task.serviceId);
+        serviceName = service?.kind;
+        clientId = service?.clientId;
+        const client = service ? await this.clientsService.findOne(service.clientId) : null;
         clientName = client?.name;
-        clientIdentifier = client?.registeredNumber || client?.id;
+        clientIdentifier = client?.clientRef || client?.registeredNumber || client?.id;
         portfolioCode = client?.portfolioCode;
       }
-      const taskServiceId = task.clientServiceId || task.serviceId;
-      if (taskServiceId) {
-        const service = await this.servicesService.findOne(taskServiceId);
-        serviceName = service?.kind;
-      }
-      result.push({ ...task, assignee: task.assigneeId, clientName, clientIdentifier, portfolioCode, serviceName });
+      result.push({
+        ...task,
+        clientId,
+        assignee: task.assigneeId,
+        clientName,
+        clientIdentifier,
+        portfolioCode,
+        serviceName,
+      });
     }
     return result;
   }
 
   async findOne(id: string): Promise<Task | null> {
     try {
-      return await (this.prisma as any).task.findUnique({ where: { id } });
+      const task = await (this.prisma as any).task.findUnique({
+        where: { id },
+        include: {
+          service: {
+            select: { clientId: true },
+          },
+        },
+      });
+      return task ? this.normalizeTaskRow(task) : null;
     } catch (error) {
       if (this.isDatabaseUnavailableError(error)) {
         this.logger.warn(`Database unavailable while loading task ${id}`);
@@ -184,15 +214,18 @@ export class TasksService {
   async findByClient(clientId: string): Promise<Task[]> {
     try {
       const resolvedClientId = await this.clientsService.resolveClientId(clientId);
-      return await (this.prisma as any).task.findMany({
+      const rows = await (this.prisma as any).task.findMany({
         where: {
-          OR: [
-            { clientId: resolvedClientId || clientId },
-            { clientService: { clientId: resolvedClientId || clientId } },
-          ],
+          service: { clientId: resolvedClientId || clientId },
         },
         orderBy: { createdAt: 'desc' },
+        include: {
+          service: {
+            select: { clientId: true },
+          },
+        },
       });
+      return rows.map((task: any) => this.normalizeTaskRow(task));
     } catch (error) {
       if (this.isDatabaseUnavailableError(error)) {
         this.logger.warn(`Database unavailable while loading tasks for client ${clientId}`);
@@ -204,15 +237,16 @@ export class TasksService {
 
   async findByService(serviceId: string): Promise<Task[]> {
     try {
-      return await (this.prisma as any).task.findMany({
-        where: {
-          OR: [
-            { serviceId },
-            { clientServiceId: serviceId },
-          ],
-        },
+      const rows = await (this.prisma as any).task.findMany({
+        where: { serviceId: serviceId },
         orderBy: { createdAt: 'desc' },
+        include: {
+          service: {
+            select: { clientId: true },
+          },
+        },
       });
+      return rows.map((task: any) => this.normalizeTaskRow(task));
     } catch (error) {
       if (this.isDatabaseUnavailableError(error)) {
         this.logger.warn(`Database unavailable while loading tasks for service ${serviceId}`);
@@ -224,10 +258,16 @@ export class TasksService {
 
   async findByAssignee(assigneeId: string): Promise<Task[]> {
     try {
-      return await (this.prisma as any).task.findMany({
+      const rows = await (this.prisma as any).task.findMany({
         where: { assigneeId },
         orderBy: { createdAt: 'desc' },
+        include: {
+          service: {
+            select: { clientId: true },
+          },
+        },
       });
+      return rows.map((task: any) => this.normalizeTaskRow(task));
     } catch (error) {
       if (this.isDatabaseUnavailableError(error)) {
         this.logger.warn(`Database unavailable while loading tasks for assignee ${assigneeId}`);
@@ -240,13 +280,19 @@ export class TasksService {
   async findOverdue(): Promise<Task[]> {
     try {
       const now = new Date();
-      return await (this.prisma as any).task.findMany({
+      const rows = await (this.prisma as any).task.findMany({
         where: {
           dueDate: { lt: now },
           status: { notIn: ['COMPLETED', 'CANCELLED'] },
         },
         orderBy: { dueDate: 'asc' },
+        include: {
+          service: {
+            select: { clientId: true },
+          },
+        },
       });
+      return rows.map((task: any) => this.normalizeTaskRow(task));
     } catch (error) {
       if (this.isDatabaseUnavailableError(error)) {
         this.logger.warn('Database unavailable while loading overdue tasks');
@@ -260,13 +306,19 @@ export class TasksService {
     try {
       const now = new Date();
       const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
-      return await (this.prisma as any).task.findMany({
+      const rows = await (this.prisma as any).task.findMany({
         where: {
           dueDate: { gte: now, lte: futureDate },
           status: { notIn: ['COMPLETED', 'CANCELLED'] },
         },
         orderBy: { dueDate: 'asc' },
+        include: {
+          service: {
+            select: { clientId: true },
+          },
+        },
       });
+      return rows.map((task: any) => this.normalizeTaskRow(task));
     } catch (error) {
       if (this.isDatabaseUnavailableError(error)) {
         this.logger.warn('Database unavailable while loading due-soon tasks');
@@ -281,7 +333,7 @@ export class TasksService {
     if (!existing) {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
-    const normalizedUpdateDto = this.normalizeTaskPayload(updateTaskDto);
+    const normalizedUpdateDto = this.normalizeTaskPayload(updateTaskDto, false);
 
     const updated = await (this.prisma as any).task.update({
       where: { id },
@@ -291,7 +343,11 @@ export class TasksService {
     });
 
     this.logger.log(`Updated task: ${updated.title} (${updated.id})`);
-    return updated;
+    const refreshed = await this.findOne(updated.id);
+    if (!refreshed) {
+      throw new NotFoundException(`Task with ID ${updated.id} not found after update`);
+    }
+    return refreshed;
   }
 
   async delete(id: string): Promise<boolean> {
@@ -335,10 +391,7 @@ export class TasksService {
         : undefined;
       const existing = await (this.prisma as any).task.findFirst({
         where: {
-          OR: [
-            { serviceId: service.id },
-            { clientServiceId: service.id },
-          ],
+          serviceId: service.id,
           title: taskTemplate.title,
           dueDate: dueDate ?? null,
           status: { notIn: ['CANCELLED'] },
@@ -350,8 +403,6 @@ export class TasksService {
       const task = await this.create({
         title: taskTemplate.title,
         description: taskTemplate.description,
-        clientId: service.clientId,
-        clientServiceId: service.id,
         serviceId: service.id,
         dueDate,
         assigneeId: taskTemplate.assigneeId,
@@ -763,13 +814,13 @@ export class TasksService {
     return normalized;
   }
 
-  private normalizeTaskPayload(payload: CreateTaskDto | UpdateTaskDto): any {
+  private normalizeTaskPayload(payload: CreateTaskDto | UpdateTaskDto, requireServiceId: boolean): any {
     const normalized: Record<string, any> = { ...payload };
-    if (normalized.clientServiceId === undefined && normalized.serviceId !== undefined) {
-      normalized.clientServiceId = normalized.serviceId;
+    if (normalized.assignee && !normalized.assigneeId) {
+      normalized.assigneeId = normalized.assignee;
     }
-    if (normalized.serviceId === undefined && normalized.clientServiceId !== undefined) {
-      normalized.serviceId = normalized.clientServiceId;
+    if (requireServiceId && !normalized.serviceId) {
+      throw new BadRequestException('serviceId is required');
     }
     if (Object.prototype.hasOwnProperty.call(normalized, 'dueDate')) {
       normalized.dueDate = this.parseOptionalDate(normalized.dueDate, 'dueDate');
