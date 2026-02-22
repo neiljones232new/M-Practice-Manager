@@ -1,18 +1,24 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export const NativeShutdownButton: React.FC = () => {
+/**
+ * Custom hook to handle native shutdown logic
+ */
+export function useNativeShutdown() {
   const [loading, setLoading] = useState(false);
+  const [isNative, setIsNative] = useState(false);
 
-  const isNative = typeof navigator !== 'undefined' && /Electron|Nativefier/i.test(navigator.userAgent);
-  if (!isNative) return null;
+  useEffect(() => {
+    setIsNative(typeof navigator !== 'undefined' && /Electron|Nativefier/i.test(navigator.userAgent));
+  }, []);
 
-  const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001/api/v1').replace(/\/+$/, '');
-  const secret = process.env.NEXT_PUBLIC_MDJ_SHUTDOWN_SECRET || '';
-
-  const handle = async () => {
-    if (!confirm('Shut down the app and exit? This will stop the local API & web servers.')) return;
+  const shutdown = async () => {
+    if (!window.confirm('Shut down the app and exit? This will stop the local API & web servers.')) return;
     setLoading(true);
+
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001/api/v1').replace(/\/+$/, '');
+    const secret = process.env.NEXT_PUBLIC_MDJ_SHUTDOWN_SECRET || '';
+
     try {
       await fetch(`${apiBase}/internal/shutdown`, {
         method: 'POST',
@@ -29,31 +35,28 @@ export const NativeShutdownButton: React.FC = () => {
       }, 800);
     } catch (err) {
       const msg = (err as any)?.message || String(err);
-      alert('Failed to request shutdown: ' + msg);
+      window.alert('Failed to request shutdown: ' + msg);
       setLoading(false);
     }
   };
 
+  return { isNative, loading, shutdown };
+}
+
+export const NativeShutdownButton: React.FC = () => {
+  const { isNative, loading, shutdown } = useNativeShutdown();
+
+  if (!isNative) return null;
+
   return (
     <button
-      onClick={handle}
+      className="btn btn-danger"
+      onClick={() => { void shutdown(); }}
       disabled={loading}
       aria-label="Exit and shut down local servers"
       title="Exit and shut down local servers"
-      style={{
-        background: 'transparent',
-        border: '1px solid var(--border)',
-        color: 'var(--dim)',
-        padding: '6px 10px',
-        borderRadius: 8,
-        cursor: 'pointer',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: 16,
-      }}
     >
-      {loading ? '⏳' : '⏻'}
+      {loading ? '...' : '⏻'}
     </button>
   );
 };

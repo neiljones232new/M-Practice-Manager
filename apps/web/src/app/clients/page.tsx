@@ -6,6 +6,7 @@ import MDJShell from '@/components/mdj-ui/MDJShell';
 import { ExportMenu } from '@/components/mdj-ui/ExportMenu';
 import { api } from '@/lib/api'; // uses http://localhost:3001/api/v1 by default
 import type { ClientContext } from '@/lib/types';
+import styles from './clients.module.scss';
 
 type ClientRow = ClientContext;
 
@@ -52,18 +53,18 @@ export default function ClientsPage() {
   const defaultColumnIds = [
     'identifier',
     'name',
-    'registeredNumber',
-    'utrNumber',
+    // 'registeredNumber', // Hidden by default to reduce clutter
+    // 'utrNumber',
     'status',
     'type',
     'portfolio',
     'mainContact',
-    'mainPhone',
+    // 'mainPhone',
     'accountsNextDue',
-    'accountsLastMadeUpTo',
+    // 'accountsLastMadeUpTo',
     'confirmationNextDue',
-    'annualFees',
-    'tasksDueCount',
+    // 'annualFees',
+    // 'tasksDueCount',
     'actions',
   ];
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
@@ -327,7 +328,7 @@ export default function ClientsPage() {
             <Link className="mdj-link" href={`/clients/${c.node.id}`} title="View client">
               {c.node.name}
             </Link>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div className={styles.badges}>
               {lifecycleInactive && (
                 <span className="mdj-badge mdj-badge-muted">
                   {lifecycle}
@@ -409,8 +410,8 @@ export default function ClientsPage() {
       id: 'actions',
       label: '',
       render: (c: ClientRow) => (
-        <div style={{ textAlign: 'right' }}>
-          <Link href={`/clients/${c.node.id}`} className="btn-outline-primary btn-xs">
+        <div className={styles.actionsCell}>
+          <Link href={`/clients/${c.node.id}`} className="btn-outline btn-xs">
             View
           </Link>
         </div>
@@ -452,13 +453,13 @@ export default function ClientsPage() {
         <div className="list-head">
           <h3>Clients ({sorted.length})</h3>
           <div className="list-head-actions">
-            <button type="button" className="btn-outline-primary" onClick={handleClear}>
+            <button type="button" className="btn-outline" onClick={handleClear}>
               Clear Filters
             </button>
             <button type="button" className="btn-primary" onClick={handlePrint}>
               Print List
             </button>
-            <button type="button" className="btn-outline-primary" onClick={() => setShowCustomize((v) => !v)}>
+            <button type="button" className="btn-outline" onClick={() => setShowCustomize((v) => !v)}>
               {showCustomize ? 'Hide' : 'Customize'}
             </button>
             <button
@@ -481,12 +482,12 @@ export default function ClientsPage() {
         </div>
 
         {showCustomize && (
-          <div style={{ marginBottom: '1rem', display: 'grid', gap: '1rem' }}>
+          <div className={styles.customizeArea}>
             <div>
-              <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Visible Columns</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div className={styles.customizeTitle}>Visible Columns</div>
+              <div className={styles.customizeOptions}>
                 {columnDefs.map((col) => (
-                  <label key={col.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <label key={col.id} className={styles.checkboxLabel}>
                     <input
                       type="checkbox"
                       checked={visibleColumns.includes(col.id)}
@@ -508,6 +509,7 @@ export default function ClientsPage() {
         {view === 'table' ? (
           <>
             <div style={{ overflowX: 'auto' }}>
+            <div className={styles.tableWrapper}>
               <table className="mdj-table">
                 <thead>
                   <tr>
@@ -590,13 +592,13 @@ export default function ClientsPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={safeColumnDefs.length} style={{ padding: '1rem', color: 'var(--text-muted)' }}>
+                    <td colSpan={safeColumnDefs.length} className={styles.tableMessage}>
                       Loading…
                     </td>
                   </tr>
                 ) : sorted.length === 0 ? (
                   <tr>
-                    <td colSpan={safeColumnDefs.length} style={{ padding: '1rem', color: 'var(--text-muted)' }}>
+                    <td colSpan={safeColumnDefs.length} className={styles.tableMessage}>
                       No clients found
                     </td>
                   </tr>
@@ -614,8 +616,8 @@ export default function ClientsPage() {
               </div>
 
               {/* Pagination controls */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem' }}>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+              <div className={styles.pagination}>
+                <div className={styles.paginationInfo}>
                   {total === 0 ? (
                     'No results'
                   ) : (
@@ -623,24 +625,23 @@ export default function ClientsPage() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <label style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }} htmlFor="per-page">Show</label>
+                <div className={styles.paginationControls}>
+                  <label className={styles.perPageLabel} htmlFor="per-page">Show</label>
                   <select
                     id="per-page"
                     value={perPage}
                     onChange={(e) => setPerPage(parseInt(e.target.value, 10))}
-                    className="mdj-select"
-                    style={{ width: 'auto' }}
+                    className={`mdj-select ${styles.perPageSelect}`}
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
                     <option value={50}>50</option>
                   </select>
 
-                  <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+                  <div className={styles.pageButtons}>
                     <button
                       type="button"
-                      className="btn-outline-primary"
+                      className="btn-outline"
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page <= 1}
                     >
@@ -661,9 +662,8 @@ export default function ClientsPage() {
                           key={p}
                           type="button"
                           onClick={() => setPage(p)}
-                          className={`segment ${p === page ? 'active' : ''}`}
+                          className={`segment ${p === page ? 'active' : ''} ${styles.pageButton}`}
                           aria-current={p === page ? 'page' : undefined}
-                          style={{ minWidth: '36px' }}
                         >
                           {p}
                         </button>
@@ -672,7 +672,7 @@ export default function ClientsPage() {
 
                     <button
                       type="button"
-                      className="btn-outline-primary"
+                      className="btn-outline"
                       onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                       disabled={page >= totalPages}
                     >
@@ -680,19 +680,29 @@ export default function ClientsPage() {
                     </button>
                   </div>
                 </div>
-      </div>
-      </>
+              </div>
+            </div>
+          </>
     ) : (
-          <div className="client-card-grid">
+          <div className={styles.grid}>
             {loading ? (
               <div className="text-dim">Loading…</div>
             ) : sorted.length === 0 ? (
               <div className="text-dim">No clients found</div>
             ) : (
               sorted.map((c) => (
-                <Link key={c.node.id} href={`/clients/${c.node.id}`} className="client-card">
-                  <div className="client-card-head">
-                    <span className="client-ref">{c.node.clientRef || c.node.registeredNumber || c.node.id || '—'}</span>
+                <Link 
+                  key={c.node.id} 
+                  href={`/clients/${c.node.id}`} 
+                  className={`card-mdj ${styles.cardLink}`}
+                >
+                  <div className={styles.cardHeader}>
+                    <div>
+                      <h4 className={styles.cardTitle}>{c.node.name}</h4>
+                      <div className={`mdj-sub ${styles.cardSubtitle}`}>
+                        {c.node.clientRef || 'No Ref'}
+                      </div>
+                    </div>
                     <span
                       className={`mdj-badge ${
                         c.node.status === 'ACTIVE'
@@ -705,16 +715,29 @@ export default function ClientsPage() {
                       {c.node.status}
                     </span>
                   </div>
-                  <h4>{c.node.name}</h4>
-                  <p className="client-card-sub">Main Contact: {c.profile.mainContactName ?? c.node.mainEmail ?? '—'}</p>
-                  <p className="client-card-info">Company No.: {c.node.registeredNumber ?? '—'}</p>
-                  <p className="client-card-info">UTR: {c.node.utrNumber ?? '—'}</p>
-                  <p className="client-card-info">Tel: {c.node.mainPhone ?? '—'}</p>
-                  <p className="client-card-info">Year End Due: {renderDate(c.node.accountsNextDue)}</p>
-                  <p className="client-card-info">Year End: {renderDate(c.node.accountsLastMadeUpTo)}</p>
-                  <p className="client-card-info">CS Due: {renderDate(c.node.confirmationNextDue)}</p>
-                  <p className="client-card-info">Fees: {typeof c.profile.annualFee === 'number' ? `£${c.profile.annualFee.toFixed(2)}` : '—'}</p>
-                  <p className="client-card-info">Tasks Due: —</p>
+
+                  <div className={styles.cardBody}>
+                    <div>
+                      <div className={`mdj-sub ${styles.labelSm}`}>Next Accounts</div>
+                      <div className={styles.valueMd}>{renderDate(c.node.accountsNextDue)}</div>
+                    </div>
+                    <div>
+                      <div className={`mdj-sub ${styles.labelSm}`}>Next CS</div>
+                      <div className={styles.valueMd}>{renderDate(c.node.confirmationNextDue)}</div>
+                    </div>
+                    <div className={styles.fullWidth}>
+                      <div className={`mdj-sub ${styles.labelSm}`}>Main Contact</div>
+                      <div className={styles.truncate}>
+                        {c.profile.mainContactName ?? c.node.mainEmail ?? '—'}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {c.profile.clientRiskRating && c.profile.clientRiskRating.toLowerCase().includes('high') && (
+                    <div className={styles.riskAlert}>
+                      ⚠️ High Risk Client
+                    </div>
+                  )}
                 </Link>
               ))
             )}

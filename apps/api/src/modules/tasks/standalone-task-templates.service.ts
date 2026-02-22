@@ -21,7 +21,7 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
    * Retrieve all standalone task templates
    */
   async findAll(): Promise<StandaloneTaskTemplate[]> {
-    return (this.prisma as any).standaloneTaskTemplate.findMany({
+    return this.prisma.standaloneTaskTemplate.findMany({
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -30,7 +30,7 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
    * Filter templates by category
    */
   async findByCategory(category: string): Promise<StandaloneTaskTemplate[]> {
-    return (this.prisma as any).standaloneTaskTemplate.findMany({
+    return this.prisma.standaloneTaskTemplate.findMany({
       where: { category },
       orderBy: { createdAt: 'desc' },
     });
@@ -40,7 +40,7 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
    * Get a single template by ID
    */
   async findOne(id: string): Promise<StandaloneTaskTemplate | null> {
-    return (this.prisma as any).standaloneTaskTemplate.findUnique({ where: { id } });
+    return this.prisma.standaloneTaskTemplate.findUnique({ where: { id } });
   }
 
   /**
@@ -50,18 +50,17 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
     const id = this.generateId();
     const now = new Date();
 
-    const template: StandaloneTaskTemplate = {
+    // @ts-ignore - Types will match after generation
+    const data = {
       id,
       title: dto.title,
       description: dto.description,
       category: dto.category,
       priority: dto.priority || 'MEDIUM',
       tags: dto.tags || [],
-      createdAt: now,
-      updatedAt: now,
     };
 
-    await (this.prisma as any).standaloneTaskTemplate.create({ data: template });
+    const template = await this.prisma.standaloneTaskTemplate.create({ data });
     this.logger.log(`Created standalone task template: ${template.title} (${template.id})`);
 
     return template;
@@ -76,23 +75,14 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
       throw new NotFoundException(`Template ${id} not found`);
     }
 
-    const updated: StandaloneTaskTemplate = {
-      ...existing,
-      ...dto,
-      id: existing.id, // Ensure ID cannot be changed
-      createdAt: existing.createdAt, // Preserve creation date
-      updatedAt: new Date(),
-    };
-
-    await (this.prisma as any).standaloneTaskTemplate.update({
+    const updated = await this.prisma.standaloneTaskTemplate.update({
       where: { id },
       data: {
-        title: updated.title,
-        description: updated.description,
-        category: updated.category,
-        priority: updated.priority,
-        tags: updated.tags,
-        updatedAt: updated.updatedAt,
+        title: dto.title,
+        description: dto.description,
+        category: dto.category,
+        priority: dto.priority,
+        tags: dto.tags,
       },
     });
     this.logger.log(`Updated standalone task template: ${updated.title} (${updated.id})`);
@@ -109,7 +99,7 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
       return false;
     }
 
-    await (this.prisma as any).standaloneTaskTemplate.delete({ where: { id } });
+    await this.prisma.standaloneTaskTemplate.delete({ where: { id } });
     this.logger.log(`Deleted standalone task template: ${existing.title} (${existing.id})`);
 
     return true;
@@ -417,16 +407,22 @@ export class StandaloneTaskTemplatesService implements OnModuleInit {
 
     for (const template of defaultTemplates) {
       try {
-        // Check if template already exists by title to avoid duplicates
-        const existing = await (this.prisma as any).standaloneTaskTemplate.findMany({
+        await this.prisma.standaloneTaskTemplate.upsert({
           where: { title: template.title },
-          take: 1,
+          update: {
+            // Optional: Update description/tags if they change in code
+            description: template.description,
+            tags: template.tags,
+          },
+          create: {
+            id: this.generateId(),
+            title: template.title,
+            description: template.description,
+            category: template.category,
+            priority: (template.priority || 'MEDIUM') as any,
+            tags: template.tags || [],
+          },
         });
-
-        if (existing.length === 0) {
-          await this.create(template);
-          this.logger.log(`Created default task template: ${template.title}`);
-        }
       } catch (error) {
         this.logger.error(`Failed to create task template ${template.title}:`, error);
       }

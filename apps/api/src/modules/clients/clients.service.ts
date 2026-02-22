@@ -35,18 +35,12 @@ const HMRC_STATUS_FIELDS = [
   'hmrcSaStatus',
   'hmrcVatStatus',
   'hmrcPayeStatus',
-  'hmrcCisStatus',
-  'hmrcMtdVatStatus',
-  'hmrcMtdItsaStatus',
-  'hmrcEoriStatus',
 ] as const;
 const CLIENT_DATE_FIELDS = [
   'incorporationDate',
   'yearEnd',
   'accountsNextDue',
-  'accountsLastMadeUpTo',
   'confirmationNextDue',
-  'confirmationLastMadeUpTo',
   'lastSyncedAt',
 ] as const;
 const CLIENT_PROFILE_DATE_FIELDS = [
@@ -94,26 +88,14 @@ const CLIENT_WRITE_FIELDS = [
   'accountsOfficeReference',
   'cisUtr',
   'eoriNumber',
-  'mtdVatEnabled',
-  'mtdItsaEnabled',
   'hmrcCtStatus',
   'hmrcSaStatus',
   'hmrcVatStatus',
   'hmrcPayeStatus',
-  'hmrcCisStatus',
-  'hmrcMtdVatStatus',
-  'hmrcMtdItsaStatus',
-  'hmrcEoriStatus',
   'incorporationDate',
   'yearEnd',
   'accountsNextDue',
-  'accountsLastMadeUpTo',
   'confirmationNextDue',
-  'confirmationLastMadeUpTo',
-  'accountsAccountingReferenceDay',
-  'accountsAccountingReferenceMonth',
-  'annualFees',
-  'tasksDueCount',
   'source',
   'lastSyncedAt',
 ] as const;
@@ -220,6 +202,8 @@ export class ClientsService {
       ? (normalizedCreateDto as any).practiceId.trim()
       : '';
     const practiceId = requestedPracticeId || 'default';
+    await this.ensurePracticeExists(practiceId);
+    await this.ensurePortfolioExists(portfolioCode, practiceId);
     const providedId = normalizedCreateDto.id?.trim().toUpperCase();
     if (providedId) {
       const parsedProvidedId = parseClientRef(providedId);
@@ -283,10 +267,8 @@ export class ClientsService {
         clientRef,
         baseClientRef,
         practiceId,
+        portfolioCode,
         status: normalizedCreateDto.status || 'ACTIVE',
-        mtdVatEnabled: normalizedCreateDto.mtdVatEnabled ?? false,
-        mtdItsaEnabled: normalizedCreateDto.mtdItsaEnabled ?? false,
-        tasksDueCount: normalizedCreateDto.tasksDueCount ?? 0,
       },
     });
 
@@ -567,7 +549,7 @@ export class ClientsService {
       const findBucketByAlpha = async (alpha: string): Promise<any | null> => {
         return (tx as any).refBucket.findFirst({
           where: { practiceId: scopedPracticeId, portfolioCode: code, alpha },
-          orderBy: { createdAt: 'asc' },
+          orderBy: { id: 'asc' },
         });
       };
 
@@ -745,14 +727,14 @@ export class ClientsService {
         orderBy: { createdAt: 'desc' },
         skip: Number.isFinite(skip) ? skip : 0,
         take: Number.isFinite(take) ? take : 100,
-        include: { clientProfile: true },
+        include: { profile: true },
       });
 
       this.logger.debug(`Found ${clients.length} clients, building contexts...`);
 
       const contexts = clients.map((client: any) => {
         try {
-          return buildClientContext(client, client.clientProfile || undefined);
+          return buildClientContext(client, client.profile || undefined);
         } catch (err) {
           this.logger.error(`Error building context for client ${client.id}: ${err.message}`, err.stack);
           throw err;
@@ -1257,5 +1239,55 @@ export class ClientsService {
       lowered.includes('prismaclientinitializationerror') ||
       lowered.includes('timeout')
     );
+  }
+
+  private async ensurePracticeExists(practiceId: string): Promise<void> {
+    const existing = await (this.prisma as any).practice.findUnique({
+      where: { id: practiceId },
+      select: { id: true },
+    });
+    if (existing?.id) return;
+
+    try {
+      await (this.prisma as any).practice.create({
+        data: {
+          id: practiceId,
+          name: practiceId === 'default' ? 'Default Practice' : `Practice ${practiceId}`,
+          mainEmail: 'local-dev@example.com',
+        },
+      });
+    } catch (error: any) {
+      const message = String(error?.message || '').toLowerCase();
+      const isUniqueCollision = error?.code === 'P2002'
+        || message.includes('unique constraint')
+        || message.includes('duplicate key');
+      if (!isUniqueCollision) throw error;
+    }
+  }
+
+  private async ensurePortfolioExists(portfolioCode: number, practiceId: string): Promise<void> {
+    const code = Number.isFinite(Number(portfolioCode)) ? Number(portfolioCode) : 1;
+    const existing = await (this.prisma as any).portfolio.findUnique({
+      where: { code },
+      select: { code: true },
+    });
+    if (existing?.code) return;
+
+    try {
+      await (this.prisma as any).portfolio.create({
+        data: {
+          code,
+          practiceId,
+          name: code === 1 ? 'Main Portfolio' : `Portfolio ${code}`,
+          description: code === 1 ? 'Default client portfolio' : undefined,
+        },
+      });
+    } catch (error: any) {
+      const message = String(error?.message || '').toLowerCase();
+      const isUniqueCollision = error?.code === 'P2002'
+        || message.includes('unique constraint')
+        || message.includes('duplicate key');
+      if (!isUniqueCollision) throw error;
+    }
   }
 }

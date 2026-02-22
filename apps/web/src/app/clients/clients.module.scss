@@ -1,0 +1,156 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.cardLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.cardSubtitle {
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.cardBody {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.labelSm {
+  font-size: 0.75rem;
+  color: var(--text-muted, #666);
+}
+
+.valueMd {
+  font-weight: 500;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.riskAlert {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  color: var(--danger, #dc2626);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.customizeArea {
+  margin-bottom: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.customizeTitle {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.customizeOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.tableMessage {
+  padding: 1rem;
+  color: var(--text-muted, #666);
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.paginationInfo {
+  color: var(--text-muted, #666);
+  font-size: 0.95rem;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.perPageLabel {
+  color: var(--text-muted, #666);
+  font-size: 0.9rem;
+}
+
+.perPageSelect {
+  width: auto;
+}
+
+.pageButtons {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.pageButton {
+  min-width: 36px;
+}
+
+.nameCell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.actionsCell {
+  text-align: right;
+}

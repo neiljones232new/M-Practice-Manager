@@ -2088,10 +2088,14 @@ export default function ClientDetailsPage() {
                   <input
                     className="input-mdj"
                     type="file"
+                    aria-label="Choose document file to upload"
+                    title="Choose document file to upload"
                     onChange={(e) => setDocFile(e.target.files?.[0] || null)}
                   />
                   <select
                     className="input-mdj"
+                    aria-label="Select document category"
+                    title="Select document category"
                     value={docCategory}
                     onChange={(e) => setDocCategory(e.target.value)}
                   >
@@ -2185,6 +2189,8 @@ export default function ClientDetailsPage() {
                 <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
                   <select
                     className="input-mdj"
+                    aria-label="Select letter template"
+                    title="Select letter template"
                     value={letterTemplateId}
                     onChange={(e) => setLetterTemplateId(e.target.value)}
                     style={{ minWidth: 240 }}
@@ -2196,6 +2202,8 @@ export default function ClientDetailsPage() {
                   </select>
                   <select
                     className="input-mdj"
+                    aria-label="Select linked service"
+                    title="Select linked service"
                     value={letterServiceId}
                     onChange={(e) => setLetterServiceId(e.target.value)}
                     style={{ minWidth: 220 }}

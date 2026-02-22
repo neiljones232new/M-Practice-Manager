@@ -3804,8 +3804,7 @@ tbody tr:hover {
   border: 2px solid rgba(230, 189, 47, 0.3);
   color: #ffffff;
   position: relative;
-  backdrop-filter: blur(10px);
-}
+  }
 
 .authCard::before {
   content: '';
