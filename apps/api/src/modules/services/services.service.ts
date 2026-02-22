@@ -14,7 +14,14 @@ import {
 } from './interfaces/service.interface';
 
 const SERVICE_FREQUENCY_VALUES = ['ANNUAL', 'QUARTERLY', 'MONTHLY', 'WEEKLY', 'ONE_OFF'] as const;
-const SERVICE_STATUS_VALUES = ['DRAFT', 'ACTIVE', 'INACTIVE', 'SUSPENDED'] as const;
+const SERVICE_STATUS_VALUES = [
+  'DRAFT',
+  'ACTIVE',
+  'AWAITING_FILING',
+  'READY_TO_CLOSE',
+  'COMPLETE',
+  'ARCHIVED',
+] as const;
 
 @Injectable()
 export class ServicesService {
@@ -266,7 +273,7 @@ export class ServicesService {
           ...service,
           clientName: client.name,
           clientId: client.id,
-          clientIdentifier: client.registeredNumber || client.id,
+          clientIdentifier: client.clientRef || client.registeredNumber || client.id,
           portfolioCode: client.portfolioCode,
         });
       }
@@ -286,6 +293,9 @@ export class ServicesService {
   async updateStatus(id: string, status: ServiceStatus): Promise<Service> {
     if (status === 'ACTIVE') {
       return this.activateService(id);
+    }
+    if (status === 'COMPLETE') {
+      return this.completeService(id);
     }
     return this.update(id, { status });
   }
@@ -324,6 +334,26 @@ export class ServicesService {
     }
 
     return updated;
+  }
+
+  async completeService(id: string): Promise<Service> {
+    const existing = await this.findOne(id);
+    if (!existing) {
+      throw new NotFoundException(`Service with ID ${id} not found`);
+    }
+
+    const completed =
+      existing.status === 'COMPLETE'
+        ? existing
+        : this.normalizeService(
+            await (this.prisma as any).service.update({
+              where: { id },
+              data: { status: 'COMPLETE' },
+            }),
+          );
+
+    await this.createNextDraftServiceFromCompletedService(completed);
+    return completed;
   }
 
   private calculateAnnualizedFee(fee: number, frequency?: ServiceFrequency): number {
@@ -581,6 +611,57 @@ export class ServicesService {
     } catch {
       return undefined;
     }
+  }
+
+  private async createNextDraftServiceFromCompletedService(service: Service): Promise<void> {
+    if (!service.templateId) return;
+    if (service.status === 'ARCHIVED') return;
+
+    const client = await this.clientsService.findOne(service.clientId);
+    if (!client || client.status !== 'ACTIVE') return;
+
+    const template = await (this.prisma as any).serviceTemplate.findUnique({
+      where: { id: service.templateId },
+    });
+    if (!template) return;
+    if (template.autoGenerateNext === false) return;
+    if (String(template.recurrenceType || 'STANDARD').toUpperCase() === 'NONE') return;
+
+    const currentStart = new Date((service as any).periodStart || service.nextDue || new Date());
+    const currentEndRaw = (service as any).periodEnd ? new Date((service as any).periodEnd) : null;
+    const nextPeriodStart = currentEndRaw && !Number.isNaN(currentEndRaw.getTime())
+      ? currentEndRaw
+      : this.incrementPeriodEnd(currentStart, (service.frequency || 'ANNUAL') as ServiceFrequency);
+    const nextPeriodEnd = this.incrementPeriodEnd(nextPeriodStart, (service.frequency || 'ANNUAL') as ServiceFrequency);
+
+    const existingNext = await (this.prisma as any).service.findFirst({
+      where: {
+        clientId: service.clientId,
+        templateId: service.templateId,
+        periodStart: nextPeriodStart,
+      },
+    });
+    if (existingNext) return;
+
+    await (this.prisma as any).service.create({
+      data: {
+        clientId: service.clientId,
+        templateId: service.templateId,
+        kind: service.kind,
+        frequency: service.frequency,
+        fee: service.fee,
+        annualized: service.annualized,
+        periodStart: nextPeriodStart,
+        periodEnd: nextPeriodEnd,
+        cycleNumber: ((service as any).cycleNumber || 0) + 1,
+        status: 'DRAFT',
+        description: service.description,
+      },
+    });
+
+    this.logger.log(
+      `Created next draft service for client ${service.clientId} template ${service.templateId}`,
+    );
   }
 
   private normalizeEnumField(

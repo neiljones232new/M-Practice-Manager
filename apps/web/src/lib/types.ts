@@ -19,7 +19,6 @@ export type HMRCRegistrationStatus =
 export interface Client {
   id: string;
   clientRef?: string | null;
-  baseClientRef?: string | null;
   name: string;
   type: ClientType;
   status: ClientStatus;
@@ -212,12 +211,11 @@ export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export interface Task {
   id: string;
   title: string;
-  clientId?: string;
-  clientServiceId?: string;
-  serviceId?: string;
+  serviceId: string;
   description?: string;
   dueDate?: string;
   assignee?: string;
+  assigneeId?: string;
   status?: TaskStatus;
   priority?: TaskPriority;
   tags?: string[];
@@ -226,7 +224,13 @@ export interface Task {
 }
 
 export type ServiceFrequency = 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF';
-export type ServiceStatus = 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+export type ServiceStatus =
+  | 'DRAFT'
+  | 'ACTIVE'
+  | 'AWAITING_FILING'
+  | 'READY_TO_CLOSE'
+  | 'COMPLETE'
+  | 'ARCHIVED';
 
 export interface Service {
   id: string;

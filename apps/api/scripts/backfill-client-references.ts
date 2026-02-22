@@ -108,7 +108,6 @@ async function main() {
       portfolioCode: true,
       practiceId: true,
       clientRef: true,
-      baseClientRef: true,
     },
   });
 
@@ -117,24 +116,14 @@ async function main() {
     const portfolioCode = Number(client.portfolioCode) || 1;
     const practiceId = String(client.practiceId || 'default').trim() || 'default';
     const currentRef = String(client.clientRef || '').trim().toUpperCase();
-    const currentBase = String(client.baseClientRef || '').trim().toUpperCase();
 
     const parsedCurrentRef = parseClientRef(currentRef);
-    const parsedCurrentBase = parseClientRef(currentBase);
     const refValid = !!parsedCurrentRef && parsedCurrentRef.portfolio === portfolioCode;
-    const baseValid = !!parsedCurrentBase
-      && !parsedCurrentBase.suffix
-      && parsedCurrentBase.portfolio === portfolioCode;
-    const baseMatchesRef = refValid && baseValid
-      ? parsedCurrentRef.base === parsedCurrentBase.base
-      : false;
-
-    if (refValid && baseValid && baseMatchesRef && client.practiceId === practiceId) {
+    if (refValid && client.practiceId === practiceId) {
       continue;
     }
 
     let nextRef = refValid ? currentRef : '';
-    let nextBase = baseValid ? currentBase : '';
 
     if (!nextRef) {
       const parsedId = parseClientRef(String(client.id || '').trim().toUpperCase());
@@ -143,23 +132,16 @@ async function main() {
       }
     }
 
-    if (nextRef && !nextBase) {
-      const parsedNextRef = parseClientRef(nextRef);
-      if (parsedNextRef) nextBase = parsedNextRef.base;
-    }
-
-    if (!nextRef || !nextBase) {
+    if (!nextRef) {
       const preferredAlpha = derivePreferredAlpha(client.name, client.type);
-      nextBase = await prisma.$transaction((tx) =>
+      nextRef = await prisma.$transaction((tx) =>
         allocateBaseClientRef(tx, portfolioCode, practiceId, preferredAlpha));
-      nextRef = nextBase;
     }
 
     const parsedNextRef = parseClientRef(nextRef);
     if (!parsedNextRef) {
       throw new Error(`Failed to compute valid clientRef for ${client.id}`);
     }
-    nextBase = parsedNextRef.base;
 
     patched += 1;
     if (APPLY) {
@@ -168,13 +150,12 @@ async function main() {
         data: {
           practiceId,
           clientRef: nextRef,
-          baseClientRef: nextBase,
         },
       });
     }
 
     console.log(
-      `${APPLY ? 'APPLY' : 'DRY'} ${client.id} => clientRef=${nextRef} baseClientRef=${nextBase} practiceId=${practiceId}`,
+      `${APPLY ? 'APPLY' : 'DRY'} ${client.id} => clientRef=${nextRef} practiceId=${practiceId}`,
     );
   }
 

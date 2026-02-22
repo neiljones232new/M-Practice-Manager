@@ -55,20 +55,34 @@ export class TasksController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
-  async findAllTasks(@Request() req: any, @Query() filters: TaskFilters) {
+  async findAllTasks(
+    @Request() req: any,
+    @Query() filters: TaskFilters,
+    @Query('serviceId') serviceId?: string,
+  ) {
     if (this.isDemoUser(req)) {
       return [];
     }
-    return this.tasksService.findAll(filters);
+    return this.tasksService.findAll({
+      ...filters,
+      ...(serviceId ? { serviceId } : {}),
+    });
   }
 
   @Get('with-client-details')
   @ApiOperation({ summary: 'Get tasks with client details' })
-  async findTasksWithClientDetails(@Request() req: any, @Query() filters: TaskFilters) {
+  async findTasksWithClientDetails(
+    @Request() req: any,
+    @Query() filters: TaskFilters,
+    @Query('serviceId') serviceId?: string,
+  ) {
     if (this.isDemoUser(req)) {
       return [];
     }
-    return this.tasksService.findAllWithClientDetails(filters);
+    return this.tasksService.findAllWithClientDetails({
+      ...filters,
+      ...(serviceId ? { serviceId } : {}),
+    });
   }
 
   @Get('summary')
@@ -149,15 +163,6 @@ export class TasksController {
       return [];
     }
     return this.tasksService.findByAssignee(assigneeId);
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Get task by ID' })
-  async findOneTask(@Request() req: any, @Param('id') id: string) {
-    if (this.isDemoUser(req)) {
-      return null;
-    }
-    return this.tasksService.findOne(id);
   }
 
   @Post()
@@ -327,16 +332,27 @@ export class TasksController {
   @ApiOperation({ summary: 'Export tasks as CSV with practice meta and filters' })
   @ApiQuery({ name: 'clientId', required: false, type: String })
   @ApiQuery({ name: 'serviceId', required: false, type: String })
-  @ApiQuery({ name: 'assignee', required: false, type: String })
+  @ApiQuery({ name: 'assigneeId', required: false, type: String })
+  @ApiQuery({ name: 'assignee', required: false, type: String, description: 'Legacy alias for assigneeId' })
   @ApiQuery({ name: 'status', required: false, enum: ['TODO', 'IN_PROGRESS', 'REVIEW', 'COMPLETED', 'CANCELLED'] })
   @ApiQuery({ name: 'priority', required: false, enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] })
   @ApiQuery({ name: 'portfolioCode', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false, type: String })
   @Header('Content-Type', 'text/csv; charset=utf-8')
   @Header('Content-Disposition', `attachment; filename="tasks-${new Date().toISOString().slice(0,10)}.csv"`)
-  async exportCSV(@Query() filters: TaskFilters): Promise<string> {
+  async exportCSV(
+    @Query() filters: TaskFilters,
+    @Query('serviceId') serviceId?: string,
+    @Query('assigneeId') assigneeId?: string,
+    @Query('assignee') legacyAssignee?: string,
+  ): Promise<string> {
     const practice = await this.configService.getPracticeSettings();
-    const items = await this.tasksService.findAllWithClientDetails(filters);
+    const effectiveAssignee = assigneeId || legacyAssignee;
+    const items = await this.tasksService.findAllWithClientDetails({
+      ...filters,
+      ...(serviceId ? { serviceId } : {}),
+      ...(effectiveAssignee ? { assigneeId: effectiveAssignee } : {}),
+    });
     const headers = ['Title','Client Identifier','Client','Service','Priority','Status','Assignee','Due Date','Portfolio'];
     const esc = (v: any) => {
       if (v === null || v === undefined) return '';
@@ -363,8 +379,19 @@ export class TasksController {
 
   @Get('export.xlsx')
   @ApiOperation({ summary: 'Export tasks as Excel (.xlsx if available, else .xls XML)' })
-  async exportXLSX(@Query() filters: TaskFilters, @Res() res): Promise<void> {
-    const items = await this.tasksService.findAllWithClientDetails(filters);
+  async exportXLSX(
+    @Query() filters: TaskFilters,
+    @Query('serviceId') serviceId: string | undefined,
+    @Query('assigneeId') assigneeId: string | undefined,
+    @Query('assignee') legacyAssignee: string | undefined,
+    @Res() res,
+  ): Promise<void> {
+    const effectiveAssignee = assigneeId || legacyAssignee;
+    const items = await this.tasksService.findAllWithClientDetails({
+      ...filters,
+      ...(serviceId ? { serviceId } : {}),
+      ...(effectiveAssignee ? { assigneeId: effectiveAssignee } : {}),
+    });
     try {
       const ExcelJS = require('exceljs');
       const wb = new ExcelJS.Workbook();
@@ -413,8 +440,18 @@ export class TasksController {
   @ApiOperation({ summary: 'Export tasks as PDF' })
   @Header('Content-Type', 'application/pdf')
   @Header('Content-Disposition', `attachment; filename="tasks-${new Date().toISOString().slice(0,10)}.pdf"`)
-  async exportPDF(@Query() filters: TaskFilters): Promise<Buffer> {
-    const items = await this.tasksService.findAllWithClientDetails(filters);
+  async exportPDF(
+    @Query() filters: TaskFilters,
+    @Query('serviceId') serviceId?: string,
+    @Query('assigneeId') assigneeId?: string,
+    @Query('assignee') legacyAssignee?: string,
+  ): Promise<Buffer> {
+    const effectiveAssignee = assigneeId || legacyAssignee;
+    const items = await this.tasksService.findAllWithClientDetails({
+      ...filters,
+      ...(serviceId ? { serviceId } : {}),
+      ...(effectiveAssignee ? { assigneeId: effectiveAssignee } : {}),
+    });
     const body = [
       [{ text: 'Title', bold: true }, { text: 'Client', bold: true }, { text: 'Service', bold: true }, { text: 'Priority', bold: true }, { text: 'Status', bold: true }, { text: 'Assignee', bold: true }, { text: 'Due', bold: true }],
       ...items.map(t => [
@@ -444,5 +481,14 @@ export class TasksController {
       const pdfDoc = PdfMake.createPdf(docDefinition);
       pdfDoc.getBuffer((buffer: Buffer) => buffer ? resolve(buffer) : reject(new Error('PDF failed')));
     });
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get task by ID' })
+  async findOneTask(@Request() req: any, @Param('id') id: string) {
+    if (this.isDemoUser(req)) {
+      return null;
+    }
+    return this.tasksService.findOne(id);
   }
 }

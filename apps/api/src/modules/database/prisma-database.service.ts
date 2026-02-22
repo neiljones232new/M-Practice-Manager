@@ -229,10 +229,6 @@ export class PrismaDatabaseService extends DatabaseService {
         ? (client as any).clientRef.trim().toUpperCase()
         : '';
       const clientRef = requestedClientRef || id;
-      const requestedBaseClientRef = typeof (client as any).baseClientRef === 'string'
-        ? (client as any).baseClientRef.trim().toUpperCase()
-        : '';
-      const baseClientRef = requestedBaseClientRef || clientRef;
       const requestedPracticeId = typeof (client as any).practiceId === 'string'
         ? (client as any).practiceId.trim()
         : '';
@@ -242,7 +238,6 @@ export class PrismaDatabaseService extends DatabaseService {
         data: {
           id,
           clientRef,
-          baseClientRef,
           practiceId,
           name,
           status: status === 'INACTIVE' || status === 'ARCHIVED' ? status : 'ACTIVE',

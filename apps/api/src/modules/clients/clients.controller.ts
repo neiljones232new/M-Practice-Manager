@@ -98,9 +98,9 @@ export class ClientsController {
     services?: Array<{
       templateId?: string;
       kind: string;
-      frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
+      frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF';
       fee?: number;
-      status?: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+      status?: 'DRAFT' | 'ACTIVE' | 'AWAITING_FILING' | 'READY_TO_CLOSE' | 'COMPLETE' | 'ARCHIVED';
       nextDue?: string | Date;
       description?: string;
     }>;
