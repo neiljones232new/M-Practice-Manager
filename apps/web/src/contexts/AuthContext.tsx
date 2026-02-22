@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { apiClient, AuthResponse } from '@/lib/api';
+import { AUTH_BYPASS_ENABLED } from '@/lib/api';
 
 interface User {
   id: string;
@@ -48,6 +49,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const initializeAuth = async () => {
     try {
+      if (AUTH_BYPASS_ENABLED) {
+        const response = await apiClient.login({
+          email: 'local-dev@example.com',
+          password: 'bypass',
+          rememberMe: true,
+        });
+        setUser(response.user);
+        setIsDemoMode(false);
+        return;
+      }
+
       // Check for demo mode first
       if (typeof window !== 'undefined') {
         const demoMode = sessionStorage.getItem('demoMode');

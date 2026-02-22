@@ -25,6 +25,7 @@ export class PortfoliosService {
       });
 
       if (!portfolios.length) {
+        const practiceId = await this.ensureDefaultPracticeId();
         // Use upsert to avoid race conditions when multiple concurrent requests
         // try to bootstrap the default portfolio at the same time.
         await (this.prisma as any).portfolio.upsert({
@@ -32,6 +33,7 @@ export class PortfoliosService {
           update: {},
           create: {
             code: 1,
+            practiceId,
             name: 'Main Portfolio',
             description: 'Default client portfolio',
           },
@@ -99,10 +101,12 @@ export class PortfoliosService {
       });
       code = (latest?.code ?? 0) + 1;
     }
+    const practiceId = await this.ensureDefaultPracticeId();
 
     const created = await (this.prisma as any).portfolio.create({
       data: {
         code,
+        practiceId,
         name: createPortfolioDto.name,
         description: createPortfolioDto.description,
       },
@@ -201,9 +205,11 @@ export class PortfoliosService {
         orderBy: { code: 'desc' },
       });
       const newCode = (latest?.code ?? 0) + 1;
+      const practiceId = await this.ensureDefaultPracticeId();
       targetPortfolio = await (this.prisma as any).portfolio.create({
         data: {
           code: newCode,
+          practiceId,
           name: mergeDto.newPortfolioName,
           description: 'Merged portfolio',
         },
@@ -278,5 +284,22 @@ export class PortfoliosService {
       lowered.includes('does not exist') ||
       lowered.includes('timeout')
     );
+  }
+
+  private async ensureDefaultPracticeId(): Promise<string> {
+    const existing = await (this.prisma as any).practice.findFirst({
+      orderBy: { createdAt: 'asc' },
+      select: { id: true },
+    });
+    if (existing?.id) return existing.id;
+
+    const created = await (this.prisma as any).practice.create({
+      data: {
+        name: 'Default Practice',
+        mainEmail: 'local-dev@example.com',
+      },
+      select: { id: true },
+    });
+    return created.id;
   }
 }

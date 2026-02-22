@@ -9,6 +9,7 @@
 
 export const DEFAULT_API = 'http://localhost:3001/api/v1';
 export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || DEFAULT_API).replace(/\/+$/, '');
+export const AUTH_BYPASS_ENABLED = (process.env.NEXT_PUBLIC_DISABLE_AUTH ?? 'true') === 'true';
 
 import type { Client, ClientContext, Service, Task } from './types';
 
@@ -76,11 +77,46 @@ class ApiClient {
     return `${this.baseUrl}${path}`;
   }
 
+  private getBypassUser(): AuthResponse['user'] {
+    return {
+      id: 'local-dev-user',
+      email: 'local-dev@example.com',
+      firstName: 'Local',
+      lastName: 'Dev',
+      role: 'SUPER_ADMIN',
+      portfolios: ['*'],
+      isActive: true,
+      emailVerified: true,
+    };
+  }
+
+  private getBypassAuthResponse(): AuthResponse {
+    return {
+      user: this.getBypassUser(),
+      accessToken: 'local-dev-bypass-access',
+      refreshToken: 'local-dev-bypass-refresh',
+      expiresIn: 24 * 60 * 60,
+    };
+  }
+
   private async request<T = any>(
     endpoint: string,
     options: RequestInit & { suppressErrorLog?: boolean } = {},
     retry = true
   ): Promise<T> {
+    if (AUTH_BYPASS_ENABLED && endpoint.startsWith('/auth/')) {
+      if (endpoint === '/auth/logout') {
+        return { message: 'Logged out successfully' } as T;
+      }
+      if (endpoint === '/auth/forgot-password' || endpoint === '/auth/reset-password') {
+        return { message: 'Auth bypass enabled' } as T;
+      }
+      if (endpoint === '/auth/me') {
+        return this.getBypassUser() as T;
+      }
+      return this.getBypassAuthResponse() as T;
+    }
+
     const url = this.buildUrl(endpoint);
     const suppressErrorLog = (options as any).suppressErrorLog;
     

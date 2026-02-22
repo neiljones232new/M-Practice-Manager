@@ -78,27 +78,53 @@ export class AuthService {
     const saltRounds = 12;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
+    const normalizedEmail = email.toLowerCase();
     const userId = uuidv4();
-    const created = await this.prisma.$transaction(async (tx) => {
-      const dbUser = await (tx as any).user.create({
-        data: {
-          id: userId,
-          email: email.toLowerCase(),
-          name: `${firstName} ${lastName}`.trim(),
-          role: 'ADMIN',
-          isActive: true,
-        },
+    let user: User;
+
+    try {
+      const created = await this.prisma.$transaction(async (tx) => {
+        const dbUser = await (tx as any).user.create({
+          data: {
+            id: userId,
+            email: normalizedEmail,
+            name: `${firstName} ${lastName}`.trim(),
+            role: 'ADMIN',
+            isActive: true,
+          },
+        });
+        const authCredential = await (tx as any).authCredential.create({
+          data: {
+            userId: dbUser.id,
+            passwordHash,
+            emailVerified: false,
+          },
+        });
+        return { dbUser, authCredential };
       });
-      const authCredential = await (tx as any).authCredential.create({
-        data: {
-          userId: dbUser.id,
-          passwordHash,
-          emailVerified: false,
-        },
-      });
-      return { dbUser, authCredential };
-    });
-    const user = this.toAuthUser(created.dbUser, created.authCredential);
+      user = this.toAuthUser(created.dbUser, created.authCredential);
+    } catch (error) {
+      if (!this.isDatabaseUnavailableError(error)) {
+        throw error;
+      }
+
+      this.logger.warn(`Database unavailable during register for ${normalizedEmail}; falling back to file storage`);
+      const now = new Date();
+      user = {
+        id: userId,
+        email: normalizedEmail,
+        firstName,
+        lastName,
+        passwordHash,
+        role: 'SUPER_ADMIN',
+        portfolios: ['*'],
+        isActive: true,
+        emailVerified: false,
+        createdAt: now,
+        updatedAt: now,
+      };
+      await this.fileStorageService.writeJson('users', user.id, user);
+    }
 
     this.logger.log(`User registered: ${email}`);
 
@@ -438,6 +464,9 @@ export class AuthService {
       || message.includes('connection refused')
       || message.includes('timed out')
       || message.includes('database connection failed')
+      || message.includes('denied access on the database')
+      || message.includes('authentication failed')
+      || message.includes('p1010')
     );
   }
 

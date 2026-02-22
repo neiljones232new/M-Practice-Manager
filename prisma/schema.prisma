@@ -5,10 +5,793 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+model Practice {
+  id                          String            @id @default(cuid())
+  name                        String
+  legalEntityName             String?
+  tradingName                 String?
+  description                 String?
+  website                     String?
+  mainEmail                   String            @db.VarChar(320)
+  mainPhone                   String?
+  fax                         String?
+  addressId                   String?           @unique
+  practicingCertificateNumber String?
+  professionalBody            String?
+  membershipNumber            String?
+  vatNumber                   String?
+  taxReference                String?
+  bankAccountName             String?
+  bankAccountNumber           String?
+  bankSortCode                String?
+  bankIban                    String?
+  bankSwift                   String?
+  piInsurer                   String?
+  piPolicyNumber              String?
+  piExpiryDate                DateTime?
+  piCoverAmount               Decimal?          @db.Decimal(12, 2)
+  piExcess                    Decimal?          @db.Decimal(8, 2)
+  moneyLaunderingSupervisor   String?
+  amlSupervisorNumber         String?
+  amlRegistrationDate         DateTime?
+  lastAmlCheckDate            DateTime?
+  nextAmlCheckDueDate         DateTime?
+  companiesHouseApiKey        String?
+  companiesHouseWebhook       String?
+  chLastSyncDate              DateTime?
+  hmrcClientId                String?
+  hmrcClientSecret            String?
+  hmrcEnvironment             String?
+  mtdVatEnabled               Boolean           @default(false)
+  mtdPayeEnabled              Boolean           @default(false)
+  mtdItsaEnabled              Boolean           @default(false)
+  defaultHourlyRate           Decimal?          @db.Decimal(10, 2)
+  currency                    String            @default("GBP")
+  timezone                    String            @default("Europe/London")
+  dateFormat                  String            @default("DD/MM/YYYY")
+  workingDays                 String[]
+  primaryColor                String?           @default("#2563eb")
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime          @updatedAt
+  branches                    PracticeBranch[]
+  settings                    PracticeSetting[]
+  address                     Address?          @relation("PracticeAddress", fields: [addressId], references: [id])
+  clients                     Client[]
+  portfolios                  Portfolio[]
+
+  @@map("practices")
+}
+
+model PracticeBranch {
+  id         String   @id @default(cuid())
+  practiceId String
+  name       String
+  isMain     Boolean  @default(false)
+  addressId  String?
+  phone      String?
+  email      String?  @db.VarChar(320)
+  address    Address? @relation("BranchAddress", fields: [addressId], references: [id])
+  practice   Practice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+
+  @@index([practiceId])
+  @@map("practice_branches")
+}
+
+model PracticeSetting {
+  id         String   @id @default(cuid())
+  practiceId String
+  category   String
+  key        String
+  value      Json
+  isEditable Boolean  @default(true)
+  practice   Practice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+
+  @@unique([practiceId, category, key])
+  @@map("practice_settings")
+}
+
+model User {
+  id               String             @id @default(cuid())
+  email            String             @unique
+  name             String?
+  role             UserRole           @default(STAFF)
+  isActive         Boolean            @default(true)
+  lastLoginAt      DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  authCredential   AuthCredential?
+  authSessions     AuthSession[]
+  createdAccounts  AccountsSet[]      @relation("AccountsCreator")
+  assignedTasks    Task[]             @relation("TaskAssignee")
+  createdTasks     Task[]             @relation("TaskCreator")
+  createdDocuments Document[]
+  createdTemplates Template[]
+  accessProfile    UserAccessProfile?
+
+  @@map("users")
+}
+
+model UserAccessProfile {
+  userId         String  @id
+  roleOverride   String?
+  portfolioCodes Int[]
+  allPortfolios  Boolean @default(false)
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_access_profiles")
+}
+
+model AuthCredential {
+  userId        String  @id
+  passwordHash  String
+  emailVerified Boolean @default(false)
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_credentials")
+}
+
+model AuthSession {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  refreshToken String   @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_sessions")
+}
+
+model Client {
+  id                      String                  @id @default(cuid())
+  clientRef               String                  @unique
+  baseClientRef           String?
+  name                    String
+  tradingName             String?
+  type                    ClientType
+  status                  ClientStatus            @default(ACTIVE)
+  practiceId              String
+  portfolioCode           Int
+  isConnectedParty        Boolean                 @default(false)
+  connectedOrder          Int?
+  connectedPrincipalId    String?
+  registeredNumber        String?                 @unique
+  utrNumber               String?                 @unique
+  vatNumber               String?                 @unique
+  payeReference           String?                 @unique
+  accountsOfficeReference String?
+  cisUtr                  String?                 @unique
+  eoriNumber              String?                 @unique
+  nationalInsuranceNumber String?                 @unique
+  dateOfBirth             DateTime?
+  mainEmail               String?
+  mainPhone               String?
+  addressId               String?
+  hmrcCtStatus            HMRCRegistrationStatus?
+  hmrcSaStatus            HMRCRegistrationStatus?
+  hmrcVatStatus           HMRCRegistrationStatus?
+  hmrcPayeStatus          HMRCRegistrationStatus?
+  incorporationDate       DateTime?
+  yearEnd                 DateTime?
+  accountsNextDue         DateTime?
+  confirmationNextDue     DateTime?
+  lastSyncedAt            DateTime?
+  source                  String?
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  practice                Practice                @relation(fields: [practiceId], references: [id])
+  portfolio               Portfolio               @relation(fields: [portfolioCode], references: [code])
+  address                 Address?                @relation(fields: [addressId], references: [id])
+  profile                 ClientProfile?
+  parties                 ClientParty[]
+  services                Service[]
+  accountsSets            AccountsSet[]
+  filings                 Filing[]
+  documents               Document[]
+  calendarEvents          CalendarEvent[]
+  taxCalculations         TaxCalculation[]
+  generatedReports        GeneratedReport[]
+  companiesHouseData      CompaniesHouseData?
+  companiesHouse          CompaniesHouseCompany?
+  auditEvents             Event[]                 @relation("ClientEvents")
+
+  @@unique([practiceId, portfolioCode, clientRef])
+  @@index([portfolioCode])
+  @@index([practiceId])
+  @@index([status, portfolioCode])
+  @@index([name])
+  @@index([registeredNumber])
+  @@index([clientRef])
+  @@index([practiceId, portfolioCode, baseClientRef])
+  @@index([connectedPrincipalId])
+  @@map("clients")
+}
+
+model ClientProfile {
+  id                          String          @id @default(cuid())
+  clientId                    String          @unique
+  mainContactName             String?
+  partnerResponsible          String?
+  clientManager               String?
+  lifecycleStatus             LifecycleStatus @default(PROSPECT)
+  engagementType              String?
+  engagementLetterSigned      Boolean         @default(false)
+  onboardingDate              DateTime?
+  disengagementDate           DateTime?
+  onboardingStartedAt         DateTime?
+  wentLiveAt                  DateTime?
+  ceasedAt                    DateTime?
+  dormantSince                DateTime?
+  corporationTaxUtr           String?
+  vatNumber                   String?
+  vatStagger                  VatStagger      @default(NONE)
+  vatScheme                   String?
+  vatReturnFrequency          String?
+  vatQuarter                  String?
+  vatRegistrationDate         DateTime?
+  payeReference               String?
+  payeAccountsOfficeReference String?
+  cisRegistered               Boolean         @default(false)
+  cisUtr                      String?
+  payrollRtiRequired          Boolean         @default(false)
+  selfAssessmentRequired      Boolean         @default(false)
+  selfAssessmentFiled         Boolean         @default(false)
+  amlCompleted                Boolean         @default(false)
+  clientRiskRating            String?
+  annualFee                   Decimal?        @db.Decimal(12, 2)
+  monthlyFee                  Decimal?        @db.Decimal(12, 2)
+  feeArrangement              String?
+  businessBankName            String?
+  accountLastFour             String?
+  directDebitInPlace          Boolean         @default(false)
+  paymentIssues               String?
+  contactPosition             String?
+  telephone                   String?
+  mobile                      String?
+  email                       String?
+  preferredContactMethod      String?
+  correspondenceAddress       String?
+  nationalInsuranceNumber     String?
+  dateOfBirth                 DateTime?
+  personalAddress             String?
+  personalTaxYear             String?
+  selfAssessmentTaxYear       String?
+  seasonalBusiness            Boolean         @default(false)
+  dormant                     Boolean         @default(false)
+  doNotContact                Boolean         @default(false)
+  notes                       String?
+  createdAt                   DateTime        @default(now())
+  updatedAt                   DateTime        @updatedAt
+  client                      Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("client_profiles")
+}
+
+model Address {
+  id       String           @id @default(cuid())
+  line1    String
+  line2    String?
+  city     String?
+  postcode String
+  country  String
+  clients  Client[]
+  branches PracticeBranch[] @relation("BranchAddress")
+  practice Practice?        @relation("PracticeAddress")
+
+  @@map("addresses")
+}
+
+model Portfolio {
+  code        Int         @id
+  practiceId  String
+  name        String
+  description String?
+  practice    Practice    @relation(fields: [practiceId], references: [id])
+  clients     Client[]
+  refBuckets  RefBucket[]
+
+  @@map("portfolios")
+}
+
+model RefBucket {
+  id            String    @id @default(cuid())
+  practiceId    String    @default("default")
+  portfolioCode Int
+  alpha         String
+  nextIndex     Int       @default(1)
+  portfolio     Portfolio @relation(fields: [portfolioCode], references: [code])
+
+  @@unique([practiceId, portfolioCode, alpha])
+  @@map("ref_buckets")
+}
+
+model Service {
+  id          String           @id @default(cuid())
+  serviceRef  String           @unique
+  clientId    String
+  templateId  String?
+  periodStart DateTime
+  periodEnd   DateTime
+  status      ServiceStatus    @default(DRAFT)
+  nextDue     DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  client      Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  template    ServiceTemplate? @relation(fields: [templateId], references: [id])
+  compliance  ComplianceItem?
+  tasks       Task[]
+
+  @@unique([clientId, templateId, periodStart])
+  @@index([status, nextDue])
+  @@map("services")
+}
+
+model ServiceTemplate {
+  id                   String              @id @default(cuid())
+  code                 String              @unique
+  serviceKind          String
+  frequency            String
+  complianceTemplateId String?
+  recurrenceType       RecurrenceType      @default(STANDARD)
+  recurrenceUnit       RecurrenceUnit?
+  frequencyValue       Int                 @default(1)
+  triggerMode          TriggerMode         @default(COMPLETION)
+  autoGenerateNext     Boolean             @default(true)
+  complianceTemplate   ComplianceTemplate? @relation("ServiceTemplateCompliance", fields: [complianceTemplateId], references: [id])
+  services             Service[]
+  taskTemplates        TaskTemplate[]
+
+  @@map("service_templates")
+}
+
+model ComplianceTemplate {
+  id                    String            @id @default(cuid())
+  code                  String            @unique
+  complianceType        ComplianceType
+  source                ComplianceSource  @default(MANUAL)
+  dueDaysAfterPeriodEnd Int               @default(0)
+  isActive              Boolean           @default(true)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  serviceTemplates      ServiceTemplate[] @relation("ServiceTemplateCompliance")
+
+  @@map("compliance_templates")
+}
+
+model ComplianceItem {
+  id        String           @id @default(cuid())
+  serviceId String           @unique
+  type      ComplianceType
+  dueDate   DateTime?
+  status    ComplianceStatus @default(PENDING)
+  source    ComplianceSource @default(MANUAL)
+  service   Service          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([status, dueDate])
+  @@map("compliance_items")
+}
+
+model Task {
+  id             String          @id @default(cuid())
+  taskRef        String?         @unique
+  serviceId      String
+  title          String
+  dueDate        DateTime?
+  assigneeId     String?
+  creatorId      String?
+  status         TaskStatus      @default(TODO)
+  priority       Priority        @default(MEDIUM)
+  assignee       User?           @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  creator        User?           @relation("TaskCreator", fields: [creatorId], references: [id])
+  service        Service         @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  calendarEvents CalendarEvent[]
+
+  @@index([serviceId, status])
+  @@index([assigneeId, dueDate, status])
+  @@map("tasks")
+}
+
+model TaskTemplate {
+  id            String          @id @default(cuid())
+  templateId    String
+  title         String
+  daysBeforeDue Int
+  priority      Priority        @default(MEDIUM)
+  template      ServiceTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@map("service_template_tasks")
+}
+
+model Document {
+  id           String           @id @default(cuid())
+  clientId     String?
+  filename     String
+  mimeType     String
+  category     DocumentCategory
+  uploadedById String?
+  createdAt    DateTime         @default(now())
+  client       Client?          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  uploadedBy   User?            @relation(fields: [uploadedById], references: [id])
+
+  @@map("documents")
+}
+
+model Template {
+  id          String           @id @default(cuid())
+  name        String
+  category    TemplateCategory
+  type        TemplateType
+  content     String
+  createdById String?
+  createdBy   User?            @relation(fields: [createdById], references: [id])
+
+  @@map("templates")
+}
+
+model AccountsSet {
+  id          String              @id @default(cuid())
+  clientId    String
+  framework   AccountingFramework
+  status      AccountsSetStatus   @default(DRAFT)
+  periodStart DateTime
+  periodEnd   DateTime
+  createdById String?
+  createdAt   DateTime            @default(now())
+  client      Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdBy   User?               @relation("AccountsCreator", fields: [createdById], references: [id])
+
+  @@map("accounts_sets")
+}
+
+model Filing {
+  id        String         @id @default(cuid())
+  clientId  String
+  type      ComplianceType
+  periodEnd DateTime?
+  status    String
+  client    Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("filings")
+}
+
+model CompaniesHouseData {
+  id             String   @id @default(cuid())
+  clientId       String   @unique
+  companyNumber  String   @unique
+  companyDetails Json?
+  lastFetched    DateTime @default(now())
+  client         Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("companies_house_data")
+}
+
+model CompaniesHouseCompany {
+  id                       String                  @id @default(cuid())
+  clientId                 String                  @unique
+  companyNumber            String                  @unique
+  companyStatus            String?
+  companyType              String?
+  jurisdiction             String?
+  incorporationDate        DateTime?
+  registeredOfficeAddress  String?
+  accountsLastMadeUpTo     DateTime?
+  accountsNextDue          DateTime?
+  confirmationLastMadeUpTo DateTime?
+  confirmationNextDue      DateTime?
+  lastFetched              DateTime                @default(now())
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime                @updatedAt
+  client                   Client                  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  officers                 CompaniesHouseOfficer[]
+  pscs                     CompaniesHousePSC[]
+  filings                  CompaniesHouseFiling[]
+  charges                  CompaniesHouseCharge[]
+
+  @@index([companyNumber])
+  @@index([clientId])
+  @@index([lastFetched])
+  @@map("companies_house_company")
+}
+
+model CompaniesHouseOfficer {
+  id          String                @id @default(cuid())
+  clientId    String
+  name        String
+  officerRole String?
+  appointedOn DateTime?
+  resignedOn  DateTime?
+  nationality String?
+  occupation  String?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  company     CompaniesHouseCompany @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+
+  @@index([clientId])
+  @@map("companies_house_officers")
+}
+
+model CompaniesHousePSC {
+  id              String                @id @default(cuid())
+  clientId        String
+  name            String
+  natureOfControl String?
+  notifiedOn      DateTime?
+  ceasedOn        DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  company         CompaniesHouseCompany @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+
+  @@index([clientId])
+  @@map("companies_house_pscs")
+}
+
+model CompaniesHouseFiling {
+  id            String                @id @default(cuid())
+  clientId      String
+  transactionId String?
+  type          String
+  description   String?
+  category      String?
+  actionDate    DateTime?
+  filedDate     DateTime?
+  barcode       String?
+  pages         Int?
+  paperFiled    Boolean?
+  reference     String?
+  madeUpTo      DateTime?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  company       CompaniesHouseCompany @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([type])
+  @@index([actionDate])
+  @@map("companies_house_filings")
+}
+
+model CompaniesHouseCharge {
+  id         String                @id @default(cuid())
+  clientId   String
+  chargeCode String?
+  createdOn  DateTime?
+  status     String?
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+  company    CompaniesHouseCompany @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+
+  @@index([clientId])
+  @@map("companies_house_charges")
+}
+
+model TaxCalculation {
+  id              String             @id @default(cuid())
+  clientId        String?
+  calculationType TaxCalculationType
+  taxYear         String
+  calculatedAt    DateTime           @default(now())
+  client          Client?            @relation(fields: [clientId], references: [id])
+  reports         GeneratedReport[]
+
+  @@map("tax_calculations")
+}
+
+model GeneratedReport {
+  id            String          @id @default(cuid())
+  clientId      String?
+  calculationId String?
+  title         String
+  calculation   TaxCalculation? @relation(fields: [calculationId], references: [id])
+  client        Client?         @relation(fields: [clientId], references: [id])
+
+  @@map("generated_reports")
+}
+
+model ClientParty {
+  id             String  @id @default(cuid())
+  clientId       String
+  fullName       String
+  email          String?
+  role           String?
+  primaryContact Boolean @default(false)
+  client         Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("client_parties")
+}
+
+model CalendarEvent {
+  id        String    @id @default(cuid())
+  title     String
+  startDate DateTime
+  endDate   DateTime?
+  clientId  String?
+  taskId    String?
+  client    Client?   @relation(fields: [clientId], references: [id])
+  task      Task?     @relation(fields: [taskId], references: [id])
+
+  @@index([startDate])
+  @@map("calendar_events")
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  ts        DateTime @default(now())
+  actor     String
+  entity    String
+  entityId  String
+  entityRef String?
+  action    String
+  payload   Json
+  clientId  String?
+  client    Client?  @relation("ClientEvents", fields: [clientId], references: [id])
+
+  @@index([entity, entityId])
+  @@map("events")
+}
+
+enum UserRole {
+  ADMIN
+  PARTNER
+  MANAGER
+  STAFF
+  READONLY
+}
+
+enum ClientType {
+  COMPANY
+  INDIVIDUAL
+  SOLE_TRADER
+  PARTNERSHIP
+  LLP
+}
+
+enum ClientStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum LifecycleStatus {
+  PROSPECT
+  ONBOARDING
+  ACTIVE
+  DORMANT
+  CEASED
+}
+
+enum VatStagger {
+  A
+  B
+  C
+  NONE
+}
+
+enum HMRCRegistrationStatus {
+  NOT_REGISTERED
+  NOT_APPLICABLE
+  APPLIED_FOR
+  REGISTERED
+  DEREGISTERED
+  MISSING_DATA
+}
+
+enum ServiceStatus {
+  DRAFT
+  ACTIVE
+  AWAITING_FILING
+  READY_TO_CLOSE
+  COMPLETE
+  ARCHIVED
+}
+
+enum RecurrenceType {
+  NONE
+  STANDARD
+}
+
+enum RecurrenceUnit {
+  DAY
+  WEEK
+  MONTH
+  YEAR
+}
+
+enum TriggerMode {
+  COMPLETION
+  DATE_BASED
+}
+
+enum ComplianceStatus {
+  PENDING
+  FILED
+  OVERDUE
+  EXEMPT
+}
+
+enum ComplianceSource {
+  COMPANIES_HOUSE
+  HMRC
+  MANUAL
+}
+
+enum ComplianceType {
+  STATUTORY_ACCOUNTS
+  VAT_RETURN
+  PAYROLL_RTI
+  CIS_RETURN
+  SELF_ASSESSMENT
+  CORPORATION_TAX
+  CONFIRMATION_STATEMENT
+  ENGAGEMENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum DocumentCategory {
+  TAX
+  ACCOUNTS
+  COMPLIANCE
+  REPORTS
+  INVOICES
+  BANK_STATEMENTS
+  OTHER
+}
+
+enum TemplateCategory {
+  TAX
+  HMRC
+  VAT
+  COMPLIANCE
+  GENERAL
+  ENGAGEMENT
+  CLIENT_REPORTS
+}
+
+enum TemplateType {
+  DOCUMENT
+  TASK
+  SERVICE
+  EMAIL
+}
+
+enum AccountingFramework {
+  MICRO_FRS105
+  SMALL_FRS102_1A
+  DORMANT
+  SOLE_TRADER
+  INDIVIDUAL
+}
+
+enum AccountsSetStatus {
+  DRAFT
+  IN_REVIEW
+  READY
+  LOCKED
+}
+
+enum TaxCalculationType {
+  SALARY_OPTIMIZATION
+  SCENARIO_COMPARISON
+  CORPORATION_TAX
+  DIVIDEND_TAX
 }

@@ -16,10 +16,12 @@
     "dev:up": "node scripts/dev-singleton.js up",
     "dev:down": "node scripts/dev-singleton.js down",
     "dev:status": "node scripts/dev-singleton.js status",
+    "practice": "pnpm run db:up && pnpm run dev:up web",
+    "practice-api": "pnpm run db:up && pnpm run dev:up api",
     "dev:turbo": "NODE_ENV=development turbo run dev --parallel",
     "dev:api": "node scripts/dev-singleton.js up api",
     "dev:web": "node scripts/dev-singleton.js up web",
-    "build": "NODE_ENV=production turbo run build",
+    "build": "NODE_ENV=production pnpm run build:api && NODE_ENV=production pnpm run build:web",
     "build:api": "NODE_ENV=production pnpm -C apps/api build",
     "build:web": "NODE_ENV=production pnpm -C apps/web build",
     "start": "NODE_ENV=production turbo run start",
@@ -46,12 +48,13 @@
     "migrate:templates:enhanced": "TS_NODE_TRANSPILE_ONLY=1 TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\",\"moduleResolution\":\"node\"}' ts-node scripts/migrate-templates-enhanced.ts"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "baseline-browser-mapping": "^2.9.19",
+    "@types/node": "^20.19.33",
+    "baseline-browser-mapping": "^2.10.0",
     "concurrently": "^8.2.2",
-    "turbo": "^2.8.1",
-    "typescript": "^5.3.0",
-    "webpack": "^5.104.1",
+    "prisma": "^7.4.1",
+    "turbo": "^2.8.10",
+    "typescript": "^5.9.3",
+    "webpack": "^5.105.2",
     "webpack-cli": "^6.0.1"
   },
   "engines": {
@@ -68,10 +71,10 @@
     "eslint": "^9.39.2"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
-    "@prisma/extension-accelerate": "^1.2.2",
+    "@prisma/adapter-pg": "^7.4.1",
+    "@prisma/client": "^7.4.1",
+    "@prisma/extension-accelerate": "^1.3.0",
     "@swc/helpers": "0.5.18",
-    "prisma": "^5.22.0",
     "project": "^0.1.6",
     "styled-jsx": "^5.1.7"
   }

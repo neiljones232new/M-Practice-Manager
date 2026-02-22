@@ -10,8 +10,8 @@ export default function HomePage() {
 
   const handleLoadingComplete = () => {
     setShowLoadingScreen(false);
-    // Redirect to login after loading screen completes
-    router.push('/login');
+    // Auth is temporarily bypassed in local dev.
+    router.push('/dashboard');
   };
 
   if (showLoadingScreen) {

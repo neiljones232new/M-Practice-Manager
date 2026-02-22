@@ -6,7 +6,7 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["apps/api/dist/**", "apps/web/.next/**"]
     },
     "start": {
       "dependsOn": ["build"],

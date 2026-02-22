@@ -6,52 +6,16 @@ import MDJShell from '@/components/mdj-ui/MDJShell';
 import { ExportMenu } from '@/components/mdj-ui/ExportMenu';
 import { api } from '@/lib/api'; // uses http://localhost:3001/api/v1 by default
 import type { ClientContext } from '@/lib/types';
+import styles from './clients.module.scss';
 
 type ClientRow = ClientContext;
-type SortField = 'name' | 'portfolio' | 'identifier' | 'accountsDue' | 'confirmationDue' | 'annualFee';
-
-type ClientEnrichment = {
-  serviceCount: number;
-  openTaskCount: number;
-};
-
-const isOpenTaskStatus = (status?: string) => {
-  const normalized = String(status || '').toUpperCase();
-  return normalized !== 'COMPLETED' && normalized !== 'CANCELLED';
-};
-
-const toDateSortValue = (value?: string | null) => {
-  if (!value) return Number.MAX_SAFE_INTEGER;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return Number.MAX_SAFE_INTEGER;
-  return date.getTime();
-};
-
-const isOverdueDate = (value?: string | null) => {
-  if (!value) return false;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return false;
-  return date.getTime() < Date.now();
-};
-
-const resolveClientRouteKey = (row: ClientRow): string => {
-  const candidates = [row?.node?.id, row?.node?.clientRef];
-  for (const raw of candidates) {
-    const value = String(raw || '').trim();
-    if (!value || value === 'undefined' || value === 'null') continue;
-    return value;
-  }
-  return '';
-};
 
 export default function ClientsPage() {
   const [allClients, setAllClients] = useState<ClientRow[]>([]);
-  const [clientEnrichment, setClientEnrichment] = useState<Record<string, ClientEnrichment>>({});
   const [loading, setLoading] = useState(true);
 
   // filters - load from localStorage on mount
   const [filters, setFilters] = useState<Record<string, string>>({
-    search: '',
     identifier: '',
     name: '',
     registeredNumber: '',
@@ -66,20 +30,12 @@ export default function ClientsPage() {
     status: '',
     type: '',
     portfolio: '',
-    overdueAccounts: '',
-    overdueConfirmation: '',
-    hasServices: '',
-    amlComplete: '',
-    hasOpenTasks: '',
   });
-  const [sortField, setSortField] = useState<SortField>(() => {
+  const [sortField, setSortField] = useState<'name' | 'status' | 'portfolio' | 'identifier'>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('clients_sort_field');
+      const stored = localStorage.getItem('clients_sort_field') as any;
       if (stored === 'ref') return 'identifier';
-      if (stored === 'name' || stored === 'portfolio' || stored === 'identifier' || stored === 'accountsDue' || stored === 'confirmationDue' || stored === 'annualFee') {
-        return stored;
-      }
-      return 'identifier';
+      return stored || 'identifier';
     }
     return 'identifier';
   });
@@ -97,18 +53,18 @@ export default function ClientsPage() {
   const defaultColumnIds = [
     'identifier',
     'name',
-    'registeredNumber',
-    'utrNumber',
+    // 'registeredNumber', // Hidden by default to reduce clutter
+    // 'utrNumber',
     'status',
     'type',
     'portfolio',
     'mainContact',
-    'mainPhone',
+    // 'mainPhone',
     'accountsNextDue',
-    'accountsLastMadeUpTo',
+    // 'accountsLastMadeUpTo',
     'confirmationNextDue',
-    'annualFees',
-    'tasksDueCount',
+    // 'annualFees',
+    // 'tasksDueCount',
     'actions',
   ];
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
@@ -145,66 +101,34 @@ export default function ClientsPage() {
     }
   }, [visibleColumns]);
 
+
+  // no-op: ClientContext already includes list signals
+  const scheduleEnrichment = () => {};
+
   const fetchClients = async () => {
     try {
       setLoading(true);
-      const [data, servicesRaw, tasksRaw] = await Promise.all([
-        api.getClients(),
-        api.get('/services').catch(() => []),
-        api.get('/tasks/with-client-details').catch(() => []),
-      ]);
+      const data = await api.getClients();
       const items = Array.isArray(data) ? data : [];
-      const services = Array.isArray(servicesRaw) ? servicesRaw : [];
-      const tasks = Array.isArray(tasksRaw) ? tasksRaw : [];
-
-      const serviceCountByClient: Record<string, number> = {};
-      for (const service of services) {
-        const clientId = String((service as any)?.clientId || '').trim();
-        if (!clientId) continue;
-        serviceCountByClient[clientId] = (serviceCountByClient[clientId] || 0) + 1;
-      }
-
-      const openTaskCountByClient: Record<string, number> = {};
-      for (const task of tasks) {
-        const clientId = String((task as any)?.clientId || '').trim();
-        if (!clientId) continue;
-        if (!isOpenTaskStatus((task as any)?.status)) continue;
-        openTaskCountByClient[clientId] = (openTaskCountByClient[clientId] || 0) + 1;
-      }
 
       const normalized = items.map((ctx) => {
         const node = ctx.node;
-        const profile = ctx.profile;
-        const accountsNextDue = node.accountsNextDue ?? profile.nextAccountsDueBy ?? profile.nextAccountsDueDate ?? null;
-        const confirmationNextDue = node.confirmationNextDue ?? profile.confirmationStatementDueBy ?? profile.nextConfirmationStatementDate ?? null;
-        const openTaskCount = openTaskCountByClient[node.id] ?? Number(node.tasksDueCount || 0);
         return {
           ...ctx,
           node: {
             ...node,
-            accountsNextDue,
+            accountsNextDue: node.accountsNextDue ?? null,
             accountsLastMadeUpTo: node.accountsLastMadeUpTo ?? null,
-            confirmationNextDue,
-            tasksDueCount: openTaskCount,
+            confirmationNextDue: node.confirmationNextDue ?? null,
           },
         };
       });
 
       setAllClients(normalized);
-      setClientEnrichment(
-        normalized.reduce<Record<string, ClientEnrichment>>((acc, row) => {
-          const clientId = row.node.id;
-          acc[clientId] = {
-            serviceCount: serviceCountByClient[clientId] || 0,
-            openTaskCount: openTaskCountByClient[clientId] || Number(row.node.tasksDueCount || 0),
-          };
-          return acc;
-        }, {}),
-      );
+      scheduleEnrichment();
     } catch (e) {
       console.error('Failed to load clients', e);
       setAllClients([]);
-      setClientEnrichment({});
     } finally {
       setLoading(false);
     }
@@ -215,6 +139,7 @@ export default function ClientsPage() {
     (async () => {
       if (!on) return;
       await fetchClients();
+      if (on) scheduleEnrichment();
     })();
     return () => { on = false; };
   }, []);
@@ -223,6 +148,7 @@ export default function ClientsPage() {
   useEffect(() => {
     const onFocus = async () => {
       await fetchClients();
+      scheduleEnrichment();
     };
     window.addEventListener('focus', onFocus);
     let bc: BroadcastChannel | null = null;
@@ -251,11 +177,9 @@ export default function ClientsPage() {
     return base.filter(ctx => {
       const node = ctx.node;
       const profile = ctx.profile;
-      const searchText = `${node.clientRef || ''} ${node.name || ''} ${node.registeredNumber || ''} ${node.utrNumber || ''}`.toLowerCase();
-      const searchMatch = !filters.search || searchText.includes(filters.search.toLowerCase());
       const matchesIdentifier =
         !filters.identifier ||
-        getText(node.clientRef).includes(filters.identifier.toLowerCase());
+        getText(node.clientRef || node.id).includes(filters.identifier.toLowerCase());
       const matchesName = !filters.name || getText(node.name).includes(filters.name.toLowerCase());
       const matchesCompanyNo =
         !filters.registeredNumber ||
@@ -283,34 +207,11 @@ export default function ClientsPage() {
         getText(profile.annualFee).includes(filters.annualFees.toLowerCase());
       const matchesTasksDue =
         !filters.tasksDueCount ||
-        getText(node.tasksDueCount).includes(filters.tasksDueCount.toLowerCase());
+        getText(undefined).includes(filters.tasksDueCount.toLowerCase());
       const matchesStatus = !filters.status || node.status === filters.status;
       const matchesType = !filters.type || node.type === filters.type;
       const matchesPortfolio = !filters.portfolio || String(node.portfolioCode || '') === filters.portfolio;
-      const serviceCount = clientEnrichment[node.id]?.serviceCount || 0;
-      const openTaskCount = clientEnrichment[node.id]?.openTaskCount || Number(node.tasksDueCount || 0);
-      const hasServices = serviceCount > 0;
-      const hasOpenTasks = openTaskCount > 0;
-      const amlComplete = profile.amlCompleted === true;
-      const overdueAccounts = isOverdueDate(node.accountsNextDue);
-      const overdueConfirmation = isOverdueDate(node.confirmationNextDue);
-      const matchesOverdueAccounts =
-        !filters.overdueAccounts ||
-        (filters.overdueAccounts === 'YES' ? overdueAccounts : !overdueAccounts);
-      const matchesOverdueConfirmation =
-        !filters.overdueConfirmation ||
-        (filters.overdueConfirmation === 'YES' ? overdueConfirmation : !overdueConfirmation);
-      const matchesHasServices =
-        !filters.hasServices ||
-        (filters.hasServices === 'YES' ? hasServices : !hasServices);
-      const matchesAmlComplete =
-        !filters.amlComplete ||
-        (filters.amlComplete === 'YES' ? amlComplete : !amlComplete);
-      const matchesHasOpenTasks =
-        !filters.hasOpenTasks ||
-        (filters.hasOpenTasks === 'YES' ? hasOpenTasks : !hasOpenTasks);
       return (
-        searchMatch &&
         matchesIdentifier &&
         matchesName &&
         matchesCompanyNo &&
@@ -324,15 +225,10 @@ export default function ClientsPage() {
         matchesTasksDue &&
         matchesStatus &&
         matchesType &&
-        matchesPortfolio &&
-        matchesOverdueAccounts &&
-        matchesOverdueConfirmation &&
-        matchesHasServices &&
-        matchesAmlComplete &&
-        matchesHasOpenTasks
+        matchesPortfolio
       );
     });
-  }, [allClients, clientEnrichment, filters]);
+  }, [allClients, filters]);
 
 
   const sorted = useMemo(() => {
@@ -345,20 +241,16 @@ export default function ClientsPage() {
         case 'name':
           result = aNode.name.localeCompare(bNode.name);
           break;
+        case 'status':
+          result = aNode.status.localeCompare(bNode.status);
+          break;
         case 'portfolio':
           result = (aNode.portfolioCode ?? 0) - (bNode.portfolioCode ?? 0);
           break;
         case 'identifier':
-          result = (aNode.clientRef || '').localeCompare(bNode.clientRef || '');
-          break;
-        case 'accountsDue':
-          result = toDateSortValue(aNode.accountsNextDue) - toDateSortValue(bNode.accountsNextDue);
-          break;
-        case 'confirmationDue':
-          result = toDateSortValue(aNode.confirmationNextDue) - toDateSortValue(bNode.confirmationNextDue);
-          break;
-        case 'annualFee':
-          result = Number(a.profile.annualFee || 0) - Number(b.profile.annualFee || 0);
+          result = (aNode.clientRef || aNode.registeredNumber || aNode.id || '').localeCompare(
+            bNode.clientRef || bNode.registeredNumber || bNode.id || ''
+          );
           break;
       }
       return sortDir === 'asc' ? result : -result;
@@ -392,7 +284,6 @@ export default function ClientsPage() {
 
   const handleClear = () => {
     setFilters({
-      search: '',
       identifier: '',
       name: '',
       registeredNumber: '',
@@ -407,11 +298,6 @@ export default function ClientsPage() {
       status: '',
       type: '',
       portfolio: '',
-      overdueAccounts: '',
-      overdueConfirmation: '',
-      hasServices: '',
-      amlComplete: '',
-      hasOpenTasks: '',
     });
     setSortField('identifier');
     setSortDir('asc');
@@ -425,13 +311,12 @@ export default function ClientsPage() {
     {
       id: 'identifier',
       label: 'Identifier',
-      render: (c: ClientRow) => <span className="mdj-ref">{c.node.clientRef || '—'}</span>,
+      render: (c: ClientRow) => <span className="mdj-ref">{c.node.clientRef || c.node.id || '—'}</span>,
     },
     {
       id: 'name',
       label: 'Name',
       render: (c: ClientRow) => {
-        const routeKey = resolveClientRouteKey(c);
         const lifecycle = c.profile.lifecycleStatus;
         const lifecycleInactive = Boolean(lifecycle && lifecycle !== 'ACTIVE');
         const amlIncomplete = !c.computed.isAmlComplete;
@@ -440,14 +325,10 @@ export default function ClientsPage() {
         const highRisk = Boolean(risk && String(risk).toLowerCase().includes('high'));
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {routeKey ? (
-              <Link className="mdj-link" href={`/clients/${encodeURIComponent(routeKey)}/overview`} title="View client">
-                {c.node.name}
-              </Link>
-            ) : (
-              <span className="mdj-link" style={{ opacity: 0.65 }}>{c.node.name}</span>
-            )}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <Link className="mdj-link" href={`/clients/${c.node.id}`} title="View client">
+              {c.node.name}
+            </Link>
+            <div className={styles.badges}>
               {lifecycleInactive && (
                 <span className="mdj-badge mdj-badge-muted">
                   {lifecycle}
@@ -501,7 +382,7 @@ export default function ClientsPage() {
     },
     {
       id: 'accountsNextDue',
-      label: 'Accounts Due',
+      label: 'Year End Due',
       render: (c: ClientRow) => renderDate(c.node.accountsNextDue),
     },
     {
@@ -511,7 +392,7 @@ export default function ClientsPage() {
     },
     {
       id: 'confirmationNextDue',
-      label: 'Confirmation Due',
+      label: 'Confirmation Statement Due',
       render: (c: ClientRow) => renderDate(c.node.confirmationNextDue),
     },
     {
@@ -523,27 +404,18 @@ export default function ClientsPage() {
     {
       id: 'tasksDueCount',
       label: 'Tasks Due',
-      render: (c: ClientRow) => String(c.node.tasksDueCount ?? 0),
+      render: () => '—',
     },
     {
       id: 'actions',
       label: '',
-      render: (c: ClientRow) => {
-        const routeKey = resolveClientRouteKey(c);
-        return (
-          <div style={{ textAlign: 'right' }}>
-            {routeKey ? (
-              <Link href={`/clients/${encodeURIComponent(routeKey)}/overview`} className="btn-outline-primary btn-xs">
-                View
-              </Link>
-            ) : (
-              <span className="btn-outline-primary btn-xs" style={{ opacity: 0.55, pointerEvents: 'none' }}>
-                View
-              </span>
-            )}
-          </div>
-        );
-      },
+      render: (c: ClientRow) => (
+        <div className={styles.actionsCell}>
+          <Link href={`/clients/${c.node.id}`} className="btn-outline btn-xs">
+            View
+          </Link>
+        </div>
+      ),
     },
   ];
   const visibleColumnDefs = columnDefs.filter((col) => visibleColumns.includes(col.id));
@@ -581,13 +453,13 @@ export default function ClientsPage() {
         <div className="list-head">
           <h3>Clients ({sorted.length})</h3>
           <div className="list-head-actions">
-            <button type="button" className="btn-outline-primary" onClick={handleClear}>
+            <button type="button" className="btn-outline" onClick={handleClear}>
               Clear Filters
             </button>
             <button type="button" className="btn-primary" onClick={handlePrint}>
               Print List
             </button>
-            <button type="button" className="btn-outline-primary" onClick={() => setShowCustomize((v) => !v)}>
+            <button type="button" className="btn-outline" onClick={() => setShowCustomize((v) => !v)}>
               {showCustomize ? 'Hide' : 'Customize'}
             </button>
             <button
@@ -606,100 +478,16 @@ export default function ClientsPage() {
             >
               Card View
             </button>
-            <select
-              aria-label="Sort field"
-              value={sortField}
-              onChange={(e) => setSortField(e.target.value as SortField)}
-              className="mdj-select"
-              style={{ width: 'auto' }}
-            >
-              <option value="identifier">Sort: Identifier</option>
-              <option value="name">Sort: Name</option>
-              <option value="portfolio">Sort: Portfolio</option>
-              <option value="accountsDue">Sort: Accounts Due</option>
-              <option value="confirmationDue">Sort: Confirmation Due</option>
-              <option value="annualFee">Sort: Annual Fee</option>
-            </select>
-            <select
-              aria-label="Sort direction"
-              value={sortDir}
-              onChange={(e) => setSortDir(e.target.value as 'asc' | 'desc')}
-              className="mdj-select"
-              style={{ width: 'auto' }}
-            >
-              <option value="asc">Asc</option>
-              <option value="desc">Desc</option>
-            </select>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
-          <input
-            aria-label="Search clients"
-            placeholder="Search name/ref/company/UTR"
-            value={filters.search}
-            onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
-            className="mdj-input"
-          />
-          <select
-            aria-label="Overdue accounts filter"
-            value={filters.overdueAccounts}
-            onChange={(e) => setFilters((prev) => ({ ...prev, overdueAccounts: e.target.value }))}
-            className="mdj-select"
-          >
-            <option value="">Accounts Due: All</option>
-            <option value="YES">Overdue Accounts: Yes</option>
-            <option value="NO">Overdue Accounts: No</option>
-          </select>
-          <select
-            aria-label="Overdue confirmation filter"
-            value={filters.overdueConfirmation}
-            onChange={(e) => setFilters((prev) => ({ ...prev, overdueConfirmation: e.target.value }))}
-            className="mdj-select"
-          >
-            <option value="">Confirmation Due: All</option>
-            <option value="YES">Overdue Confirmation: Yes</option>
-            <option value="NO">Overdue Confirmation: No</option>
-          </select>
-          <select
-            aria-label="Has services filter"
-            value={filters.hasServices}
-            onChange={(e) => setFilters((prev) => ({ ...prev, hasServices: e.target.value }))}
-            className="mdj-select"
-          >
-            <option value="">Has Services: All</option>
-            <option value="YES">Has Services: Yes</option>
-            <option value="NO">Has Services: No</option>
-          </select>
-          <select
-            aria-label="AML complete filter"
-            value={filters.amlComplete}
-            onChange={(e) => setFilters((prev) => ({ ...prev, amlComplete: e.target.value }))}
-            className="mdj-select"
-          >
-            <option value="">AML Complete: All</option>
-            <option value="YES">AML Complete: Yes</option>
-            <option value="NO">AML Complete: No</option>
-          </select>
-          <select
-            aria-label="Open tasks filter"
-            value={filters.hasOpenTasks}
-            onChange={(e) => setFilters((prev) => ({ ...prev, hasOpenTasks: e.target.value }))}
-            className="mdj-select"
-          >
-            <option value="">Open Tasks: All</option>
-            <option value="YES">Open Tasks: Yes</option>
-            <option value="NO">Open Tasks: No</option>
-          </select>
-        </div>
-
         {showCustomize && (
-          <div style={{ marginBottom: '1rem', display: 'grid', gap: '1rem' }}>
+          <div className={styles.customizeArea}>
             <div>
-              <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Visible Columns</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div className={styles.customizeTitle}>Visible Columns</div>
+              <div className={styles.customizeOptions}>
                 {columnDefs.map((col) => (
-                  <label key={col.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <label key={col.id} className={styles.checkboxLabel}>
                     <input
                       type="checkbox"
                       checked={visibleColumns.includes(col.id)}
@@ -721,6 +509,7 @@ export default function ClientsPage() {
         {view === 'table' ? (
           <>
             <div style={{ overflowX: 'auto' }}>
+            <div className={styles.tableWrapper}>
               <table className="mdj-table">
                 <thead>
                   <tr>
@@ -803,13 +592,13 @@ export default function ClientsPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={safeColumnDefs.length} style={{ padding: '1rem', color: 'var(--text-muted)' }}>
+                    <td colSpan={safeColumnDefs.length} className={styles.tableMessage}>
                       Loading…
                     </td>
                   </tr>
                 ) : sorted.length === 0 ? (
                   <tr>
-                    <td colSpan={safeColumnDefs.length} style={{ padding: '1rem', color: 'var(--text-muted)' }}>
+                    <td colSpan={safeColumnDefs.length} className={styles.tableMessage}>
                       No clients found
                     </td>
                   </tr>
@@ -827,8 +616,8 @@ export default function ClientsPage() {
               </div>
 
               {/* Pagination controls */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem' }}>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+              <div className={styles.pagination}>
+                <div className={styles.paginationInfo}>
                   {total === 0 ? (
                     'No results'
                   ) : (
@@ -836,24 +625,23 @@ export default function ClientsPage() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <label style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }} htmlFor="per-page">Show</label>
+                <div className={styles.paginationControls}>
+                  <label className={styles.perPageLabel} htmlFor="per-page">Show</label>
                   <select
                     id="per-page"
                     value={perPage}
                     onChange={(e) => setPerPage(parseInt(e.target.value, 10))}
-                    className="mdj-select"
-                    style={{ width: 'auto' }}
+                    className={`mdj-select ${styles.perPageSelect}`}
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
                     <option value={50}>50</option>
                   </select>
 
-                  <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+                  <div className={styles.pageButtons}>
                     <button
                       type="button"
-                      className="btn-outline-primary"
+                      className="btn-outline"
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page <= 1}
                     >
@@ -874,9 +662,8 @@ export default function ClientsPage() {
                           key={p}
                           type="button"
                           onClick={() => setPage(p)}
-                          className={`segment ${p === page ? 'active' : ''}`}
+                          className={`segment ${p === page ? 'active' : ''} ${styles.pageButton}`}
                           aria-current={p === page ? 'page' : undefined}
-                          style={{ minWidth: '36px' }}
                         >
                           {p}
                         </button>
@@ -885,7 +672,7 @@ export default function ClientsPage() {
 
                     <button
                       type="button"
-                      className="btn-outline-primary"
+                      className="btn-outline"
                       onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                       disabled={page >= totalPages}
                     >
@@ -893,62 +680,66 @@ export default function ClientsPage() {
                     </button>
                   </div>
                 </div>
-      </div>
-      </>
+              </div>
+            </div>
+          </>
     ) : (
-          <div className="client-card-grid">
+          <div className={styles.grid}>
             {loading ? (
               <div className="text-dim">Loading…</div>
             ) : sorted.length === 0 ? (
               <div className="text-dim">No clients found</div>
             ) : (
-              sorted.map((c, index) => {
-                const routeKey = resolveClientRouteKey(c);
-                const cardKey = routeKey || `${c.node.name || 'client'}-${index}`;
-
-                const body = (
-                  <>
-                    <div className="client-card-head">
-                      <span className="client-ref">{c.node.clientRef || '—'}</span>
-                      <span
-                        className={`mdj-badge ${
-                          c.node.status === 'ACTIVE'
-                            ? 'mdj-badge-success'
-                            : c.node.status === 'ARCHIVED'
-                            ? 'mdj-badge-dark'
-                            : 'mdj-badge-muted'
-                        }`}
-                      >
-                        {c.node.status}
-                      </span>
+              sorted.map((c) => (
+                <Link 
+                  key={c.node.id} 
+                  href={`/clients/${c.node.id}`} 
+                  className={`card-mdj ${styles.cardLink}`}
+                >
+                  <div className={styles.cardHeader}>
+                    <div>
+                      <h4 className={styles.cardTitle}>{c.node.name}</h4>
+                      <div className={`mdj-sub ${styles.cardSubtitle}`}>
+                        {c.node.clientRef || 'No Ref'}
+                      </div>
                     </div>
-                    <h4>{c.node.name}</h4>
-                    <p className="client-card-sub">Main Contact: {c.profile.mainContactName ?? c.node.mainEmail ?? '—'}</p>
-                    <p className="client-card-info">Company No.: {c.node.registeredNumber ?? '—'}</p>
-                    <p className="client-card-info">UTR: {c.node.utrNumber ?? '—'}</p>
-                    <p className="client-card-info">Tel: {c.node.mainPhone ?? '—'}</p>
-                    <p className="client-card-info">Year End Due: {renderDate(c.node.accountsNextDue)}</p>
-                    <p className="client-card-info">Year End: {renderDate(c.node.accountsLastMadeUpTo)}</p>
-                    <p className="client-card-info">CS Due: {renderDate(c.node.confirmationNextDue)}</p>
-                    <p className="client-card-info">Fees: {typeof c.profile.annualFee === 'number' ? `£${c.profile.annualFee.toFixed(2)}` : '—'}</p>
-                    <p className="client-card-info">Tasks Due: {String(c.node.tasksDueCount ?? 0)}</p>
-                  </>
-                );
+                    <span
+                      className={`mdj-badge ${
+                        c.node.status === 'ACTIVE'
+                          ? 'mdj-badge-success'
+                          : c.node.status === 'ARCHIVED'
+                          ? 'mdj-badge-dark'
+                          : 'mdj-badge-muted'
+                      }`}
+                    >
+                      {c.node.status}
+                    </span>
+                  </div>
 
-                if (!routeKey) {
-                  return (
-                    <div key={cardKey} className="client-card" style={{ opacity: 0.7 }}>
-                      {body}
+                  <div className={styles.cardBody}>
+                    <div>
+                      <div className={`mdj-sub ${styles.labelSm}`}>Next Accounts</div>
+                      <div className={styles.valueMd}>{renderDate(c.node.accountsNextDue)}</div>
                     </div>
-                  );
-                }
-
-                return (
-                  <Link key={cardKey} href={`/clients/${encodeURIComponent(routeKey)}/overview`} className="client-card">
-                    {body}
-                  </Link>
-                );
-              })
+                    <div>
+                      <div className={`mdj-sub ${styles.labelSm}`}>Next CS</div>
+                      <div className={styles.valueMd}>{renderDate(c.node.confirmationNextDue)}</div>
+                    </div>
+                    <div className={styles.fullWidth}>
+                      <div className={`mdj-sub ${styles.labelSm}`}>Main Contact</div>
+                      <div className={styles.truncate}>
+                        {c.profile.mainContactName ?? c.node.mainEmail ?? '—'}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {c.profile.clientRiskRating && c.profile.clientRiskRating.toLowerCase().includes('high') && (
+                    <div className={styles.riskAlert}>
+                      ⚠️ High Risk Client
+                    </div>
+                  )}
+                </Link>
+              ))
             )}
           </div>
         )}

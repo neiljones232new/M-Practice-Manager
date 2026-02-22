@@ -211,22 +211,27 @@ function cmdUp(targets) {
     const tracked = state[name];
     const trackedAlive = tracked?.pid && isAlive(tracked.pid);
     if (trackedAlive) {
-      console.log(`[${name}] already running (pid ${tracked.pid}, port ${service.port})`);
-      continue;
+      console.log(`[${name}] stopping existing tracked process (pid ${tracked.pid}) on port ${service.port}`);
+      const stoppedTracked = stopPid(tracked.pid, Boolean(tracked?.managed));
+      if (!stoppedTracked) {
+        console.error(`[${name}] unable to stop tracked process ${tracked.pid}`);
+        continue;
+      }
     }
 
     const portPid = resolvePortPid(service.port);
     if (portPid) {
-      state[name] = {
-        pid: portPid,
-        port: service.port,
-        managed: false,
-        log: service.log,
-        cwd: service.cwd,
-        adoptedAt: new Date().toISOString(),
-      };
-      console.log(`[${name}] already listening on port ${service.port} (pid ${portPid}), not starting duplicate`);
-      continue;
+      console.log(`[${name}] port ${service.port} occupied by pid ${portPid}, stopping it before restart`);
+      const stoppedPort = stopPid(portPid, false);
+      if (!stoppedPort) {
+        console.error(`[${name}] unable to free port ${service.port} (pid ${portPid})`);
+        continue;
+      }
+      const portStillBusy = resolvePortPid(service.port);
+      if (portStillBusy) {
+        console.error(`[${name}] port ${service.port} still in use by pid ${portStillBusy}`);
+        continue;
+      }
     }
 
     const pid = spawnService(service, nodeBin);

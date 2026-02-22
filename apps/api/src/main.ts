@@ -2,6 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import * as path from 'path';
+import * as dotenv from 'dotenv';
+import * as fs from 'fs';
 import { AppModule } from './app.module';
 import * as bcrypt from 'bcryptjs';
 import { FileStorageService } from './modules/file-storage/file-storage.service';
@@ -11,8 +14,40 @@ import { findPracticeManagerRoot, resolveStorageRoot } from './common/utils/stor
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const projectRoot = findPracticeManagerRoot();
-  logger.log(`PROJECT ROOT: ${projectRoot}`);
+
+  const envCandidates = [
+    path.resolve(process.cwd(), '.env.prod'),
+    path.resolve(process.cwd(), '.env.local'),
+    path.resolve(process.cwd(), '.env'),
+    path.resolve(process.cwd(), '../.env.prod'),
+    path.resolve(process.cwd(), '../.env.local'),
+    path.resolve(process.cwd(), '../.env'),
+    path.resolve(process.cwd(), '../../.env.prod'),
+    path.resolve(process.cwd(), '../../.env.local'),
+    path.resolve(process.cwd(), '../../.env'),
+  ];
+  for (const p of envCandidates) {
+    dotenv.config({ path: p, override: false });
+  }
+
+  // If an env file has set COMPANIES_HOUSE_API_KEY to an empty string, dotenv won't override it.
+  // Ensure the key is populated from .env.prod if present.
+  if (!process.env.COMPANIES_HOUSE_API_KEY || String(process.env.COMPANIES_HOUSE_API_KEY).trim() === '') {
+    const prodCandidates = envCandidates.filter((p) => p.endsWith('.env.prod'));
+    for (const p of prodCandidates) {
+      try {
+        if (!fs.existsSync(p)) continue;
+        const parsed = dotenv.parse(fs.readFileSync(p));
+        const key = parsed?.COMPANIES_HOUSE_API_KEY;
+        if (key && String(key).trim() !== '') {
+          process.env.COMPANIES_HOUSE_API_KEY = key;
+          break;
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }
   
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
@@ -139,8 +174,8 @@ async function bootstrap() {
   logger.log(`🚀 M Practice Manager API is running on: http://localhost:${port}/${apiPrefix}`);
   logger.log(`📚 API Documentation available at: http://localhost:${port}/${apiPrefix}/docs`);
   logger.log(`🏢 Companies House integration: ${configService.get('COMPANIES_HOUSE_API_KEY') ? 'Enabled' : 'Disabled'}`);
-  logger.log(`💾 Storage path: ${resolveStorageRoot(configService)}`);
-  logger.log(`🗄️ Database path: ${configService.get('DATABASE_URL', 'not configured')}`);
+  logger.log(`💾 Storage path: ${configService.get('STORAGE_PATH', './storage')}`);
+  logger.log(`🗄️ Database path: ${configService.get('DATABASE_URL', 'sqlite:./storage/practice-manager.db')}`);
 }
 
 bootstrap().catch((error) => {

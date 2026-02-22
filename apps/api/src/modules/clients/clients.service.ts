@@ -35,22 +35,41 @@ const HMRC_STATUS_FIELDS = [
   'hmrcSaStatus',
   'hmrcVatStatus',
   'hmrcPayeStatus',
-  'hmrcCisStatus',
-  'hmrcMtdVatStatus',
-  'hmrcMtdItsaStatus',
-  'hmrcEoriStatus',
 ] as const;
 const CLIENT_DATE_FIELDS = [
   'incorporationDate',
   'yearEnd',
+  'accountsNextDue',
+  'confirmationNextDue',
   'lastSyncedAt',
 ] as const;
 const CLIENT_PROFILE_DATE_FIELDS = [
   'onboardingDate',
   'disengagementDate',
+  'onboardingStartedAt',
+  'wentLiveAt',
+  'ceasedAt',
+  'dormantSince',
+  'accountingPeriodEnd',
+  'nextAccountsDueDate',
+  'nextCorporationTaxDueDate',
+  'statutoryYearEnd',
+  'vatRegistrationDate',
+  'vatPeriodStart',
+  'vatPeriodEnd',
+  'dateOfBirth',
+  'lastChRefresh',
+  'nextAccountsMadeUpTo',
+  'nextAccountsDueBy',
+  'lastAccountsMadeUpTo',
+  'nextConfirmationStatementDate',
+  'confirmationStatementDueBy',
+  'lastConfirmationStatementDate',
 ] as const;
-const CLIENT_CREATE_WRITE_FIELDS = [
+const CLIENT_WRITE_FIELDS = [
+  'id',
   'clientRef',
+  'baseClientRef',
   'name',
   'type',
   'status',
@@ -69,37 +88,17 @@ const CLIENT_CREATE_WRITE_FIELDS = [
   'accountsOfficeReference',
   'cisUtr',
   'eoriNumber',
-  'mtdVatEnabled',
-  'mtdItsaEnabled',
   'hmrcCtStatus',
   'hmrcSaStatus',
   'hmrcVatStatus',
   'hmrcPayeStatus',
-  'hmrcCisStatus',
-  'hmrcMtdVatStatus',
-  'hmrcMtdItsaStatus',
-  'hmrcEoriStatus',
   'incorporationDate',
   'yearEnd',
-  'accountsAccountingReferenceDay',
-  'accountsAccountingReferenceMonth',
+  'accountsNextDue',
+  'confirmationNextDue',
   'source',
   'lastSyncedAt',
 ] as const;
-
-const CLIENT_UPDATE_WRITE_FIELDS = [
-  'name',
-  'type',
-  'status',
-  'mainEmail',
-  'mainPhone',
-  'registeredNumber',
-  'utrNumber',
-  'vatNumber',
-  'payeReference',
-  'accountsOfficeReference',
-] as const;
-
 const CLIENT_PROFILE_WRITE_FIELDS = [
   'clientId',
   'mainContactName',
@@ -110,15 +109,83 @@ const CLIENT_PROFILE_WRITE_FIELDS = [
   'engagementLetterSigned',
   'onboardingDate',
   'disengagementDate',
+  'onboardingStartedAt',
+  'wentLiveAt',
+  'ceasedAt',
+  'dormantSince',
+  'accountingPeriodEnd',
+  'nextAccountsDueDate',
+  'nextCorporationTaxDueDate',
+  'statutoryYearEnd',
+  'vatRegistrationDate',
+  'vatPeriodStart',
+  'vatPeriodEnd',
+  'vatStagger',
+  'payrollPayDay',
+  'payrollPeriodEndDay',
+  'corporationTaxUtr',
+  'vatNumber',
+  'vatScheme',
+  'vatReturnFrequency',
+  'vatQuarter',
+  'payeReference',
+  'payeAccountsOfficeReference',
+  'cisRegistered',
+  'cisUtr',
+  'personalUtr',
+  'payrollRtiRequired',
   'amlCompleted',
   'clientRiskRating',
+  'annualFee',
+  'monthlyFee',
+  'selfAssessmentRequired',
+  'selfAssessmentFiled',
+  'tradingName',
+  'companyType',
+  'registeredAddress',
+  'authenticationCode',
+  'employeeCount',
+  'payrollFrequency',
   'contactPosition',
   'telephone',
   'mobile',
   'email',
   'preferredContactMethod',
   'correspondenceAddress',
+  'feeArrangement',
+  'businessBankName',
+  'accountLastFour',
+  'directDebitInPlace',
+  'paymentIssues',
+  'nationalInsuranceNumber',
+  'dateOfBirth',
+  'personalAddress',
+  'personalTaxYear',
+  'selfAssessmentTaxYear',
+  'linkedCompanyNumber',
+  'directorRole',
+  'companyStatusDetail',
+  'jurisdiction',
+  'sicCodes',
+  'sicDescriptions',
+  'registeredOfficeFull',
+  'directorCount',
+  'pscCount',
+  'currentDirectors',
+  'currentPscs',
+  'lastChRefresh',
+  'accountsOverdue',
+  'confirmationStatementOverdue',
+  'nextAccountsMadeUpTo',
+  'nextAccountsDueBy',
+  'lastAccountsMadeUpTo',
+  'nextConfirmationStatementDate',
+  'confirmationStatementDueBy',
+  'lastConfirmationStatementDate',
   'notes',
+  'specialCircumstances',
+  'seasonalBusiness',
+  'dormant',
   'doNotContact',
 ] as const;
 
@@ -129,16 +196,34 @@ export class ClientsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
-    const normalizedCreateDto = this.normalizeClientPayload(
-      createClientDto,
-      true,
-      CLIENT_CREATE_WRITE_FIELDS,
-    );
+    const normalizedCreateDto = this.normalizeClientPayload(createClientDto, true);
     const portfolioCode = normalizedCreateDto.portfolioCode ?? 1;
     const requestedPracticeId = typeof (normalizedCreateDto as any).practiceId === 'string'
       ? (normalizedCreateDto as any).practiceId.trim()
       : '';
     const practiceId = requestedPracticeId || 'default';
+    await this.ensurePracticeExists(practiceId);
+    await this.ensurePortfolioExists(portfolioCode, practiceId);
+    const providedId = normalizedCreateDto.id?.trim().toUpperCase();
+    if (providedId) {
+      const parsedProvidedId = parseClientRef(providedId);
+      if (!parsedProvidedId) {
+        throw new BadRequestException(
+          'Client ID must match format <portfolio><letter><3 digits> with optional suffix letter',
+        );
+      }
+      if (parsedProvidedId.portfolio !== portfolioCode) {
+        throw new BadRequestException(
+          `Client ID portfolio prefix ${parsedProvidedId.portfolio} must match portfolioCode ${portfolioCode}`,
+        );
+      }
+    }
+    const id = providedId || await this.generateClientIdentifier(
+      portfolioCode,
+      normalizedCreateDto.name,
+      normalizedCreateDto.type,
+      practiceId,
+    );
     const requestedClientRef = typeof (normalizedCreateDto as any).clientRef === 'string'
       ? (normalizedCreateDto as any).clientRef.trim().toUpperCase()
       : '';
@@ -147,12 +232,7 @@ export class ClientsService {
         'clientRef must match format <portfolio><letter><3 digits> with optional suffix letter',
       );
     }
-    const clientRef = requestedClientRef || await this.generateClientIdentifier(
-      portfolioCode,
-      normalizedCreateDto.name,
-      normalizedCreateDto.type,
-      practiceId,
-    );
+    const clientRef = requestedClientRef || id.toUpperCase();
     const parsedClientRef = parseClientRef(clientRef);
     if (!parsedClientRef) {
       throw new BadRequestException('Generated client reference is invalid');
@@ -162,15 +242,33 @@ export class ClientsService {
         `clientRef portfolio prefix ${parsedClientRef.portfolio} must match portfolioCode ${portfolioCode}`,
       );
     }
+    const requestedBaseClientRef = typeof (normalizedCreateDto as any).baseClientRef === 'string'
+      ? (normalizedCreateDto as any).baseClientRef.trim().toUpperCase()
+      : '';
+    if (requestedBaseClientRef && !isValidClientRef(requestedBaseClientRef)) {
+      throw new BadRequestException(
+        'baseClientRef must match format <portfolio><letter><3 digits> with optional suffix letter',
+      );
+    }
+    const baseClientRef = requestedBaseClientRef || parsedClientRef.base;
+    const parsedBaseClientRef = parseClientRef(baseClientRef);
+    if (!parsedBaseClientRef || parsedBaseClientRef.suffix) {
+      throw new BadRequestException('baseClientRef must be a base reference in format <portfolio><letter><3 digits>');
+    }
+    if (parsedBaseClientRef.portfolio !== portfolioCode) {
+      throw new BadRequestException(
+        `baseClientRef portfolio prefix ${parsedBaseClientRef.portfolio} must match portfolioCode ${portfolioCode}`,
+      );
+    }
     const created = await (this.prisma as any).client.create({
       data: {
         ...normalizedCreateDto,
+        id,
         clientRef,
+        baseClientRef,
         practiceId,
+        portfolioCode,
         status: normalizedCreateDto.status || 'ACTIVE',
-        mtdVatEnabled: normalizedCreateDto.mtdVatEnabled ?? false,
-        mtdItsaEnabled: normalizedCreateDto.mtdItsaEnabled ?? false,
-        tasksDueCount: normalizedCreateDto.tasksDueCount ?? 0,
       },
     });
 
@@ -184,9 +282,9 @@ export class ClientsService {
     services?: Array<{
       templateId?: string;
       kind: string;
-      frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF';
+      frequency?: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY';
       fee?: number;
-      status?: 'DRAFT' | 'ACTIVE' | 'AWAITING_FILING' | 'READY_TO_CLOSE' | 'COMPLETE' | 'ARCHIVED';
+      status?: 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
       nextDue?: string | Date;
       description?: string;
     }>;
@@ -302,11 +400,21 @@ export class ClientsService {
     for (const service of services) {
       const [tasks, complianceItem] = await Promise.all([
         (this.prisma as any).task.findMany({
-          where: { serviceId: service.id },
+          where: {
+            OR: [
+              { clientServiceId: service.id },
+              { serviceId: service.id },
+            ],
+          },
           orderBy: { createdAt: 'desc' },
         }),
         (this.prisma as any).complianceItem.findFirst({
-          where: { serviceId: service.id },
+          where: {
+            OR: [
+              { clientServiceId: service.id },
+              { serviceId: service.id },
+            ],
+          },
           orderBy: { createdAt: 'desc' },
         }),
       ]);
@@ -393,20 +501,20 @@ export class ClientsService {
     if (existing) {
       return {
         id: existing.id,
-        identifier: existing.clientRef || existing.id,
+        identifier: existing.clientRef || existing.registeredNumber || existing.id,
         name: existing.name,
         created: false,
       };
     }
 
-    const newClientRef = await this.generateClientIdentifier(
+    const newClientId = await this.generateClientIdentifier(
       baseClient.portfolioCode,
       name,
       'INDIVIDUAL',
       (baseClient as any).practiceId || 'default',
     );
     const created = await this.create({
-      clientRef: newClientRef,
+      id: newClientId,
       name,
       type: 'INDIVIDUAL',
       status: 'ACTIVE',
@@ -418,7 +526,7 @@ export class ClientsService {
 
     return {
       id: created.id,
-      identifier: created.clientRef || created.id,
+      identifier: created.clientRef || created.registeredNumber || created.id,
       name: created.name,
       created: true,
     };
@@ -441,7 +549,7 @@ export class ClientsService {
       const findBucketByAlpha = async (alpha: string): Promise<any | null> => {
         return (tx as any).refBucket.findFirst({
           where: { practiceId: scopedPracticeId, portfolioCode: code, alpha },
-          orderBy: { createdAt: 'asc' },
+          orderBy: { id: 'asc' },
         });
       };
 
@@ -534,7 +642,7 @@ export class ClientsService {
         }
 
         const candidate = `${code}${bucketAlpha}${String(nextIndex).padStart(3, '0')}`;
-        const exists = await (tx as any).client.findUnique({ where: { clientRef: candidate } });
+        const exists = await (tx as any).client.findUnique({ where: { id: candidate } });
         if (!exists) {
           await (tx as any).refBucket.update({
             where: { id: bucket.id },
@@ -619,14 +727,14 @@ export class ClientsService {
         orderBy: { createdAt: 'desc' },
         skip: Number.isFinite(skip) ? skip : 0,
         take: Number.isFinite(take) ? take : 100,
-        include: { clientProfile: true },
+        include: { profile: true },
       });
 
       this.logger.debug(`Found ${clients.length} clients, building contexts...`);
 
       const contexts = clients.map((client: any) => {
         try {
-          return buildClientContext(client, client.clientProfile || undefined);
+          return buildClientContext(client, client.profile || undefined);
         } catch (err) {
           this.logger.error(`Error building context for client ${client.id}: ${err.message}`, err.stack);
           throw err;
@@ -668,6 +776,7 @@ export class ClientsService {
           OR: [
             { registeredNumber: normalizedIdentifier },
             { clientRef: normalizedIdentifier.toUpperCase() },
+            { baseClientRef: normalizedIdentifier.toUpperCase() },
           ],
         },
       });
@@ -695,11 +804,7 @@ export class ClientsService {
     if (!existing) {
       throw new NotFoundException(`Client with ID ${id} not found`);
     }
-    const normalizedUpdateDto = this.normalizeClientPayload(
-      updateClientDto,
-      false,
-      CLIENT_UPDATE_WRITE_FIELDS,
-    );
+    const normalizedUpdateDto = this.normalizeClientPayload(updateClientDto, false);
     const targetPortfolioCode = normalizedUpdateDto.portfolioCode ?? existing.portfolioCode;
 
     if ((normalizedUpdateDto as any).practiceId !== undefined) {
@@ -730,6 +835,35 @@ export class ClientsService {
         );
       }
       (normalizedUpdateDto as any).clientRef = clientRef;
+      if ((normalizedUpdateDto as any).baseClientRef === undefined) {
+        (normalizedUpdateDto as any).baseClientRef = parsedClientRef.base;
+      }
+    }
+
+    if ((normalizedUpdateDto as any).baseClientRef !== undefined) {
+      if (typeof (normalizedUpdateDto as any).baseClientRef !== 'string') {
+        throw new BadRequestException('baseClientRef must be a string');
+      }
+      const baseClientRef = String((normalizedUpdateDto as any).baseClientRef).trim().toUpperCase();
+      const parsedBaseClientRef = parseClientRef(baseClientRef);
+      if (!parsedBaseClientRef || parsedBaseClientRef.suffix) {
+        throw new BadRequestException(
+          'baseClientRef must be a base reference in format <portfolio><letter><3 digits>',
+        );
+      }
+      if (parsedBaseClientRef.portfolio !== targetPortfolioCode) {
+        throw new BadRequestException(
+          `baseClientRef portfolio prefix ${parsedBaseClientRef.portfolio} must match portfolioCode ${targetPortfolioCode}`,
+        );
+      }
+      (normalizedUpdateDto as any).baseClientRef = baseClientRef;
+    }
+
+    if ((normalizedUpdateDto as any).clientRef && (normalizedUpdateDto as any).baseClientRef) {
+      const parsedClientRef = parseClientRef((normalizedUpdateDto as any).clientRef);
+      if (!parsedClientRef || parsedClientRef.base !== (normalizedUpdateDto as any).baseClientRef) {
+        throw new BadRequestException('baseClientRef must match the base portion of clientRef');
+      }
     }
 
     const updated = await (this.prisma as any).client.update({
@@ -903,13 +1037,9 @@ export class ClientsService {
     return normalized;
   }
 
-  private normalizeClientPayload(
-    payload: CreateClientDto | UpdateClientDto,
-    requireType: boolean,
-    allowedFields: readonly string[],
-  ): any {
+  private normalizeClientPayload(payload: CreateClientDto | UpdateClientDto, requireType: boolean): any {
     const normalizedWithDates = this.normalizeDateFields(payload, CLIENT_DATE_FIELDS);
-    const normalized = this.pickWritableFields(normalizedWithDates, allowedFields);
+    const normalized = this.pickWritableFields(normalizedWithDates, CLIENT_WRITE_FIELDS);
 
     if ((normalized as any).type !== undefined || requireType) {
       const type = this.normalizeEnumField((normalized as any).type, 'type', CLIENT_TYPE_VALUES);
@@ -1058,24 +1188,19 @@ export class ClientsService {
     return this.normalizeBucketAlpha(preferred) || 'X';
   }
 
-  private normalizeWorkFrequency(value?: string): 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF' {
+  private normalizeWorkFrequency(value?: string): 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' {
     const normalized = String(value || 'ANNUAL').toUpperCase().trim();
     if (normalized === 'MONTHLY') return 'MONTHLY';
     if (normalized === 'QUARTERLY') return 'QUARTERLY';
     if (normalized === 'WEEKLY') return 'WEEKLY';
-    if (normalized === 'ONE_OFF') return 'ONE_OFF';
     return 'ANNUAL';
   }
 
   private incrementPeriodEnd(
     periodStart: Date,
-    frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF',
+    frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY',
   ): Date {
     const end = new Date(periodStart);
-    if (frequency === 'ONE_OFF') {
-      end.setDate(end.getDate() + 1);
-      return end;
-    }
     if (frequency === 'MONTHLY') {
       end.setMonth(end.getMonth() + 1);
       return end;
@@ -1094,9 +1219,8 @@ export class ClientsService {
 
   private calculateAnnualizedFee(
     fee: number,
-    frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY' | 'ONE_OFF',
+    frequency: 'ANNUAL' | 'QUARTERLY' | 'MONTHLY' | 'WEEKLY',
   ): number {
-    if (frequency === 'ONE_OFF') return fee;
     if (frequency === 'MONTHLY') return fee * 12;
     if (frequency === 'QUARTERLY') return fee * 4;
     if (frequency === 'WEEKLY') return fee * 52;
@@ -1115,5 +1239,55 @@ export class ClientsService {
       lowered.includes('prismaclientinitializationerror') ||
       lowered.includes('timeout')
     );
+  }
+
+  private async ensurePracticeExists(practiceId: string): Promise<void> {
+    const existing = await (this.prisma as any).practice.findUnique({
+      where: { id: practiceId },
+      select: { id: true },
+    });
+    if (existing?.id) return;
+
+    try {
+      await (this.prisma as any).practice.create({
+        data: {
+          id: practiceId,
+          name: practiceId === 'default' ? 'Default Practice' : `Practice ${practiceId}`,
+          mainEmail: 'local-dev@example.com',
+        },
+      });
+    } catch (error: any) {
+      const message = String(error?.message || '').toLowerCase();
+      const isUniqueCollision = error?.code === 'P2002'
+        || message.includes('unique constraint')
+        || message.includes('duplicate key');
+      if (!isUniqueCollision) throw error;
+    }
+  }
+
+  private async ensurePortfolioExists(portfolioCode: number, practiceId: string): Promise<void> {
+    const code = Number.isFinite(Number(portfolioCode)) ? Number(portfolioCode) : 1;
+    const existing = await (this.prisma as any).portfolio.findUnique({
+      where: { code },
+      select: { code: true },
+    });
+    if (existing?.code) return;
+
+    try {
+      await (this.prisma as any).portfolio.create({
+        data: {
+          code,
+          practiceId,
+          name: code === 1 ? 'Main Portfolio' : `Portfolio ${code}`,
+          description: code === 1 ? 'Default client portfolio' : undefined,
+        },
+      });
+    } catch (error: any) {
+      const message = String(error?.message || '').toLowerCase();
+      const isUniqueCollision = error?.code === 'P2002'
+        || message.includes('unique constraint')
+        || message.includes('duplicate key');
+      if (!isUniqueCollision) throw error;
+    }
   }
 }

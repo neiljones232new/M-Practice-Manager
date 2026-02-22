@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '../generated/prisma';
+import { Prisma, PrismaClient } from 'prisma/prisma-client';
 import {
   normalizeCompanyInitial,
   parseClientRef,

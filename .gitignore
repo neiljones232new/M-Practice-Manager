@@ -32,3 +32,5 @@ apps/nest
 apps/api/src/modules.zip
 apps/web/src/app.zip
 apps/web/src/app/dashboard.zip
+
+/generated/prisma
